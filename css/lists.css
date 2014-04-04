@@ -30,7 +30,7 @@ div[data-rocket-component="list-label"] > img{ /* The optional label image */
 
 div[data-rocket-component="list-dropdown"]{ /* The list dropdown */
     float: left;
-    display: block;
+    display: none;
     height: auto;
     min-height: 40px;
     width: inherit;

@@ -1,0 +1,14 @@
+/* Import Rocket UI Components */
+
+@import "header.css";
+@import "footer.css";
+@import "buttons.css";
+@import "lists.css";
+
+/* Page Component */
+
+main[data-rocket-component="page"]{
+    margin-top: 80px;
+}
+
+/* End of Page Component */

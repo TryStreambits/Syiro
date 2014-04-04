@@ -1,0 +1,43 @@
+/* Basic Buttons */
+
+div[data-rocket-component="button"][data-rocket-component-type="basic"]{
+    float: left;
+    height: 40px;
+    min-width: 125px;
+    color: #fafafa;
+    font-size: 16px;
+    text-align: center;
+    line-height: 40px;
+    background-color: #0099ff;
+    margin: 5px;
+}
+
+/* End of Basic Buttons
+
+/* Toggle Button */
+
+div[data-rocket-component="button"][data-rocket-component-type="toggle"]{
+    float: left;
+    height: 30px;
+    width: 75px;
+    background-color: #f3f3f3;
+    border: 1px solid #dddddd;
+    margin: 5px;
+}
+
+div[data-rocket-component="button"][data-rocket-component-status="true"]{
+    background-color: #0099ff !important;
+}
+
+div[data-rocket-minor-component="buttonToggle"]{
+    float: left;
+    height: 30px;
+    width: 30px;
+    background-color: #333333;
+}
+
+div[data-rocket-component-status="true"] > div{
+    margin-left: 45px;
+}
+
+/* End of Toggle Button */

@@ -1,0 +1,26 @@
+/* Header */
+
+header[data-rocket-component="header"]{ /* Header Component */
+    float: left;
+    height: 80px;
+    width: 100%;
+    background-color: #f3f3f3;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    position: absolute;
+}
+
+img[data-rocket-minor-component="logo"]{ /* Header Logo Component */
+    float: left;
+    height: 64px;
+    width: auto;
+    border: 0px;
+    margin: 8px;
+}
+
+header[data-rocket-component="header"] > div[data-rocket-component="list"]{ /* Header List Modifications */
+    margin-top: 20px !important; /* Force the list to be vertically aligned */
+}
+
+/* End of Header */

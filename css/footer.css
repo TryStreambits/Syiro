@@ -1,0 +1,24 @@
+footer[data-rocket-component="footer"]{
+    float: left;
+    height: 80px;
+    width: 100%;
+    color: #333333;
+    font-family: 'Dosis', 'Droid Sans', 'Ubuntu', Segoe UI, Calibri !important;
+    font-size: 16px;
+    line-height: 80px;
+    background-color: #f3f3f3;
+}
+
+footer[data-rocket-component="footer"] > pre{
+    float: left;
+    height: 80px;
+    font-family: 'Dosis', 'Droid Sans', 'Ubuntu', Segoe UI, Calibri;
+    white-space: normal;
+    margin: 0px 0px 0px 15px;
+}
+
+footer[data-rocket-component="footer"] > a{
+    color: #0099ff;
+    text-decoration: none;
+    margin-left: 15px;
+}

@@ -1,9 +1,20 @@
 /* Import Rocket UI Components */
 
-@import "header.css";
-@import "footer.css";
-@import "buttons.css";
-@import "lists.css";
+@import "header.min.css";
+@import "footer.min.css";
+@import "animations.min.css";
+@import "buttons.min.css";
+@import "lists.min.css";
+@import "searchbar.min.css";
+
+/* Required Fonts */
+
+@font-face {
+    font-family: 'Dosis';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Dosis Regular'), local('Dosis-Regular'), url(fonts/dosis.woff) format('woff');
+}
 
 /* Page Component */
 

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+fileChanged(){ # Function that checks if a file is new or has been changed
+	file=$1
+	latestFileSum=$(cat "$file" | sha1sum) # Get the sha1sum of the file
+
+        cleanShaSum=${latestFileSum% -} # Remove everything after  -, which is sha1sum's reference to the file that was hashed
+	cleanShaSum=${cleanShaSum:0:-1} # Remove the whitespace from the ending of the sha1sum
+
+	FILE_CHANGED=""
+
+	if [ -f "$file.sha1sum" ]; then # If the sha1sum file of file exists
+		currentRecordedSumOfFile=$(cat "$file.sha1sum") # Get the sha1sum of the file stored
+
+		if [ "$cleanShaSum" != "$currentRecordedSumOfFile" ]; then # If the sums don't match (file diff)
+			FILE_CHANGED="CHANGED"
+		else
+			FILE_CHANGED="NOT_CHANGED"
+		fi
+	else # If the sha1sum of the file does not exist
+		FILE_CHANGED="CHANGED" # Assume the file has been changed, since there is no sum and it could be a new file
+	fi
+
+	if [ $FILE_CHANGED == "CHANGED" ]; then # If the file has been changed or is new, create an sha1sum of the file
+		echo "$cleanShaSum" > "$file.sha1sum" # Write the contents
+	fi
+
+	return
+}

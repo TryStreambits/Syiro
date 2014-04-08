@@ -3,10 +3,10 @@
 div[data-rocket-component="list"]{ /* Overall List Component */
     float: left;
     height: auto;
-    width: 250px;
+    width: 200px;
     color: #333333;
-    font-family: 'Droid Sans', 'Segoe UI', Calibri;
-    font-size: 16px;
+    font-family: 'Dosis', 'Droid Sans', 'Segoe UI', Calibri;
+    font-size: 18px;
     text-indent: 10px;
     line-height: 40px;
 }
@@ -14,18 +14,20 @@ div[data-rocket-component="list"]{ /* Overall List Component */
 div[data-rocket-component="list-label"]{ /* The List's label */
     float: left;
     height: 40px;
-    min-width: 250px;
+    min-width: 200px;
     background-color: #f3f3f3;
     background-image: url("../img/down.png");
-    background-position-x: 95%;
-    background-position-y: center;
+    background-position: 95% center;
     background-repeat: no-repeat;
+    text-align: center;
+    text-indent: -20px !important;
 }
 
 div[data-rocket-component="list-label"] > img{ /* The optional label image */
     float: left;
     height: 40px;
     width: 40px;
+    margin-right: -30px; /* Overwrite text indentation and aligning that is otherwise proper */
 }
 
 div[data-rocket-component="list-dropdown"]{ /* The list dropdown */
@@ -38,7 +40,7 @@ div[data-rocket-component="list-dropdown"]{ /* The list dropdown */
     border-top: 2px solid #efefef;
     background-color: #f3f3f3;
     margin-top: 40px;
-    position: fixed;
+    position: absolute;
     z-index: 10;
 }
 
@@ -53,6 +55,8 @@ div[data-rocket-component="list-item"]{ /* An individual list dropdown item */
 
 div[data-rocket-component="list-item"] > a{ /* Links within the List dropdown item
     /* Override any color or text decoration to make sure it looks good on the list item */
+    float: left;
+    width: 100%;
     color: #0099ff !important;
     font-weight: normal;
     text-decoration: none;

@@ -4,6 +4,7 @@ header[data-rocket-component="header"]{ /* Header Component */
     float: left;
     height: 80px;
     width: 100%;
+    min-width: 1000px;
     background-color: #f3f3f3;
     top: 0px;
     left: 0px;
@@ -13,14 +14,24 @@ header[data-rocket-component="header"]{ /* Header Component */
 
 img[data-rocket-minor-component="logo"]{ /* Header Logo Component */
     float: left;
-    height: 64px;
+    height: 50px;
     width: auto;
     border: 0px;
-    margin: 8px;
+    margin: 15px;
 }
 
 header[data-rocket-component="header"] > div[data-rocket-component="list"]{ /* Header List Modifications */
-    margin-top: 20px !important; /* Force the list to be vertically aligned */
+    min-height: 80px;
+    margin-top: 0px !important; /* Force the list to be vertically aligned */
+}
+
+header[data-rocket-component="header"] > div[data-rocket-component="list"] > div[data-rocket-component="list-label"]{ /* Header List Label Modifications */
+    margin-top: 20px !important;
+}
+
+header[data-rocket-component="header"] > div[data-rocket-component="list"] > div[data-rocket-component="list-dropdown"]{ /* Header List Dropdown Modification */
+    border-top: 2px solid #0099ff !important; /* Have the border be blue to more easily differentiate between the header and list dropdown */
+    margin-top: 80px;  /* Have the dropdown sit below the header */
 }
 
 /* End of Header */

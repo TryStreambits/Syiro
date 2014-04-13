@@ -9,13 +9,18 @@ class Rocket {
 	}
 
 	init(){ // Initialization function
+		do {
+			// Waiting
+		} while ($ == undefined);
+
 		$(document).ready(
 			function(){
-				$('div[data-rocket-component="list"]').on("click touchend MSPointerUp", // For every list dropdown, create a click binding that shows or hides the dropdown
+				$('div[data-rocket-component="list"]').on("click touchend MSPointerUp keydown.VK_ENTER", // For every list dropdown, create a click binding that shows or hides the dropdown
 					function(){
 						var currentDisplayValue = $(this).children('div[data-rocket-component="list-dropdown"]').css("display"); // Get the current display value
 
 						if (currentDisplayValue !== "block"){ // If the list dropdown is currently hidden
+							$('div[data-rocket-component="list-dropdown"]').hide(); // Hide all other dropdowns
 							$(this).children('div[data-rocket-component="list-dropdown"]').show(); // Show the dropdown
 						}
 						else{ // If it is already shown when clicked
@@ -23,6 +28,7 @@ class Rocket {
 						}
 					}
 				);
+
 				$(document).on("scroll", // Whenever the document is scrolled, make sure the list dropdowns are hidden
 					function(){
 						$('div[data-rocket-component="list-dropdown"]').fadeOut(250,
@@ -30,7 +36,8 @@ class Rocket {
 								$(this).hide();
 							}
 						);
-					})
+					}
+				);
 			}
 		);
 	}
@@ -196,7 +203,7 @@ class Rocket {
 		function listen(primaryCallback : Function, secondaryCallback ?: Function){ // Listener function that creates an event handle
 			this.addCallback(predictableComponentRegister, rocketComponent, primaryCallback, secondaryCallback);
 
-			$(rocketComponent).on("click touchend MSPointerUp", { "componentRegister" : predictableComponentRegister },
+			$(rocketComponent).on("click touchend MSPointerUp keydown.VK_ENTER", { "componentRegister" : predictableComponentRegister },
 				$.proxy(
 					function(){
 						var componentRegister = event.data["componentRegister"];

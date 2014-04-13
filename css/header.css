@@ -9,7 +9,7 @@ header[data-rocket-component="header"]{ /* Header Component */
     top: 0px;
     left: 0px;
     right: 0px;
-    position: absolute;
+    position: static;
 }
 
 img[data-rocket-minor-component="logo"]{ /* Header Logo Component */

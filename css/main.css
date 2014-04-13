@@ -19,7 +19,7 @@
 /* Page Component */
 
 main[data-rocket-component="page"]{
-    margin-top: 80px;
+    position: static;
 }
 
 /* End of Page Component */

@@ -4,16 +4,21 @@ var Rocket = (function () {
         this.rocketCallbacks = {};
     }
     Rocket.prototype.init = function () {
+        do {
+        } while($ == undefined);
+
         $(document).ready(function () {
-            $('div[data-rocket-component="list"]').on("click touchend MSPointerUp", function () {
+            $('div[data-rocket-component="list"]').on("click touchend MSPointerUp keydown.VK_ENTER", function () {
                 var currentDisplayValue = $(this).children('div[data-rocket-component="list-dropdown"]').css("display");
 
                 if (currentDisplayValue !== "block") {
+                    $('div[data-rocket-component="list-dropdown"]').hide();
                     $(this).children('div[data-rocket-component="list-dropdown"]').show();
                 } else {
                     $(this).children('div[data-rocket-component="list-dropdown"]').hide();
                 }
             });
+
             $(document).on("scroll", function () {
                 $('div[data-rocket-component="list-dropdown"]').fadeOut(250, function () {
                     $(this).hide();
@@ -154,7 +159,7 @@ var Rocket = (function () {
         function listen(primaryCallback, secondaryCallback) {
             this.addCallback(predictableComponentRegister, rocketComponent, primaryCallback, secondaryCallback);
 
-            $(rocketComponent).on("click touchend MSPointerUp", { "componentRegister": predictableComponentRegister }, $.proxy(function () {
+            $(rocketComponent).on("click touchend MSPointerUp keydown.VK_ENTER", { "componentRegister": predictableComponentRegister }, $.proxy(function () {
                 var componentRegister = event.data["componentRegister"];
 
                 var component = this.rocketCallbacks[componentRegister]["element"];

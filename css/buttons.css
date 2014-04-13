@@ -1,7 +1,15 @@
+/* General Button CSS */
+
+*[data-rocket-component="button"]{
+    float: left;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    margin: 5px;
+}
+
 /* Basic Buttons */
 
 *[data-rocket-component="button"][data-rocket-component-type="basic"]{
-    float: left;
     height: 40px;
     min-width: 125px;
     color: #fafafa;
@@ -10,8 +18,6 @@
     text-decoration: none;
     line-height: 40px;
     background-color: #0099ff;
-    border-radius: 5px;
-    margin: 5px;
 }
 
 /* End of Basic Buttons
@@ -19,12 +25,10 @@
 /* Toggle Button */
 
 div[data-rocket-component="button"][data-rocket-component-type="toggle"]{
-    float: left;
     height: 30px;
     width: 75px;
     background-color: #f3f3f3;
     border: 1px solid #dddddd;
-    margin: 5px;
 }
 
 div[data-rocket-component="button"][data-rocket-component-status="true"]{

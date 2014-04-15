@@ -2,8 +2,8 @@
 
 *[data-rocket-component="button"]{
     float: left;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
     margin: 5px;
 }
 
@@ -13,11 +13,13 @@
     height: 40px;
     min-width: 125px;
     color: #fafafa;
+    font-family: 'Dosis', 'Droid Sans', 'Segoe UI', Calibri;
     font-size: 16px;
     text-align: center;
     text-decoration: none;
     line-height: 40px;
     background-color: #0099ff;
+    border: 0px;
 }
 
 /* End of Basic Buttons

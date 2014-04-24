@@ -1,43 +1,43 @@
 /* Toggle Animation */
 
 @keyframes toggle{
-    0%{
-        margin-left: 0px;
-    }
+	0%{
+		margin-left: 0;
+	}
 
-    100%{
-        margin-left: 45px;
-    }
+	100%{
+		margin-left: 45px;
+	}
 }
 
 @-webkit-keyframes toggle{
-    0%{
-        margin-left: 0px;
-    }
+	0%{
+		margin-left: 0;
+	}
 
-    100%{
-        margin-left: 45px;
-    }
+	100%{
+		margin-left: 45px;
+	}
 }
 
 @-moz-keyframes toggle{
-    0%{
-        margin-left: 0px;
-    }
+	0%{
+		margin-left: 0;
+	}
 
-    100%{
-        margin-left: 45px;
-    }
+	100%{
+		margin-left: 45px;
+	}
 }
 
 @-o-keyframes toggle{
-    0%{
-        margin-left: 0px;
-    }
+	0%{
+		margin-left: 0;
+	}
 
-    100%{
-      margin-left: 45px;
-    }
+	100%{
+	  margin-left: 45px;
+	}
 }
 
 /* End of Toggle Animation */

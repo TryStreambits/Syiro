@@ -27,7 +27,15 @@ declare module Rocket {
         public listen(primaryCallback: Function, secondaryCallback?: Function): void;
     }
     class List extends RocketComponentFunctions {
-        constructor();
+        public rocketComponent: HTMLElement;
+        public listLabelSelector: string;
+        public listDropdownSelector: string;
+        constructor(rocketComponentSelector: string);
+        public setLabelText(labelText: string): void;
+        public setLabelImage(imageSource: string): void;
+        public addListItem(prependOrAppend: string, listItem: Element): void;
+        public removeListItem(listItem: Element): void;
         public listen(rocketComponent: HTMLElement): void;
     }
 }
+declare var rocket: typeof Rocket;

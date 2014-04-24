@@ -1,37 +1,78 @@
 /* Header */
 
 header[data-rocket-component="header"]{ /* Header Component */
-    float: left;
-    height: 80px;
-    width: 100%;
-    min-width: 1000px;
-    background-color: #f3f3f3;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    position: static;
+	float: left;
+	width: 100%;
+	min-width: 1000px;
+	background-color: #f3f3f3;
+	top: 0;
+	left: 0;
+	right: 0;
+	position: static;
 }
 
-img[data-rocket-minor-component="logo"]{ /* Header Logo Component */
-    float: left;
-    height: 50px;
-    width: auto;
-    border: 0px;
-    margin: 15px;
+@media (max-width: 1024px){ /* If the document width is 1024 pixel, make everything properly scale to the smaller resolutions */
+	header[data-rocket-component="header"]{ /* Header Component */
+		height: 60px;
+	}
+
+	img[data-rocket-minor-component="logo"]{ /* Header Logo Component */
+		height: 40px;
+		margin: 10px;
+	}
+
+	header[data-rocket-component="header"] > div[data-rocket-component="list"]{ /* Header List Modifications */
+		min-height: 60px;
+	}
+
+	header[data-rocket-component="header"] > div[data-rocket-component="list"] > div[data-rocket-component="list-label"]{ /* Header List Label Modifications */
+		margin-top: 10px !important;
+	}
+
+	header[data-rocket-component="header"] > div[data-rocket-component="list"] > div[data-rocket-component="list-dropdown"]{ /* Header List Dropdown Modification */
+		margin-top: 60px;  /* Have the dropdown sit below the header */
+	}
 }
 
-header[data-rocket-component="header"] > div[data-rocket-component="list"]{ /* Header List Modifications */
-    min-height: 80px;
-    margin-top: 0px !important; /* Force the list to be vertically aligned */
+@media (min-width: 1260px){ /* If the document width is larger than 1260 (mainly 1280 minus window decoration sizes) */
+	header[data-rocket-component="header"]{ /* Header Component */
+		height: 80px;
+	}
+
+	img[data-rocket-minor-component="logo"]{ /* Header Logo Component */
+		height: 60px;
+		margin: 10px;
+	}
+
+	header[data-rocket-component="header"] > div[data-rocket-component="list"]{ /* Header List Modifications */
+		min-height: 80px;
+	}
+
+	header[data-rocket-component="header"] > div[data-rocket-component="list"] > div[data-rocket-component="list-label"]{ /* Header List Label Modifications */
+		margin-top: 20px !important;
+	}
+
+	header[data-rocket-component="header"] > div[data-rocket-component="list"] > div[data-rocket-component="list-dropdown"]{ /* Header List Dropdown Modification */
+		margin-top: 80px;  /* Have the dropdown sit below the header */
+	}
 }
 
-header[data-rocket-component="header"] > div[data-rocket-component="list"] > div[data-rocket-component="list-label"]{ /* Header List Label Modifications */
-    margin-top: 20px !important;
-}
+/* General Resolution CSS */
+@media screen, handheld, projection, tv{
+	img[data-rocket-minor-component="logo"]{ /* Header Logo Component */
+		float: left;
+		width: auto;
+		border: 0;
+	}
 
-header[data-rocket-component="header"] > div[data-rocket-component="list"] > div[data-rocket-component="list-dropdown"]{ /* Header List Dropdown Modification */
-    border-top: 2px solid #0099ff !important; /* Have the border be blue to more easily differentiate between the header and list dropdown */
-    margin-top: 80px;  /* Have the dropdown sit below the header */
+	header[data-rocket-component="header"] > div[data-rocket-component="list"]{ /* Header List Modifications */
+		margin-top: 0 !important; /* Force the list to be vertically aligned */
+	}
+
+	header[data-rocket-component="header"] > div[data-rocket-component="list"] > div[data-rocket-component="list-dropdown"]{ /* Header List Dropdown Modification */
+		border-top: 2px solid #0099ff !important; /* Have the border be blue to more easily differentiate between the header and list dropdown */
+	}
 }
+/* End of General Resolution CSS */
 
 /* End of Header */

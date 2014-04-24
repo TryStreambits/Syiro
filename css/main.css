@@ -10,16 +10,16 @@
 /* Required Fonts */
 
 @font-face {
-    font-family: 'Dosis';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Dosis Regular'), local('Dosis-Regular'), url(fonts/dosis.woff) format('woff');
+	font-family: 'Dosis';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Dosis Regular'), local('Dosis-Regular'), url(fonts/dosis.woff) format('woff');
 }
 
 /* Page Component */
 
 main[data-rocket-component="page"]{
-    position: static;
+	position: static;
 }
 
 /* End of Page Component */

@@ -25,7 +25,7 @@ var Rocket;
 
             $(document).on("scroll", function () {
                 $('div[data-rocket-component="list-dropdown"]').fadeOut(250, function (e) {
-                    $(e.currentTarget).hide();
+                    $('div[data-rocket-component="list-dropdown"]').hide();
                 });
             });
         });
@@ -203,9 +203,41 @@ var Rocket;
 
     var List = (function (_super) {
         __extends(List, _super);
-        function List() {
+        function List(rocketComponentSelector) {
             _super.call(this);
+            this.listLabelSelector = 'div[data-rocket-component="list-label"]';
+            this.listDropdownSelector = 'div[data-rocket-component="list-dropdown"]';
+            this.rocketComponent = $(rocketComponentSelector).get(0);
         }
+        List.prototype.setLabelText = function (labelText) {
+            var savedInternalLabelContent = "";
+
+            if ($(this.rocketComponent).children(this.listLabelSelector + ' > img').length > 0) {
+                savedInternalLabelContent = $(this.rocketComponent).children(this.listLabelSelector + ' > img').clone().toString();
+            }
+
+            $(this.rocketComponent).children(this.listLabelSelector).html(savedInternalLabelContent + labelText);
+        };
+
+        List.prototype.setLabelImage = function (imageSource) {
+            if ($(this.rocketComponent).children(this.listLabelSelector + ' > img').length > 0) {
+                $(this.rocketComponent).children(this.listLabelSelector + ' > img').attr("src", imageSource);
+            } else {
+                var currentLabelText = $(this.rocketComponent).children(this.listLabelSelector).text();
+                $(this.rocketComponent).children(this.listLabelSelector).html('<img src="' + imageSource + '">' + currentLabelText);
+            }
+        };
+
+        List.prototype.addListItem = function (prependOrAppend, listItem) {
+            var listDropdown = $(this.rocketComponent).get(1);
+            this.addComponent(prependOrAppend, listDropdown, listItem);
+        };
+
+        List.prototype.removeListItem = function (listItem) {
+            var listDropdown = $(this.rocketComponent).get(1);
+            this.removeComponent(listDropdown, listItem);
+        };
+
         List.prototype.listen = function (rocketComponent) {
             Rocket.init();
         };
@@ -213,3 +245,5 @@ var Rocket;
     })(RocketComponentFunctions);
     Rocket.List = List;
 })(Rocket || (Rocket = {}));
+
+var rocket = Rocket;

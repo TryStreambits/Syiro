@@ -250,8 +250,8 @@ module Rocket {
 		setLabelText(labelText : string){ // Function that sets the list label text
 			var savedInternalLabelContent : string = ""; // Set the savedInternalLabelContent to any potential html we'll need to re-add to the label (mainly img)
 
-			if ($(this.rocketComponent).children(this.listLabelSelector + ' > img').length > 0){ // If an image exists
-				savedInternalLabelContent = $(this.rocketComponent).children(this.listLabelSelector + ' > img').clone().toString(); // Clone the image and make sure it is an HTML string
+			if ($(this.rocketComponent).children(this.listLabelSelector).children("img").length > 0){ // If an image exists
+				savedInternalLabelContent = $(this.rocketComponent).children(this.listLabelSelector).children("img").get(0).outerHTML; // Fetch the avatar and save it's HTML
 			}
 
 			$(this.rocketComponent).children(this.listLabelSelector).html( // Change the listLabelSelector HTML
@@ -260,24 +260,24 @@ module Rocket {
 		}
 
 		setLabelImage(imageSource : string){ // Function that sets the list label image
-			if ($(this.rocketComponent).children(this.listLabelSelector + ' > img').length > 0){ // If an image already exists
-				$(this.rocketComponent).children(this.listLabelSelector + ' > img').attr("src", imageSource); // Set the image source
+			if ($(this.rocketComponent).children(this.listLabelSelector).children("img").length > 0){ // If an image already exists
+				$(this.rocketComponent).children(this.listLabelSelector).children("img").first().attr("src", imageSource); // Set the image source
 			}
 			else{ // If an image does NOT exist in the list's label
 				var currentLabelText = $(this.rocketComponent).children(this.listLabelSelector).text(); // Get the current list label text
 				$(this.rocketComponent).children(this.listLabelSelector).html( // Set the HTML of the list label to the image and existing label text
-					'<img src="' + imageSource +'">' + currentLabelText
+					'<img alt="" src="' + imageSource +'" />' + currentLabelText
 				);
 			}
 		}
 
 		addListItem(prependOrAppend : string, listItem : Element){ // Function that adds a list item
-			var listDropdown = $(this.rocketComponent).get(1); // Set listDropdown as the second (1 in 0-index) component
+			var listDropdown = $(this.rocketComponent).children('div[data-rocket-component="list-dropdown"]').get(0); // Set listDropdown as the HTMLElement provided by .get() from the dropdown grabbed via selector
 			this.addComponent(prependOrAppend, listDropdown, listItem); // Add the list item
 		}
 
 		removeListItem(listItem : Element){ // Function that removes a list item
-			var listDropdown = $(this.rocketComponent).get(1); // Set listDropdown as the second (1 in 0-index) component
+			var listDropdown = $(this.rocketComponent).children('div[data-rocket-component="list-dropdown"]').get(0); // Set listDropdown as the HTMLElement provided by .get() from the dropdown grabbed via selector
 			this.removeComponent(listDropdown, listItem); // Remove the list item
 		}
 

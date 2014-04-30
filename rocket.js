@@ -212,29 +212,29 @@ var Rocket;
         List.prototype.setLabelText = function (labelText) {
             var savedInternalLabelContent = "";
 
-            if ($(this.rocketComponent).children(this.listLabelSelector + ' > img').length > 0) {
-                savedInternalLabelContent = $(this.rocketComponent).children(this.listLabelSelector + ' > img').clone().toString();
+            if ($(this.rocketComponent).children(this.listLabelSelector).children("img").length > 0) {
+                savedInternalLabelContent = $(this.rocketComponent).children(this.listLabelSelector).children("img").get(0).outerHTML;
             }
 
             $(this.rocketComponent).children(this.listLabelSelector).html(savedInternalLabelContent + labelText);
         };
 
         List.prototype.setLabelImage = function (imageSource) {
-            if ($(this.rocketComponent).children(this.listLabelSelector + ' > img').length > 0) {
-                $(this.rocketComponent).children(this.listLabelSelector + ' > img').attr("src", imageSource);
+            if ($(this.rocketComponent).children(this.listLabelSelector).children("img").length > 0) {
+                $(this.rocketComponent).children(this.listLabelSelector).children("img").first().attr("src", imageSource);
             } else {
                 var currentLabelText = $(this.rocketComponent).children(this.listLabelSelector).text();
-                $(this.rocketComponent).children(this.listLabelSelector).html('<img src="' + imageSource + '">' + currentLabelText);
+                $(this.rocketComponent).children(this.listLabelSelector).html('<img alt="" src="' + imageSource + '" />' + currentLabelText);
             }
         };
 
         List.prototype.addListItem = function (prependOrAppend, listItem) {
-            var listDropdown = $(this.rocketComponent).get(1);
+            var listDropdown = $(this.rocketComponent).children('div[data-rocket-component="list-dropdown"]').get(0);
             this.addComponent(prependOrAppend, listDropdown, listItem);
         };
 
         List.prototype.removeListItem = function (listItem) {
-            var listDropdown = $(this.rocketComponent).get(1);
+            var listDropdown = $(this.rocketComponent).children('div[data-rocket-component="list-dropdown"]').get(0);
             this.removeComponent(listDropdown, listItem);
         };
 

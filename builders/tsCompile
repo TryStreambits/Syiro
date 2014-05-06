@@ -2,7 +2,7 @@
 
 currentDirectory=$(pwd) # Get the current Metis directory
 currentDirectory=${currentDirectory%builders} # Remove the builders folder, if it exists, from the directory
-projectName=${currentDirectory##*/} # Get the "project" naem
+projectName=${currentDirectory##*/} # Get the "project" name
 operatingSystem=$(lsb_release -is) # Get the short name for the operating system in use
 source "$currentDirectory/builders/tsFunctions" # Import Functions Dependency
 

@@ -2,15 +2,17 @@
 
 fileChanged(){ # Function that checks if a file is new or has been changed
 	file=$1
+	fileName="${file##*/}" # Remove everything before last /
+	fileShaSumPath="builders/sha1sums/$fileName.sha1sum" # Set the full patch of the potential sha1sum of the file
 	latestFileSum=$(cat "$file" | sha1sum) # Get the sha1sum of the file
 
-        cleanShaSum=${latestFileSum% -} # Remove everything after  -, which is sha1sum's reference to the file that was hashed
+	cleanShaSum=${latestFileSum% -} # Remove everything after  -, which is sha1sum's reference to the file that was hashed
 	cleanShaSum=${cleanShaSum:0:-1} # Remove the whitespace from the ending of the sha1sum
 
 	FILE_CHANGED=""
 
-	if [ -f "$file.sha1sum" ]; then # If the sha1sum file of file exists
-		currentRecordedSumOfFile=$(cat "$file.sha1sum") # Get the sha1sum of the file stored
+	if [ -f "$fileShaSumPath" ]; then # If the sha1sum file of file exists
+		currentRecordedSumOfFile=$(cat "$fileShaSumPath") # Get the sha1sum of the file stored
 
 		if [ "$cleanShaSum" != "$currentRecordedSumOfFile" ]; then # If the sums don't match (file diff)
 			FILE_CHANGED="CHANGED"
@@ -22,7 +24,7 @@ fileChanged(){ # Function that checks if a file is new or has been changed
 	fi
 
 	if [ $FILE_CHANGED == "CHANGED" ]; then # If the file has been changed or is new, create an sha1sum of the file
-		echo "$cleanShaSum" > "$file.sha1sum" # Write the contents
+		echo "$cleanShaSum" > "$fileShaSumPath" # Write the contents
 	fi
 
 	return

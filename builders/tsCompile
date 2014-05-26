@@ -1,7 +1,7 @@
 #!/bin/bash
 
-currentDirectory=$(pwd) # Get the current Metis directory
-currentDirectory=${currentDirectory%builders} # Remove the builders folder, if it exists, from the directory
+currentDirectory=$(pwd) # Get the current directory
+currentDirectory=${currentDirectory%builders} #Remove the builders folder, if it exists, from the directory
 projectName=${currentDirectory##*/} # Get the "project" name
 operatingSystem=$(lsb_release -is) # Get the short name for the operating system in use
 source "$currentDirectory/builders/tsFunctions" # Import Functions Dependency
@@ -56,9 +56,9 @@ allTSFiles=$(find -name "*.ts") # Get all Typescript files recursively
 for file in $allTSFiles; do
 	if [[ "$file" != *.d.ts ]]; then # If it is not a declaration file (exists after using tsCompile once)
 		fileNameWithoutPathRemnant="${file#./}" # Remove the ./ from the directory
-		fileNameWithoutExtension=${fileNameWithoutPathRemnant%%.ts}
+		fileNameWithoutExtension="${fileNameWithoutPathRemnant%.*}" # Remove everything after the last .
 
-		echo "------$fileNameWithoutPathRemnant------"
+		echo "------$fileNameWithoutPathRemnant-----"
 		echo "Checking if this file is new or has been changed."
 
 		fileChanged $fileNameWithoutPathRemnant

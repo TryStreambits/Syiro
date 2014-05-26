@@ -168,7 +168,7 @@ var Rocket;
             this.rocketComponent = $(rocketComponentSelector).get(0);
         }
         Button.prototype.listen = function (primaryCallback, secondaryCallback) {
-            $(this.rocketComponent).on("click touchend MSPointerUp keydown.VK_ENTER", { primaryFunction: primaryCallback, secondaryFunction: secondaryCallback }, function (e) {
+            $(this.rocketComponent).on("click touchend MSPointerUp", { primaryFunction: primaryCallback, secondaryFunction: secondaryCallback }, function (e) {
                 var $rocketComponent = e.currentTarget;
 
                 var primaryFunction = e.data["primaryFunction"];

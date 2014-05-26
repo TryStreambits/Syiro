@@ -196,7 +196,7 @@ module Rocket {
 		}
 
 		listen(primaryCallback : Function, secondaryCallback ?: Function){ // Listener function that creates an event handle
-			$(this.rocketComponent).on("click touchend MSPointerUp keydown.VK_ENTER", { primaryFunction : primaryCallback, secondaryFunction : secondaryCallback},
+			$(this.rocketComponent).on("click touchend MSPointerUp", { primaryFunction : primaryCallback, secondaryFunction : secondaryCallback},
 				function(e : JQueryEventObject){
 					var $rocketComponent = e.currentTarget; // Define $rocketComponent as the component that has been triggered
 

@@ -32,7 +32,7 @@ module rocket.button {
 
 			if (componentElement.getAttribute("data-rocket-component-type") == "toggle"){
 				var toggleValue : string = componentElement.getAttribute("data-rocket-component-status");
-				var newToggleValue : string;
+				var newToggleValue : any;
 
 				if (toggleValue == "false"){ // If the CURRENT toggle value is FALSE
 					newToggleValue = "true"; // Set the NEW toggle value to TRUE

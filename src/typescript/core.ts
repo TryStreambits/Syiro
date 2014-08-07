@@ -6,14 +6,13 @@
 
 module rocket.core {
 	export var storedComponents : Object = {}; // An object that stores generated component(s) / component(s) information
-	export var lastUniqueId : Number = 0; // Default the lastUniqueId to zero
+	export var lastUniqueId : number = 0; // Default the lastUniqueId to zero
 
 	// #region Component Id Generator
 
 	export function IdGen(type : string) : string { // Takes a component type and returns the new component Id
-		var componentId : string = type + (rocket.core.lastUniqueId + 1).toString(); // Increment the lastUniqueId by one and append it to the type to create a "unique" ID
-		rocket.core.lastUniqueId = rocket.core.lastUniqueId + 1;
-		return componentId;
+		rocket.core.lastUniqueId += 1; // Add the lastUniqueID by one
+		return (type + (rocket.core.lastUniqueId).toString()); // Increment the lastUniqueId by one and append it to the type to create a "unique" ID
 	}
 
 	// #endregion
@@ -101,12 +100,12 @@ module rocket.core {
 									delete rocket.core.storedComponents[component["id"]]["HTMLElement"]; // Delete the HTMLElement from the component in the storedComponents
 								}
 								else if (navigationItem["type"] == "link"){ // If we are adding a link
-									var component : HTMLElement = document.createElement("a"); // Create a link address
-									component.setAttribute("href", navigationItem["link"]); // Set the href (link)
-									component.title = navigationItem["title"]; // Set the <a> link title
-									component.innerText = navigationItem["title"]; // Also set the innerText of the <a> tag to title
+									var linkElement : HTMLElement = document.createElement("a"); // Create a link address
+									linkElement.setAttribute("href", navigationItem["link"]); // Set the href (link)
+									linkElement.title = navigationItem["title"]; // Set the <a> link title
+									linkElement.innerText = navigationItem["title"]; // Also set the innerText of the <a> tag to title
 
-									componentElement.appendChild(component); // Append the component to the parent component element
+									componentElement.appendChild(linkElement); // Append the component to the parent component element
 								}
 							}
 							else if (type == "list"){ // If the component we are adding items to is a List
@@ -333,7 +332,7 @@ module rocket.core {
 		var parentElement : Element = rocket.core.Get(parentComponent); // Get the parent's Element
 		var removeComponentSuccessful : boolean; // Define removeComponentSuccessful as a boolean
 
-		if (typeof(childComponent).indexOf("Element") > -1){ // If the childComponent is an HTMLElement or an Element
+		if ((typeof(childComponent)).indexOf("Element") !== -1){ // If the childComponent is an HTMLElement or an Element
 			parentElement.removeChild(childComponent); // Remove the child element from the component
 			removeComponentSuccessful = true; // Define removal success as true
 		}

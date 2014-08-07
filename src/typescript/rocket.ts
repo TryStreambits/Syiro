@@ -17,30 +17,35 @@ module rocket {
 		if (MutationObserver !== undefined){ // If MutationObserver is supported by the browser
 			var mutationWatcher = new MutationObserver(
 				function(mutations : Array<MutationRecord>){ // Define mutationHandler as a variable that consists of a function that handles mutationRecords
+
 					mutations.forEach( // For each mutation that occured
 						function(mutation : MutationRecord){
-							var mutationAddedNodesNum : Number = mutation.addedNodes.length;
-							if (mutationAddedNodesNum > 0){ // If the addedNodes are NOT empty
-								for (var i = 0; i < mutationAddedNodesNum; i++){ // For each node in the mutation.addedNodes
-									var addedNode : Node = mutation[i]; // Get the Node
-									var nodeAsElement : Element = addedNode.childNodes[0].parentElement; // "Convert" the Node to an Element for proper attribute fetching by fetching the childNode[0] parentElement
+							if (mutation.type == "childList"){ // If something in the document changed (childList)
+								if (mutation.target.toString().indexOf("Body") == -1){ // If the object that was changed isn't directly in the body (such as a <script>)
 
-									var potentialElementId = nodeAsElement.getAttribute("data-rocket-component-id"); // Get the potential Rocket component ID
+									for (var i = 0; i < mutation.addedNodes.length; i++){ // For each node in the mutation.addedNodes
+										var addedNode : Element = mutation[i]; // Get the Node
+										var potentialElementId = addedNode.getAttribute("data-rocket-component-id");
 
-									if (potentialElementId !== null){ // If the element is a Rocket component
-										delete rocket.core.storedComponents[potentialElementId]["HTMLElement"]; // Ensure the HTMLElement in the storedComponents is deleted
+										if (potentialElementId !== null){ // If the element is a Rocket component
+											delete rocket.core.storedComponents[potentialElementId]["HTMLElement"]; // Ensure the HTMLElement in the storedComponents is deleted
+										}
 									}
+
 								}
 							}
 						}
-					)
+					);
+
 				}
 			);
 
 			var mutationWatcherOptions = { // Define mutationWatcherOptions as the options we'll pass to mutationWatcher.observe()
 				childList : true, // Watch child nodes of the element we are watching
-				attributes : false, // Don't bother to watch for attribute changes
+				attributes : true, // Watch for attribute changes
 				characterData : false, // Don't bother to watch character data changes
+				attributeFilter : ['data-rocket-component-id'], //  Look for elements with this particular attribute
+				subtree: true
 			};
 
 			mutationWatcher.observe(document.body, mutationWatcherOptions); // Watch the document body with the options provided.

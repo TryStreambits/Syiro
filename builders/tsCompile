@@ -3,46 +3,9 @@
 currentDirectory=$(pwd) # Get the current directory
 currentDirectory=${currentDirectory%builders} #Remove the builders folder, if it exists, from the directory
 projectName=${currentDirectory##*/} # Get the "project" name
-operatingSystem=$(lsb_release -is) # Get the short name for the operating system in use
 source "$currentDirectory/builders/tsFunctions" # Import Functions Dependency
 
-# Node / NPM & Package Manager Checking
-
-if [ ! -f /usr/bin/nodejs ]; then # If nodejs does not exist
-	if [ ! -f /usr/bin/node ]; then # If nodejs is most certainly not installed
-		# Install nodejs
-
-		cd /home/"$USER"/ # Go to the home directory of the user
-
-		if [ -f /usr/bin/apt-get ]; then # If the user is using apt-get for package management
-			sudo apt-get install -y nodejs npm
-		elif [ -f /usr/bin/pacman ]; then # If the user is using pacman for package management
-			sudo pacman -S nodejs npm
-		elif [ -f /usr/bin/yum ]; then  # If the user is using yum for package management
-			sudo yum install nodejs npm
-		elif [ -f /usr/bin/zypper ]; then #If the user is using zypper for package management
-			sudo zypper install nodejs npm
-		fi
-	elif [ -f /usr/bin/node ]; then # Else if nodejs is installed but not properly symlinked
-		sudo ln -s /usr/bin/nodejs /usr/bin/node # Properly symlink
-	fi
-fi
-
-# End of Node / NPM & Package Manager Checking
-
-if [ ! -f /usr/bin/tsc ]; then # If the Typescript compiler is NOT installed
-	cd /home/"$USER"/ #Go to the user's home directory to ensure node_modules are install in node_modules
-	npm install typescript@1.0.1 # Install Typescript via NPM
-	sudo ln -s /home/"$USER"/node_modules/typescript/bin/tsc /usr/bin/tsc # Ensure Typescript Compiler is symlinked
-fi
-
-if [ ! -f /usr/bin/yuicompressor ]; then # If yuicompressor is NOT installed
-	cd /home/"$USER"/ #Go to the user's home directory to ensure node_modules are install
-	npm install yuicompressor # Install yuicompressor via NPM
-	sudo ln -s /home/"$USER"/node_modules/yuicompressor/nodejs/cli.js /usr/bin/yuicompressor # Ensure yuicompressor is symlinked
-fi
-
-cd "$currentDirectory/typescript" # Go to the current directory and then the typescript folder
+cd "$currentDirectory/src/typescript" # Go to the current directory and then the src/typescript folder
 
 rocketCodebaseChanged=false # Set rocketCodebaseChanged to false by default. If a module has been added or changed, then it will be changed to true
 
@@ -69,17 +32,13 @@ for file in $allTSFiles; do
 done
 
 if [ $rocketCodebaseChanged == true ]; then # If the Rocket codebase has been changed
-	tsc --removeComments --target 'ES5' rocket.ts --declaration --out rocket.js
-    echo "Minifying Rocket compiled Javascript."
+    tsc --removeComments --target 'ES5' rocket.ts --declaration --out rocket.js
+    echo "Minifying Metis compiled Javascript."
     yuicompressor --type=js rocket.js -o rocket.min.js &> /dev/null
-    echo "Finished compiling and minification process of Rocket."
+    echo "Finished compiling and minification process of Metis."
 fi
 
 if [ -f "$currentDirectory/builders/tsHook" ]; then # If tsHook exists, we will execute the file (it acts as a post-compile hook)
 	source "$currentDirectory/builders/tsHook"
 	hook
-fi
-
-if [[ "$operatingSystem" == "Ubuntu" ]]; then # If the operating system is Ubuntu
-	notify-send "Compiler process is finished." "Compiling of code in $projectName is finished." # Provide a notification
 fi

@@ -43,6 +43,7 @@ module rocket.core {
 	export function Generate(type : string, properties : Object) : Object { // Takes type as the type of Rocket component, properties as Object where properties are attributes for the component
 		var generatedComponent : Object = {}; // Define generatedComponent as the object we'll return to the developer
 		var componentElement : HTMLElement; // Define componentElement as the generated HTMLElement
+		var inputElement : HTMLInputElement; // Define inputElement as a potential HTMLInputElement we may need to create
 
 		var componentId : string =rocket.core.IdGen(type); // Generate a component ID
 
@@ -50,14 +51,15 @@ module rocket.core {
 			componentElement = document.createElement("header"); // Use the HTML5 header tag
 		}
 		else if (type == "footer") { // If we are creating a footer
-				componentElement = document.createElement("footer"); // Use the HTML5 footer tag
-		}
-		else if (type == "searchbox"){ // If we create a searchbox
-			componentElement = document.createElement("input"); // Create a searchbox input
-			componentElement.setAttribute("type", "text"); // Set the searchbox input type to text
+			componentElement = document.createElement("footer"); // Use the HTML5 footer tag
 		}
 		else{ // Otherwise
 			componentElement = document.createElement("div"); // Create a div tag
+
+			if (type == "searchbox"){ // If we are creating a searchbox
+				var inputElement = document.createElement("input"); // Create a searchbox input
+				inputElement.setAttribute("type", "text"); // Set the searchbox input type to text
+			}
 		}
 
 		if ((type == "button") && (properties["type"] == undefined)){ // If the component is a button and the type is undefined
@@ -192,8 +194,8 @@ module rocket.core {
 
 						footerLabel.innerText = properties[propertyKey]; // Set the innerText of the footer label
 					}
-					else if (type == "searchbar"){ // If we are adding text to a Searchbar component
-						componentElement.setAttribute("placeholder", properties[propertyKey]); // Set the searchbox input placeholder to the one defined
+					else if (type == "searchbox"){ // If we are adding text to a Searchbar component
+						inputElement.setAttribute("placeholder", properties[propertyKey]); // Set the searchbox input placeholder to the one defined
 					}
 					break;
 				case "type": // If we are specifying a type even further

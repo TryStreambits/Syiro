@@ -20,7 +20,7 @@ module rocket.button {
 
 		rocket.core.storedComponents[component["id"]]["handlers"] = handlersArray; // Set the handlers for this particular component in the storedComponents to handlersArray
 
-		var buttonEventListener = function handler(){ // Define buttonEventHandler as a binding to a function called handler that passes the component object
+		var buttonEventListener = function(){ // Define buttonEventHandler as a binding to a function called handler that passes the component object
 			var componentObject = arguments[0]; // Set the componentsObject to the first argument (since bind forces the data to be the first arg)
 			var componentElement : Element = rocket.core.Get(componentObject); // Get the component element
 

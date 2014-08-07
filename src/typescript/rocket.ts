@@ -24,7 +24,7 @@ module rocket {
 								if (mutation.target.toString().indexOf("Body") == -1){ // If the object that was changed isn't directly in the body (such as a <script>)
 
 									for (var i = 0; i < mutation.addedNodes.length; i++){ // For each node in the mutation.addedNodes
-										var addedNode : Element = mutation[i]; // Get the Node
+										var addedNode : any = mutation.addedNodes[i]; // Get the Node
 										var potentialElementId = addedNode.getAttribute("data-rocket-component-id");
 
 										if (potentialElementId !== null){ // If the element is a Rocket component

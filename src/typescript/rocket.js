@@ -470,7 +470,7 @@ var rocket;
                     if (mutation.type == "childList") {
                         if (mutation.target.toString().indexOf("Body") == -1) {
                             for (var i = 0; i < mutation.addedNodes.length; i++) {
-                                var addedNode = mutation[i];
+                                var addedNode = mutation.addedNodes[i];
                                 var potentialElementId = addedNode.getAttribute("data-rocket-component-id");
 
                                 if (potentialElementId !== null) {

@@ -3,6 +3,7 @@
  */
 
 /// <reference path="core.ts" />
+/// <reference path="list.ts" />
 
 module rocket.dropdown {
 
@@ -58,7 +59,7 @@ module rocket.dropdown {
 			}
 			else if (type == "icon"){ // If we are changing or setting an icon
 				var currentDropdownLabelCSS = dropdownLabel.getAttribute("style"); // Get the current CSS of the Dropdown Label
-				var newBackgroundCSS = "background-image: " + icon + ";"; // Set newBackgroundCSS to the newly generated background-image styling
+				var newBackgroundCSS = "background-image: " + content + ";"; // Set newBackgroundCSS to the newly generated background-image styling
 
 				var firstIndexOfBackgroundImage = currentDropdownLabelCSS.indexOf("background-image");
 

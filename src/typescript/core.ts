@@ -20,8 +20,8 @@ module rocket.core {
 
 	// #region Defining existing Rocket components
 
-	export function Define(type : string, selector : string) : ComponentObject {
-		var component : ComponentObject = {}; // Create an object called component that stores the component information
+	export function Define(type : string, selector : string) : Object {
+		var component : Object = {}; // Create an object called component that stores the component information
 		component["type"] = type; // Define the key "type" as the type we've defined
 
 		var componentID : string = rocket.core.IdGen(type); // Generate a unque ID for this component
@@ -294,7 +294,7 @@ module rocket.core {
 		}
 
 		if (allowAdding == true){ // If we are allowing the adding of the childComponent
-			if (prepend == true){ // If we are prepending the childElement
+			if (append == false){ // If we are prepending the childElement
 				parentElement.insertBefore(childElement, parentElement.firstChild); // Insert before the first component
 			}
 			else{ // If we are appending the childComponent

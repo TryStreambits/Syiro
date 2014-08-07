@@ -3,7 +3,6 @@
 */
 
 /// <reference path="core.ts" />
-/// <reference path="definitions/jquery.d.ts" />
 
 module rocket.button {
 
@@ -11,40 +10,58 @@ module rocket.button {
 
 	export function Listen(component : Object, primaryCallback : Function, secondaryCallback ?: Function){
 		var buttonElement : Element = rocket.core.Get(component);
+		var handlersArray : Array<Function> = []; // Define handlersArray as an array of functions
 
-		$(buttonElement).on("click touchend MSPointerUp", { primaryFunction : primaryCallback, secondaryFunction : secondaryCallback},
-			function(e : JQueryEventObject){
-				var $rocketComponent = e.currentTarget; // Define $rocketComponent as the component that has been triggered
+		handlersArray.push(primaryCallback); // Push the primaryCallback to the handlersArray
 
-				var primaryFunction : Function = e.data["primaryFunction"];
-				var secondaryFunction : Function = e.data["secondaryFunction"];
+		if (secondaryCallback !== undefined){ // If a secondary function is defined
+			handlersArray.push(secondaryCallback); // Push the secondaryCallback to the handlersArray
+		}
 
-				if ($($rocketComponent).attr("data-rocket-component-type") == "toggle"){
-					var toggleValue : string = $($rocketComponent).attr("data-rocket-component-status");
-					var newToggleValue : string;
+		rocket.core.storedComponents[component["id"]]["handlers"] = handlersArray; // Set the handlers for this particular component in the storedComponents to handlersArray
 
-					if (toggleValue == "false"){ // If the CURRENT toggle value is FALSE
-						newToggleValue = "true"; // Set the NEW toggle value to TRUE
+		var buttonEventListener = function handler(){ // Define buttonEventHandler as a binding to a function called handler that passes the component object
+			var componentObject = arguments[0]; // Set the componentsObject to the first argument (since bind forces the data to be the first arg)
+			var componentElement : Element = rocket.core.Get(componentObject); // Get the component element
 
-						if (secondaryFunction !== undefined){ // If the secondary function is defined
-							secondaryFunction(new Boolean(newToggleValue)); // Call the secondary function
-						}
-						else{ // If the secondary function is NOT defined
-							primaryFunction(new Boolean(newToggleValue)); // Call the primary function
-						}
-					}
-					else{ // If the CURRENT toggle value is TRUE
-						newToggleValue = "false"; // Set the NEW toggle value to FALSE
-						primaryFunction(newToggleValue);
-					}
+			var handlersArray : Array<Function> = rocket.core.storedComponents[componentObject["id"]]["handlers"]; // Fetch the handlers and assign it to the handlersArray
 
-					$($rocketComponent).attr("data-rocket-component-status", newToggleValue); // Update the status
+			var primaryFunction : Function = handlersArray[0];
+			var secondaryFunction : Function = handlersArray[1];
+
+
+			if (componentElement.getAttribute("data-rocket-component-type") == "toggle"){
+				var toggleValue : string = componentElement.getAttribute("data-rocket-component-status");
+				var newToggleValue : string;
+
+				if (toggleValue == "false"){ // If the CURRENT toggle value is FALSE
+					newToggleValue = "true"; // Set the NEW toggle value to TRUE
 				}
-				else{ // If the component is a basic button
-					primaryFunction(); // Call the primary function
+				else{ // If the CURRENT toggle value is TRUE
+					newToggleValue = "false"; // Set the NEW toggle value to FALSE
+				}
+
+				componentElement.setAttribute("data-rocket-component-status", newToggleValue); // Update the status
+
+				newToggleValue = Boolean(newToggleValue); // Convert from string to Boolean for function call
+
+				if (secondaryFunction !== undefined){ // If the secondary function is defined
+					secondaryFunction(); // Call the secondary function
+				}
+				else{ // If the secondary function is NOT defined
+					primaryFunction(newToggleValue); // Call the primary function
 				}
 			}
-		);
+			else{ // If the component is a basic button
+				primaryFunction(); // Call the primary function
+			}
+
+		}.bind(this, component);
+
+		buttonElement.addEventListener( // Add the event listener
+			"click touchend MSPointerUp",
+			buttonEventListener
+		)
 	}
 
 	// #endregion

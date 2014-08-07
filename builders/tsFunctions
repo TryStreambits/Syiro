@@ -1,10 +1,11 @@
 #!/bin/bash
 
 fileChanged(){ # Function that checks if a file is new or has been changed
-	file=$1
+	projectDirectory=$1
+	file=$2
 	fileName="${file##*/}" # Remove everything before last /
-	fileShaSumPath="builders/sha1sums/$fileName.sha1sum" # Set the full patch of the potential sha1sum of the file
-	latestFileSum=$(cat "$file" | sha1sum) # Get the sha1sum of the file
+	fileShaSumPath="$projectDirectory/builders/sha1sums/$fileName.sha1sum" # Set the full patch of the potential sha1sum of the file
+	latestFileSum=$(cat "$projectDirectory/typescript/$file" | sha1sum) # Get the sha1sum of the file
 
 	cleanShaSum=${latestFileSum% -} # Remove everything after  -, which is sha1sum's reference to the file that was hashed
 	cleanShaSum=${cleanShaSum:0:-1} # Remove the whitespace from the ending of the sha1sum

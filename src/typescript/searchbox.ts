@@ -18,6 +18,8 @@ module rocket.searchbox {
 
 			var searchboxInputElement : HTMLInputElement = searchboxElement.getElementsByTagName("input")[0]; // Get the inner input tag of the searchboxElement
 			searchboxInputElement.setAttribute("placeholder", placeholderText); // Set the placeholder string
+
+			rocket.core.UpdateStoredComponent(component["id"], searchboxElement); // Update the storedComponent HTMLElement if necessary
 			placeholderSettingSucceeded = true; // Define success as true
 		}
 		else{ // If the component is not a Searchbox

@@ -75,6 +75,7 @@ module rocket.listitem {
 					listItemElement.removeChild(listItemRightElement); // Remove the section
 				}
 
+				rocket.core.UpdateStoredComponent(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
 				setSectionSucceeded = true; // Define success as true
 			}
 			else{ // If either we aren't using an appropriate section, content is a mismatch, etc.

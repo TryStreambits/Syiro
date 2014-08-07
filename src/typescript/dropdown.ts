@@ -3,7 +3,6 @@
  */
 
 /// <reference path="core.ts" />
-/// <reference path="definitions/jquery.d.ts" />
 
 module rocket.dropdown {
 
@@ -58,8 +57,25 @@ module rocket.dropdown {
 				}
 			}
 			else if (type == "icon"){ // If we are changing or setting an icon
-				$(dropdownLabel).css("background-image", content); // Set the background image to the content (icon source) provided
+				var currentDropdownLabelCSS = dropdownLabel.getAttribute("style"); // Get the current CSS of the Dropdown Label
+				var newBackgroundCSS = "background-image: " + icon + ";"; // Set newBackgroundCSS to the newly generated background-image styling
+
+				var firstIndexOfBackgroundImage = currentDropdownLabelCSS.indexOf("background-image");
+
+				if ((currentDropdownLabelCSS.length > 0) && (firstIndexOfBackgroundImage !== -1)){ // If there is content that already exists and the background-image already exists
+					var endingOfBackgroundImageCSS = currentDropdownLabelCSS.indexOf(";", firstIndexOfBackgroundImage); // Get the first index of ; based on the index of the background-image
+					var fullBackgroundImageStyling = currentDropdownLabelCSS.substring(firstIndexOfBackgroundImage, (endingOfBackgroundImageCSS +1)); // Get the entire background-image styling
+
+					currentDropdownLabelCSS = currentDropdownLabelCSS.replace(fullBackgroundImageStyling, newBackgroundCSS); // Replace old with the new
+				}
+				else{ // Whether or not there is content, append the newBackgroundCSS
+					currentDropdownLabelCSS += newBackgroundCSS; // Append
+				}
+
+				dropdownLabel.setAttribute("style", currentDropdownLabelCSS); // Update the style with the new styling
 			}
+
+			rocket.core.UpdateStoredComponent(component["id"], dropdownElement); // Update the storedComponent HTMLElement if necessary
 		}
 	}
 

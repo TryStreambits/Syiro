@@ -25,6 +25,9 @@ module rocket.footer {
 				}
 
 				labelComponent.textContent = labelText; // Set the labelComponent textContent to the labelText defined
+
+				rocket.core.UpdateStoredComponent(component["id"], parentElement); // Update the storedComponent HTMLElement if necessary
+
 				return true; // Return a success boolean
 			}
 			else{ // If the labelText is NOT defined
@@ -69,6 +72,8 @@ module rocket.footer {
 
 		if (potentialLinkElement !== null){ // If we successfully got the link element
 			footerElement.removeChild(potentialLinkElement); // Remove the element
+
+			rocket.core.UpdateStoredComponent(component["id"], footerElement); // Update the storedComponent HTMLElement if necessary
 			componentRemovingSucceed = true; // Set the removingSucceed to true
 		}
 		else{ // If the link does not exist in the footer

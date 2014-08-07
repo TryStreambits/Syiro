@@ -246,6 +246,16 @@ module rocket.core {
 
 	// #endregion
 
+	// #region Update Stored Component's HTMLElement, but only if it exists in the first place.
+
+	export function UpdateStoredComponent(componentId : string, componentElement : Element){
+		if (rocket.core.storedComponents[componentId]["HTMLElement"] !== undefined){ // If the HTMLElement is defined in the storedComponents
+			rocket.core.storedComponents[componentId]["HTMLElement"] = componentElement; // Update with the componentElement we defined
+		}
+	}
+
+	// #endregoin
+
 	// #region Add Component function - Responsible for adding components to other components or elements
 
 	export function AddComponent(append : boolean, parentComponent : Object, childComponent : any) : boolean { // Returns boolean if the component adding was successful or not
@@ -310,6 +320,7 @@ module rocket.core {
 			}
 		}
 
+		rocket.core.UpdateStoredComponent(parentComponent["id"], parentElement); // Update the storedComponent HTMLElement if necessary
 
 		return childComponent; // Return the updated component object
 	}
@@ -320,19 +331,26 @@ module rocket.core {
 
 	export function RemoveComponent(parentComponent : Object, childComponent : any) : boolean{
 		var parentElement : Element = rocket.core.Get(parentComponent); // Get the parent's Element
+		var removeComponentSuccessful : boolean; // Define removeComponentSuccessful as a boolean
 
 		if (typeof(childComponent).indexOf("Element") > -1){ // If the childComponent is an HTMLElement or an Element
 			parentElement.removeChild(childComponent); // Remove the child element from the component
-			return true; // Return success
+			removeComponentSuccessful = true; // Define removal success as true
 		}
 		else if (typeof(childComponent) == "Object"){ // If the childComponent is an Object
 			parentElement.removeChild(rocket.core.Get(childComponent)); // Remove the fetched child component HTMLElement from the document
 			delete rocket.core.storedComponents[childComponent["id"]]; // Remove the component from the storedComponents
-			return true; // Return success
+			removeComponentSuccessful = true; // Define removal success as true
 		}
 		else{ // If it isn't an Element or an Object
-			return false; // Return failure
+			removeComponentSuccessful = false; // Define removal success as false
 		}
+
+		if (removeComponentSuccessful == true){ // If we successfully removed the childComponent from the parentComponent
+			rocket.core.UpdateStoredComponent(parentComponent["id"], parentElement); // Update the storedComponent HTMLElement if necessary
+		}
+
+		return removeComponentSuccessful;
 	}
 
 	// #endregion

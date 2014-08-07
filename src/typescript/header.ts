@@ -19,6 +19,8 @@ module rocket.header {
 		}
 
 		imageElement.setAttribute("src", image); // Set the image source
+
+		rocket.core.UpdateStoredComponent(component["id"], headerElement); // Update the storedComponent HTMLElement if necessary
 	}
 
 	// #endregion
@@ -30,6 +32,7 @@ module rocket.header {
 
 		if (headerElement.querySelectorAll('img[data-rocket-minor-component="logo"]').length > 0){ // If the headerElement has a logo
 			headerElement.removeChild(headerElement.firstChild); // Remove the image element (which has to be the first child in the Header component)
+			rocket.core.UpdateStoredComponent(component["id"], headerElement); // Update the storedComponent HTMLElement if necessary
 		}
 	}
 

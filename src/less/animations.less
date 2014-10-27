@@ -1,0 +1,75 @@
+@import (reference) "core.less"; // Import Core as a reference
+
+// #region Fade Animation (Unified In / Out since it is reversable)
+
+@keyframes fade{
+	from{
+		opacity: 0; // Not Visible
+	}
+
+	to{
+		opacity: 1.0; // Visible
+	}
+}
+
+@-webkit-keyframes fade{
+	from{
+		opacity: 0; // Not Visible
+	}
+
+	to{
+		opacity: 1.0; // Visible
+	}
+}
+
+// #endregion
+
+// #region Animation Parametric Mixin - Allows easy adding of animations
+
+.animate(@animation : "fade"; @reverse : "no"){
+	animation-name: @animation;
+	-webkit-animation-name: @animation;
+
+	animation-duration: unit(250, ms);
+	-webkit-animation-duration: unit(250, ms);
+
+	animation-iteration-count: 1;
+	-webkit-animation-iteration-count: 1;
+
+	animation-direction: normal;
+	-webkit-animation-direction: normal;
+
+	& when (@reverse = "no"){ // If we are NOT reversing the animation
+		animation-fill-mode: forwards !important;
+		-webkit-animation-fill-mode: forwards !important;
+	}
+
+	& when (@reverse = "yes"){ // If we are reversing the animation
+		animation-fill-mode: backwards !important;
+		-webkit-animation-fill-mode: backwards !important;
+	}
+}
+
+// #endregion
+
+.fade-in-animation{
+	.animate("fade"; "no"); // Fade In animation
+}
+
+.fade-out-animation{
+	.animate("fade"; "yes"); // Fade Out animation
+}
+
+.toggle-backward-animation{
+	transition-duration: 125ms;
+	transition-timing-function: ease-in;
+	transform: translateX(0px);
+	-webkit-transform: translateX(0px);
+}
+
+.toggle-forward-animation{
+	transition-duration: 125ms;
+	transition-timing-function: ease-in;
+	transform: translateX(45px);
+	-webkit-transform: translateX(45px);
+}

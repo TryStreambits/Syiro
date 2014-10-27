@@ -1,0 +1,74 @@
+#!/bin/bash
+
+currentDirectory=$(pwd) # Get the current directory
+currentDirectory=${currentDirectory%build*} #Remove the build folder, if it exists, from the directory path
+
+cd "$currentDirectory"
+source "build/compiler/compilerFunctions"
+
+anyFilesChanged=false # Global anyFilesChanged tracks if any files are changed. If so we recompiling a devel.tar.gz.
+declare -a filesThatHaveChanged # Create an array to hold the names of the files that have changed
+
+recursiveCompiling(){ # Recursive function for code compiling
+	sourceLocation=$1 # Set sourceLocation as the second location
+
+	if [ "$sourceLocation" == "typescript" ]; then # If the sourceLocation is typescript code
+		fileType="ts" # Set the fileType to ts
+	else
+		fileType="less" # Set the fileType to less
+	fi
+
+	filesArray=$(find src/"$sourceLocation"/ -type f -name "*.$fileType") # Get all files relating to this type recursively
+
+	codebaseChanged=false # Set codebaseChanged to false by default. If a module has been added or changed, then it will be changed to true
+
+	for file in $filesArray; do
+		if [[ "$file" != *.d.ts ]]; then # If it is not a declaration file (exists after using the compiler once)
+			fileName="${file##*$sourceLocation/}" # Remove everything before last / to clean up the file pathing
+			fileChanged "$sourceLocation" "$fileName"
+
+			if [ "$FILE_CHANGED" == "CHANGED" ]; then # If the file has been changed
+				codebaseChanged=true # Change to true
+				filesThatHaveChanged+=("$fileName")
+			fi
+		fi
+	done
+
+	if [ $codebaseChanged == true ]; then # If the codebase has been changed
+		anyFilesChanged=true # Set Any Files Changed to true since the codebase has changed
+
+		if [ "$sourceLocation" == "less" ]; then # If we are compiling the LESS
+			# Run the Rocket LESS through the LESS compiler quietly, with no IE compatibility requirements and JS stuff
+			lessc --no-js --no-color --no-ie-compat --clean-css src/less/rocket.less build/rocket.css
+			cp build/rocket.css tests/design/css/ # Copy newly built rocket.css to our tests
+		else # If we are compiling Typescript
+			anyFilesChanged=true # Set global var to true
+
+			tsc --removeComments --target 'ES5' src/typescript/rocket.ts --declaration --out build/rocket.js
+			echo "Minifying Rocket compiled Javascript."
+			java -jar build/compiler/jscompressor.jar --compilation_level SIMPLE --language_in ECMASCRIPT5 --language_out ECMASCRIPT5 --warning_level QUIET --js build/rocket.js --js_output_file build/rocket.min.js
+			zopfli --i1000 build/rocket.min.js # Use zopfli to gzip content
+
+			rm build/rocket.js &> /dev/null # Remove the uncompressed rocket.js file
+			cp build/rocket.min.js tests/design/js/ # Copy the rocket.min.js to the tests/design/js
+
+			echo "Finished compiling and minification process of Rocket."
+		fi
+	fi
+}
+
+echo "Compiling Rocket."
+
+recursiveCompiling "less" # Compile LESS
+recursiveCompiling "typescript" # Compile Typescript
+
+if [ $anyFilesChanged == true ]; then # If the codebase has been changed
+	echo "Files that have changed:"
+
+	for file in ${filesThatHaveChanged[@]}
+	do
+		echo "$file"
+	done
+else # If the codebase has changed
+	echo "No files have changed."
+fi

@@ -2,36 +2,16 @@
  This is the module for Rocket List component and it's sub-component, List Item
  */
 
-/// <reference path="core.ts" />
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
 
 // #region Rocket List Component
 
 module rocket.list {
 
-	// #region Add a List Item component to a List component
+	export var AddItem = rocket.component.Add; // Meta-function for adding a List Item component to a List component
 
-	export function AddItem(listComponent : Object, listItemComponent : Object) : boolean {
-		var addItemSucceeded : boolean; // Variable we return with a boolean value of success
-
-		if ((listComponent["type"] == "list") && (listItemComponent["type"] == "list-item")){ // If the List Component type is in fact a List and the List Item component is in fact a List Item
-			addItemSucceeded = rocket.core.AddComponent(true, listComponent, listItemComponent); // Append the List Item to the List and assign the value returned to addItemSucceeded
-		}
-		else{ // If either of the components is NOT valid
-			addItemSucceeded = false;
-		}
-
-		return addItemSucceeded;
-	}
-
-	// #endregion
-
-	// #region Remove a List Item component from a List Item component
-
-	export function RemoveItem(listComponent : Object, listItemComponent : Object) : boolean {
-		return rocket.core.RemoveComponent(listComponent, listItemComponent);
-	}
-
-	// #endregion
+	export var RemoveItem = rocket.component.Remove; // Meta-function for removing a List Item component from a List Item component
 
 }
 
@@ -47,7 +27,7 @@ module rocket.listitem {
 		var setSectionSucceeded : boolean; // Variable we return with a boolean value of success
 
 		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			var listItemElement : Element = rocket.core.Get(component); // Get the corresponding Element
+			var listItemElement : Element = rocket.component.Fetch(component); // Get the corresponding Element
 
 			if ((section == "left") && (typeof content == "string")){ // If the content we are adding is a string and going to the left section
 				var listItemLeftElement : Element = listItemElement.querySelector("label"); // Get the label element
@@ -69,13 +49,13 @@ module rocket.listitem {
 						listItemElement.appendChild(listItemRightElement); // Append the section
 					}
 
-					listItemRightElement.appendChild(rocket.core.Get(content)); // Append the fetched Element to the listItemRightElement
+					listItemRightElement.appendChild(rocket.component.Fetch(content)); // Append the fetched Element to the listItemRightElement
 				}
 				else{ // If the content is NOT an Object
 					listItemElement.removeChild(listItemRightElement); // Remove the section
 				}
 
-				rocket.core.UpdateStoredComponent(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
+				rocket.component.Update(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
 				setSectionSucceeded = true; // Define success as true
 			}
 			else{ // If either we aren't using an appropriate section, content is a mismatch, etc.
@@ -91,47 +71,20 @@ module rocket.listitem {
 
 	// #endregion
 
-	// #region Add Listener to List Item
+	// #region Add Event Listener - Meta-function
+	// This function exists so we can default to a reasonable set of click-related events. This is no different from actually calling the function rocket.component.AddListener
 
-	export function AddListener(component : Object, callback : Function) : boolean{
-		var addEventListenerSucceeded : boolean; // Variable we return with a boolean value of success
-
-		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			var listItemElement : Element = rocket.core.Get(component); // Get the corresponding Element
-
-			if (listItemElement.querySelector("section") == null){ // If there is no section defined in the List Item, meaning it is only the text label
-				listItemElement.addEventListener("click touchend MSPointerUp", callback(component)); // Call the callback on "click" with the component that was clicked / touched / etc.
-				addEventListenerSucceeded = true; // Define success as true
-			}
-			else{ // If there IS a section defined
-				addEventListenerSucceeded = false; // Define success as false since we have a section, which could potentially hold a component that requires listeners
-			}
-		}
-		else{ // If component is NOT a List Item
-			addEventListenerSucceeded = false; // Define success as false
-		}
-
-		return addEventListenerSucceeded;
-	}
-
-	// #endregion
-
-	// #region Remove Listener From List Item
-
-	export function RemoveListener(component : Object) : boolean {
-		var removeEventListenerSucceeded : boolean; // Variable we return with a boolean value of success
+	export function AddListeners(component : Object, callback : Function) : boolean {
+		var listenerSettingSucceeded : boolean;
 
 		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			var listItemElement : Element = rocket.core.Get(component); // Get the corresponding Element
-
-			listItemElement.removeEventListener("click touchend MSPointerUp", function(){}); // Remove the Event Listener
-			removeEventListenerSucceeded = true; // Define success as true
+			listenerSettingSucceeded = rocket.component.AddListeners("click touchend MSPointerUp", component, callback);
 		}
-		else{ // If component is NOT a List Item
-			removeEventListenerSucceeded = false; // Define success as false
+		else{ // If the component is NOT a List Item
+			listenerSettingSucceeded = false;
 		}
 
-		return removeEventListenerSucceeded;
+		return listenerSettingSucceeded;
 	}
 
 	// #endregion

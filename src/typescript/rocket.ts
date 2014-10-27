@@ -2,41 +2,60 @@
 	This is the aggregate of all the Rocket modules into a unified interface
 */
 
-/// <reference path="core.ts" />
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
 /// <reference path="header.ts" />
 /// <reference path="footer.ts" />
 /// <reference path="button.ts" />
+/// <reference path="dropdown.ts" />
+/// <reference path="list.ts" />
+/// <reference path="searchbox.ts" />
 
 module rocket {
 
 	// #region Rocket Initialization Function
 
 	export function Init() : void {
+
 		// #region Watch DOM For Components
 
 		if (MutationObserver !== undefined){ // If MutationObserver is supported by the browser
 			var mutationWatcher = new MutationObserver(
 				function(mutations : Array<MutationRecord>){ // Define mutationHandler as a variable that consists of a function that handles mutationRecords
-
 					mutations.forEach( // For each mutation that occured
 						function(mutation : MutationRecord){
 							if (mutation.type == "childList"){ // If something in the document changed (childList)
-								if (mutation.target.toString().indexOf("Body") == -1){ // If the object that was changed isn't directly in the body (such as a <script>)
+								for (var i = 0; i < mutation.addedNodes.length; i++){ // For each node in the mutation.addedNodes
+									var addedNode : any = mutation.addedNodes[i]; // Get the Node
 
-									for (var i = 0; i < mutation.addedNodes.length; i++){ // For each node in the mutation.addedNodes
-										var addedNode : any = mutation.addedNodes[i]; // Get the Node
-										var potentialElementId = addedNode.getAttribute("data-rocket-component-id");
+									function NodeParser(passedNode : any){ // Function that parses a Node (type any rather than Node since lib.ts doesn't seem to make not that attribute func are usable on Nodes)
+										if (passedNode.localName !== null){ // If the addedNode has a localName, such as "header" instead of null
+											var potentialElementId = passedNode.getAttribute("data-rocket-component-id");
 
-										if (potentialElementId !== null){ // If the element is a Rocket component
-											delete rocket.core.storedComponents[potentialElementId]["HTMLElement"]; // Ensure the HTMLElement in the storedComponents is deleted
+											if (potentialElementId !== null){ // If the element is a Rocket component
+												var type = passedNode.getAttribute("data-rocket-component"); // Get the Rocket Component Type
+
+												if (type == "dropdown"){ // If the component is a Dropdown
+													rocket.component.AddListeners("click touchend MSPointerUp", {"id" : potentialElementId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+												}
+
+												if (passedNode.childNodes.length > 0){ // If the passedNode has childNodes
+													for (var i = 0; i < passedNode.childNodes.length; i++){ // For each node in the mutation.childNodes
+														var childNode : any = passedNode.childNodes[i]; // Get the Node
+														NodeParser(childNode); // Also parse this childNode
+													}
+												}
+
+												delete rocket.component.storedComponents[potentialElementId]["HTMLElement"]; // Ensure the HTMLElement in the storedComponents is deleted
+											}
 										}
 									}
 
+									NodeParser(addedNode); // Parse this Node
 								}
 							}
 						}
 					);
-
 				}
 			);
 
@@ -44,77 +63,84 @@ module rocket {
 				childList : true, // Watch child nodes of the element we are watching
 				attributes : true, // Watch for attribute changes
 				characterData : false, // Don't bother to watch character data changes
-				attributeFilter : ['data-rocket-component-id'], //  Look for elements with this particular attribute
+				attributeFilter : ['data-rocket-component'], //  Look for elements with this particular attribute
 				subtree: true
 			};
 
-			mutationWatcher.observe(document.body, mutationWatcherOptions); // Watch the document body with the options provided.
+			mutationWatcher.observe(document.querySelector("body"), mutationWatcherOptions); // Watch the document body with the options provided.
 		}
 		else{ // If MutationObserver is NOT supported
 			// Use an ol' fashion "timer"
 
 			(function mutationTimer(){
-				window.setTimeout( // Set interval to 10000 (10 seconds) with a timeout, forcing the execution to happen within 10 seconds
+				window.setTimeout( // Set interval to 5000 (5 seconds) with a timeout, forcing the execution to happen within 10 seconds
 					function(){ // Call this function
-						for (var componentId in Object.keys(rocket.core.storedComponents)){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
-							if (document.querySelector('*[data-rocket-component="' + componentId + '"]') !== null){ // If the component exists in the DOM
-								delete rocket.core.storedComponents[componentId]["HTMLElement"]; // Ensure the HTMLElement in the storedComponents is deleted
+						for (var componentId in Object.keys(rocket.component.storedComponents)){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
+							var potentiallyExistingComponent = document.querySelector('*[data-rocket-component-id="' + componentId + '"]');
+
+							if (potentiallyExistingComponent !== null){ // If the component exists in the DOM
+								var type = potentiallyExistingComponent.getAttribute("data-rocket-component"); // Get the Rocket Component Type
+
+								if (type == "dropdown"){ // If the component is a Dropdown
+									rocket.component.AddListeners("click touchend MSPointerUp", {"id" : componentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+								}
+
+								delete rocket.component.storedComponents[componentId]["HTMLElement"]; // Ensure the HTMLElement in the storedComponents is deleted
 							}
 						}
 
 						mutationTimer(); // Recursively call setTimeout
 					},
-					10000
+					5000
 				)
 			})();
 		}
 
 		// #endregion
-	}
 
-	// #endregion
+		// #region Document Scroll Event Listening
 
-	// #region Meta-function for defining Rocket components
+		document.addEventListener("scroll", function(){ // Add an event listener to the document for when the document is scrolling
+			var dropdowns : any = document.querySelectorAll('div[data-rocket-component="dropdown"][active]'); // Get all of the Dropdowns that are active
 
-	export function Define(type : string, properties : any) : Object{
-		return rocket.core.Define(type, properties); // Call and return the Rocket component Object
-	}
-
-	// #endregion
-
-	// #region Meta-function (with sanity checking) for generating Rocket components
-
-	export function Generate(componentType : string, componentProperties : Object) {
-		var validComponents : Array<string> = ["header", "footer", "button", "dropdown", "list", "list-item", "searchbox"]; // Create an array that consists of the valid Rocket components
-
-		if (validComponents.indexOf(componentType) > -1){ // If the type defined is a valid Component type
-			if (typeof componentProperties == ("Object" || "object")){ // If the component properties is an Object
-				return rocket.core.Generate(componentType, componentProperties); // Return a valid Rocket Component object
+			for (var dropdownIndex = 0; dropdownIndex < dropdowns.length; dropdownIndex++){ // For each of those Dropdown Components that are active
+				var thisDropdown : Element = dropdowns[dropdownIndex]; // Get the dropdown from the array of Dropdowns
+				thisDropdown.removeAttribute("active"); // Remove the "active" attribute
 			}
-			else{ // If the component properties is NOT an Object
-				return false; // Return a false for failure
-			}
-		}
-		else{ // If the component type is NOT valid
-			return false; // Return a false for failure
-		}
+		});
+
+		// #endregion
+
 	}
 
 	// #endregion
 
-	// #region Meta-function for adding Rocket components to each other
+	export var Define = rocket.component.Define; // Meta-function for defining Rocket components
 
-	export function AddComponent(prepend : boolean, parentComponent : Object, component : Object) : Object {
-		return rocket.core.AddComponent(prepend, parentComponent, component);
-	}
+	export var generate = { // Object with Meta-functions for generating Rocket components. Ex: rocket.generate.Header => rocket.generator.Header
+		Header : rocket.generator.Header,
+		Footer : rocket.generator.Footer,
+		Button : rocket.generator.Button,
+		Dropdown : rocket.generator.Dropdown,
+		List : rocket.generator.List,
+		ListItem : rocket.generator.ListItem,
+		Searchbox : rocket.generator.Searchbox
+	};
 
-	// #endregion
+	export var Fetch = rocket.component.Fetch; // Meta-function for fetching Rocket component HTMLElements
 
-	// #region Meta-function for removing Rocket components
+	export var Get = rocket.component.Fetch; // Alternate venacular for fetching Rocket component HTMLElements
 
-	export function RemoveComponent(parentComponent : Object, childComponent : any) : boolean {
-		return rocket.core.RemoveComponent(parentComponent, childComponent); // Remove a component from the parentComponent
-	}
+	export var Add = rocket.component.Add; // Meta-function for adding Rocket components to each other
 
-	// #endregion
+	export var Remove = rocket.component.Remove; // Meta-function for removing Rocket components
+
+	export var Animate = rocket.component.Animate; // Meta-function for animating Rocket components (highly limited currently)
+
+	export var CSS = rocket.component.CSS; // Meta-function for modifying Rocket Component CSS styling
+
+	export var AddListeners = rocket.component.AddListeners; // Meta-function for adding event listeners to Rocket Components
+
+	export var RemoveListeners = rocket.component.RemoveListeners; // Meta-function for removing event listeners to Rocket Components
+
 }

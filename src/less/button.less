@@ -1,0 +1,45 @@
+@import (reference) "core.less"; // Import Core as a reference
+
+div[data-rocket-component="button"]{ // Rocket Button Component
+	float: left;
+	margin: 5px;
+
+	&[data-rocket-component-type="basic"]{ // Rocket "Basic" Button Component
+		height: 40px;
+		min-width: 125px;
+		color: @rocketLightWhite;
+		font-size: 16px;
+		text-align: center;
+		text-decoration: none;
+		line-height: 40px;
+		background-color: #0099ff;
+		cursor: default; // Force "arrow" cursor
+		border-radius: 3px;
+		-webkit-border-radius: 3px;
+
+		&[data-rocket-component-status="false"]{ // Rocket "Basic" Button Component - "Disabled" Type CSS
+			color: @rocketSecondaryColor;
+			background-color: @rocketBorderColor; // Change the color
+		}
+	}
+
+	&[data-rocket-component-type="toggle"]{ // Rocket "Toggle" Button Component
+		height: 32px; // Make it smaller than the typical button
+		width: 75px; // Fixed width
+		background-color: #eeeeee;
+		border-radius: 32px; // Make sure the Toggle has a rounded edge
+
+		& > div[data-rocket-minor-component="buttonToggle"]{ // Rocket "Toggle" Button - Actual Toggle
+			float: left;
+			height: 32px;
+			width: 32px;
+			background-color: @rocketSecondaryColor;
+			border-radius: 16px; // Make the buttonToggle circular
+		}
+
+		&[data-rocket-component-status="true"]{ // Rocket "Toggle" Button - Status Set to True
+			background-color: @rocketPrimaryColor !important;
+		}
+
+	}
+}

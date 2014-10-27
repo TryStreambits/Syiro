@@ -1,0 +1,36 @@
+@import (reference) "core.less"; // Import Core as a reference
+
+div[data-rocket-component="list"]{ // Rocket List Component
+	float: left;
+	height: auto;
+	min-height: 40px;
+	width: 100%; // 100% of the parent of the List component
+	overflow: hidden; // Hide overflow
+
+	& > div[data-rocket-component="list-item"]{ // Rocket List Item Component
+		float: left;
+		display: block;
+		height: 40px;
+		width: 100%;
+		font-size: 15px !important;
+		overflow: hidden;
+
+		& > a{ // Rocket List Item - Links
+			width: 100%; // Only allow the link to be in this particular List Item component (disallow secondary controls)
+			color: @rocketPrimaryColor !important; // Force link color (primary color)
+			font-weight: normal;
+			text-decoration: none; // No text decoration
+		}
+
+		& > div{ // Secondary control within List Item component
+			float: right !important; // Float the component to the right
+		}
+
+		& > div[data-rocket-component="button"][data-rocket-component-type="basic"]{ // Overrides for Basic Button component within the dropdown list item
+			color: #fafafa !important;
+			font-size: 16px !important;
+			text-indent: 0px !important;
+			margin: 0px !important;
+		}
+	}
+}

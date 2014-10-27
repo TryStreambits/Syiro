@@ -2,7 +2,8 @@
  This is the module for Rocket Header component.
 */
 
-/// <reference path="core.ts" />
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
 
 interface linkPropertiesInterface { // Interface called linksProperties to define the necessary Object
 	link : string;
@@ -16,7 +17,7 @@ module rocket.footer {
 	export function SetLabel(component : Object, labelText : string) : boolean{ // Set the label text of the footer component to the labelText defined
 		if (component !== undefined){ // If the component is defined
 			if (labelText !== undefined){ // If the labelText is defined
-				var parentElement = rocket.core.Get(component); // Get the Element of the footer component
+				var parentElement = rocket.component.Fetch(component); // Get the Element of the footer component
 				var labelComponent : Element = document.querySelector("pre"); // Fetch the labelComponent if it exists
 
 				if (labelComponent == null){ // If the labelComponent does not exist
@@ -26,7 +27,7 @@ module rocket.footer {
 
 				labelComponent.textContent = labelText; // Set the labelComponent textContent to the labelText defined
 
-				rocket.core.UpdateStoredComponent(component["id"], parentElement); // Update the storedComponent HTMLElement if necessary
+				rocket.component.Update(component["id"], parentElement); // Update the storedComponent HTMLElement if necessary
 
 				return true; // Return a success boolean
 			}
@@ -48,7 +49,7 @@ module rocket.footer {
 
 		if (typeof linkProperties == "Object"){ // If the linkProperties is in fact an Object
 			if ((linkProperties["title"] !== undefined) && (linkProperties["link"] !== undefined)){ // If the linkProperties object has the valid properties needed
-				componentAddingSucceeded = rocket.core.AddComponent(prepend, component, linkProperties);
+				componentAddingSucceeded = rocket.component.Add(prepend, component, linkProperties);
 			}
 			else{ // If it did not contain the appropriate properties
 				componentAddingSucceeded = false; // Set to false
@@ -67,13 +68,13 @@ module rocket.footer {
 
 	export function RemoveLink(component : Object, linkProperties : linkPropertiesInterface) : boolean { // Return boolean if it was successful or not
 		var componentRemovingSucceed : boolean; // Variable to store the determination of success
-		var footerElement : Element = rocket.core.Get(component); // Get the Element of the Footer component
+		var footerElement : Element = rocket.component.Fetch(component); // Get the Element of the Footer component
 		var potentialLinkElement : Element = footerElement.querySelector('a[href="' + linkProperties["link"] + '"][title="' + linkProperties["title"] + '"]'); // Get the potential link element.
 
 		if (potentialLinkElement !== null){ // If we successfully got the link element
 			footerElement.removeChild(potentialLinkElement); // Remove the element
 
-			rocket.core.UpdateStoredComponent(component["id"], footerElement); // Update the storedComponent HTMLElement if necessary
+			rocket.component.Update(component["id"], footerElement); // Update the storedComponent HTMLElement if necessary
 			componentRemovingSucceed = true; // Set the removingSucceed to true
 		}
 		else{ // If the link does not exist in the footer

@@ -1,68 +1,42 @@
 /*
- This is the module for Rocket Button components.
-*/
+ This is the module for Rocket Button component.
+ */
 
-/// <reference path="core.ts" />
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
 
 module rocket.button {
 
-	// #region Button Listener
+	// #region Function for easily adding event listeners to a Basic button
+	// This is the same as using rocket.component.AddListener with click touchend MSPointerUp events
 
-	export function Listen(component : Object, primaryCallback : Function, secondaryCallback ?: Function){
-		var buttonElement : Element = rocket.core.Get(component);
-		var handlersArray : Array<Function> = []; // Define handlersArray as an array of functions
-
-		handlersArray.push(primaryCallback); // Push the primaryCallback to the handlersArray
-
-		if (secondaryCallback !== undefined){ // If a secondary function is defined
-			handlersArray.push(secondaryCallback); // Push the secondaryCallback to the handlersArray
+	export function AddListeners(component : Object, callback : Function){
+		if (component["type"] == "button"){ // If the Rocket Component is a Button
+			rocket.component.AddListeners("click touchend MSPointerUp", component, callback);
 		}
-
-		rocket.core.storedComponents[component["id"]]["handlers"] = handlersArray; // Set the handlers for this particular component in the storedComponents to handlersArray
-
-		var buttonEventListener = function(){ // Define buttonEventHandler as a binding to a function called handler that passes the component object
-			var componentObject = arguments[0]; // Set the componentsObject to the first argument (since bind forces the data to be the first arg)
-			var componentElement : Element = rocket.core.Get(componentObject); // Get the component element
-
-			var handlersArray : Array<Function> = rocket.core.storedComponents[componentObject["id"]]["handlers"]; // Fetch the handlers and assign it to the handlersArray
-
-			var primaryFunction : Function = handlersArray[0];
-			var secondaryFunction : Function = handlersArray[1];
-
-
-			if (componentElement.getAttribute("data-rocket-component-type") == "toggle"){
-				var toggleValue : string = componentElement.getAttribute("data-rocket-component-status");
-				var newToggleValue : any;
-
-				if (toggleValue == "false"){ // If the CURRENT toggle value is FALSE
-					newToggleValue = "true"; // Set the NEW toggle value to TRUE
-				}
-				else{ // If the CURRENT toggle value is TRUE
-					newToggleValue = "false"; // Set the NEW toggle value to FALSE
-				}
-
-				componentElement.setAttribute("data-rocket-component-status", newToggleValue); // Update the status
-
-				newToggleValue = Boolean(newToggleValue); // Convert from string to Boolean for function call
-
-				if (secondaryFunction !== undefined){ // If the secondary function is defined
-					secondaryFunction(); // Call the secondary function
-				}
-				else{ // If the secondary function is NOT defined
-					primaryFunction(newToggleValue); // Call the primary function
-				}
-			}
-			else{ // If the component is a basic button
-				primaryFunction(); // Call the primary function
-			}
-
-		}.bind(this, component);
-
-		buttonElement.addEventListener( // Add the event listener
-			"click touchend MSPointerUp",
-			buttonEventListener
-		)
 	}
 
 	// #endregion
+
+	// #region Function for setting the label of a Button
+
+	export function SetLabel(component : Object, content : string) : boolean { // Returns boolean value in relation to success
+		var setSucceeded : boolean; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
+
+		var componentElement = rocket.component.Fetch(component); // Get the componentElement
+
+		if ((componentElement !== null) && (componentElement.getAttribute("data-rocket-component-type") == "basic")){ // If the button exists in storedComponents or DOM AND button is "basic" rather than toggle
+			componentElement.textContent = content; // Set the button component textContent
+			rocket.component.Update(component["id"], componentElement); // Update the storedComponent (if necessary)
+			setSucceeded = true; // Define setSucceeded as true
+		}
+		else{ // If it is NOT a basic button
+			setSucceeded = false; // Define setSucceeded as false
+		}
+
+		return setSucceeded; // Return the boolean value
+	}
+
+	// #endregion
+
 }

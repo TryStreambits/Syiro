@@ -1,0 +1,55 @@
+@import (reference) "animations.less"; // Import Animations as a reference
+@import (reference) "core.less"; // Import Core as a reference
+
+div[data-rocket-component="dropdown"]{ // Rocket Dropdown Component
+	float: left;
+	height: auto;
+	width: 200px;
+	color: @rocketSecondaryColor;
+	font-size: 16px;
+	text-indent: 10px;
+	line-height: 40px;
+	background-color: @rocketDarkWhite;
+
+	&[data-rocket-component-active]{ // If the Dropdown is "active"
+
+		.icon("dropdown-inverted"); // Set the Dropdown to the inverted color image
+
+		& > div[data-rocket-component="list"]{ // Modify the inner List component
+			display : block !important; // Ensure it is showing
+		}
+	}
+
+	& > div[data-rocket-minor-component="dropdown-label"]{ // Rocket Dropdown Label
+		float: left;
+		height: 40px;
+		min-width: 200px;
+		cursor: default; // Default to "arrow" cursor
+
+		.icon(); // Add the default dropdown icon
+
+		background-position: 95% center;
+
+		& > img{ // Rocket Dropdown Label Image (Optional)
+			float: left;
+			height: 40px;
+			width: 40px;
+		}
+
+		&::selection{ // If the dropdown is double-clicked, that acts as a text selection
+			background-color: transparent; // Mask that the text was selected by making the background-color transparent.
+		}
+	}
+
+	& > div[data-rocket-component="list"]{ // The Dropdown's List (This is only Dropdown specific CSS)
+		display: none; // Default to not displaying
+		border-top: 2px solid #eeeeee;
+		position: relative; // Align with the the entire dropdown element
+		z-index: 10; // Ensure it floats above other content
+
+		// Modifier for toggle buttons that do not have a TRUE status within list items in a Dropdown's List
+		& > div[data-rocket-component="list-item"] > div[data-rocket-component="button"][data-rocket-component-type="toggle"]:not([data-rocket-component-status="toggle"]){
+			border: 1px solid #dddddd; // Allow easy differentiation between list-item background and toggle button
+		}
+	}
+}

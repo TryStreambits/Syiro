@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Dynamic Rocket Testing</title>
+		<link rel="stylesheet" type="text/css" href="css/rocket.css">
+		<script type="text/javascript" src="js/rocket.min.js"></script>
+	</head>
+	<body>
+		<main data-rocket-component="page">
+			<div style="float: left; height: 150px; width: 100%;"></div> <!-- DIV so we can view the other components under the forced dropdown showing in header -->
+			<div id="padding" style="float: left; height: 1000px; width: 100%;"></div> <!-- DIV so we don't have some tests right next to the footer -->
+		</main>
+		<script>
+			rocket.Init();
+
+			var generatedToggle = rocket.generate.Button({"type" : "toggle"}); // Generate a Toggle Button
+
+			var generatedHeaderDropdown = rocket.generate.Dropdown(
+					{
+						"label" : {
+							"text" : "Test Dropdown"
+						},
+						"items" : [
+							{
+								"label" : "Test Item",
+								"control" : generatedToggle
+							},
+							{
+								"label" : "Second Test Item"
+							}
+						]
+					}
+			);
+
+			var generatedHeader = rocket.generate.Header(
+					{
+						"logo" : "https://stroblindustries.com/images/logo.png",
+						"items" : [
+							{
+								"type" : "link",
+								"link" : "https://stroblindustries.com",
+								"content" : "Example Link"
+							},
+							{
+								"type" : "dropdown",
+								"component" : generatedHeaderDropdown
+							}
+						]
+					}
+			);
+
+			var generatedHeaderElement = rocket.Fetch(generatedHeader); // Fetch the Header
+			document.querySelector("body").insertBefore(generatedHeaderElement, document.querySelector("body").firstChild);
+
+			var generatedButton = rocket.generate.Button({"type" : "basic", "label" : "Hello"}); // Generate a Basic Button
+			document.querySelector("main").insertBefore(rocket.Fetch(generatedButton), document.getElementById("padding"));
+
+			var generatedButtonTwo = rocket.generate.Button({"type" : "basic", "label" : "Test 2"}); // Generate a Basic Button
+			document.querySelector("main").insertBefore(rocket.Fetch(generatedButtonTwo), document.getElementById("padding"));
+
+			var generatedFooter = rocket.generate.Footer({"label" : "Strobl Industries"}); // Generate a Footer
+			document.querySelector("body").appendChild(rocket.Fetch(generatedFooter));
+
+			var generatedSearchbox = rocket.generate.Searchbox(); // Generate a Searchbox
+			rocket.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
+
+			var fauxSecondListItem = { "id" : "list-item5", "type" : "list-item"};
+
+			rocket.button.AddListeners(generatedButton, function(x){console.log("First Button Hit!")}); // Listen to the Basic Button
+			rocket.button.AddListeners(generatedButtonTwo, function(x){console.log("Second Button Hit!")}); // Listen to the Basic Button
+			rocket.searchbox.AddListeners(generatedSearchbox, function(x){console.log(x)}); // Listen to the Searchbox value change
+			rocket.button.AddListeners(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
+			rocket.listitem.AddListeners(fauxSecondListItem, function(x){console.log("List Item Hit!")}); // Listen to the second List Item
+		</script>
+	</body>
+</html>

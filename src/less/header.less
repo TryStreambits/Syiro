@@ -1,0 +1,87 @@
+@import (reference) "core.less"; // Import Core as a reference
+
+header[data-rocket-component="header"]{ // Rocket Header Component
+	float: left;
+  	height: 80px;
+	width: 100%;
+	line-height: 80px;
+	background-color: @rocketDarkWhite;
+
+	& > img[data-rocket-minor-component="logo"]{ // Logo component within header
+		float: left;
+		height: 60px; // Default to 60px for logo height
+		width: auto;
+		margin: 10px 10px 10px 20px;
+		border: 0;
+	}
+
+  	// #region Header Dropdown Modifications
+
+	& > div[data-rocket-component="dropdown"]{
+	 	min-height: 80px; // Set the minimal height to 80px
+		margin-top: 0 !important; /* Force the list to be vertically aligned */
+
+		&[data-rocket-component-active] > div[data-rocket-minor-component="dropdown-label"] { // If the Dropdown is "active", change the Dropdown Label
+
+			.icon("dropdown-inverted"); // Change the Dropdown image
+
+			background-color: @rocketPrimaryColor; // Ensure the active Dropdown is differentiated from the other Dropdowns
+			color: @rocketLightWhite; // Ensure the text viewable
+		}
+
+		& > div[data-rocket-minor-component="dropdown-label"]{ // Dropdown Label Changes
+			height: 80px; // Match height of the Header component
+			line-height: 80px; // Match height of component
+		}
+
+		& > div[data-rocket-component="list"] > div[data-rocket-component="list-item"]:last-of-type{ // Modify the last List Item of the List slightly
+			margin-bottom: 5px; // Ensure the Dropdown's Inner List has proper bottom "padding"
+		}
+
+	}
+
+  	// #endregion
+
+	// #region Header Searchbox Modifications
+
+	& > input[data-rocket-component="searchbox"]{
+		float: right !important; // Force the component to float to the right
+		margin-top: 20px; // Center the searchbox in the Header
+		margin-right: 20px; // Have some padding to the right of the Searchbox
+		border: 1px solid #dddddd;
+	}
+
+	// #endregion
+
+  @media (max-width: 1280px){ /* For resolutions with a max of 1280 in width */
+		&{
+			height: 60px; // Header height is 20px shorter
+			line-height: 60px; // Shorten the line-height
+		}
+
+		& > img[data-rocket-minor-component="logo"]{ /* Header Logo Component */
+			height: 40px; // As a result of a smaller resolution, have a shorter logo
+		}
+
+		// #region Header Dropdown Modifications
+
+		& > div[data-rocket-component="dropdown"]{
+			min-height: 60px; // Set the minimal height to 60px
+
+			& > div[data-rocket-minor-component="dropdown-label"]{ // Dropdown Label Changes
+				height: 60px; // Match height of the Header component
+				line-height: 60px; // Match height of component
+			}
+		}
+
+		// #endregion
+
+		  // #region Header Searchbox Modifications
+
+		  & > input[data-rocket-component="searchbox"]{
+			  margin-top: 10px; // Center the searchbox in the Header
+		  }
+
+		  // #endregion
+	}
+}

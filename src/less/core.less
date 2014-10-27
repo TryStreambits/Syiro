@@ -1,0 +1,71 @@
+// #region Required Fonts
+
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Source Sans Pro'), local('SourceSansPro-Regular'), local('SourceSansPro'), url(fonts/ssp.woff) format('woff');
+}
+
+// #endregion
+
+@rocketLightWhite: #fafafa;
+@rocketDarkWhite: #f6f6f6;
+@rocketPrimaryColor: #0099ff;
+@rocketSecondaryColor: #333333;
+@rocketBorderColor: #cccccc;
+
+// #region Icon Parametric Mixin - Allows easy including of a particular icon
+
+.icon(@iconImage : "dropdown", @iconSize : 24){
+	background-image : url("img/@{iconImage}.png"); // Set the background-image to img/iconImage.png
+	background-size: unit(@iconSize, px); // Set the background-size to the iconSize
+	background-repeat: no-repeat; // Don't repeat the icon
+}
+
+//#endregion
+
+// #region Multi-component font utilization
+
+div[data-rocket-component="button"], div[data-rocket-component="dropdown"],  header[data-rocket-component="header"], footer[data-rocket-component="footer"], input[data-rocket-component="searchbox"]{
+	font-family: 'Source Sans Pro', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
+}
+
+// #endregion
+
+// #region Multi-component link styling
+
+header[data-rocket-component="header"], footer[data-rocket-component="footer"] {
+	a {
+		float: left; // Float left
+		height: 80px; // Default height of 80px
+		width: auto; // Automatic width
+		min-width: 180px; // Minimum width of 180px
+		color: @rocketPrimaryColor; // Primary Rocket Color
+		line-height: 80px; // Default height of 80px
+		text-align: center; // Center it
+		text-decoration: none; // No decoration
+		padding: 0 10px 0 10px; // Padding of 10px on left and right side
+
+		@media (max-width: 1280px){ /* For resolutions with a max of 1280 in width */
+			&{
+				height: 60px; // Change the height of the link to match what the header and footer height would be
+				line-height: 60px; // Change the line-height as well
+			}
+		}
+	}
+}
+
+// #region Page Component
+
+body {
+	margin: 0px;
+	overflow-x: hidden;
+}
+
+main[data-rocket-component="page"]{
+	position: static;
+}
+
+
+// #endregion

@@ -45,7 +45,7 @@ module rocket.component {
 		var componentHandler : Function; // Set componentHandler as a variable that will be a function
 
 		if (type == "dropdown"){ // If we are defining a Dropdown Rocket component
-			rocket.component.AddListeners("click touchend MSPointerUp", component, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+			rocket.component.AddListeners("pointerup MSPointerUp", component, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 		}
 
 		return component; // Return the component Object

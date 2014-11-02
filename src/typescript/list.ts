@@ -78,7 +78,7 @@ module rocket.listitem {
 		var listenerSettingSucceeded : boolean;
 
 		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			listenerSettingSucceeded = rocket.component.AddListeners("click touchend MSPointerUp", component, callback);
+			listenerSettingSucceeded = rocket.component.AddListeners("pointerup MSPointerUp", component, callback);
 		}
 		else{ // If the component is NOT a List Item
 			listenerSettingSucceeded = false;

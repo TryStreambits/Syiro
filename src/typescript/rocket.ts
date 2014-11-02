@@ -36,7 +36,7 @@ module rocket {
 												var type = passedNode.getAttribute("data-rocket-component"); // Get the Rocket Component Type
 
 												if (type == "dropdown"){ // If the component is a Dropdown
-													rocket.component.AddListeners("click touchend MSPointerUp", {"id" : potentialElementId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+													rocket.component.AddListeners("pointerup MSPointerUp", {"id" : potentialElementId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 												}
 
 												if (passedNode.childNodes.length > 0){ // If the passedNode has childNodes
@@ -82,7 +82,7 @@ module rocket {
 								var type = potentiallyExistingComponent.getAttribute("data-rocket-component"); // Get the Rocket Component Type
 
 								if (type == "dropdown"){ // If the component is a Dropdown
-									rocket.component.AddListeners("click touchend MSPointerUp", {"id" : componentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+									rocket.component.AddListeners("pointerup MSPointerUp", {"id" : componentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 								}
 
 								delete rocket.component.storedComponents[componentId]["HTMLElement"]; // Ensure the HTMLElement in the storedComponents is deleted

@@ -11,3 +11,11 @@ interface Object { // As ComponentObject is inherently an Object, extend the Obj
 interface Element { // Implementation of valid spec not found in lib.d.ts
 	parentElement : Element; // Element's parentElement
 }
+
+interface Navigator { // Implementation of valid spec not found in lib.d.ts
+	doNotTrack : string; // Define doNotTrack as a string
+}
+
+interface Window { // Implementation of valid spec not found in lib.d.ts
+	crypto : any; // Define crypto as any
+}

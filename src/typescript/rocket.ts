@@ -3,6 +3,7 @@
 */
 
 /// <reference path="component.ts" />
+/// <reference path="device.ts" />
 /// <reference path="generator.ts" />
 /// <reference path="header.ts" />
 /// <reference path="footer.ts" />
@@ -16,6 +17,42 @@ module rocket {
 	// #region Rocket Initialization Function
 
 	export function Init() : void {
+
+		rocket.device.Detect(); // Detect Device information and functionality support by using our Detect() function.
+
+		// #region Document Scroll Event Listening
+
+		document.addEventListener("scroll", function(){ // Add an event listener to the document for when the document is scrolling
+			var dropdowns : any = document.querySelectorAll('div[data-rocket-component="dropdown"][active]'); // Get all of the Dropdowns that are active
+
+			for (var dropdownIndex = 0; dropdownIndex < dropdowns.length; dropdownIndex++){ // For each of those Dropdown Components that are active
+				var thisDropdown : Element = dropdowns[dropdownIndex]; // Get the dropdown from the array of Dropdowns
+				thisDropdown.removeAttribute("active"); // Remove the "active" attribute
+			}
+		});
+
+		// #endregion
+
+		// #region Viewport Scaling Enabling - Automatically checks if there is a meta tag with viewport properties to help scale to mobile. If not, insert it.
+
+		var documentHeadSection : Element = document.querySelector("head"); // Get the head tag from the document
+
+		if (documentHeadSection == null){ // If the documentHeadSection doesn't actually exist
+			documentHeadSection = document.createElement("head"); // Create the head section / tag
+			document.querySelector("html").insertBefore(documentHeadSection, document.querySelector("head").querySelector("body")); // Insert the head tag before the body
+		}
+
+		var viewportMetaTag : Element = documentHeadSection.querySelector('meta[name="viewport"]');
+
+		if (viewportMetaTag == null){ // If the viewportMetaTag does NOT exist
+			viewportMetaTag = document.createElement("meta"); // Create the meta tag
+			viewportMetaTag.setAttribute("name", "viewport"); // Set the name to viewport
+			viewportMetaTag.setAttribute("content", 'width=device-width, initial-scale=1,user-scalable=no'); // Set the viewportMetaTag content to the appropriate values that enables scaling and disables zooming
+
+			documentHeadSection.appendChild(viewportMetaTag); // Append the meta tag
+		}
+
+		// #endregion
 
 		// #region Watch DOM For Components
 
@@ -36,7 +73,7 @@ module rocket {
 												var type = passedNode.getAttribute("data-rocket-component"); // Get the Rocket Component Type
 
 												if (type == "dropdown"){ // If the component is a Dropdown
-													rocket.component.AddListeners("pointerup MSPointerUp", {"id" : potentialElementId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+													rocket.component.AddListeners("click MSPointerUp", {"id" : potentialElementId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 												}
 
 												if (passedNode.childNodes.length > 0){ // If the passedNode has childNodes
@@ -82,7 +119,7 @@ module rocket {
 								var type = potentiallyExistingComponent.getAttribute("data-rocket-component"); // Get the Rocket Component Type
 
 								if (type == "dropdown"){ // If the component is a Dropdown
-									rocket.component.AddListeners("pointerup MSPointerUp", {"id" : componentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+									rocket.component.AddListeners("click MSPointerUp", {"id" : componentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 								}
 
 								delete rocket.component.storedComponents[componentId]["HTMLElement"]; // Ensure the HTMLElement in the storedComponents is deleted
@@ -97,20 +134,6 @@ module rocket {
 		}
 
 		// #endregion
-
-		// #region Document Scroll Event Listening
-
-		document.addEventListener("scroll", function(){ // Add an event listener to the document for when the document is scrolling
-			var dropdowns : any = document.querySelectorAll('div[data-rocket-component="dropdown"][active]'); // Get all of the Dropdowns that are active
-
-			for (var dropdownIndex = 0; dropdownIndex < dropdowns.length; dropdownIndex++){ // For each of those Dropdown Components that are active
-				var thisDropdown : Element = dropdowns[dropdownIndex]; // Get the dropdown from the array of Dropdowns
-				thisDropdown.removeAttribute("active"); // Remove the "active" attribute
-			}
-		});
-
-		// #endregion
-
 	}
 
 	// #endregion

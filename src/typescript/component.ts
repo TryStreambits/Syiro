@@ -45,7 +45,7 @@ module rocket.component {
 		var componentHandler : Function; // Set componentHandler as a variable that will be a function
 
 		if (type == "dropdown"){ // If we are defining a Dropdown Rocket component
-			rocket.component.AddListeners("pointerup MSPointerUp", component, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+			rocket.component.AddListeners("click touchend MSPointerUp", component, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 		}
 
 		return component; // Return the component Object
@@ -218,7 +218,7 @@ module rocket.component {
 										passableValue = null; // Just set to null
 									}
 
-									listenerCallback(passableValue); // Call the listenerCallback and pass along the passableValue
+									listenerCallback.call(rocket, component, passableValue); // Call the listenerCallback and pass along the passableValue and the component Object
 								}
 							}.bind(rocket, component, listenerCallback) // Bind to Rocket, pass the component and listenerCallback
 						);

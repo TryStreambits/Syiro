@@ -6,6 +6,12 @@ interface Object {
 interface Element {
     parentElement: Element;
 }
+interface Navigator {
+    doNotTrack: string;
+}
+interface Window {
+    crypto: any;
+}
 declare module rocket.component {
     var storedComponents: Object;
     var lastUniqueId: number;
@@ -19,6 +25,18 @@ declare module rocket.component {
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(parentComponent: Object, childComponent?: any): boolean;
+}
+declare module rocket.device {
+    var DoNotTrack: boolean;
+    var HasCryptography: boolean;
+    var HasGeolocation: boolean;
+    var HasIndexedDB: boolean;
+    var HasLocalStorage: boolean;
+    var IsOnline: boolean;
+    var IsSubHD: boolean;
+    var IsHD: boolean;
+    var IsFullHDOrAbove: boolean;
+    function Detect(): void;
 }
 declare module rocket.generator {
     function IdGen(type: string): string;

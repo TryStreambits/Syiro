@@ -8,11 +8,11 @@
 module rocket.button {
 
 	// #region Function for easily adding event listeners to a Basic button
-	// This is the same as using rocket.component.AddListener with pointerup MSPointerUp events
+	// This is the same as using rocket.component.AddListener with click MSPointerUp events
 
 	export function AddListeners(component : Object, callback : Function){
 		if (component["type"] == "button"){ // If the Rocket Component is a Button
-			rocket.component.AddListeners("pointerup MSPointerUp", component, callback);
+			rocket.component.AddListeners("click MSPointerUp", component, callback);
 		}
 	}
 

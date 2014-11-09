@@ -47,7 +47,7 @@ Details:
 
 You can get started using Rocket by using the guide below:
 
-1. [Understanding Rocket Components](https://github.com/StroblIndustries/Rocket/wiki/Using-Rocket-Components) - *Honestly not much to understand*
+1. [Understanding Rocket Components](https://github.com/StroblIndustries/Rocket/wiki/Understanding-Rocket-Components) - *Honestly not much to understand*
 2. [The Components Index](https://github.com/StroblIndustries/Rocket/wiki/Component-Index) - *Like the Pokèdex but for Components*
 3. [Managing Components](https://github.com/StroblIndustries/Rocket/wiki/Managing-Components) - *Covers creating both static and dynamically defined Components and other Component functions.*
 4. [Using Component Listeners](https://github.com/StroblIndustries/Rocket/wiki/Using-Component-Listeners) - *Covers our AddListener and RemoveListener() functions*

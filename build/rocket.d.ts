@@ -100,7 +100,6 @@ declare module rocket {
         Searchbox: typeof generator.Searchbox;
     };
     var Fetch: typeof component.Fetch;
-    var Get: typeof component.Fetch;
     var Add: typeof component.Add;
     var Remove: typeof component.Remove;
     var Animate: typeof component.Animate;

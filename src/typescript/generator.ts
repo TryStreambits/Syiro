@@ -134,10 +134,10 @@ module rocket.generator {
                     }
                 }
             }
-            else if (propertyKey == "label"){ // If we are adding a Footer label
+            else if (propertyKey == "content"){ // If we are adding a Footer label
                 var generatedElement : HTMLElement = rocket.generator.ElementCreator(null, "label", // Generate a generic label element
                     {
-                        "content" : properties[propertyKey] // Also set the inner content of the <label> tag
+                        "content" : properties["content"] // Also set the inner content of the <label> tag
                     }
                 );
 
@@ -173,8 +173,8 @@ module rocket.generator {
             if ((propertyKey == "icon") && (properties["type"] == "basic")){ // If we are adding an icon and the button type is basic
                 componentElement.style.backgroundImage = properties["icon"]; // Set the backgroundImage to the icon URL specified
             }
-            else if (propertyKey == "label"){ // If we are adding a label
-                componentElement.textContent = properties[propertyKey]; // Set the innerText of the button
+            else if (propertyKey == "content"){ // If we are adding a label
+                componentElement.textContent = properties["content"]; // Set the textContent of the button
             }
             else if ((propertyKey == "type") && (properties["type"] == "toggle")) { // If the Button type is toggle
                 if (properties["default"] == undefined){ // If a default state for the button is NOT defined
@@ -238,10 +238,10 @@ module rocket.generator {
                     dropdownLabel.appendChild(dropdownLabelImage); // Append the dropdown image
                 }
 
-                if (labelProperties["text"] !== undefined){ // If text is defined for the dropdown
+                if (labelProperties["content"] !== undefined){ // If text is defined for the dropdown
                     var dropdownLabelText : HTMLElement = rocket.generator.ElementCreator(null, "label", // Create a label within the "label" (labelception) to hold the defined text.
                         {
-                            "content" : labelProperties["text"] // Set the text content of the Dropdown's label label (yes, two intentional labels) to the text defined
+                            "content" : labelProperties["content"] // Set the text content of the Dropdown's label label (yes, two intentional labels) to the text defined
                         }
                     );
                     dropdownLabel.appendChild(dropdownLabelText); // Append the label to the label.
@@ -276,9 +276,14 @@ module rocket.generator {
         for (var propertyKey in properties){ // Recursive go through each propertyKey
             if (propertyKey == "items"){ // If we are adding navigation elements
                 for (var individualItemIndex in properties["items"]){ // For each list item in navigationItems Object array
-                    var listItemComponent : Object = rocket.generate.ListItem(properties["items"][individualItemIndex]); // Generate a List Item based on the List Item properties provided
-                    componentElement.appendChild(rocket.Fetch(listItemComponent)); // Append the List Item component to the List
-                    delete rocket.component.storedComponents[listItemComponent["id"]]["HTMLElement"]; // Delete the HTMLElement from the component in the storedComponents
+                    var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as an Object
+
+                    if (individualItem["type"] !== "list-item"){ // If the individualItem is NOT a List Item Object
+                        individualItem = rocket.generate.ListItem(individualItem); // Generate a List Item based on the individualItem properties
+                    }
+
+                    componentElement.appendChild(rocket.Fetch(individualItem)); // Append the List Item component to the List
+                    delete rocket.component.storedComponents[individualItem["id"]]["HTMLElement"]; // Delete the HTMLElement from the component in the storedComponents
                 }
             }
         }
@@ -340,8 +345,8 @@ module rocket.generator {
             if (propertyKey == "icon"){ // If we are adding an icon
                 componentElement.style.backgroundImage = properties["icon"]; // Set the backgroundImage to the icon URL specified
             }
-            else if (propertyKey == "label"){ // If we are adding a label
-                componentElement.setAttribute("placeholder", properties["label"]); // Set the searchbox input placeholder to the one defined
+            else if (propertyKey == "content"){ // If we are adding a placeholder / content
+                componentElement.setAttribute("placeholder", properties["content"]); // Set the searchbox input placeholder to the one defined
             }
         }
 

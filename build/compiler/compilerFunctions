@@ -43,8 +43,8 @@ createSnapshot(){ # Create a snapshot of the branch and package it
 	mkdir -p "build/active-snapshot/Rocket" # Create a temporary snapshot directory
 	echo "$rocketVersion" > VERSION.txt # Update the VERSION.txt file
 
-	cp -r build/rocket.css build/rocket.min.js ./build/active-snapshot/Metis # Copy over particular build content to the snapshot
-	cp -r License.txt VERSION.txt ./build/active-snapshot/Metis # Copy over particular non-build data to the snapshot
+	cp -r build/rocket.css build/rocket.min.js build/rocket.min.js.gz ./build/active-snapshot/Rocket # Copy over particular build content to the snapshot
+	cp -r src/less/fonts README.md License.txt VERSION.txt ./build/active-snapshot/Rocket # Copy over particular non-build data to the snapshot
 
 	tar --create --gzip --recursion --directory=build/active-snapshot -f "$snapshotType".tar.gz Rocket
 	rm -rf build/active-snapshot

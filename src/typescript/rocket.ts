@@ -152,8 +152,6 @@ module rocket {
 
 	export var Fetch = rocket.component.Fetch; // Meta-function for fetching Rocket component HTMLElements
 
-	export var Get = rocket.component.Fetch; // Alternate venacular for fetching Rocket component HTMLElements
-
 	export var Add = rocket.component.Add; // Meta-function for adding Rocket components to each other
 
 	export var Remove = rocket.component.Remove; // Meta-function for removing Rocket components

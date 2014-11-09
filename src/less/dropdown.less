@@ -43,13 +43,14 @@ div[data-rocket-component="dropdown"]{ // Rocket Dropdown Component
 
 	& > div[data-rocket-component="list"]{ // The Dropdown's List (This is only Dropdown specific CSS)
 		display: none; // Default to not displaying
-		border-top: 2px solid #eeeeee;
+		background-color: @rocketLightWhite;
+		border-top: 2px solid @rocketBorderColor;
 		position: relative; // Align with the the entire dropdown element
 		z-index: 10; // Ensure it floats above other content
 
 		// Modifier for toggle buttons that do not have a TRUE status within list items in a Dropdown's List
 		& > div[data-rocket-component="list-item"] > div[data-rocket-component="button"][data-rocket-component-type="toggle"]:not([data-rocket-component-status="toggle"]){
-			border: 1px solid #dddddd; // Allow easy differentiation between list-item background and toggle button
+			border: 1px solid @rocketBorderColor; // Allow easy differentiation between list-item background and toggle button
 		}
 	}
 }

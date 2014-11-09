@@ -15,7 +15,7 @@
 			var generatedHeaderDropdown = rocket.generate.Dropdown(
 					{
 						"label" : {
-							"text" : "Test Dropdown"
+							"content" : "Test Dropdown"
 						},
 						"items" : [
 							{
@@ -31,7 +31,6 @@
 
 			var generatedHeader = rocket.generate.Header(
 					{
-						"logo" : "https://stroblindustries.com/images/logo.png",
 						"items" : [
 							{
 								"type" : "link",
@@ -49,13 +48,13 @@
 			var generatedHeaderElement = rocket.Fetch(generatedHeader); // Fetch the Header
 			document.querySelector("body").insertBefore(generatedHeaderElement, document.querySelector("body").firstChild);
 
-			var generatedButton = rocket.generate.Button({"type" : "basic", "label" : "Hello"}); // Generate a Basic Button
+			var generatedButton = rocket.generate.Button({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
 			document.querySelector("main").insertBefore(rocket.Fetch(generatedButton), document.getElementById("padding"));
 
-			var generatedButtonTwo = rocket.generate.Button({"type" : "basic", "label" : "Test 2"}); // Generate a Basic Button
+			var generatedButtonTwo = rocket.generate.Button({"type" : "basic", "content" : "Test 2"}); // Generate a Basic Button
 			document.querySelector("main").insertBefore(rocket.Fetch(generatedButtonTwo), document.getElementById("padding"));
 
-			var generatedFooter = rocket.generate.Footer({"label" : "Strobl Industries"}); // Generate a Footer
+			var generatedFooter = rocket.generate.Footer({"content" : "Strobl Industries"}); // Generate a Footer
 			document.querySelector("body").appendChild(rocket.Fetch(generatedFooter));
 
 			var generatedSearchbox = rocket.generate.Searchbox(); // Generate a Searchbox

@@ -245,8 +245,21 @@ module rocket.component {
 				componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]'); // Get the Dropdown's inner Label
 			}
 
-			var newElement : any = componentElement.cloneNode(true); // Make a clone of the Node, which doesn't copy event listeners
-			componentElement.outerHTML = newElement.outerHTML; // Replace the component's Element outer HTML with the new Element outerHTML, so it does not copy listeners (therefore they are "removed")
+			var componentElement : any = rocket.component.Fetch(component); // Get the component Element
+
+			if (componentElement !== null){ // If the component exists in storedComponents or DOM
+				if (component["type"] == "dropdown"){ // If we are adding an event listener to a dropdown
+					componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]'); // Get the Dropdown's inner Label
+				}
+
+				var newElement : any = componentElement.cloneNode(true); // Make a clone of the Node, which doesn't copy event listeners
+				componentElement.outerHTML = newElement.outerHTML; // Replace the component's Element outer HTML with the new Element outerHTML, so it does not copy listeners (therefore they are "removed")
+
+				return true; // Return true since we successfully removed event listeners
+			}
+			else{ // If the component does NOT exist in storedComponents or DOM
+				return false; // Return false we did not successfully remove event listeners
+			}
 
 			return true; // Return true since we successfully removed event listeners
 		}

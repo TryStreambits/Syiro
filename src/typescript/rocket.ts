@@ -83,7 +83,7 @@ module rocket {
 													}
 												}
 
-												delete rocket.component.storedComponents[potentialElementId]["HTMLElement"]; // Ensure the HTMLElement in the storedComponents is deleted
+												delete rocket.component.storedComponents[potentialElementId]; // Ensure the Component in the storedComponents is deleted
 											}
 										}
 									}
@@ -122,7 +122,7 @@ module rocket {
 									rocket.component.AddListeners("click MSPointerUp", {"id" : componentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 								}
 
-								delete rocket.component.storedComponents[componentId]["HTMLElement"]; // Ensure the HTMLElement in the storedComponents is deleted
+								delete rocket.component.storedComponents[componentId]; // Ensure the Component in the storedComponents is deleted
 							}
 						}
 

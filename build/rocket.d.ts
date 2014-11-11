@@ -1,6 +1,8 @@
 interface Object {
     id?: string;
     type: string;
+    link: string;
+    title: string;
     HTMLElement?: Element;
 }
 interface Element {
@@ -14,7 +16,6 @@ interface Window {
 }
 declare module rocket.component {
     var storedComponents: Object;
-    var lastUniqueId: number;
     var dropdownToggler: Function;
     function Define(type: string, selector: string): Object;
     function Animate(component: Object, animation: string, postAnimationFunction?: Function): void;
@@ -24,7 +25,7 @@ declare module rocket.component {
     function Fetch(component: Object): any;
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
-    function Remove(parentComponent: Object, childComponent?: any): boolean;
+    function Remove(componentsToRemove: any): boolean;
 }
 declare module rocket.device {
     var DoNotTrack: boolean;
@@ -39,6 +40,7 @@ declare module rocket.device {
     function Detect(): void;
 }
 declare module rocket.generator {
+    var lastUniqueIds: Object;
     function IdGen(type: string): string;
     function ElementCreator(componentId: any, componentType: string, attributes?: Object): HTMLElement;
     function Header(properties: Object): Object;
@@ -53,14 +55,10 @@ declare module rocket.header {
     function SetLogo(component: Object, image: string): void;
     function RemoveLogo(component: Object): void;
 }
-interface linkPropertiesInterface {
-    link: string;
-    title: string;
-}
 declare module rocket.footer {
     function SetLabel(component: Object, labelText: string): boolean;
-    function AddLink(prepend: boolean, component: Object, linkProperties: linkPropertiesInterface): boolean;
-    function RemoveLink(component: Object, linkProperties: linkPropertiesInterface): boolean;
+    function AddLink(prepend: boolean, component: Object, linkProperties: Object): boolean;
+    function RemoveLink(component: Object, linkProperties: Object): boolean;
 }
 declare module rocket.button {
     function AddListeners(component: Object, callback: Function): void;
@@ -75,7 +73,7 @@ declare module rocket.listitem {
     function AddListeners(component: Object, callback: Function): boolean;
 }
 declare module rocket.dropdown {
-    function InternalListComponentFetcher(dropdownComponent: any): Object;
+    function InnerListComponentFetcher(dropdownComponent: any): Object;
     function SetText(component: Object, content: any): void;
     function SetImage(component: Object, content: any): void;
     function SetIcon(component: Object, content: string): void;

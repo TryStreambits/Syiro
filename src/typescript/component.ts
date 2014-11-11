@@ -7,7 +7,6 @@
 
 module rocket.component {
 	export var storedComponents : Object = {}; // An object that stores generated component(s) / component(s) information
-	export var lastUniqueId : number = 0; // Default the lastUniqueId to zero
 
 	// #region Common Component Handlers
 
@@ -37,8 +36,6 @@ module rocket.component {
 
 		var selectedElement : Element = document.querySelector(selector); // Get the first recognized HTMLElement that has this selector.
 		selectedElement.setAttribute("data-rocket-component-id", componentID); // Set this component's ID
-
-		rocket.component.storedComponents[componentID] = component; // Add the component object (without the nested identifier ID) with the key being componentID
 
 		component["id"] = componentID; // Add the component ID to the object that we will be returning to the developer
 
@@ -275,8 +272,8 @@ module rocket.component {
 	export function Fetch(component : Object) : any { // Take a Rocket component object and return an HTMLElement (it's like magic!)
 		var componentElement : Element; // The (HTML)Element of the Rocket component we'll be returning
 
-		if (rocket.component.storedComponents[component["id"]]["HTMLElement"] !== undefined){ // If an HTMLElement  is defined, meaning this is a new component that has not been put in the DOM yet
-			componentElement = rocket.component.storedComponents[component["id"]]["HTMLElement"]; // Get the HTMLElement stored in the tempStoredComponents
+		if (rocket.component.storedComponents[component["id"]] !== undefined){ // If an HTMLElement  is defined, meaning this is a new component that has not been put in the DOM yet
+			componentElement = rocket.component.storedComponents[component["id"]]; // Get the HTMLElement stored in the storedComponents
 		}
 		else{ // If the HTMLElement  is NOT defined (meaning the element is could be in the DOM)
 			componentElement = document.querySelector('*[data-rocket-component-id="' + component["id"] + '"]'); // Look for the component in the DOM, may return null
@@ -290,8 +287,8 @@ module rocket.component {
 	// #region Update Stored Component's HTMLElement, but only if it exists in the first place.
 
 	export function Update(componentId : string, componentElement : Element){
-		if (rocket.component.storedComponents[componentId]["HTMLElement"] !== undefined){ // If the HTMLElement is defined in the storedComponents
-			rocket.component.storedComponents[componentId]["HTMLElement"] = componentElement; // Update with the componentElement we defined
+		if (rocket.component.storedComponents[componentId] !== undefined){ // If the HTMLElement is defined in the storedComponents (by the id of the component being in the storedComponents)
+			rocket.component.storedComponents[componentId] = componentElement; // Update with the componentElement we defined
 		}
 	}
 
@@ -321,7 +318,7 @@ module rocket.component {
 			}
 			else if (childComponent["type"] == "list-item"){ // If the childComponent is a ListItem
 				if (parentComponent["type"] == "dropdown"){ // If the parentComponent is a Dropdown
-					parentElement = rocket.component.Fetch(rocket.dropdown.InternalListComponentFetcher(parentComponent)); // Reset parentElement to be the Dropdown's inner List
+					parentElement = rocket.component.Fetch(rocket.dropdown.InnerListComponentFetcher(parentComponent)); // Reset parentElement to be the Dropdown's inner List
 				}
 
 				if ((parentComponent["type"] == "dropdown") || (parentComponent["type"] == "list")){ // If the parentComponent is a Dropdown or a List
@@ -358,8 +355,8 @@ module rocket.component {
 			}
 
 			if (childComponentId !== undefined){ // If we have defined the childComponentId, meaning it is an object and we should do cleanup
-				if ((typeof rocket.component.storedComponents[childComponentId]["HTMLElement"]) !== undefined){ // If the childComponent has not been placed anywhere prior to the AddComponent
-					delete rocket.component.storedComponents[childComponentId]["HTMLElement"]; // Delete the temporary stored component
+				if (rocket.component.storedComponents[childComponentId] !== undefined){ // If the childComponent has not been placed anywhere prior to the AddComponent
+					delete rocket.component.storedComponents[childComponentId]; // Delete the storedComponent
 				}
 			}
 		}
@@ -376,49 +373,37 @@ module rocket.component {
 
 	// #region Remove Component function - Responsible for removing components or Elements from their parents
 
-	export function Remove(parentComponent : Object, childComponent ?: any) : boolean {
-		var parentComponentElement : Element = rocket.component.Fetch(parentComponent); // Get the parent's Element
-		var removeComponentSuccessful : boolean; // Define removeComponentSuccessful as a boolean
+	export function Remove(componentsToRemove : any) : boolean {
+		var allowRemoval : boolean = false; // Define allowRemoval as a boolean value of whether or not we will allow Component remove. Defaults to false.
+		var componentList : Array<Object>; // Define componentList as an array of Component Objects to remove
 
-		if (parentComponent !== null){ // If the parentComponent exists in storedComponents or DOM
-			if (childComponent !== undefined){ // If a childComponent is defined
-				var childComponentType : string = (typeof childComponent).toLowerCase(); // Set childComponentType to the typeof childComponent and lower-case it to ensure it is consistent across browsers
-
-				if (childComponentType.indexOf("element") !== -1){ // If the childComponent is an HTMLElement or an Element
-					parentComponentElement.removeChild(childComponent); // Remove the child element from the component
-					removeComponentSuccessful = true; // Define removal success as true
-				}
-				else if (childComponentType == "object"){ // If the childComponent is an Object
-					var childElement = rocket.component.Fetch(childComponent); // Fetch the Rocket Component Element
-
-					if (childElement !== null){ // If the childElement exists in the DOM
-						parentComponentElement.removeChild(childElement); // Remove the fetched child component HTMLElement from the document
-						delete rocket.component.storedComponents[childComponent["id"]]; // Remove the component from the storedComponents
-						removeComponentSuccessful = true; // Define removal success as true
-					}
-					else{ // If the childElement does not exist in the DOM
-						removeComponentSuccessful = false; // Define removal success as true
-					}
-				}
-				else{ // If it isn't an Element or an Object
-					removeComponentSuccessful = false; // Define removal success as false
-				}
-
-				if (removeComponentSuccessful == true){ // If we successfully removed the childComponent from the parentComponent
-					rocket.component.Update(parentComponent["id"], parentComponentElement); // Update the storedComponent HTMLElement if necessary
-				}
-			}
-			else{ // If a childComponent is NOT defined
-				parentComponentElement.parentElement.removeChild(parentComponentElement); // Assume we are deleting the primary component provided from the document, so delete the component from the component Element's parentElement
-				delete rocket.component.storedComponents[parentComponent["id"]]; // Remove the component from the storedComponents
-				removeComponentSuccessful = true; // Define removal success as true
-			}
+		if (componentsToRemove["id"] !== undefined){ // If the componentsToRemove actually has an "id" key / value, meaning it is a single Component Object
+			allowRemoval = true; // Set allowRemoval to true
+			componentList = Array(componentsToRemove); // Set componentList to an Array consisting of the single Component Object
 		}
-		else{ // If the parentComponent IS null
-			removeComponentSuccessful = false; // Since the parentComponent does NOT exist, removing the childComponent would obviously fail.
+		else if (((typeof componentsToRemove).toLowerCase() == "object") && (componentsToRemove.length > 0)){ // If the componentsToRemove is an object (a.k.a array) and has a length (which an array does)
+			allowRemoval = true; // Set allowRemoval to true
+			componentList = componentsToRemove; // Set componentList to the componentsToRemove
 		}
 
-		return removeComponentSuccessful;
+		if (allowRemoval == true){ // If we are allowing the removal of Components
+			for (var individualComponentIndex in componentList){ // For each Component and Sub-Component in componentList
+				var individualComponent : Object = componentList[individualComponentIndex]; // Get this specific Object
+				var individualComponentElement : Element = rocket.component.Fetch(individualComponent); // Fetch the Rocket Component Element
+
+				if (individualComponentElement !== null){ // If the Component Element returned via Fetch actually exists in the DOM or storedComponents
+					if (rocket.component.storedComponents[individualComponent["id"]] == undefined){ // If the Element does exist in DOM, rather in the storedComponents
+						var parentElement : Element = individualComponentElement.parentElement; // Get the individualComponentElement's parentElement
+						parentElement.removeChild(individualComponentElement); // Remove this Component from the DOM
+					}
+					else{ // If the Component is actually stored in rocket.component.storedComponents
+						delete rocket.component.storedComponents[individualComponent["id"]]; // Remove the component from the storedComponents
+					}
+				}
+			}
+		}
+
+		return allowRemoval; // Return the boolean value of IF we allowed Component removal or not
 	}
 
 	// #endregion

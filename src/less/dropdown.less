@@ -9,7 +9,7 @@ div[data-rocket-component="dropdown"]{ // Rocket Dropdown Component
 	font-size: 16px;
 	text-indent: 10px;
 	line-height: 40px;
-	background-color: @rocketDarkWhite;
+	background-color: @rocketGrey;
 
 	&[data-rocket-component-active]{ // If the Dropdown is "active"
 
@@ -43,7 +43,7 @@ div[data-rocket-component="dropdown"]{ // Rocket Dropdown Component
 
 	& > div[data-rocket-component="list"]{ // The Dropdown's List (This is only Dropdown specific CSS)
 		display: none; // Default to not displaying
-		background-color: @rocketLightWhite;
+		background-color: @rocketWhite;
 		border-top: 2px solid @rocketBorderColor;
 		position: relative; // Align with the the entire dropdown element
 		z-index: 10; // Ensure it floats above other content

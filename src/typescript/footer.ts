@@ -5,11 +5,6 @@
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
 
-interface linkPropertiesInterface { // Interface called linksProperties to define the necessary Object
-	link : string;
-	title : string;
-}
-
 module rocket.footer {
 
 	// #region Function to set the Footer label (typically something like a Copyright notice)
@@ -44,7 +39,7 @@ module rocket.footer {
 
 	// #region Function to add a link to the Footer based on properties of that link
 
-	export function AddLink(prepend : boolean, component : Object, linkProperties : linkPropertiesInterface) : boolean { // Returns boolean if it was successful or not
+	export function AddLink(prepend : boolean, component : Object, linkProperties : Object) : boolean { // Returns boolean if it was successful or not
 		var componentAddingSucceeded : boolean; // Variable to store the determination of success
 
 		if (typeof linkProperties == "Object"){ // If the linkProperties is in fact an Object
@@ -66,7 +61,7 @@ module rocket.footer {
 
 	// #region Function to remove a link from the Footer based on the properties of that link
 
-	export function RemoveLink(component : Object, linkProperties : linkPropertiesInterface) : boolean { // Return boolean if it was successful or not
+	export function RemoveLink(component : Object, linkProperties : Object) : boolean { // Return boolean if it was successful or not
 		var componentRemovingSucceed : boolean; // Variable to store the determination of success
 		var footerElement : Element = rocket.component.Fetch(component); // Get the Element of the Footer component
 		var potentialLinkElement : Element = footerElement.querySelector('a[href="' + linkProperties["link"] + '"][title="' + linkProperties["title"] + '"]'); // Get the potential link element.

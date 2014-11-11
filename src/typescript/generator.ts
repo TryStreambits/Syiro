@@ -8,11 +8,24 @@
 
 module rocket.generator {
 
+    export var lastUniqueIds : Object = {}; // Default the lastUniqueIds to an empty Object
+
     // #region Component ID Generator
 
     export function IdGen(type : string) : string { // Takes a component type and returns the new component Id
-        rocket.component.lastUniqueId += 1; // Add the lastUniqueID by one
-        return (type + (rocket.component.lastUniqueId).toString()); // Increment the lastUniqueId by one and append it to the type to create a "unique" ID
+        var lastUniqueIdOfType : number; // Define lastUniqueIdOfType as a Number
+        if (rocket.generator.lastUniqueIds[type] == undefined){ // If the lastUniqueId of this type hasn't been defined yet.
+            lastUniqueIdOfType = 0; // Set to zero
+        }
+        else{ // If the lastUniqueId of this type IS defined
+            lastUniqueIdOfType = rocket.generator.lastUniqueIds[type]; // Set lastUniqueIdOfType to the one set in lastUniqueIds
+        }
+
+        var newUniqueIdOfType = lastUniqueIdOfType + 1; // Increment by one
+
+        rocket.generator.lastUniqueIds[type] = newUniqueIdOfType; // Update the lastUniqueIds
+
+        return (type + newUniqueIdOfType.toString()); // Append newUniqueIdOfType to the type to create a "unique" ID
     }
 
     // #endregion
@@ -77,7 +90,7 @@ module rocket.generator {
                         var dropdownComponent : Object = properties["items"][individualItem]["component"]; // Get the embedded component object
                         componentElement.appendChild(rocket.component.Fetch(dropdownComponent)); // Append the HTMLElement fetched from rocket.component.Fetch(dropdownComponent)
 
-                        delete rocket.component.storedComponents[dropdownComponent["id"]]["HTMLElement"]; // Delete the HTMLElement from the component in the storedComponents
+                        delete rocket.component.storedComponents[dropdownComponent["id"]]; // Delete the Component from the storedComponents
                     }
                     else if (properties["items"][individualItem]["type"] == "link"){ // If we are adding a link
                         var generatedElement : HTMLElement = rocket.generator.ElementCreator(null, "a", // Generate a generic link element
@@ -103,7 +116,7 @@ module rocket.generator {
             }
         }
 
-        rocket.component.storedComponents[componentId] = {"type" : "header", "HTMLElement" : componentElement}; // Add the component to the storedComponents
+        rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
 
         return { // Return a Component Object
             "id" : componentId, // Component ID
@@ -145,7 +158,7 @@ module rocket.generator {
             }
         }
 
-        rocket.component.storedComponents[componentId] = {"type" : "footer", "HTMLElement" : componentElement}; // Add the component to the storedComponents
+        rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
 
         return { // Return a Component Object
             "id" : componentId, // Component ID
@@ -192,7 +205,7 @@ module rocket.generator {
             }
         }
 
-        rocket.component.storedComponents[componentId] = {"type" : "button", "HTMLElement" : componentElement}; // Add the component to the storedComponents
+        rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
 
         return { // Return a Component Object
             "id" : componentId, // Component ID
@@ -215,7 +228,7 @@ module rocket.generator {
 
                 componentElement.appendChild(newListElement);
 
-                delete rocket.component.storedComponents[newListComponent["id"]]["HTMLElement"]; // Delete the HTMLElement from the component in the storedComponents
+                delete rocket.component.storedComponents[newListComponent["id"]]; // Delete the Component from the storedComponents
             }
             else if (propertyKey == "label"){ // If we are adding a Label to the Dropdown
                 var labelProperties : string = properties["label"]; // Get the label properties
@@ -253,11 +266,11 @@ module rocket.generator {
                 var listComponent : Element = rocket.component.Fetch(properties[propertyKey]); // Get the list component from the embedded List component Object
                 componentElement.appendChild(listComponent); // Append the List component to the Dropdown
 
-                delete rocket.component.storedComponents[properties[propertyKey]["id"]]["HTMLElement"]; // Delete the HTMLElement from the component in the storedComponents
+                delete rocket.component.storedComponents[properties[propertyKey]["id"]]; // Delete the Component from the storedComponents
             }
         }
 
-        rocket.component.storedComponents[componentId] = {"type" : "dropdown", "HTMLElement" : componentElement}; // Add the component to the storedComponents
+        rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
 
         return { // Return a Component Object
             "id" : componentId, // Component ID
@@ -283,12 +296,12 @@ module rocket.generator {
                     }
 
                     componentElement.appendChild(rocket.Fetch(individualItem)); // Append the List Item component to the List
-                    delete rocket.component.storedComponents[individualItem["id"]]["HTMLElement"]; // Delete the HTMLElement from the component in the storedComponents
+                    delete rocket.component.storedComponents[individualItem["id"]]; // Delete the HTMLElement from the component in the storedComponents
                 }
             }
         }
 
-        rocket.component.storedComponents[componentId] = {"type" : "list", "HTMLElement" : componentElement}; // Add the component to the storedComponents
+        rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
 
         return { // Return a Component Object
             "id" : componentId, // Component ID
@@ -312,7 +325,7 @@ module rocket.generator {
                     var controlComponentElement : Element= rocket.component.Fetch(controlComponentObject); // Get the component's (HTML)Element
                     componentElement.appendChild(controlComponentElement); // Append the component to the List Item
 
-                    delete rocket.component.storedComponents[controlComponentObject["id"]]["HTMLElement"]; // Delete the HTMLElement from the component in the storedComponents
+                    delete rocket.component.storedComponents[controlComponentObject["id"]]; // Delete the Component from the storedComponents
                 }
             }
             else if (propertyKey == "label"){ // If we are adding a label
@@ -325,7 +338,7 @@ module rocket.generator {
             }
         }
 
-        rocket.component.storedComponents[componentId] = {"type" : "list-item", "HTMLElement" : componentElement}; // Add the component to the storedComponents
+        rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
 
         return { // Return a Component Object
             "id" : componentId, // Component ID
@@ -350,7 +363,7 @@ module rocket.generator {
             }
         }
 
-        rocket.component.storedComponents[componentId] = {"type" : "searchbox", "HTMLElement" : componentElement}; // Add the component to the storedComponents
+        rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
 
         return { // Return a Component Object
             "id" : componentId, // Component ID

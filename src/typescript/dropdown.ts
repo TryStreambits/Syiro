@@ -10,7 +10,7 @@ module rocket.dropdown {
 
 	// #region Function for fetching the internal List component of the Dropdown. This function is meant to be only a List component
 
-	export function InternalListComponentFetcher(dropdownComponent) : Object {
+	export function InnerListComponentFetcher(dropdownComponent) : Object {
 		var dropdownElement : Element = rocket.component.Fetch(dropdownComponent); // Get the Element
 		var dropdownListElement : Element = dropdownElement.querySelector('div[data-rocket-component="list"]'); // Get the dropdown component list
 
@@ -97,7 +97,7 @@ module rocket.dropdown {
 	// #region Function for adding an List Item component to the Dropdown's list, where component equals the Dropdown component
 
 	export function AddItem(component : Object, listItemComponent : Object) : void {
-		var listComponentObject = rocket.dropdown.InternalListComponentFetcher(component); // Fetch the internal List component from the Dropdown
+		var listComponentObject = rocket.dropdown.InnerListComponentFetcher(component); // Fetch the internal List component from the Dropdown
 		rocket.component.Add(true, listComponentObject, listItemComponent); // Add the List Item component to the inner List
 	}
 
@@ -105,9 +105,8 @@ module rocket.dropdown {
 
 	// #region Function for removing a List Item component from the Dropdown's list, where component equals the Dropdown component
 
-	export function RemoveItem(component : Object, listItemComponent : Object) : void{
-		var listComponentObject = rocket.dropdown.InternalListComponentFetcher(component); // Fetch the internal List component from the Dropdown
-		rocket.list.RemoveItem(listComponentObject, listItemComponent); // Remove the List Item component from the inner List
+	export function RemoveItem(component : Object, listItemComponent : Object) : void {
+		rocket.list.RemoveItem(listItemComponent); // Remove the List Item component from the inner List (which we auto-magically get in ```rocket.component.Remove()```)
 	}
 
 	// #endregion

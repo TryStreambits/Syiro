@@ -10,8 +10,6 @@
 		<script>
 			rocket.Init();
 
-			var generatedToggle = rocket.generate.Button({"type" : "toggle"}); // Generate a Toggle Button
-
 			var generatedHeaderDropdown = rocket.generate.Dropdown(
 					{
 						"label" : {
@@ -19,8 +17,7 @@
 						},
 						"items" : [
 							{
-								"label" : "Test Item",
-								"control" : generatedToggle
+								"label" : "Test Item"
 							},
 							{
 								"label" : "Second Test Item"
@@ -54,13 +51,13 @@
 			var generatedButtonTwo = rocket.generate.Button({"type" : "basic", "content" : "Test 2"}); // Generate a Basic Button
 			document.querySelector("main").insertBefore(rocket.Fetch(generatedButtonTwo), document.getElementById("padding"));
 
+			var generatedToggle = rocket.generate.Button({"type" : "toggle"}); // Generate a Toggle Button
+
 			var generatedFooter = rocket.generate.Footer({"content" : "Strobl Industries"}); // Generate a Footer
 			document.querySelector("body").appendChild(rocket.Fetch(generatedFooter));
 
 			var generatedSearchbox = rocket.generate.Searchbox(); // Generate a Searchbox
 			rocket.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
-
-			var fauxSecondListItem = { "id" : "list-item5", "type" : "list-item"};
 
 			rocket.button.AddListeners(generatedButton, function(x){console.log("First Button Hit!")}); // Listen to the Basic Button
 			rocket.button.AddListeners(generatedButtonTwo,
@@ -79,8 +76,15 @@
 			); // Listen to the Basic Button
 
 			rocket.searchbox.AddListeners(generatedSearchbox, function(x){console.log(x)}); // Listen to the Searchbox value change
+
+			var testListItem = rocket.Define("list-item", 'header > div[data-rocket-component="dropdown"] > div[data-rocket-component="list"] > div:first-of-type');
+			var secondListItem = rocket.Define("list-item", 'header > div[data-rocket-component="dropdown"] > div[data-rocket-component="list"] > div:nth-of-type(2)');
+
+			rocket.listitem.SetLabel(testListItem, "First!");
+			rocket.listitem.SetControl(testListItem, generatedToggle);
+
 			rocket.button.AddListeners(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
-			rocket.listitem.AddListeners(fauxSecondListItem, function(x){console.log("List Item Hit!")}); // Listen to the second List Item
+			rocket.listitem.AddListeners(secondListItem, function(x){console.log("List Item Hit!")}); // Listen to the second List Item
 		</script>
 	</body>
 </html>

@@ -69,7 +69,8 @@ declare module rocket.list {
     var RemoveItem: typeof component.Remove;
 }
 declare module rocket.listitem {
-    function Set(component: Object, section: string, content: any): boolean;
+    function SetLabel(component: Object, content: string): boolean;
+    function SetControl(component: Object, control: Object): boolean;
     function AddListeners(component: Object, callback: Function): boolean;
 }
 declare module rocket.dropdown {

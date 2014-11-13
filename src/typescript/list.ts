@@ -69,7 +69,7 @@ module rocket.listitem {
 					if (innerControlElement !== null){ // If the Component Element is actually stored in rocket.component.storedComponents
 						delete rocket.component.storedComponents[control["id"]]; // Delete the Element from storedComponents
 						listItemElement.appendChild(innerControlElement); // Append the control Component
-						rocket.component.RemoveListeners("click MSPointerUp", component); // Ensure the List Item has no Listeners after adding the new Control
+						rocket.component.RemoveListeners(component); // Ensure the List Item has no Listeners after adding the new Control
 						rocket.component.Update(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
 
 						setControlSucceeded = true; // Set setLabelSucceeded to true
@@ -79,24 +79,6 @@ module rocket.listitem {
 		}
 
 		return setControlSucceeded;
-	}
-
-	// #endregion
-
-	// #region Add Event Listener - Meta-function
-	// This function exists so we can default to a reasonable set of click-related events. This is no different from actually calling the function rocket.component.AddListener
-
-	export function AddListeners(component : Object, callback : Function) : boolean {
-		var listenerSettingSucceeded : boolean;
-
-		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			listenerSettingSucceeded = rocket.component.AddListeners("click MSPointerUp", component, callback);
-		}
-		else{ // If the component is NOT a List Item
-			listenerSettingSucceeded = false;
-		}
-
-		return listenerSettingSucceeded;
 	}
 
 	// #endregion

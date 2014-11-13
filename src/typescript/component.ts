@@ -145,128 +145,6 @@ module rocket.component {
 
 	// #endregion
 
-	// #region Component Add Listener Function
-
-	export function AddListeners(listeners : string, component : Object, handler : Function) : boolean { // Takes space-separated listeners component Object and the handler
-		var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
-		var componentElement : Element = rocket.component.Fetch(component); // Get the component Element
-		var listenerCallback : Function = handler; // Default to having the listenerCallback be the handler we are passed.
-
-		if (componentElement !== null){ // If the componentElement exists in storedComponents or DOM
-			if (component["type"] == "dropdown"){ // If we are adding an event listener to a dropdown
-				componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]'); // Get the Dropdown's inner Label
-			}
-			else if ((component["type"] == "button") && (componentElement.getAttribute("data-rocket-component-type") == "toggle")){ // If the component is a Toggle Button
-				componentElement = componentElement.querySelector('div[data-rocket-minor-component="buttonToggle"]'); // Get the Toggle Buttons's inner toggle button
-			}
-			else if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-				if (componentElement.querySelector("div") !== null){ // If there is a div defined in the List Item, meaning there is a control within the list item
-					allowListening = false; // Set allowListening to false. We shouldn't allow the entire List Item to listen to the same events as the inner control.
-				}
-			}
-
-			if (allowListening == true){ // If allowListening is TRUE
-				var listenerArray : Array<string>  = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
-
-				listenerArray.forEach( // For each listener
-					function(individualListener : string){
-						componentElement.addEventListener(individualListener, // Attach an event listener to the component
-							function(){
-								var component : Object = arguments[0]; // Set the Rocket Component Object to the first argument passed
-								var listenerCallback : Function = arguments[1]; // Set the Callback to the second argument passed
-
-								var componentElement : any = rocket.Fetch(component); // Set the componentElement to the component Element we fetched
-
-								if (componentElement !== null){ // If the listener wasn't magically called while the Element did not exist
-									var passableValue : any; // Set passableValue to any type.
-
-									if ((component["type"] == "button") && (componentElement.getAttribute("data-rocket-component-type") == "toggle")){ // If it is a toggle button
-										var animationString : string;
-
-										if (componentElement.getAttribute("data-rocket-component-status") !== "true"){ // If the button is NOT active (has no status or one that is false)
-											animationString = "toggle-forward-animation"; // Animate forward the toggle
-											passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
-										}
-										else{ // If the button is active and we are setting it as inactive
-											animationString = "toggle-backward-animation"; // Animate backward the toggle
-											passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
-										}
-
-										rocket.component.Animate(component, animationString,
-											function(component : Object){ // Post-Animation Function
-												var buttonElement : Element = rocket.component.Fetch(component); // Get the buttonElement based on the component Object
-
-												if (buttonElement.getAttribute("data-rocket-component-status") !== "true"){ // If the status is not "true" / active
-													buttonElement.setAttribute("data-rocket-component-status", "true"); // Set to true
-												}
-												else{ // If the status IS true
-													buttonElement.setAttribute("data-rocket-component-status", "false"); // Set to false
-												}
-											}
-										);
-									}
-									else if (component["type"] == "dropdown"){ // If the component is a Rocket Dropdown
-										passableValue = component; // Set the passableValue as the component itself
-									}
-									else if (component["type"] == "searchbox"){ // If the component is a Rocket Searchbox
-										passableValue = componentElement.value; // Get the current value of the input
-									}
-									else{ // If it is NOT a Toggle Button or Searchbox
-										passableValue = null; // Just set to null
-									}
-
-									listenerCallback.call(rocket, component, passableValue); // Call the listenerCallback and pass along the passableValue and the component Object
-								}
-							}.bind(rocket, component, listenerCallback) // Bind to Rocket, pass the component and listenerCallback
-						);
-					}
-				);
-			}
-		}
-		else{ // If the componentElement does NOT exist
-			allowListening = false; // Since componentElement does not exist in storedComponents or in the DOM, set to false
-		}
-
-		return allowListening; // Return whether we allowed listening to the component
-	}
-
-	// #endregion
-
-	// #region Component Remove Event Listener
-
-	export function RemoveListeners(listeners : string, component : Object) : boolean {
-		var componentElement : any = rocket.component.Fetch(component); // Get the component Element
-
-		if (componentElement !== null){ // If the component exists in storedComponents or DOM
-			if (component["type"] == "dropdown"){ // If we are adding an event listener to a dropdown
-				componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]'); // Get the Dropdown's inner Label
-			}
-
-			var componentElement : any = rocket.component.Fetch(component); // Get the component Element
-
-			if (componentElement !== null){ // If the component exists in storedComponents or DOM
-				if (component["type"] == "dropdown"){ // If we are adding an event listener to a dropdown
-					componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]'); // Get the Dropdown's inner Label
-				}
-
-				var newElement : any = componentElement.cloneNode(true); // Make a clone of the Node, which doesn't copy event listeners
-				componentElement.outerHTML = newElement.outerHTML; // Replace the component's Element outer HTML with the new Element outerHTML, so it does not copy listeners (therefore they are "removed")
-
-				return true; // Return true since we successfully removed event listeners
-			}
-			else{ // If the component does NOT exist in storedComponents or DOM
-				return false; // Return false we did not successfully remove event listeners
-			}
-
-			return true; // Return true since we successfully removed event listeners
-		}
-		else{ // If the component does NOT exist in storedComponents or DOM
-			return false; // Return false we did not successfully remove event listeners
-		}
-	}
-
-	// #endregion
-
 	// #region Fetch - Function for fetching the HTMLElement of a Component object
 
 	export function Fetch(component : Object) : any { // Take a Rocket component object and return an HTMLElement (it's like magic!)
@@ -290,6 +168,136 @@ module rocket.component {
 		if (rocket.component.storedComponents[componentId] !== undefined){ // If the HTMLElement is defined in the storedComponents (by the id of the component being in the storedComponents)
 			rocket.component.storedComponents[componentId] = componentElement; // Update with the componentElement we defined
 		}
+	}
+
+	// #endregion
+
+	// #region Component Add Listener Function
+
+	export function AddListeners(... args : any[]) : boolean { // Takes (optional) space-separated listeners, component Object, and the handler function.
+		var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
+		var listeners : string; // Define listeners as a string
+		var component : Object; // Define Component as a Component Object
+		var listenerCallback : Function;; // Default to having the listenerCallback be the handler we are passed.
+
+		if ((args.length == 2) || (args.length == 3)){ // If an appropriate amount of arguments are provided
+			if (args.length == 2){ // If two arguments are passed to the AddListeners function
+				component = args[0]; // Component is the first argument
+				listenerCallback = args[1]; // Handler is the second argument
+
+				if (component["type"] !== "searchbox"){ // If we are adding listeners to a Component that is NOT a Searchbox (which uses a unique listener)
+					listeners = "click MSPointerUp"; // Use click / touch related events
+				}
+				else{ // If the Component IS a Searchbox
+					listeners = "keyup"; // Use the keyup listener
+				}
+			}
+			else{ // If the arguments list is 3, meaning listeners, a Component Object, and a Handler are provided
+				listeners = args[0]; // Set listeners to the first argument
+				component = args[1]; // Set component to the second argument
+				listenerCallback = args[2]; // Set the handler to the third argument
+			}
+
+			var componentElement : any = rocket.component.Fetch(component); // Get the Component Element
+
+			if (componentElement !== null){ // If the componentElement exists in storedComponents or DOM
+				if (component["type"] == "dropdown"){ // If we are adding an event listener to a dropdown
+					componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]'); // Get the Dropdown's inner Label
+				}
+				else if ((component["type"] == "button") && (componentElement.getAttribute("data-rocket-component-type") == "toggle")){ // If the component is a Toggle Button
+					componentElement = componentElement.querySelector('div[data-rocket-minor-component="buttonToggle"]'); // Get the Toggle Buttons's inner toggle button
+				}
+				else if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
+					if (componentElement.querySelector("div") !== null){ // If there is a div defined in the List Item, meaning there is a control within the list item
+						allowListening = false; // Set allowListening to false. We shouldn't allow the entire List Item to listen to the same events as the inner control.
+					}
+				}
+
+				if (allowListening == true){ // If allowListening is TRUE
+					var listenerArray : Array<string>  = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
+
+					listenerArray.forEach( // For each listener
+						function(individualListener : string){
+							componentElement.addEventListener(individualListener, // Attach an event listener to the component
+								function(){
+									var component : Object = arguments[0]; // Set the Rocket Component Object to the first argument passed
+									var listenerCallback : Function = arguments[1]; // Set the Callback to the second argument passed
+									var componentElement : any = rocket.component.Fetch(component); // Set the componentElement to the component Element we fetched
+
+									if (componentElement !== null){ // If the listener wasn't magically called while the Element did not exist
+										var passableValue : any = null; // Set passableValue to any type, defaults to null
+
+										if ((component["type"] == "button") && (componentElement.getAttribute("data-rocket-component-type") == "toggle")){ // If it is a toggle button
+											var animationString : string;
+
+											if (componentElement.getAttribute("data-rocket-component-status") !== "true"){ // If the button is NOT active (has no status or one that is false)
+												animationString = "toggle-forward-animation"; // Animate forward the toggle
+												passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
+											}
+											else{ // If the button is active and we are setting it as inactive
+												animationString = "toggle-backward-animation"; // Animate backward the toggle
+												passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
+											}
+
+											rocket.component.Animate(component, animationString,
+												function(component : Object){ // Post-Animation Function
+													var buttonElement : Element = rocket.component.Fetch(component); // Get the buttonElement based on the component Object
+
+													if (buttonElement.getAttribute("data-rocket-component-status") !== "true"){ // If the status is not "true" / active
+														buttonElement.setAttribute("data-rocket-component-status", "true"); // Set to true
+													}
+													else{ // If the status IS true
+														buttonElement.setAttribute("data-rocket-component-status", "false"); // Set to false
+													}
+												}
+											);
+										}
+										else if (component["type"] == "searchbox"){ // If the component is a Rocket Searchbox
+											passableValue = componentElement.value; // Get the current value of the input
+										}
+										else{ // If it is NOT a Toggle Button or Searchbox
+											passableValue = null; // Just set to null
+										}
+
+										listenerCallback.call(rocket, component, passableValue); // Call the listenerCallback and pass along the passableValue and the component Object
+									}
+								}.bind(rocket, component, listenerCallback) // Bind to Rocket, pass the component and listenerCallback
+							);
+						}
+					);
+				}
+			}
+			else{ // If the componentElement does NOT exist
+				allowListening = false; // Since componentElement does not exist in storedComponents or in the DOM, set to false
+			}
+		}
+		else{ // If the arguments length is NOT 2 or 3, meaning either too few or too many arguments were provided
+			allowListening = false;
+		}
+
+		return allowListening; // Return whether we allowed listening to the component
+	}
+
+	// #endregion
+
+	// #region Component Remove Event Listener
+
+	export function RemoveListeners(component : Object) : boolean {
+		var successfulRemoval : boolean = false; // Set successfulRemove as a boolean, defaulting to false unless it was successful
+		var componentElement : any = rocket.component.Fetch(component); // Get the component Element
+
+		if (componentElement !== null){ // If the component exists in storedComponents or DOM
+			if (component["type"] == "dropdown"){ // If we are adding an event listener to a dropdown
+				componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]'); // Get the Dropdown's inner Label
+			}
+
+			var newElement : any = componentElement.cloneNode(true); // Make a clone of the Node, which doesn't copy event listeners
+			componentElement.outerHTML = newElement.outerHTML; // Replace the component's Element outer HTML with the new Element outerHTML, so it does not copy listeners (therefore they are "removed")
+
+			successfulRemoval = true; // Return true since we successfully removed event listeners
+		}
+
+		return successfulRemoval; // Return whether the removal was successful
 	}
 
 	// #endregion

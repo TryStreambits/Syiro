@@ -59,8 +59,8 @@
 			var generatedSearchbox = rocket.generate.Searchbox(); // Generate a Searchbox
 			rocket.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
 
-			rocket.button.AddListeners(generatedButton, function(x){console.log("First Button Hit!")}); // Listen to the Basic Button
-			rocket.button.AddListeners(generatedButtonTwo,
+			rocket.AddListeners(generatedButton, function(x){console.log("First Button Hit!")}); // Listen to the Basic Button
+			rocket.AddListeners(generatedButtonTwo,
 				function(x){
 					console.log(arguments);
 					var component = arguments[0];
@@ -75,7 +75,7 @@
 				}
 			); // Listen to the Basic Button
 
-			rocket.searchbox.AddListeners(generatedSearchbox, function(x){console.log(x)}); // Listen to the Searchbox value change
+			rocket.AddListeners(generatedSearchbox, function(x){console.log(x)}); // Listen to the Searchbox value change
 
 			var testListItem = rocket.Define("list-item", 'header > div[data-rocket-component="dropdown"] > div[data-rocket-component="list"] > div:first-of-type');
 			var secondListItem = rocket.Define("list-item", 'header > div[data-rocket-component="dropdown"] > div[data-rocket-component="list"] > div:nth-of-type(2)');
@@ -83,8 +83,8 @@
 			rocket.listitem.SetLabel(testListItem, "First!");
 			rocket.listitem.SetControl(testListItem, generatedToggle);
 
-			rocket.button.AddListeners(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
-			rocket.listitem.AddListeners(secondListItem, function(x){console.log("List Item Hit!")}); // Listen to the second List Item
+			rocket.AddListeners(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
+			rocket.AddListeners(secondListItem, function(x){console.log("List Item Hit!")}); // Listen to the second List Item
 		</script>
 	</body>
 </html>

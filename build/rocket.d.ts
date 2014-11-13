@@ -20,10 +20,10 @@ declare module rocket.component {
     function Define(type: string, selector: string): Object;
     function Animate(component: Object, animation: string, postAnimationFunction?: Function): void;
     function CSS(componentObject: Object, property: string, newValue?: any): any;
-    function AddListeners(listeners: string, component: Object, handler: Function): boolean;
-    function RemoveListeners(listeners: string, component: Object): boolean;
     function Fetch(component: Object): any;
     function Update(componentId: string, componentElement: Element): void;
+    function AddListeners(...args: any[]): boolean;
+    function RemoveListeners(component: Object): boolean;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): boolean;
 }
@@ -61,7 +61,6 @@ declare module rocket.footer {
     function RemoveLink(component: Object, linkProperties: Object): boolean;
 }
 declare module rocket.button {
-    function AddListeners(component: Object, callback: Function): void;
     function SetLabel(component: Object, content: string): boolean;
 }
 declare module rocket.list {
@@ -71,7 +70,6 @@ declare module rocket.list {
 declare module rocket.listitem {
     function SetLabel(component: Object, content: string): boolean;
     function SetControl(component: Object, control: Object): boolean;
-    function AddListeners(component: Object, callback: Function): boolean;
 }
 declare module rocket.dropdown {
     function InnerListComponentFetcher(dropdownComponent: any): Object;
@@ -83,8 +81,6 @@ declare module rocket.dropdown {
 }
 declare module rocket.searchbox {
     function SetText(component: Object, placeholderText: any): void;
-    function AddListeners(component: Object, callback: Function): boolean;
-    function RemoveListeners(component: Object): boolean;
 }
 declare module rocket {
     function Init(): void;

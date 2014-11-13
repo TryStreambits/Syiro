@@ -119,7 +119,7 @@ module rocket {
 								var type = potentiallyExistingComponent.getAttribute("data-rocket-component"); // Get the Rocket Component Type
 
 								if (type == "dropdown"){ // If the component is a Dropdown
-									rocket.component.AddListeners("click MSPointerUp", {"id" : componentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+									rocket.component.AddListeners({"id" : componentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 								}
 
 								delete rocket.component.storedComponents[componentId]; // Ensure the Component in the storedComponents is deleted

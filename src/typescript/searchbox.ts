@@ -30,39 +30,4 @@ module rocket.searchbox {
 
 	// #endregion
 
-	// #region Add Event Listener - Meta-function
-	// This function exists so we can default to using val events. When the searchbox value changes, send to the callback
-
-	export function AddListeners(component : Object, callback : Function) : boolean {
-		var listenerSettingSucceeded : boolean;
-
-		if (component["type"] == "searchbox"){ // If the component is a Searchbox
-			listenerSettingSucceeded = rocket.component.AddListeners("keyup", component, callback);
-		}
-		else{ // If the component is NOT a searchbox
-			listenerSettingSucceeded = false;
-		}
-
-		return listenerSettingSucceeded;
-	}
-
-	// #endregion
-
-	// #region Remove Event Listener - Meta-function
-	// This function exists so we can defualt to using val events for removal.
-
-	export function RemoveListeners(component : Object) : boolean {
-		var listenerRemovalSucceeded : boolean;
-
-		if (component["type"] == "searchbox"){ // If the component is a Searchbox
-			rocket.component.RemoveListeners("keyup", component);
-			listenerRemovalSucceeded = true;
-		}
-		else{ // If the component is NOT a searchbox
-			listenerRemovalSucceeded = false;
-		}
-
-		return listenerRemovalSucceeded;
-	}
-
 }

@@ -10,7 +10,7 @@
 		<script>
 			rocket.Init();
 
-			var generatedHeaderDropdown = rocket.generate.Dropdown(
+			var generatedHeaderDropdown = rocket.dropdown.Generate(
 					{
 						"label" : {
 							"content" : "Test Dropdown"
@@ -26,7 +26,7 @@
 					}
 			);
 
-			var generatedHeader = rocket.generate.Header(
+			var generatedHeader = rocket.header.Generate(
 					{
 						"items" : [
 							{
@@ -45,18 +45,18 @@
 			var generatedHeaderElement = rocket.Fetch(generatedHeader); // Fetch the Header
 			document.querySelector("body").insertBefore(generatedHeaderElement, document.querySelector("body").firstChild);
 
-			var generatedButton = rocket.generate.Button({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
+			var generatedButton = rocket.button.Generate({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
 			document.querySelector("main").insertBefore(rocket.Fetch(generatedButton), document.getElementById("padding"));
 
-			var generatedButtonTwo = rocket.generate.Button({"type" : "basic", "content" : "Test 2"}); // Generate a Basic Button
+			var generatedButtonTwo = rocket.button.Generate({"type" : "basic", "content" : "Test 2"}); // Generate a Basic Button
 			document.querySelector("main").insertBefore(rocket.Fetch(generatedButtonTwo), document.getElementById("padding"));
 
-			var generatedToggle = rocket.generate.Button({"type" : "toggle"}); // Generate a Toggle Button
+			var generatedToggle = rocket.button.Generate({"type" : "toggle"}); // Generate a Toggle Button
 
-			var generatedFooter = rocket.generate.Footer({"content" : "Strobl Industries"}); // Generate a Footer
+			var generatedFooter = rocket.footer.Generate({"content" : "Strobl Industries"}); // Generate a Footer
 			document.querySelector("body").appendChild(rocket.Fetch(generatedFooter));
 
-			var generatedSearchbox = rocket.generate.Searchbox(); // Generate a Searchbox
+			var generatedSearchbox = rocket.searchbox.Generate(); // Generate a Searchbox
 			rocket.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
 
 			rocket.AddListeners(generatedButton, function(x){console.log("First Button Hit!")}); // Listen to the Basic Button

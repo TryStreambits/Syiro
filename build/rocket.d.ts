@@ -43,35 +43,34 @@ declare module rocket.generator {
     var lastUniqueIds: Object;
     function IdGen(type: string): string;
     function ElementCreator(componentId: any, componentType: string, attributes?: Object): HTMLElement;
-    function Header(properties: Object): Object;
-    function Footer(properties: Object): Object;
-    function Button(properties: Object): Object;
-    function Dropdown(properties: Object): Object;
-    function List(properties: Object): Object;
-    function ListItem(properties: Object): Object;
-    function Searchbox(properties: Object): Object;
 }
 declare module rocket.header {
+    function Generate(properties: Object): Object;
     function SetLogo(component: Object, image: string): void;
     function RemoveLogo(component: Object): void;
 }
 declare module rocket.footer {
+    function Generate(properties: Object): Object;
     function SetLabel(component: Object, labelText: string): boolean;
     function AddLink(prepend: boolean, component: Object, linkProperties: Object): boolean;
     function RemoveLink(component: Object, linkProperties: Object): boolean;
 }
 declare module rocket.button {
+    function Generate(properties: Object): Object;
     function SetLabel(component: Object, content: string): boolean;
 }
 declare module rocket.list {
+    function Generate(properties: Object): Object;
     var AddItem: typeof component.Add;
     var RemoveItem: typeof component.Remove;
 }
 declare module rocket.listitem {
+    function Generate(properties: Object): Object;
     function SetLabel(component: Object, content: string): boolean;
     function SetControl(component: Object, control: Object): boolean;
 }
 declare module rocket.dropdown {
+    function Generate(properties: Object): Object;
     function InnerListComponentFetcher(dropdownComponent: any): Object;
     function SetText(component: Object, content: any): void;
     function SetImage(component: Object, content: any): void;
@@ -80,20 +79,12 @@ declare module rocket.dropdown {
     function RemoveItem(component: Object, listItemComponent: Object): void;
 }
 declare module rocket.searchbox {
+    function Generate(properties: Object): Object;
     function SetText(component: Object, placeholderText: any): void;
 }
 declare module rocket {
     function Init(): void;
     var Define: typeof component.Define;
-    var generate: {
-        Header: typeof generator.Header;
-        Footer: typeof generator.Footer;
-        Button: typeof generator.Button;
-        Dropdown: typeof generator.Dropdown;
-        List: typeof generator.List;
-        ListItem: typeof generator.ListItem;
-        Searchbox: typeof generator.Searchbox;
-    };
     var Fetch: typeof component.Fetch;
     var Add: typeof component.Add;
     var Remove: typeof component.Remove;

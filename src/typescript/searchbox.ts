@@ -9,6 +9,28 @@
 
 module rocket.searchbox {
 
+	// #region Searchbox Generator
+
+	export function Generate(properties : Object) : Object { // Generate a Searchbox Component and return a Component Object
+		var componentId : string = rocket.generator.IdGen("searchbox"); // Generate a component Id
+		var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "searchbox"); // Generate a Searchbox Element
+
+		for (var propertyKey in properties){ // Recursive go through each propertyKey
+			if (propertyKey == "icon"){ // If we are adding an icon
+				componentElement.style.backgroundImage = properties["icon"]; // Set the backgroundImage to the icon URL specified
+			}
+			else if (propertyKey == "content"){ // If we are adding a placeholder / content
+				componentElement.setAttribute("placeholder", properties["content"]); // Set the searchbox input placeholder to the one defined
+			}
+		}
+
+		rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
+
+		return { "id" : componentId, "type" : "searchbox" }; // Return a Component Object
+	}
+
+	// #endregion
+
 	// #region Setting Searchbox Text / Placeholder
 
 	export function SetText(component : Object, placeholderText : any) : void {

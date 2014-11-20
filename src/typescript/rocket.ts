@@ -140,16 +140,6 @@ module rocket {
 
 	export var Define = rocket.component.Define; // Meta-function for defining Rocket components
 
-	export var generate = { // Object with Meta-functions for generating Rocket components. Ex: rocket.generate.Header => rocket.generator.Header
-		Header : rocket.generator.Header,
-		Footer : rocket.generator.Footer,
-		Button : rocket.generator.Button,
-		Dropdown : rocket.generator.Dropdown,
-		List : rocket.generator.List,
-		ListItem : rocket.generator.ListItem,
-		Searchbox : rocket.generator.Searchbox
-	};
-
 	export var Fetch = rocket.component.Fetch; // Meta-function for fetching Rocket component HTMLElements
 
 	export var Add = rocket.component.Add; // Meta-function for adding Rocket components to each other

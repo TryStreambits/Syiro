@@ -7,6 +7,45 @@
 
 module rocket.footer {
 
+	// #region Footer Generation
+
+	export function Generate(properties : Object) : Object { // Generate a Footer Component and return a Component Object
+		var componentId : string = rocket.generator.IdGen("footer"); // Generate a component Id
+		var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "footer"); // Generate a Footer Element
+
+		for (var propertyKey in properties){ // Recursive go through each propertyKey
+			if (propertyKey == "items"){ // If we are adding items to the Footer
+				for (var individualItem in properties["items"]){ // For each individualItem in navigationItems Object array
+					if (properties["items"][individualItem]["type"] == "link"){ // If we are adding a link
+						var generatedElement : HTMLElement = rocket.generator.ElementCreator(null, "a", // Generate a generic link element
+							{
+								"href" : properties["items"][individualItem]["link"], // Set the href (link)
+								"content" : properties["items"][individualItem]["content"] // Also set the inner content of the <a> tag to title
+							}
+						);
+
+						componentElement.appendChild(generatedElement); // Append the component to the parent component element
+					}
+				}
+			}
+			else if (propertyKey == "content"){ // If we are adding a Footer label
+				var generatedElement : HTMLElement = rocket.generator.ElementCreator(null, "label", // Generate a generic label element
+					{
+						"content" : properties["content"] // Also set the inner content of the <label> tag
+					}
+				);
+
+				componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the footer
+			}
+		}
+
+		rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
+
+		return { "id" : componentId, "type" : "footer" }; // Return a Component Object
+	}
+
+	// #endregion
+
 	// #region Function to set the Footer label (typically something like a Copyright notice)
 
 	export function SetLabel(component : Object, labelText : string) : boolean{ // Set the label text of the footer component to the labelText defined

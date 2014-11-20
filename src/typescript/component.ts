@@ -64,9 +64,7 @@ module rocket.component {
 
 					var timeoutId = componentElement.getAttribute("data-rocket-animationTimeout-id"); // Get the animationTimeout ID
 					componentElement.removeAttribute("data-rocket-animationTimeout-id"); // Remove the animationTimeout ID attribute
-					var timeoutIdInt = parseInt(timeoutId); // Convert the ID from string to an Integer
-
-					window.clearTimeout(timeoutIdInt); // Clear the timeout
+					window.clearTimeout(Number(timeoutId)); // Convert the ID from string to Int and clear the timeout
 
 					postAnimationFunction(component); // Call the postAnimationFunction (which we pass the Rocket Component Object)
 				}.bind(rocket, component, postAnimationFunction) // Attach the Rocket Component Object and postAnimationFunction

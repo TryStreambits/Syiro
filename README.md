@@ -21,6 +21,10 @@ Absolutely. Since jQuery is not used in Rocket, you don't have to deal with conf
 
 Rocket uses LESS / CSS to theme components, making it easy to differentiate your application from the rest. We recommend you take a look at our [theming guide](https://github.com/StroblIndustries/Rocket/wiki/Theming-Rocket).
 
+#### What is Rocket's policy on backwards compatibility? ####
+
+We have a [document that highlights our policy](https://github.com/StroblIndustries/Rocket/wiki/API-Support-Policy) on API support and backwards compatibility, so you know exactly when something *could* break and when something *shouldn't* break so you can yell at us!
+
 ### Download ###
 
 You can download our development build (since we are currently in the release candidate phase) of our initial release by grabbing [devel.tar.gz](https://github.com/StroblIndustries/Metis/blob/master/devel.tar.gz) which provides the necessary minified CSS and JS wrapped in a nice package.

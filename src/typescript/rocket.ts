@@ -110,7 +110,7 @@ module rocket {
 			// Use an ol' fashion "timer"
 
 			(function mutationTimer(){
-				window.setTimeout( // Set interval to 5000 (5 seconds) with a timeout, forcing the execution to happen within 10 seconds
+				window.setTimeout( // Set interval to 5000 (5 seconds) with a timeout, forcing the execution to happen within 5 seconds
 					function(){ // Call this function
 						for (var componentId in Object.keys(rocket.component.storedComponents)){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
 							var potentiallyExistingComponent = document.querySelector('*[data-rocket-component-id="' + componentId + '"]');

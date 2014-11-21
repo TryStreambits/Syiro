@@ -78,6 +78,24 @@ declare module rocket.dropdown {
     function AddItem(component: Object, listItemComponent: Object): void;
     function RemoveItem(component: Object, listItemComponent: Object): void;
 }
+declare module rocket.player {
+    function Init(component: Object): void;
+    function GetInnerContentElement(component: Object): HTMLMediaElement;
+    function GetPlayerLengthInfo(component: Object): Object;
+    function TimeOrVolumeChanger(): void;
+    function IsPlaying(component: Object): boolean;
+    function IsDoingTimeChange(component: Object): boolean;
+    function PlayOrPause(component: Object): void;
+}
+declare module rocket.playercontrol {
+    function Generate(properties: Object): Object;
+}
+declare module rocket.audioplayer {
+    function Generate(properties: Object): Object;
+}
+declare module rocket.videoplayer {
+    function Generate(properties: Object): Object;
+}
 declare module rocket.searchbox {
     function Generate(properties: Object): Object;
     function SetText(component: Object, placeholderText: any): void;

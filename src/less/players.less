@@ -1,0 +1,194 @@
+@import (reference) "core.less"; // Import Core as a reference
+
+// #region Shared Player Control
+
+div[data-rocket-component="player-control"]{
+    float: left;
+    height: 50px;
+    width: 100%; // Scales to width of video player if necessary
+    min-width: 350px; // Minimum width of the audio player
+    background-color: @rocketSecondaryColor; // Secondary "Dark" control background
+
+    & > div[data-rocket-component="button"][data-rocket-component-type="basic"]{ // Custom LESS for Basic Button Components inside Player Control
+        float: left;
+        height: 32px;
+        width: 32px;
+        min-width: 0 !important; // Override Basic Button minimum width
+        background-color: @rocketSecondaryColor;
+        border: 2px solid @rocketWhite; // White background
+        border-radius: 32px; // Make the buttons "circular"
+        margin: 7px !important; // Center on Player Control
+
+        &:last-of-type{ // If the button is the last one
+            float: right; // Float to the right of the Player Control
+        }
+
+        &[data-rocket-component-status="true"]{ // When the button is active
+            background-color: @rocketPrimaryColor;
+            border: 2px solid @rocketPrimaryColor;
+        }
+
+        &[data-rocket-component-disabled]{ // When the button is "disabled"
+            opacity: 0.3; // Set the opacity / darken the Basic Button
+        }
+
+        &[data-rocket-minor-component="player-button-play"]{ // Play Button
+            background-image : url("img/play.png"); // Set the background-image to img/play.png
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        &[data-rocket-minor-component="player-button-volume"]{ // Volume Button
+            background-image : url("img/volume.png"); // Set the background-image to img/volume.png
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+    }
+
+    // #region Our "slider" / input range
+
+    & > input[type="range"]{
+
+        // #region Range "Track"
+
+        .trackProperties(){
+            -moz-appearance: none !important; // No Firefox styling
+            -webkit-appearance: none !important; // No WebKit styling
+            float: left;
+            height: 7.5px !important;
+            width: auto !important;
+            background-color: @rocketWhite;
+            border-radius: 3.75px !important;
+            border-top: 0 !important;
+            border-bottom: 0 !important;
+            margin-top: 21.75px !important; // Center on Player Control
+        }
+
+        &::-moz-range-track { // Firefox
+            .trackProperties;
+        }
+
+        &::-ms-track{ // Internet Explorer
+            .trackProperties; // Import the trackProperties
+        }
+
+        .trackProperties; // Place in input[type="range"] for Chrome
+
+        // #endregion
+
+        // #region Range "Outer Focus" (Border around track when interacting with Element)
+
+        &:focus, &::-moz-focus-outer{ // Chrome and Firefox Border on Focus
+            border: 0 !important;
+            outline: 0 !important;
+        }
+
+        // #endregion
+
+        // #region Range Thumb
+
+        .thumbProperties() {
+            -moz-appearance: none !important; // No Firefox appearance
+            -webkit-appearance: none !important; // No WebKit appearance
+
+            height: 16px !important;
+            width: 16px !important;
+            border: 0 !important;
+            background-color: @rocketPrimaryColor;
+            background-image: none; // Mozilla applies an SVG image as the thumbnail. Lets remove that.
+            border-radius: 8px; // Make it round
+        }
+
+        &::-moz-range-thumb { // Firefox "Thumb" Styling
+            .thumbProperties; // Import Thumb Styling
+        }
+
+        &::-ms-thumb { // Internet Explorer "Thumb" Styling
+            .thumbProperties; // Import Thumb Styling
+        }
+
+        &::-webkit-slider-thumb{ // Chrome "Thumb" Styling
+            .thumbProperties; // Import Thumb Styling
+        }
+
+        // #endregion
+    }
+
+    // #endregion
+
+    // #region Label Time Information
+
+    & > label {
+        float: left;
+        height: 50px;
+        width: auto;
+        color: @rocketWhite;
+        font-size: 14px;
+        line-height: 50px;
+    }
+}
+
+// #endregion
+
+div[data-rocket-component="audio-player"]{ // Audio Player
+    float: left;
+    height: auto;
+    min-height: 50px; // Minimum height of player is the Player Control
+    max-height: 150px; // Maximum height of player is the Player Control and Player Information
+    width: 350px;
+    background-color: @rocketGrey; // Grey background
+
+    & > audio {
+        display: hidden; // Hide the audio player
+    }
+
+    & > div[data-rocket-minor-component="player-information"]{ // Information in the Audio Player like cover art
+        & > img { // Cover Art
+            float: left;
+            height: 100px;
+            width: 100px;
+        }
+
+        & > section { // Song Information
+            float: left;
+            height: 100px;
+            width: 250px;
+
+            & > b,label {
+                float: left;
+                height: 28px;
+                width: 100%; // Fill up entire "row"
+            }
+
+            & > b {
+                color: @rocketPrimaryColor; // Primary color to differentiate from other content
+                font-size: 16px;
+                font-weight: normal; // No font-weight
+            }
+
+            & > label {
+                color: @rocketSecondaryColor; // Secondary color
+                font-size: 14px; // Slightly smaller than song title
+            }
+        }
+    }
+
+    & > div[data-rocket-component="player-control"] >  input { // Specify input range width for audio player
+        width: 150px !important;
+    }
+}
+
+div[data-rocket-component="video-player"]{ // Video Player
+    float: left;
+    height: 300px;
+    width: 450px;
+
+    & > video { // Inner video
+        float: left;
+        width: 450px;
+    }
+
+    & > div[data-rocket-component="player-control"] >  input { // Specify input range width for video player
+        width: 220px !important;
+    }
+}

@@ -34,25 +34,24 @@ module rocket.generator {
 
     export function ElementCreator(componentId : any, componentType : string, attributes ?: Object) : HTMLElement { // Make an element based on the componentType that is passed and any key/val Object of attributes to set
         var componentElement : HTMLElement; // Define componentElement as the generated HTMLElement
-        var creatingGenericElement : boolean = false; // Define creatingGenericElement as a boolean false that gets changed if we are creating an element like a Link
 
-        if (componentType == "searchbox"){ // If we are creating a searchbox
-            componentElement = document.createElement("input"); // Use the HTML input tag
-            componentElement.setAttribute("type", "text"); // Set the searchbox input type to text
-        }
-        else if ((componentType == "dropdown") || (componentType.indexOf("list") > -1) || (componentType == "button")){ // If we are creating a Dropdown, a List or List Item, or a Button
-            componentElement = document.createElement("div"); // Create a div tag
-        }
-        else{ // If we're not creating a Rocket Component OR we're creating one that uses a valid HTML5 tag
-            if ((componentType !== "header") && (componentType !== "footer")){ // If the componentType is NOT a header or a footer
-                creatingGenericElement = true; // Set creatingGenericElement to TRUE since that is what we're doing
+        if (componentId !== null){ // If we have defined a Component Id
+            if ((componentType == "header") || (componentType == "footer")){ // If the componentType is a header or a footer
+                componentElement = document.createElement(componentType); // Create an Element of the tag of "header" or "footer", since they are valid HTML5 tags
             }
-            componentElement = document.createElement(componentType); // Create an element based on the componentType (in this case, it is really just a element tag name)
-        }
+            else if (componentType == "searchbox"){ // If we are creating a searchbox
+                componentElement = document.createElement("input"); // Use the HTML input tag
+                componentElement.setAttribute("type", "text"); // Set the searchbox input type to text
+            }
+            else{ // If we are creating a Component that uses a generic div tag as a container
+                componentElement = document.createElement("div"); // Create a div tag
+            }
 
-        if (creatingGenericElement == false){ // If we are not creating a generic Element
             componentElement.setAttribute("data-rocket-component-id", componentId); // Set the Rocket Component ID to the componentID passed
             componentElement.setAttribute("data-rocket-component", componentType); // Set the Rocket Component to the type specified (ex. header)
+        }
+        else{ // If we're not creating a Rocket Component
+            componentElement = document.createElement(componentType); // Create an element based on the componentType (in this case, it is really just a element tag name)
         }
 
         if (attributes !== undefined){ // If an attributes Object is defined

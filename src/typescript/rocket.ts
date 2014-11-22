@@ -68,16 +68,16 @@ module rocket {
 
 									function NodeParser(passedNode : any){ // Function that parses a Node (type any rather than Node since lib.ts doesn't seem to make not that attribute func are usable on Nodes)
 										if (passedNode.localName !== null){ // If the addedNode has a localName, such as "header" instead of null
-											var potentialElementId = passedNode.getAttribute("data-rocket-component-id");
+											var potentialComponentId = passedNode.getAttribute("data-rocket-component-id");
 
-											if (potentialElementId !== null){ // If the element is a Rocket component
+											if (potentialComponentId !== null){ // If the element is a Rocket component
 												var type = passedNode.getAttribute("data-rocket-component"); // Get the Rocket Component Type
 
 												if (type == "dropdown"){ // If the component is a Dropdown
-													rocket.component.AddListeners("click MSPointerUp", {"id" : potentialElementId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+													rocket.component.AddListeners("click MSPointerUp", {"id" : potentialComponentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 												}
-												else if (type.indexOf("player") > -1){ // If the component is an Audio or Video Player Component
-													rocket.player.Init( { "id" : potentialElementId, "type" : type} ); // Initialize the Audio or Video Palyer
+												else if ((type == "audio-player") || (type == "video-player")){ // If the component is an Audio or Video Player Component
+													rocket.player.Init( { "id" : potentialComponentId, "type" : type} ); // Initialize the Audio or Video Palyer
 												}
 
 												if (passedNode.childNodes.length > 0){ // If the passedNode has childNodes
@@ -87,7 +87,7 @@ module rocket {
 													}
 												}
 
-												delete rocket.component.storedComponents[potentialElementId]; // Ensure the Component in the storedComponents is deleted
+												delete rocket.component.storedComponents[potentialComponentId]; // Ensure the Component in the storedComponents is deleted
 											}
 										}
 									}
@@ -125,8 +125,8 @@ module rocket {
 								if (type == "dropdown"){ // If the component is a Dropdown
 									rocket.component.AddListeners({"id" : componentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 								}
-								else if (type.indexOf("player") > -1){ // If the component is an Audio or Video Player Component
-									rocket.player.Init( { "id" : componentId, "type" : type} ); // Initialize the Audio or Video Palyer
+								else if ((type == "audio-player") || (type == "video-player")){ // If the component is an Audio or Video Player Component
+									rocket.player.Init( { "id" : componentId, "type" : type } ); // Initialize the Audio or Video Palyer
 								}
 
 								delete rocket.component.storedComponents[componentId]; // Ensure the Component in the storedComponents is deleted

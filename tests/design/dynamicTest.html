@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html manifest="test.appcache">
 	<head>
 		<title>Dynamic Rocket Testing</title>
 		<link rel="stylesheet" type="text/css" href="css/rocket.css">
@@ -42,14 +42,38 @@
 					}
 			);
 
+			var generatedAudioPlayer = rocket.audioplayer.Generate(
+					{
+						"audio": "http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",
+						"art" : "http://upload.wikimedia.org/wikipedia/en/thumb/a/ac/XiphophorusLogoSVG.svg/132px-XiphophorusLogoSVG.svg.png",
+						"title" : "Example OGG File",
+						"artist" : "JesseW",
+						"album": "Wikipedia"
+					}
+			);
+
+			rocket.CSS(generatedAudioPlayer, "margin", "20px"); // Set CSS margin for Audio Player
+
+			var generatedVideoPlayer = rocket.videoplayer.Generate(
+					{
+						"art" : "img/video-art.png",
+						"video" : "http://download.blender.org/peach/trailer/trailer_1080p.ogg"
+					}
+			);
+
+			rocket.CSS(generatedVideoPlayer, "margin", "20px"); // Set CSS margin for Video Player
+
 			var generatedHeaderElement = rocket.Fetch(generatedHeader); // Fetch the Header
 			document.querySelector("body").insertBefore(generatedHeaderElement, document.querySelector("body").firstChild);
 
 			var generatedButton = rocket.button.Generate({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
-			document.querySelector("main").insertBefore(rocket.Fetch(generatedButton), document.getElementById("padding"));
+			document.querySelector("main").appendChild(rocket.Fetch(generatedButton));
 
 			var generatedButtonTwo = rocket.button.Generate({"type" : "basic", "content" : "Test 2"}); // Generate a Basic Button
-			document.querySelector("main").insertBefore(rocket.Fetch(generatedButtonTwo), document.getElementById("padding"));
+			document.querySelector("main").appendChild(rocket.Fetch(generatedButtonTwo));
+
+			document.querySelector("main").appendChild(rocket.Fetch(generatedAudioPlayer));
+			document.querySelector("main").appendChild(rocket.Fetch(generatedVideoPlayer));
 
 			var generatedToggle = rocket.button.Generate({"type" : "toggle"}); // Generate a Toggle Button
 

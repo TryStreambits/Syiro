@@ -1,5 +1,5 @@
 /*
-	This is an interface for Component Objects.
+	These are interface extensions so Typescript doesn't freak out.
 */
 
 interface Object { // As ComponentObject is inherently an Object, extend the Object interface / type
@@ -16,6 +16,10 @@ interface Element { // Implementation of valid spec not found in lib.d.ts
 
 interface Navigator { // Implementation of valid spec not found in lib.d.ts
 	doNotTrack : string; // Define doNotTrack as a string
+}
+
+interface HTMLElement { // Implementation of HTMLElement
+	autoplay : boolean; // Technically not in spec except for HTMLAudioElement and HTMLVideoElement
 }
 
 interface Window { // Implementation of valid spec not found in lib.d.ts

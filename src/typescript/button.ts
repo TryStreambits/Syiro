@@ -42,6 +42,9 @@ module rocket.button {
 
 				componentElement.appendChild(buttonToggle); // Append the buttonToggle to the toggle button
 			}
+			else{ // If it is none of the above properties
+				componentElement.setAttribute(propertyKey, properties[propertyKey]); // Treat it like an attribute
+			}
 		}
 
 		rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents

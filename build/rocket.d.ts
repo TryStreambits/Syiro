@@ -11,6 +11,9 @@ interface Element {
 interface Navigator {
     doNotTrack: string;
 }
+interface HTMLElement {
+    autoplay: boolean;
+}
 interface Window {
     crypto: any;
 }
@@ -85,7 +88,7 @@ declare module rocket.player {
     function TimeOrVolumeChanger(): void;
     function IsPlaying(component: Object): boolean;
     function IsDoingTimeChange(component: Object): boolean;
-    function PlayOrPause(component: Object): void;
+    function PlayOrPause(component: Object): string;
 }
 declare module rocket.playercontrol {
     function Generate(properties: Object): Object;

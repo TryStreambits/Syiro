@@ -12,6 +12,7 @@ module rocket.player {
     // #region Shared Player Initialization
 
     export function Init(component : Object){
+        console.log(component);
         var componentElement : Element = rocket.component.Fetch(component); // Fetch the Component Element
         var innerContentElement : Element = rocket.player.GetInnerContentElement(component); // Fetch the Audio or Video Player Element
 
@@ -28,7 +29,6 @@ module rocket.player {
         innerContentElement.addEventListener("timeupdate", // Add an event listener to track timeupdate
             function(){
                 var playerComponent = arguments[0];
-                var playerControlComponent = arguments[1];
                 var playerComponentElement = rocket.component.Fetch(playerComponent); // Fetch the Player Component Element
                 var playerControlElement = rocket.component.Fetch(playerControlComponent); // Fetch the Player Control Element
 
@@ -52,12 +52,21 @@ module rocket.player {
                     var playButtonComponent : Object = arguments[0]; // Get the Play Button that was clicked
                     var playButton : Element = rocket.component.Fetch(playButtonComponent); // Get the Play Button Element
 
-                    var playerElement = playButton.parentElement.parentElement; // Get the Play Button's player-controls section's player
-                    var playerId = playerElement.getAttribute("data-rocket-component-id"); // Get the player's Component ID
-                    var playerType = playerElement.getAttribute("data-rocket-component"); // Get the player's Component type
-                    var playerComponent = { "id" : playerId, "type" : playerType}; // Create a Component Object based on the ID and Type of Player
+                    if (playButton.hasAttribute("data-rocket-component-disabled") == false){ // If the play button is not disabled (done when tweaking volume)
+                        var playerElement = playButton.parentElement.parentElement; // Get the Play Button's player-controls section's player
+                        var playerId = playerElement.getAttribute("data-rocket-component-id"); // Get the player's Component ID
+                        var playerType = playerElement.getAttribute("data-rocket-component"); // Get the player's Component type
+                        var playerComponent = { "id" : playerId, "type" : playerType}; // Create a Component Object based on the ID and Type of Player
 
-                    rocket.player.PlayOrPause(playerComponent); // Switch the status of the Player to either play or pause
+                        rocket.player.PlayOrPause(playerComponent); // Switch the status of the Player to either play or pause
+
+                        if (rocket.player.IsPlaying(playerComponent) == true){ // If the Player is now playing
+                            rocket.component.CSS(playButtonComponent, "background-image", "css/img/pause.png"); // Set background-image to pause
+                        }
+                        else{ // If the Player is paused
+                            rocket.component.CSS(playButtonComponent, "background-image", "css/img/play.png"); // Set background-image to pause
+                        }
+                    }
                 }
             );
 
@@ -226,15 +235,21 @@ module rocket.player {
 
     // #region Play or Pause Audio or Video based on current state
 
-    export function PlayOrPause(component : Object){
+    export function PlayOrPause(component : Object) : string {
+        var newPlayerStatus : string; // Define newPlayerStatus as the new status of the player
+
         var innerContentElement = rocket.player.GetInnerContentElement(component); // Get the inner audio or video Element
 
         if (innerContentElement.paused == false){ // If the audio or video Element is playing
             innerContentElement.pause(); // Pause the audio or video Element
+            newPlayerStatus = "pause"; // Set newPlayerStatus to pause
         }
         else{ // If the audio or video Element is paused
             innerContentElement.play(); // Play the audio or video Element
+            newPlayerStatus = "play"; // Set newPlayerStatus to play
         }
+
+        return newPlayerStatus;
     }
 }
 
@@ -252,7 +267,7 @@ module rocket.playercontrol {
 
         var playButton = rocket.button.Generate( // Generate a Play Button
             {
-                "icon" : "css/img/play.png" // Set the icon to the play icon
+                "data-rocket-minor-component" : "player-button-play" // Set the icon to the play icon
             }
         );
 
@@ -261,7 +276,7 @@ module rocket.playercontrol {
 
         var volumeButton = rocket.button.Generate( // Generate a Volume Button
             {
-                "icon" : "css/img/volume.png" // Set the icon to the volume icon
+                "data-rocket-minor-component" : "player-button-volume" // Set the icon to the volume icon
             }
         );
 
@@ -298,42 +313,51 @@ module rocket.audioplayer {
                     "volume" : "0.5" // Set volume to 50%
                 }
             );
+            audioPlayer.autoplay = false; // Set autoplay of audio to false
             componentElement.appendChild(audioPlayer); // Append the audio player
 
-            if ((properties["art"] !== undefined) && (properties["song"] !== undefined)){ // If the properties has cover art and the song title defined
+            if ((properties["art"] !== undefined) && (properties["title"] !== undefined)){ // If the properties has cover art and the audio title defined
                 var playerInformation : HTMLElement = rocket.generator.ElementCreator(null, "div", // Create the player information
                     {
                         "data-rocket-minor-component" : "player-information"
                     }
                 );
 
-                var playerInformationDetails : HTMLElement = document.createElement("section");
+                var playerTextualInformation : HTMLElement = rocket.generator.ElementCreator(null, "section"); // Create a section to hold the textual information like audio title
 
-                var coverArt : HTMLElement = rocket.generator.ElementCreator(null, "img", { "src" : properties["art"]}); // Create the cover art
-                var songTitle : HTMLElement = rocket.generator.ElementCreator(null, "b", { "content" : properties["song"]}); // Create a "bold" tag with the song title
+                playerInformation.appendChild(rocket.generator.ElementCreator(null, "img", { "src" : properties["art"]})); // Create the covert art and append the cover art to the playerInformation
 
-                playerInformationDetails.appendChild(coverArt); // Append the cover art to the playerInformationDetails section
-                playerInformationDetails.appendChild(songTitle); // Append the song title to the playerInformationDetails section
+                var audioTitle : HTMLElement = rocket.generator.ElementCreator(null, "b", { "content" : properties["title"]}); // Create a "bold" tag with the audio title
+
+                playerTextualInformation.appendChild(audioTitle); // Append the audio title to the playerInformationDetails section
 
                 if (properties["artist"] !== undefined){ // If the artist is NOT undefined
                     var artistInfo = rocket.generator.ElementCreator(null, "label", { "content" : properties["artist"] }); // Create a label with the artist info
-                    playerInformationDetails.appendChild(artistInfo);
+                    playerTextualInformation.appendChild(artistInfo);
                 }
 
                 if (properties["album"] !== undefined){ // If the album is NOT undefined
                     var albumInfo = rocket.generator.ElementCreator(null, "label", { "content" : properties["album"] }); // Create a label with the album info
-                    playerInformationDetails.appendChild(albumInfo);
+                    playerTextualInformation.appendChild(albumInfo);
                 }
 
-                componentElement.appendChild(playerInformationDetails); // Append the player information details to the component Element
+                playerInformation.appendChild(playerTextualInformation); // Append the textual information section to the parent Player Information area
+
+                componentElement.appendChild(playerInformation); // Append the player information details to the component Element
             }
 
             var playerControlComponent : Object = rocket.playercontrol.Generate({ "type" : "audio" }); // Pass along the "audio" type so we know NOT to append the fullscreen
             var playerControlElement : Element = rocket.component.Fetch(playerControlComponent); // Fetch the HTMLElement
             componentElement.appendChild(playerControlElement); // Append the player control
+
+            rocket.component.storedComponents[componentId] = componentElement;
+
+            return { "id" : componentId, "type" : "audio-player" }; // Return a Component Object
+        }
+        else{ // If audio is not defined in the properties
+            return { "error" : "no audio defined" }; // Return an error Object
         }
 
-        return { "id" : componentId, "type" : "audio-player" }; // Return a Component Object
     }
 
     // #endregion
@@ -359,15 +383,24 @@ module rocket.videoplayer {
                 "volume" : "0.5" // Set volume to 50%
             };
 
+            if (properties["art"] !== undefined){ // If art has been defined
+                videoPlayerAttributes["poster"] = properties["art"]; // Define the poster attribute as the art
+            }
+
             var videoPlayer : HTMLElement = rocket.generator.ElementCreator(null, "video", videoPlayerAttributes); // Create the video player
+            videoPlayer.autoplay = false; // Set autoplay of video to false
             componentElement.appendChild(videoPlayer); // Append the video player
 
             var playerControlComponent : Object = rocket.playercontrol.Generate({ "type" : "video" }); // Pass along the "video" type so we know NOT to append the fullscreen
             var playerControlElement : Element = rocket.component.Fetch(playerControlComponent); // Fetch the HTMLElement
             componentElement.appendChild(playerControlElement); // Append the player control
-        }
 
-        return { "id" : componentId, "type" : "audio-player" }; // Return a Component Object
+            rocket.component.storedComponents[componentId] = componentElement;
+            return { "id" : componentId, "type" : "video-player" }; // Return a Component Object
+        }
+        else{ // If video is not defined in the properties
+            return { "error" : "no video defined" }; // Return an error Object
+        }
     }
 
     // #endregion

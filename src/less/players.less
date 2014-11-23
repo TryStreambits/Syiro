@@ -28,10 +28,6 @@ div[data-rocket-component="player-control"]{
             border: 2px solid @rocketPrimaryColor;
         }
 
-        &[data-rocket-component-disabled]{ // When the button is "disabled"
-            opacity: 0.3; // Set the opacity / darken the Basic Button
-        }
-
         &[data-rocket-minor-component="player-button-play"]{ // Play Button
             background-image : url("img/play.png"); // Set the background-image to img/play.png
             background-repeat: no-repeat;
@@ -62,6 +58,8 @@ div[data-rocket-component="player-control"]{
             border-top: 0 !important;
             border-bottom: 0 !important;
             margin-top: 21.75px !important; // Center on Player Control
+            margin-left: 0 !important;
+            margin-right: 0 !important;
         }
 
         &::-moz-range-track { // Firefox
@@ -118,13 +116,14 @@ div[data-rocket-component="player-control"]{
 
     // #region Label Time Information
 
-    & > label {
+    & > time {
         float: left;
         height: 50px;
         width: auto;
         color: @rocketWhite;
         font-size: 14px;
         line-height: 50px;
+        margin-left: 10px;
     }
 }
 

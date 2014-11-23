@@ -24,6 +24,7 @@ declare module rocket.component {
     function Animate(component: Object, animation: string, postAnimationFunction?: Function): void;
     function CSS(componentObject: Object, property: string, newValue?: any): any;
     function Fetch(component: Object): any;
+    function FetchComponentObject(componentElement: any): Object;
     function Update(componentId: string, componentElement: Element): void;
     function AddListeners(...args: any[]): boolean;
     function RemoveListeners(component: Object): boolean;
@@ -88,10 +89,12 @@ declare module rocket.player {
     function TimeOrVolumeChanger(): void;
     function IsPlaying(component: Object): boolean;
     function IsDoingTimeChange(component: Object): boolean;
-    function PlayOrPause(component: Object): string;
+    function PlayOrPause(component: Object, playButtonComponentObject?: Object): void;
 }
 declare module rocket.playercontrol {
-    function Generate(properties: Object): Object;
+    function Generate(): Object;
+    function SecondsToTimeFormat(seconds: number): Object;
+    function TimeLabelUpdater(component: Object, timePart: number, value: number): void;
 }
 declare module rocket.audioplayer {
     function Generate(properties: Object): Object;
@@ -107,6 +110,7 @@ declare module rocket {
     function Init(): void;
     var Define: typeof component.Define;
     var Fetch: typeof component.Fetch;
+    var FetchComponentObject: typeof component.FetchComponentObject;
     var Add: typeof component.Add;
     var Remove: typeof component.Remove;
     var Animate: typeof component.Animate;

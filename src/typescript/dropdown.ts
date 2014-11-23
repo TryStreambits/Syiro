@@ -74,12 +74,7 @@ module rocket.dropdown {
 
 	export function InnerListComponentFetcher(dropdownComponent) : Object {
 		var dropdownElement : Element = rocket.component.Fetch(dropdownComponent); // Get the Element
-		var dropdownListElement : Element = dropdownElement.querySelector('div[data-rocket-component="list"]'); // Get the dropdown component list
-
-		return { // Return an object we have generated
-			"id" : dropdownListElement.getAttribute("data-rocket-component-id"), // Set the ID to the ID we fetched from the dropdown list component
-			"type" : "list" // Set the type to List
-		};
+		return rocket.component.FetchComponentObject(dropdownElement.querySelector('div[data-rocket-component="list"]')); // Get the Dropdown's List Component Object
 	}
 
 	// #endregion

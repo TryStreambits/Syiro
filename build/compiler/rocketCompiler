@@ -45,11 +45,12 @@ recursiveCompiling(){ # Recursive function for code compiling
 			anyFilesChanged=true # Set global var to true
 
 			tsc --removeComments --target 'ES5' src/typescript/rocket.ts --declaration --out build/rocket.js
-			echo "Minifying Rocket compiled Javascript."
-			java -jar build/compiler/jscompressor.jar --compilation_level SIMPLE --language_in ECMASCRIPT5 --language_out ECMASCRIPT5 --warning_level QUIET --js build/rocket.js --js_output_file build/rocket.min.js
-			zopfli build/rocket.min.js # Use zopfli to gzip content
+			cp build/rocket.js tests/design/js/ # Copy rocket.js to tests/design/js
 
-			rm build/rocket.js &> /dev/null # Remove the uncompressed rocket.js file
+			echo "Minifying Rocket compiled Javascript."
+			/home/$USER/node_modules/uglify-js/bin/uglifyjs build/rocket.js --output build/rocket.min.js --mangle --screw-ie8 --compress sequences,conditionals,comparisons,evaluate,booleans,loops,join_vars,hoist_funs,if_return,drop_console,properties,unsafe &> /dev/null
+
+			zopfli build/rocket.min.js # Use zopfli to gzip content
 			cp build/rocket.min.js tests/design/js/ # Copy the rocket.min.js to the tests/design/js
 
 			echo "Finished compiling and minification process of Rocket."

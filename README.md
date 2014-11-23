@@ -11,7 +11,7 @@ Rocket is a highly-focused framework for building front-end applications for dev
 3. Bootstrap, unlike Rocket, also requires jQuery to do simple functionality like event handing, making the footprint for creating applications significantly larger as well as adding complexity in regards to dependencies.
 4. Polymer, just like Bootstrap, requires multiple dependencies and therefore makes rapid development more complex and forces you to rely on tools like Bower for dependency management.
 5. Polymer relies on Custom Elements, which is a working draft and is only supported in Chrome, therefore not friendly to the web as a whole, since users of any browser not using the Blink engine can't utilize Custom Elements without polyfilling. Rocket, on the other hand, leverages the HTML5 standard data-* to define components.
-6. Neither Bootstrap nor Polymer offer an easy way to generate components via Javascript. With Rocket you can easily generate a component by calling rocket.generate.X (where X = the component type).
+6. Neither Bootstrap nor Polymer offer an easy way to generate components via Javascript. With Rocket you can easily generate a component by calling rocket.X.Generate (where X = the component type).
 
 #### You mentioned that Rocket does not rely on jQuery, does that mean I can choose any other JavaScript framework to use with Rocket? ####
 
@@ -36,16 +36,14 @@ The package also comes with a gzipped version of the JavaScript code, so you can
 Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
 Bootstrap  (Not including jQuery) | 114kb + 19.2kb (theme.min.css)| 34.7kb | 8.9kb
-Polymer | Varies depending on use of components | 109kb | 32.3kb
-**Rocket** | **7.2kb** | **16.4kb** | **3.9kb**
+Polymer | Varies depending on use of components | 123.5kb | 35.7kb
+**Rocket** | **7.2kb** | **23.4kb** | **5.3kb**
 
 Details:
 
 1. Bootstrap did not provide a gzipped JavaScript file.
-2. Polymer did not provide a minified JS file.
-3. Rocket's build script auto-minifies and gzipped JS.
-4. Polymer's JS was minified with the same minified technique that is used with Rocket using [Google Closure Compiler](https://developers.google.com/closure/compiler/) with the following arguments: `--compilation_level SIMPLE --language_in ECMASCRIPT5 --language_out ECMASCRIPT5 --warning_level QUIET --js x.js --js_output_file x.min.js`
-5. All gzipped  JavaScript was done using [zopfli](https://code.google.com/p/zopfli/) at 1000 iterations: `zopfli --i1000 x.min.js`
+2. Rocket's build script auto-minifies and gzipped JS.
+3. All gzipped  JavaScript was done using [zopfli](https://code.google.com/p/zopfli/) with 15 iterations: `zopfli x.min.js`
 
 ### Using Rocket ###
 

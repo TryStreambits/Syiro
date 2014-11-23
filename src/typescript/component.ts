@@ -39,8 +39,6 @@ module rocket.component {
 
 		component["id"] = componentID; // Add the component ID to the object that we will be returning to the developer
 
-		var componentHandler : Function; // Set componentHandler as a variable that will be a function
-
 		if (type == "dropdown"){ // If we are defining a Dropdown Rocket component
 			rocket.component.AddListeners("click touchend MSPointerUp", component, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 		}
@@ -93,10 +91,10 @@ module rocket.component {
 		var componentElement = rocket.component.Fetch(componentObject); // Get the componentElement
 
 		if (componentElement !== null){ // If the componentElement exists in storedComponents or DOM
-			var currentValue : string; // Define currentValue as the value of the property we are potentially looking for (not applicable for prop setting)
+			var currentValue : string;  // Define currentValue as the value of the property we are potentially looking for (not applicable for prop setting)
 			var currentComponentCSS = componentElement.getAttribute("style"); // Get the current CSS of the Component
 
-			if (currentComponentCSS == null){ // If there is no style attribute in the component
+			if ((currentComponentCSS == null) || (currentComponentCSS == undefined)){ // If there is no style attribute in the component
 				currentComponentCSS = ""; // Set to a blank string
 			}
 
@@ -114,12 +112,11 @@ module rocket.component {
 				currentValue = "";
 			}
 
-
 			if (newValue == undefined){ // If a new value is NOT defined for the component, meaning we are getting the current value
 				return currentValue; // Return the current value
 			}
-			else{ // If a new value IS defined for the component, we are going to update the component's style
-				var updatedStyleValue : string;
+			else{ // If a new value IS defined, we are going to update the component's style
+				var updatedStyleValue : string = "";
 
 				if (currentValue !== ""){ // If the property exists (since it'd have a value)
 					updatedStyleValue = currentComponentCSS.replace(property + ": " + currentValue + ";", ""); // Remove the current prop / val
@@ -156,6 +153,19 @@ module rocket.component {
 		}
 
 		return componentElement;
+	}
+
+	// #endregion
+
+	// #region Fetch Component Object based on Element
+
+	export function FetchComponentObject(componentElement : any) : Object {
+		if (componentElement.hasAttribute("data-rocket-component")){ // If the componentElement is actually a Component
+			return { "id" : componentElement.getAttribute("data-rocket-component-id"), "type" : componentElement.getAttribute("data-rocket-component")};
+		}
+		else{ // If the componentElement is not actually a Component
+			return false; // Return false
+		}
 	}
 
 	// #endregion
@@ -201,9 +211,6 @@ module rocket.component {
 			if (componentElement !== null){ // If the componentElement exists in storedComponents or DOM
 				if (component["type"] == "dropdown"){ // If we are adding an event listener to a dropdown
 					componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]'); // Get the Dropdown's inner Label
-				}
-				else if ((component["type"] == "button") && (componentElement.getAttribute("data-rocket-component-type") == "toggle")){ // If the component is a Toggle Button
-					componentElement = componentElement.querySelector('div[data-rocket-minor-component="buttonToggle"]'); // Get the Toggle Buttons's inner toggle button
 				}
 				else if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
 					if (componentElement.querySelector("div") !== null){ // If there is a div defined in the List Item, meaning there is a control within the list item

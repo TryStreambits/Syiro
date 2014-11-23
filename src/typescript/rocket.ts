@@ -68,16 +68,14 @@ module rocket {
 
 									function NodeParser(passedNode : any){ // Function that parses a Node (type any rather than Node since lib.ts doesn't seem to make not that attribute func are usable on Nodes)
 										if (passedNode.localName !== null){ // If the addedNode has a localName, such as "header" instead of null
-											var potentialComponentId = passedNode.getAttribute("data-rocket-component-id");
+											var componentObject = rocket.component.FetchComponentObject(passedNode); // Fetch the (potential) Component Object of the passedNode
 
-											if (potentialComponentId !== null){ // If the element is a Rocket component
-												var type = passedNode.getAttribute("data-rocket-component"); // Get the Rocket Component Type
-
-												if (type == "dropdown"){ // If the component is a Dropdown
-													rocket.component.AddListeners("click MSPointerUp", {"id" : potentialComponentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+											if (componentObject !== false){ // If the element is a Rocket component
+												if (componentObject["type"] == "dropdown"){ // If the component is a Dropdown
+													rocket.component.AddListeners("click MSPointerUp", componentObject, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 												}
-												else if ((type == "audio-player") || (type == "video-player")){ // If the component is an Audio or Video Player Component
-													rocket.player.Init( { "id" : potentialComponentId, "type" : type} ); // Initialize the Audio or Video Palyer
+												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
+													rocket.player.Init(componentObject); // Initialize the Audio or Video Palyer
 												}
 
 												if (passedNode.childNodes.length > 0){ // If the passedNode has childNodes
@@ -87,7 +85,7 @@ module rocket {
 													}
 												}
 
-												delete rocket.component.storedComponents[potentialComponentId]; // Ensure the Component in the storedComponents is deleted
+												delete rocket.component.storedComponents[componentObject["id"]]; // Ensure the Component in the storedComponents is deleted
 											}
 										}
 									}
@@ -110,35 +108,6 @@ module rocket {
 
 			mutationWatcher.observe(document.querySelector("body"), mutationWatcherOptions); // Watch the document body with the options provided.
 		}
-		else{ // If MutationObserver is NOT supported
-			// Use an ol' fashion "timer"
-
-			(function mutationTimer(){
-				window.setTimeout( // Set interval to 5000 (5 seconds) with a timeout, forcing the execution to happen within 5 seconds
-					function(){ // Call this function
-						for (var componentId in Object.keys(rocket.component.storedComponents)){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
-							var potentiallyExistingComponent = document.querySelector('*[data-rocket-component-id="' + componentId + '"]');
-
-							if (potentiallyExistingComponent !== null){ // If the component exists in the DOM
-								var type = potentiallyExistingComponent.getAttribute("data-rocket-component"); // Get the Rocket Component Type
-
-								if (type == "dropdown"){ // If the component is a Dropdown
-									rocket.component.AddListeners({"id" : componentId, "type" : type}, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
-								}
-								else if ((type == "audio-player") || (type == "video-player")){ // If the component is an Audio or Video Player Component
-									rocket.player.Init( { "id" : componentId, "type" : type } ); // Initialize the Audio or Video Palyer
-								}
-
-								delete rocket.component.storedComponents[componentId]; // Ensure the Component in the storedComponents is deleted
-							}
-						}
-
-						mutationTimer(); // Recursively call setTimeout
-					},
-					5000
-				)
-			})();
-		}
 
 		// #endregion
 	}
@@ -148,6 +117,8 @@ module rocket {
 	export var Define = rocket.component.Define; // Meta-function for defining Rocket components
 
 	export var Fetch = rocket.component.Fetch; // Meta-function for fetching Rocket component HTMLElements
+
+	export var FetchComponentObject = rocket.component.FetchComponentObject; // Meta-function for fetching Rocket Component Objects from Component Elements.
 
 	export var Add = rocket.component.Add; // Meta-function for adding Rocket components to each other
 

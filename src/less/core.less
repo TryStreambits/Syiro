@@ -29,8 +29,16 @@
 
 div[data-rocket-component="button"], div[data-rocket-component="dropdown"],
 header[data-rocket-component="header"], footer[data-rocket-component="footer"],
-input[data-rocket-component="searchbox"], div[data-rocket-component="audio-player"]{
+input[data-rocket-component="searchbox"], div[data-rocket-component="audio-player"], div[data-rocket-component="video-player"]{
 	font-family: 'Source Sans Pro', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
+}
+
+// #endregion
+
+// #region Disabled UI Design
+
+*[data-rocket-component-disabled] { // When the Element is "disabled"
+	opacity: 0.3; // Set the opacity / darken the Element
 }
 
 // #endregion
@@ -65,7 +73,7 @@ body {
 	overflow-x: hidden;
 }
 
-main[data-rocket-component="page"]{
+div[data-rocket-component="page"]{
 	position: static;
 }
 

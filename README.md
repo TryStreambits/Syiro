@@ -15,7 +15,7 @@ Rocket is a highly-focused framework for building front-end applications for dev
 
 #### You mentioned that Rocket does not rely on jQuery, does that mean I can choose any other JavaScript framework to use with Rocket? ####
 
-Absolutely. Since jQuery is not used in Rocket, you don't have to deal with conflicts. All Rocket functionality is encapsulated in our Rocket module. You are free to use the likes of jQuery, Prototype, MooTools, etc.
+Absolutely. Since jQuery is not used in Rocket, you will not have to worry about dependency conflicts. All Rocket functionality is encapsulated in our Rocket module. You are free to use the likes of jQuery, Prototype, MooTools, etc.
 
 #### How easy is it to modify the theming of Rocket to help my application differentiate? ####
 
@@ -27,7 +27,7 @@ We have a [document that highlights our policy](https://github.com/StroblIndustr
 
 ### Download ###
 
-You can download our development build (since we are currently in the release candidate phase) of our initial release by grabbing [devel.tar.gz](https://github.com/StroblIndustries/Metis/blob/master/devel.tar.gz) which provides the necessary minified CSS and JS wrapped in a nice package.
+You can download our development build (since we are currently in the release candidate phase) of our initial release by grabbing [devel.tar.gz](https://github.com/StroblIndustries/Rocket/blob/master/devel.tar.gz) which provides the necessary minified CSS and JS wrapped in a nice package.
 
 The package also comes with a gzipped version of the JavaScript code, so you can easily serve the compressed content.
 

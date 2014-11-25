@@ -18,6 +18,7 @@ interface Window {
     crypto: any;
 }
 declare module rocket.component {
+    var listenerStrings: Object;
     var storedComponents: Object;
     var dropdownToggler: Function;
     function Define(type: string, selector: string): Object;
@@ -90,6 +91,7 @@ declare module rocket.player {
     function IsPlaying(component: Object): boolean;
     function IsDoingTimeChange(component: Object): boolean;
     function PlayOrPause(component: Object, playButtonComponentObject?: Object): void;
+    function FetchSources(type: string, sources: any): HTMLElement[];
 }
 declare module rocket.playercontrol {
     function Generate(): Object;

@@ -1,6 +1,7 @@
 # Our app cache so we don't hit the Blender or Wikipedia servers
-# v1.0
+# v1.1
 
 http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg
 http://upload.wikimedia.org/wikipedia/en/thumb/a/ac/XiphophorusLogoSVG.svg/132px-XiphophorusLogoSVG.svg.png
 http://download.blender.org/peach/trailer/trailer_400p.ogg
+http://download.blender.org/peach/trailer/trailer_480p.mov

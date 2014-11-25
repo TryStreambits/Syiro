@@ -15,9 +15,6 @@ module rocket.player {
         var componentElement : Element = rocket.component.Fetch(component); // Fetch the Component Element
         var innerContentElement : HTMLMediaElement = rocket.player.GetInnerContentElement(component); // Fetch the Audio or Video Player Element
 
-        var clickDownListeners = ["mousedown", "MSPointerDown", "touchstart"]; // Listeners for mousedown events
-        var clickUpListeners = ["mouseup", "MSPointerUp", "touchend"]; // Listeners for mouseup events
-
         // #region Player Controls List
         var playerControlArea = componentElement.querySelector('div[data-rocket-component="player-control"]'); // Get the Player Control section
         var playerControlComponent : Object = rocket.component.FetchComponentObject(playerControlArea); // Get the Player Control Component Object
@@ -77,8 +74,8 @@ module rocket.player {
             if (posterImageElement !== null){ // If the posterImageElement exists
                 rocket.component.CSS(playerControlComponent, "opacity", "0.8"); // Set opacity to 80%
 
-                for (var listenerKey in clickUpListeners){ // For each listener
-                    posterImageElement.addEventListener(clickUpListeners[listenerKey],
+                for (var listenerKey in rocket.component.listenerStrings["up"]){ // For each listener
+                    posterImageElement.addEventListener(rocket.component.listenerStrings["up"][listenerKey],
                         function(){
                             var playerElementComponent : Object = arguments[0]; // Get the Component we passed
                             var posterImageElement : Element = arguments[1]; // Get the posterImageElement we passed
@@ -97,8 +94,8 @@ module rocket.player {
 
             // #region Video Click Handling
 
-            for (var listenerKey in clickUpListeners){ // For each listener
-                innerContentElement.addEventListener(clickUpListeners[listenerKey],
+            for (var listenerKey in rocket.component.listenerStrings["up"]){ // For each listener
+                innerContentElement.addEventListener(rocket.component.listenerStrings["up"][listenerKey],
                     function(){
                         var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
                         if (e.button == 0){
@@ -150,8 +147,8 @@ module rocket.player {
 
             // #region Player Range Initialization
 
-            for (var listenerKey in clickDownListeners){ // For each listener
-                playerRange.addEventListener(clickDownListeners[listenerKey], // When the individual first starts changing the player range value
+            for (var listenerKey in rocket.component.listenerStrings["down"]){ // For each listener
+                playerRange.addEventListener(rocket.component.listenerStrings["down"][listenerKey], // When the individual first starts changing the player range value
                     function(){
                         var playerControlComponent : Object = arguments[0]; // Get the Player Control Component passed by binding
                         var playerControl : Element = rocket.component.Fetch(playerControlComponent); // Fetch the Player Control Element
@@ -162,8 +159,8 @@ module rocket.player {
                 );
             }
 
-            for (var listenerKey in clickUpListeners){ // For each listener
-                playerRange.addEventListener(clickUpListeners[listenerKey], rocket.player.TimeOrVolumeChanger.bind(this, playerControlComponent)); // When the individual lets go of the mouse / tap, call the TimeOrVolumeChanger()
+            for (var listenerKey in rocket.component.listenerStrings["up"]){ // For each listener
+                playerRange.addEventListener(rocket.component.listenerStrings["up"][listenerKey], rocket.player.TimeOrVolumeChanger.bind(this, playerControlComponent)); // When the individual lets go of the mouse / tap, call the TimeOrVolumeChanger()
             }
 
             // #endregion
@@ -371,6 +368,48 @@ module rocket.player {
             }
         }
     }
+
+    // #endregion
+
+    // #region Multi-Source Generation
+
+    export function FetchSources(type: string, sources : any) : Array<HTMLElement> { // Returns an array of HTMLElements
+        var arrayOfSourceElements : Array<HTMLElement> = []; // Define arrayOfSourceElements as the array to hold all the source Elements we generate
+        var sourcesList : Array<string>; // Define sourcesList as an array of string (sources)
+
+        if (typeof sources == "string"){ // If only a single source is defined
+            sourcesList = [sources]; // Set the sourcesList array to be the single item
+        }
+        else{ // If it is not a single source
+            sourcesList = sources; // Set sourcesList to the src array provided
+        }
+
+        for (var sourceKey in sourcesList){ // For each source defined in videoSources
+            var source : string = sourcesList[sourceKey]; // Get the source from the videoSources array
+            var sourceExtension = source.substr(source.lastIndexOf(".")).replace(".", ""); // Get the last index of ., get the substring based on that, and then remove the period on the extension.
+            var sourceType : string; // Define sourceType as a string equal to the type of the source (ex. mp3, ogg, webm)
+
+            if (sourceExtension !== "mov"){ // If the source extension is not mov
+                sourceType = sourceExtension; // Append videoExtension to the videoType
+            }
+            else{ // If the source extension IS mov
+                sourceType = "quicktime"; // Append the quicktime string
+            }
+
+            var sourceTag = rocket.generator.ElementCreator(null, "source", // Create a source tag
+                {
+                    "src" : source, // Set src equal to the source provided
+                    "type" : (type + "/" + sourceType) // Set the type attribute equal to the videoType
+                }
+            );
+
+            arrayOfSourceElements.push(sourceTag); // Push this source tag
+        }
+
+        return arrayOfSourceElements;
+    }
+
+    // #endregion
 }
 
 // #endregion
@@ -491,20 +530,31 @@ module rocket.audioplayer {
     // #region Audio Player Generator
 
     export function Generate(properties : Object) : Object { // Generate a Audio Player Component and return a Component Object
-        if (properties["audio"] !== undefined){ // If the audio property is defined
+        if (properties["sources"] !== undefined){ // If the audio property is defined
             var componentId : string = rocket.generator.IdGen("audio-player"); // Generate a component Id
             var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "audio-player"); // Generate an Audio Player Element
+
+            // #region Audio Element and Source Creation
 
             var audioPlayer : HTMLElement = rocket.generator.ElementCreator(null, "audio", // Create the audio player
                 {
                     "preload" : "metadata", // Only download metadata
-                    "src" : properties["audio"], // Set the src to the audio source defined
                     "volume" : "0.5" // Set volume to 50%
                 }
             );
-
             audioPlayer.autoplay = false; // Set autoplay of audio to false
+
+            var arrayofSourceElements : Array<HTMLElement> = rocket.player.FetchSources("audio", properties["sources"]); // Get an array of Source Elements
+
+            for (var sourceElementKey in arrayofSourceElements){ // For each sourceElement in arrayofSourceElements
+                audioPlayer.appendChild(arrayofSourceElements[sourceElementKey]); // Append the HTMLElement
+            }
+
+            // #endregion
+
             componentElement.appendChild(audioPlayer); // Append the audio player
+
+            // #region Audio Player Information Creation
 
             if ((properties["art"] !== undefined) && (properties["title"] !== undefined)){ // If the properties has cover art and the audio title defined
                 var playerInformation : HTMLElement = rocket.generator.ElementCreator(null, "div", // Create the player information
@@ -536,6 +586,8 @@ module rocket.audioplayer {
                 componentElement.appendChild(playerInformation); // Append the player information details to the component Element
             }
 
+            // #endregion
+
             var playerControlComponent : Object = rocket.playercontrol.Generate(); // Pass along the "audio" type so we know NOT to append the fullscreen
             var playerControlElement : Element = rocket.component.Fetch(playerControlComponent); // Fetch the HTMLElement
             componentElement.appendChild(playerControlElement); // Append the player control
@@ -545,7 +597,7 @@ module rocket.audioplayer {
             return { "id" : componentId, "type" : "audio-player" }; // Return a Component Object
         }
         else{ // If audio is not defined in the properties
-            return { "error" : "no audio defined" }; // Return an error Object
+            return { "error" : "no sources defined" }; // Return an error Object
         }
 
     }
@@ -563,15 +615,12 @@ module rocket.videoplayer {
     // #region Video Player Generator
 
     export function Generate(properties : Object) : Object { // Generate a Video Player Component and return a Component Object
-        if (properties["video"] !== undefined){ // If the video property is defined
+        if (properties["sources"] !== undefined){ // If the video property is defined
             var componentId : string = rocket.generator.IdGen("video-player"); // Generate a component Id
             var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "video-player"); // Generate an Video Player Element
 
-            var videoPlayerAttributes = { // Define videoPlayerAttributes as an Object
-                "preload" : "metadata", // Only download metadata
-                "src" : properties["video"], // Set the src to the audio source defined
-                "volume" : "0.5" // Set volume to 50%
-            };
+
+            // #region Video Art Poster Creation
 
             if (properties["art"] !== undefined){ // If art has been defined
                 var posterImageElement : HTMLElement = rocket.generator.ElementCreator(null, "img", // Create an img Element with the src set to the artwork
@@ -583,8 +632,26 @@ module rocket.videoplayer {
                 componentElement.appendChild(posterImageElement); // Append to the Video Player container
             }
 
-            var videoPlayer : HTMLElement = rocket.generator.ElementCreator(null, "video", videoPlayerAttributes); // Create the video player
+            // #endregion
+
+            // #region Video Element and Sources Creation
+
+            var videoPlayer : HTMLElement = rocket.generator.ElementCreator(null, "video", // Create the video player
+                {
+                    "preload" : "metadata", // Only download metadata
+                    "volume" : "0.5" // Set volume to 50%
+                }
+            );
             videoPlayer.autoplay = false; // Set autoplay of video to false
+
+            var arrayofSourceElements : Array<HTMLElement> = rocket.player.FetchSources("video", properties["sources"]); // Get an array of Source Elements
+
+            for (var sourceElementKey in arrayofSourceElements){ // For each sourceElement in arrayofSourceElements
+                videoPlayer.appendChild(arrayofSourceElements[sourceElementKey]); // Append the HTMLElement
+            }
+
+            // #endregion
+
             componentElement.appendChild(videoPlayer); // Append the video player
 
             var playerControlComponent : Object = rocket.playercontrol.Generate(); // Pass along the "video" type so we know NOT to append the fullscreen

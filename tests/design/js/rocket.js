@@ -2,6 +2,10 @@ var rocket;
 (function (rocket) {
     var component;
     (function (_component) {
+        _component.listenerStrings = {
+            "down": ["mousedown", "touchstart", "MSPointerDown"],
+            "up": ["mouseup", "touchend", "MSPointerUp"]
+        };
         _component.storedComponents = {};
         _component.dropdownToggler = function () {
             var component = arguments[0];
@@ -23,7 +27,7 @@ var rocket;
             selectedElement.setAttribute("data-rocket-component-id", componentID);
             component["id"] = componentID;
             if (type == "dropdown") {
-                rocket.component.AddListeners("click touchend MSPointerUp", component, rocket.component.dropdownToggler);
+                rocket.component.AddListeners(rocket.component.listenerStrings["up"], component, rocket.component.dropdownToggler);
             }
             return component;
         }
@@ -131,10 +135,10 @@ var rocket;
                     component = args[0];
                     listenerCallback = args[1];
                     if (component["type"] !== "searchbox") {
-                        listeners = "click MSPointerUp";
+                        listeners = rocket.component.listenerStrings["up"];
                     }
                     else {
-                        listeners = "keyup";
+                        listeners = ["keyup"];
                     }
                 }
                 else {
@@ -153,7 +157,13 @@ var rocket;
                         }
                     }
                     if (allowListening == true) {
-                        var listenerArray = listeners.trim().split(" ");
+                        var listenerArray;
+                        if ((typeof listeners).toLowerCase() == "object") {
+                            listenerArray = listeners;
+                        }
+                        else {
+                            listeners.trim().split(" ");
+                        }
                         listenerArray.forEach(function (individualListener) {
                             componentElement.addEventListener(individualListener, function () {
                                 var component = arguments[0];
@@ -840,8 +850,6 @@ var rocket;
         function Init(component) {
             var componentElement = rocket.component.Fetch(component);
             var innerContentElement = rocket.player.GetInnerContentElement(component);
-            var clickDownListeners = ["mousedown", "MSPointerDown", "touchstart"];
-            var clickUpListeners = ["mouseup", "MSPointerUp", "touchend"];
             var playerControlArea = componentElement.querySelector('div[data-rocket-component="player-control"]');
             var playerControlComponent = rocket.component.FetchComponentObject(playerControlArea);
             var playerRange = playerControlArea.querySelector('input[type="range"]');
@@ -867,8 +875,8 @@ var rocket;
                 var posterImageElement = componentElement.querySelector('img[data-rocket-minor-component="video-poster"]');
                 if (posterImageElement !== null) {
                     rocket.component.CSS(playerControlComponent, "opacity", "0.8");
-                    for (var listenerKey in clickUpListeners) {
-                        posterImageElement.addEventListener(clickUpListeners[listenerKey], function () {
+                    for (var listenerKey in rocket.component.listenerStrings["up"]) {
+                        posterImageElement.addEventListener(rocket.component.listenerStrings["up"][listenerKey], function () {
                             var playerElementComponent = arguments[0];
                             var posterImageElement = arguments[1];
                             var e = arguments[2];
@@ -879,8 +887,8 @@ var rocket;
                         }.bind(this, component, posterImageElement));
                     }
                 }
-                for (var listenerKey in clickUpListeners) {
-                    innerContentElement.addEventListener(clickUpListeners[listenerKey], function () {
+                for (var listenerKey in rocket.component.listenerStrings["up"]) {
+                    innerContentElement.addEventListener(rocket.component.listenerStrings["up"][listenerKey], function () {
                         var e = arguments[1];
                         if (e.button == 0) {
                             var playerElementComponent = arguments[0];
@@ -900,16 +908,16 @@ var rocket;
                 var playerElementComponent = rocket.component.FetchComponentObject(playerElement);
                 rocket.player.PlayOrPause(playerElementComponent, playButtonComponent);
             });
-            for (var listenerKey in clickDownListeners) {
-                playerRange.addEventListener(clickDownListeners[listenerKey], function () {
+            for (var listenerKey in rocket.component.listenerStrings["down"]) {
+                playerRange.addEventListener(rocket.component.listenerStrings["down"][listenerKey], function () {
                     var playerControlComponent = arguments[0];
                     var playerControl = rocket.component.Fetch(playerControlComponent);
                     var playerRange = playerControl.querySelector("input");
                     playerRange.parentElement.parentElement.setAttribute("data-rocket-component-status", "true");
                 }.bind(this, component));
             }
-            for (var listenerKey in clickUpListeners) {
-                playerRange.addEventListener(clickUpListeners[listenerKey], rocket.player.TimeOrVolumeChanger.bind(this, playerControlComponent));
+            for (var listenerKey in rocket.component.listenerStrings["up"]) {
+                playerRange.addEventListener(rocket.component.listenerStrings["up"][listenerKey], rocket.player.TimeOrVolumeChanger.bind(this, playerControlComponent));
             }
             var volumeButtonComponent = rocket.component.FetchComponentObject(playerControlArea.querySelector('div[data-rocket-minor-component="player-button-volume"]'));
             rocket.component.AddListeners(volumeButtonComponent, function () {
@@ -1045,6 +1053,34 @@ var rocket;
             }
         }
         player.PlayOrPause = PlayOrPause;
+        function FetchSources(type, sources) {
+            var arrayOfSourceElements = [];
+            var sourcesList;
+            if (typeof sources == "string") {
+                sourcesList = [sources];
+            }
+            else {
+                sourcesList = sources;
+            }
+            for (var sourceKey in sourcesList) {
+                var source = sourcesList[sourceKey];
+                var sourceExtension = source.substr(source.lastIndexOf(".")).replace(".", "");
+                var sourceType;
+                if (sourceExtension !== "mov") {
+                    sourceType = sourceExtension;
+                }
+                else {
+                    sourceType = "quicktime";
+                }
+                var sourceTag = rocket.generator.ElementCreator(null, "source", {
+                    "src": source,
+                    "type": (type + "/" + sourceType)
+                });
+                arrayOfSourceElements.push(sourceTag);
+            }
+            return arrayOfSourceElements;
+        }
+        player.FetchSources = FetchSources;
     })(player = rocket.player || (rocket.player = {}));
 })(rocket || (rocket = {}));
 var rocket;
@@ -1123,15 +1159,18 @@ var rocket;
     var audioplayer;
     (function (audioplayer) {
         function Generate(properties) {
-            if (properties["audio"] !== undefined) {
+            if (properties["sources"] !== undefined) {
                 var componentId = rocket.generator.IdGen("audio-player");
                 var componentElement = rocket.generator.ElementCreator(componentId, "audio-player");
                 var audioPlayer = rocket.generator.ElementCreator(null, "audio", {
                     "preload": "metadata",
-                    "src": properties["audio"],
                     "volume": "0.5"
                 });
                 audioPlayer.autoplay = false;
+                var arrayofSourceElements = rocket.player.FetchSources("audio", properties["sources"]);
+                for (var sourceElementKey in arrayofSourceElements) {
+                    audioPlayer.appendChild(arrayofSourceElements[sourceElementKey]);
+                }
                 componentElement.appendChild(audioPlayer);
                 if ((properties["art"] !== undefined) && (properties["title"] !== undefined)) {
                     var playerInformation = rocket.generator.ElementCreator(null, "div", {
@@ -1159,7 +1198,7 @@ var rocket;
                 return { "id": componentId, "type": "audio-player" };
             }
             else {
-                return { "error": "no audio defined" };
+                return { "error": "no sources defined" };
             }
         }
         audioplayer.Generate = Generate;
@@ -1170,14 +1209,9 @@ var rocket;
     var videoplayer;
     (function (videoplayer) {
         function Generate(properties) {
-            if (properties["video"] !== undefined) {
+            if (properties["sources"] !== undefined) {
                 var componentId = rocket.generator.IdGen("video-player");
                 var componentElement = rocket.generator.ElementCreator(componentId, "video-player");
-                var videoPlayerAttributes = {
-                    "preload": "metadata",
-                    "src": properties["video"],
-                    "volume": "0.5"
-                };
                 if (properties["art"] !== undefined) {
                     var posterImageElement = rocket.generator.ElementCreator(null, "img", {
                         "data-rocket-minor-component": "video-poster",
@@ -1185,8 +1219,15 @@ var rocket;
                     });
                     componentElement.appendChild(posterImageElement);
                 }
-                var videoPlayer = rocket.generator.ElementCreator(null, "video", videoPlayerAttributes);
+                var videoPlayer = rocket.generator.ElementCreator(null, "video", {
+                    "preload": "metadata",
+                    "volume": "0.5"
+                });
                 videoPlayer.autoplay = false;
+                var arrayofSourceElements = rocket.player.FetchSources("video", properties["sources"]);
+                for (var sourceElementKey in arrayofSourceElements) {
+                    videoPlayer.appendChild(arrayofSourceElements[sourceElementKey]);
+                }
                 componentElement.appendChild(videoPlayer);
                 var playerControlComponent = rocket.playercontrol.Generate();
                 var playerControlElement = rocket.component.Fetch(playerControlComponent);
@@ -1270,7 +1311,7 @@ var rocket;
                                     var componentObject = rocket.component.FetchComponentObject(passedNode);
                                     if (componentObject !== false) {
                                         if (componentObject["type"] == "dropdown") {
-                                            rocket.component.AddListeners("click MSPointerUp", componentObject, rocket.component.dropdownToggler);
+                                            rocket.component.AddListeners(rocket.component.listenerStrings["up"], componentObject, rocket.component.dropdownToggler);
                                         }
                                         else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")) {
                                             rocket.player.Init(componentObject);

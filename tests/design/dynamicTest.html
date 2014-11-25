@@ -44,7 +44,7 @@
 
 			var generatedAudioPlayer = rocket.audioplayer.Generate(
 					{
-						"audio": "http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",
+						"sources": "http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",
 						"art" : "http://upload.wikimedia.org/wikipedia/en/thumb/a/ac/XiphophorusLogoSVG.svg/132px-XiphophorusLogoSVG.svg.png",
 						"title" : "Example OGG File",
 						"artist" : "JesseW",
@@ -57,7 +57,7 @@
 			var generatedVideoPlayer = rocket.videoplayer.Generate(
 					{
 						"art" : "img/video-art.png",
-						"video" : "http://download.blender.org/peach/trailer/trailer_400p.ogg"
+						"sources" : ["http://download.blender.org/peach/trailer/trailer_400p.ogg", "http://download.blender.org/peach/trailer/trailer_480p.mov"]
 					}
 			);
 

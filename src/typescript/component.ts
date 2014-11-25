@@ -6,6 +6,11 @@
 /// <reference path="interfaces/component-object.ts" />
 
 module rocket.component {
+	export var listenerStrings : Object = { // Set rocket.component.listenerStrings as an Object containing commonly used event lister combinations
+		"down" : ["mousedown", "touchstart", "MSPointerDown"],
+		"up" : ["mouseup", "touchend", "MSPointerUp"]
+	};
+
 	export var storedComponents : Object = {}; // An object that stores generated component(s) / component(s) information
 
 	// #region Common Component Handlers
@@ -40,7 +45,7 @@ module rocket.component {
 		component["id"] = componentID; // Add the component ID to the object that we will be returning to the developer
 
 		if (type == "dropdown"){ // If we are defining a Dropdown Rocket component
-			rocket.component.AddListeners("click touchend MSPointerUp", component, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+			rocket.component.AddListeners(rocket.component.listenerStrings["up"], component, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 		}
 
 		return component; // Return the component Object
@@ -184,7 +189,7 @@ module rocket.component {
 
 	export function AddListeners(... args : any[]) : boolean { // Takes (optional) space-separated listeners, component Object, and the handler function.
 		var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
-		var listeners : string; // Define listeners as a string
+		var listeners : any; // Define listeners as a string
 		var component : Object; // Define Component as a Component Object
 		var listenerCallback : Function;; // Default to having the listenerCallback be the handler we are passed.
 
@@ -194,10 +199,10 @@ module rocket.component {
 				listenerCallback = args[1]; // Handler is the second argument
 
 				if (component["type"] !== "searchbox"){ // If we are adding listeners to a Component that is NOT a Searchbox (which uses a unique listener)
-					listeners = "click MSPointerUp"; // Use click / touch related events
+					listeners = rocket.component.listenerStrings["up"]; // Use click / touch related events
 				}
 				else{ // If the Component IS a Searchbox
-					listeners = "keyup"; // Use the keyup listener
+					listeners = ["keyup"]; // Use the keyup listener
 				}
 			}
 			else{ // If the arguments list is 3, meaning listeners, a Component Object, and a Handler are provided
@@ -219,7 +224,14 @@ module rocket.component {
 				}
 
 				if (allowListening == true){ // If allowListening is TRUE
-					var listenerArray : Array<string>  = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
+					var listenerArray : Array<string>; // Define listenerArray as an array of strings
+
+					if ((typeof listeners).toLowerCase() == "object"){ // If the listeners is an array / object
+						listenerArray = listeners; // Set the listenerArray to listeners
+					}
+					else{ // If the listeners is NOT an array / object
+						listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
+					}
 
 					listenerArray.forEach( // For each listener
 						function(individualListener : string){

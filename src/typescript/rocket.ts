@@ -72,7 +72,7 @@ module rocket {
 
 											if (componentObject !== false){ // If the element is a Rocket component
 												if (componentObject["type"] == "dropdown"){ // If the component is a Dropdown
-													rocket.component.AddListeners("click MSPointerUp", componentObject, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+													rocket.component.AddListeners(rocket.component.listenerStrings["up"], componentObject, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
 												}
 												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
 													rocket.player.Init(componentObject); // Initialize the Audio or Video Palyer

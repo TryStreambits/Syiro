@@ -29,12 +29,7 @@ module rocket.footer {
 				}
 			}
 			else if (propertyKey == "content"){ // If we are adding a Footer label
-				var generatedElement : HTMLElement = rocket.generator.ElementCreator(null, "label", // Generate a generic label element
-					{
-						"content" : properties["content"] // Also set the inner content of the <label> tag
-					}
-				);
-
+				var generatedElement : HTMLElement = rocket.generator.ElementCreator(null, "label", { "content" : properties["content"] }); // Generate a generic label element
 				componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the footer
 			}
 		}
@@ -55,11 +50,12 @@ module rocket.footer {
 				var labelComponent : Element = document.querySelector("pre"); // Fetch the labelComponent if it exists
 
 				if (labelComponent == null){ // If the labelComponent does not exist
-					labelComponent = document.createElement("pre");
+					labelComponent = rocket.generator.ElementCreator(null, "pre", { "content" : labelText }); // Create a label Element with the content set to labelText
 					parentElement.insertBefore(labelComponent, parentElement.firstChild); // Pre-emptively insert the empty label
 				}
-
-				labelComponent.textContent = labelText; // Set the labelComponent textContent to the labelText defined
+				else{ // If the labelComponent does exist
+					labelComponent.textContent = labelText; // Set the labelComponent textContent to the labelText defined
+				}
 
 				rocket.component.Update(component["id"], parentElement); // Update the storedComponent HTMLElement if necessary
 

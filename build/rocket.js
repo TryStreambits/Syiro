@@ -416,16 +416,20 @@ var rocket;
             }
             if (attributes !== undefined) {
                 for (var attributeKey in attributes) {
+                    var attributeValue = attributes[attributeKey];
                     if (attributeKey !== "content") {
-                        componentElement.setAttribute(attributeKey, attributes[attributeKey]);
+                        if (attributeKey == "content-attr") {
+                            attributeKey = "content";
+                        }
+                        componentElement.setAttribute(attributeKey, attributeValue);
                     }
                     else {
-                        var innerComponentContent = attributes["content"];
+                        var innerComponentContent = attributeValue;
                         innerComponentContent = innerComponentContent.replace("<", "");
                         innerComponentContent = innerComponentContent.replace(">", "");
                         innerComponentContent = innerComponentContent.replace("&lt;", "");
                         innerComponentContent = innerComponentContent.replace("&gt;", "");
-                        componentElement.textContent = attributes[attributeKey];
+                        componentElement.textContent = innerComponentContent;
                     }
                 }
             }
@@ -516,9 +520,7 @@ var rocket;
                     }
                 }
                 else if (propertyKey == "content") {
-                    var generatedElement = rocket.generator.ElementCreator(null, "label", {
-                        "content": properties["content"]
-                    });
+                    var generatedElement = rocket.generator.ElementCreator(null, "label", { "content": properties["content"] });
                     componentElement.insertBefore(generatedElement, componentElement.firstChild);
                 }
             }
@@ -532,10 +534,12 @@ var rocket;
                     var parentElement = rocket.component.Fetch(component);
                     var labelComponent = document.querySelector("pre");
                     if (labelComponent == null) {
-                        labelComponent = document.createElement("pre");
+                        labelComponent = rocket.generator.ElementCreator(null, "pre", { "content": labelText });
                         parentElement.insertBefore(labelComponent, parentElement.firstChild);
                     }
-                    labelComponent.textContent = labelText;
+                    else {
+                        labelComponent.textContent = labelText;
+                    }
                     rocket.component.Update(component["id"], parentElement);
                     return true;
                 }
@@ -1293,11 +1297,8 @@ var rocket;
             documentHeadSection = document.createElement("head");
             document.querySelector("html").insertBefore(documentHeadSection, document.querySelector("head").querySelector("body"));
         }
-        var viewportMetaTag = documentHeadSection.querySelector('meta[name="viewport"]');
-        if (viewportMetaTag == null) {
-            viewportMetaTag = document.createElement("meta");
-            viewportMetaTag.setAttribute("name", "viewport");
-            viewportMetaTag.setAttribute("content", 'width=device-width, initial-scale=1,user-scalable=no');
+        if (documentHeadSection.querySelector('meta[name="viewport"]') == null) {
+            var viewportMetaTag = rocket.generator.ElementCreator(null, "meta", { "name": "viewport", "content-attr": "width=device-width, initial-scale=1,user-scalable=no" });
             documentHeadSection.appendChild(viewportMetaTag);
         }
         if (MutationObserver !== undefined) {
@@ -1339,6 +1340,11 @@ var rocket;
                 subtree: true
             };
             mutationWatcher.observe(document.querySelector("body"), mutationWatcherOptions);
+        }
+        else {
+            if (rocket.plugin.alternativeInit !== undefined) {
+                rocket.plugin.alternativeInit.Init();
+            }
         }
     }
     rocket.Init = Init;

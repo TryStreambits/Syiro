@@ -17,6 +17,10 @@ interface HTMLElement {
 interface Window {
     crypto: any;
 }
+declare module rocket.plugin.alternativeInit {
+    function Init(): void;
+    function Wait(): void;
+}
 declare module rocket.component {
     var listenerStrings: Object;
     var storedComponents: Object;

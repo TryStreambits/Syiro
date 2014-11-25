@@ -56,17 +56,23 @@ module rocket.generator {
 
         if (attributes !== undefined){ // If an attributes Object is defined
             for (var attributeKey in attributes){ // For each attributeKey in attributes
+                var attributeValue = attributes[attributeKey]; // Get the attribute value based on key
+
                 if (attributeKey !== "content"){ // If the attributeKey is not content
-                    componentElement.setAttribute(attributeKey, attributes[attributeKey]); // Set the attribute
+                    if (attributeKey == "content-attr"){ // If the attributeKey is "content-attr" (used in meta tag creation)
+                        attributeKey = "content"; // Set to content instead.
+                    }
+
+                    componentElement.setAttribute(attributeKey, attributeValue); // Set the attribute
                 }
                 else{ // If the attributeKey IS "content"
-                    var innerComponentContent = attributes["content"]; // Set innerComponentContent to the attributes content
+                    var innerComponentContent = attributeValue; // Set innerComponentContent to the attributes content
                     innerComponentContent = innerComponentContent.replace("<", ""); // Remove < symbol
                     innerComponentContent = innerComponentContent.replace(">", ""); // Remove > symbol
                     innerComponentContent = innerComponentContent.replace("&lt;", ""); // Remove < (entity) symbol
                     innerComponentContent = innerComponentContent.replace("&gt;", ""); // Remove > (entity) symbol
 
-                    componentElement.textContent = attributes[attributeKey]; // Set the innerText of the componentElement
+                    componentElement.textContent = innerComponentContent; // Set the innerText of the componentElement
                 }
             }
         }

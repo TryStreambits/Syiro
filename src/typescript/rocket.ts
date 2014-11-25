@@ -1,7 +1,6 @@
 /*
 	This is the aggregate of all the Rocket modules into a unified interface
 */
-
 /// <reference path="component.ts" />
 /// <reference path="device.ts" />
 /// <reference path="generator.ts" />
@@ -43,13 +42,8 @@ module rocket {
 			document.querySelector("html").insertBefore(documentHeadSection, document.querySelector("head").querySelector("body")); // Insert the head tag before the body
 		}
 
-		var viewportMetaTag : Element = documentHeadSection.querySelector('meta[name="viewport"]');
-
-		if (viewportMetaTag == null){ // If the viewportMetaTag does NOT exist
-			viewportMetaTag = document.createElement("meta"); // Create the meta tag
-			viewportMetaTag.setAttribute("name", "viewport"); // Set the name to viewport
-			viewportMetaTag.setAttribute("content", 'width=device-width, initial-scale=1,user-scalable=no'); // Set the viewportMetaTag content to the appropriate values that enables scaling and disables zooming
-
+		if (documentHeadSection.querySelector('meta[name="viewport"]') == null){ // If the viewportMetaTag does NOT exist
+			var viewportMetaTag : HTMLElement = rocket.generator.ElementCreator(null, "meta", { "name" : "viewport", "content-attr" : "width=device-width, initial-scale=1,user-scalable=no"}); // Create a meta tag, setting attributes to enable scaling and disable zooming
 			documentHeadSection.appendChild(viewportMetaTag); // Append the meta tag
 		}
 
@@ -107,6 +101,11 @@ module rocket {
 			};
 
 			mutationWatcher.observe(document.querySelector("body"), mutationWatcherOptions); // Watch the document body with the options provided.
+		}
+		else{ // If MutationObserver is NOT supported (IE10 and below), such as in Windows Phone
+			if (rocket.plugin.alternativeInit !== undefined){ // If rocket.plugin.alternativeInit is added in the page as well
+				rocket.plugin.alternativeInit.Init(); // Initialize the alternative init
+			}
 		}
 
 		// #endregion

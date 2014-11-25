@@ -25,3 +25,12 @@ interface HTMLElement { // Implementation of HTMLElement
 interface Window { // Implementation of valid spec not found in lib.d.ts
 	crypto : any; // Define crypto as any
 }
+
+// #region Official Plugins
+
+declare module rocket.plugin.alternativeInit {
+	function Init(): void;
+	function Wait(): void;
+}
+
+// #endregion

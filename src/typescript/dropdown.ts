@@ -25,7 +25,7 @@ module rocket.dropdown {
 			}
 			else if (propertyKey == "label"){ // If we are adding a Label to the Dropdown
 				var labelProperties : string = properties["label"]; // Get the label properties
-				var dropdownLabel : HTMLElement = rocket.generator.ElementCreator(null, "div", // Create a documentLabel
+				var dropdownLabel : HTMLElement = rocket.generator.ElementCreator("div", // Create a documentLabel
 					{
 						"data-rocket-minor-component": "dropdown-label" // Set the Dropdown label to a minor-component.
 					}
@@ -36,7 +36,7 @@ module rocket.dropdown {
 				}
 
 				if (labelProperties["image"] !== undefined){ // If an image is defined for the dropdown label
-					var dropdownLabelImage : Element = rocket.generator.ElementCreator(null, "img", // Create an img element
+					var dropdownLabelImage : Element = rocket.generator.ElementCreator("img", // Create an img element
 						{
 							"src" : labelProperties["image"] // Set the src property
 						}
@@ -45,7 +45,7 @@ module rocket.dropdown {
 				}
 
 				if (labelProperties["content"] !== undefined){ // If text is defined for the dropdown
-					var dropdownLabelText : HTMLElement = rocket.generator.ElementCreator(null, "label", // Create a label within the "label" (labelception) to hold the defined text.
+					var dropdownLabelText : HTMLElement = rocket.generator.ElementCreator("label", // Create a label within the "label" (labelception) to hold the defined text.
 						{
 							"content" : labelProperties["content"] // Set the text content of the Dropdown's label label (yes, two intentional labels) to the text defined
 						}
@@ -108,7 +108,7 @@ module rocket.dropdown {
 
 		if (content !== false){ // If the content is not set to FALSE
 			if (dropdownLabelImage == null){ // If the image element does not exist
-				dropdownLabelImage = rocket.generator.ElementCreator(null, "img"); // Create an image
+				dropdownLabelImage = rocket.generator.ElementCreator("img"); // Create an image
 				dropdownLabel.insertBefore(dropdownLabelImage, dropdownLabel.firstChild); // Prepend the img in the dropdown label
 			}
 

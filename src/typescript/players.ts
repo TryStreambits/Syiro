@@ -396,7 +396,7 @@ module rocket.player {
                 sourceType = "quicktime"; // Append the quicktime string
             }
 
-            var sourceTag = rocket.generator.ElementCreator(null, "source", // Create a source tag
+            var sourceTag = rocket.generator.ElementCreator("source", // Create a source tag
                 {
                     "src" : source, // Set src equal to the source provided
                     "type" : (type + "/" + sourceType) // Set the type attribute equal to the videoType
@@ -430,8 +430,8 @@ module rocket.playercontrol {
             }
         );
 
-        var inputRange : HTMLElement = rocket.generator.ElementCreator(null, "input", { "type" : "range", "value" : "0"}); // Create an input range
-        var timeStamp : HTMLElement = rocket.generator.ElementCreator(null, "time", { "content" : "00:00 / 00:00"}); // Create a timestamp time element
+        var inputRange : HTMLElement = rocket.generator.ElementCreator("input", { "type" : "range", "value" : "0"}); // Create an input range
+        var timeStamp : HTMLElement = rocket.generator.ElementCreator("time", { "content" : "00:00 / 00:00"}); // Create a timestamp time element
 
         var volumeButton = rocket.button.Generate( // Generate a Volume Button
             {
@@ -536,7 +536,7 @@ module rocket.audioplayer {
 
             // #region Audio Element and Source Creation
 
-            var audioPlayer : HTMLElement = rocket.generator.ElementCreator(null, "audio", // Create the audio player
+            var audioPlayer : HTMLElement = rocket.generator.ElementCreator("audio", // Create the audio player
                 {
                     "preload" : "metadata", // Only download metadata
                     "volume" : "0.5" // Set volume to 50%
@@ -557,27 +557,27 @@ module rocket.audioplayer {
             // #region Audio Player Information Creation
 
             if ((properties["art"] !== undefined) && (properties["title"] !== undefined)){ // If the properties has cover art and the audio title defined
-                var playerInformation : HTMLElement = rocket.generator.ElementCreator(null, "div", // Create the player information
+                var playerInformation : HTMLElement = rocket.generator.ElementCreator("div", // Create the player information
                     {
                         "data-rocket-minor-component" : "player-information"
                     }
                 );
 
-                var playerTextualInformation : HTMLElement = rocket.generator.ElementCreator(null, "section"); // Create a section to hold the textual information like audio title
+                var playerTextualInformation : HTMLElement = rocket.generator.ElementCreator("section"); // Create a section to hold the textual information like audio title
 
-                playerInformation.appendChild(rocket.generator.ElementCreator(null, "img", { "src" : properties["art"]})); // Create the covert art and append the cover art to the playerInformation
+                playerInformation.appendChild(rocket.generator.ElementCreator("img", { "src" : properties["art"]})); // Create the covert art and append the cover art to the playerInformation
 
-                var audioTitle : HTMLElement = rocket.generator.ElementCreator(null, "b", { "content" : properties["title"]}); // Create a "bold" tag with the audio title
+                var audioTitle : HTMLElement = rocket.generator.ElementCreator("b", { "content" : properties["title"]}); // Create a "bold" tag with the audio title
 
                 playerTextualInformation.appendChild(audioTitle); // Append the audio title to the playerInformationDetails section
 
                 if (properties["artist"] !== undefined){ // If the artist is NOT undefined
-                    var artistInfo = rocket.generator.ElementCreator(null, "label", { "content" : properties["artist"] }); // Create a label with the artist info
+                    var artistInfo = rocket.generator.ElementCreator("label", { "content" : properties["artist"] }); // Create a label with the artist info
                     playerTextualInformation.appendChild(artistInfo);
                 }
 
                 if (properties["album"] !== undefined){ // If the album is NOT undefined
-                    var albumInfo = rocket.generator.ElementCreator(null, "label", { "content" : properties["album"] }); // Create a label with the album info
+                    var albumInfo = rocket.generator.ElementCreator("label", { "content" : properties["album"] }); // Create a label with the album info
                     playerTextualInformation.appendChild(albumInfo);
                 }
 
@@ -623,12 +623,7 @@ module rocket.videoplayer {
             // #region Video Art Poster Creation
 
             if (properties["art"] !== undefined){ // If art has been defined
-                var posterImageElement : HTMLElement = rocket.generator.ElementCreator(null, "img", // Create an img Element with the src set to the artwork
-                    {
-                        "data-rocket-minor-component" : "video-poster",
-                        "src" : properties["art"]
-                    }
-                );
+                var posterImageElement : HTMLElement = rocket.generator.ElementCreator("img", { "data-rocket-minor-component" : "video-poster", "src" : properties["art"] }); // Create an img Element with the src set to the artwork
                 componentElement.appendChild(posterImageElement); // Append to the Video Player container
             }
 
@@ -636,12 +631,7 @@ module rocket.videoplayer {
 
             // #region Video Element and Sources Creation
 
-            var videoPlayer : HTMLElement = rocket.generator.ElementCreator(null, "video", // Create the video player
-                {
-                    "preload" : "metadata", // Only download metadata
-                    "volume" : "0.5" // Set volume to 50%
-                }
-            );
+            var videoPlayer : HTMLElement = rocket.generator.ElementCreator("video", { "preload" : "metadata", "volume" : "0.5"} ); // Create the video player, with the preloading to only metadata and volume to 50%
             videoPlayer.autoplay = false; // Set autoplay of video to false
 
             var arrayofSourceElements : Array<HTMLElement> = rocket.player.FetchSources("video", properties["sources"]); // Get an array of Source Elements

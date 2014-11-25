@@ -4,7 +4,7 @@
 
 /// <reference path="rocket.ts" />
 /// <reference path="component.ts" />
-/// <reference path="interfaces/component-object.ts" />
+/// <reference path="interfaces.ts" />
 
 module rocket.generator {
 
@@ -32,26 +32,33 @@ module rocket.generator {
 
     // #region Element Creator Function
 
-    export function ElementCreator(componentId : any, componentType : string, attributes ?: Object) : HTMLElement { // Make an element based on the componentType that is passed and any key/val Object of attributes to set
-        var componentElement : HTMLElement; // Define componentElement as the generated HTMLElement
+    export function ElementCreator(... args : any[]) : HTMLElement { // Takes an optional componentId, componentType or the desired element tag name and attributes
+        var attributes : Object; // Define attributes as an Object
+        var generatedElement : HTMLElement; // Define componentElement as the generated HTMLElement
 
-        if (componentId !== null){ // If we have defined a Component Id
+        if (((args.length == 2) && (typeof args[1] == "string")) || (args.length == 3)){ // If we have either defined three arguments: ID, type, and attributes OR two arguments where the second one is a string
+            var componentId : string = args[0]; // Set componentId as the first argument passed
+            var componentType : string = args[1]; // Set componentType as the second argument passed
+            attributes = args[2]; // Set attributes equal to the third argument passed
+
             if ((componentType == "header") || (componentType == "footer")){ // If the componentType is a header or a footer
-                componentElement = document.createElement(componentType); // Create an Element of the tag of "header" or "footer", since they are valid HTML5 tags
+                generatedElement = document.createElement(componentType); // Create an Element of the tag of "header" or "footer", since they are valid HTML5 tags
             }
             else if (componentType == "searchbox"){ // If we are creating a searchbox
-                componentElement = document.createElement("input"); // Use the HTML input tag
-                componentElement.setAttribute("type", "text"); // Set the searchbox input type to text
+                generatedElement = document.createElement("input"); // Use the HTML input tag
+                generatedElement.setAttribute("type", "text"); // Set the searchbox input type to text
             }
             else{ // If we are creating a Component that uses a generic div tag as a container
-                componentElement = document.createElement("div"); // Create a div tag
+                generatedElement = document.createElement("div"); // Create a div tag
             }
 
-            componentElement.setAttribute("data-rocket-component-id", componentId); // Set the Rocket Component ID to the componentID passed
-            componentElement.setAttribute("data-rocket-component", componentType); // Set the Rocket Component to the type specified (ex. header)
+            generatedElement.setAttribute("data-rocket-component-id", componentId); // Set the Rocket Component ID to the componentID passed
+            generatedElement.setAttribute("data-rocket-component", componentType); // Set the Rocket Component to the type specified (ex. header)
         }
         else{ // If we're not creating a Rocket Component
-            componentElement = document.createElement(componentType); // Create an element based on the componentType (in this case, it is really just a element tag name)
+        console.log(args);
+            attributes = args[1]; // Set attributes equal to the second argument passed
+            generatedElement = document.createElement(args[0]); // Create an element based on the componentType (in this case, it is really just a element tag name)
         }
 
         if (attributes !== undefined){ // If an attributes Object is defined
@@ -63,7 +70,7 @@ module rocket.generator {
                         attributeKey = "content"; // Set to content instead.
                     }
 
-                    componentElement.setAttribute(attributeKey, attributeValue); // Set the attribute
+                    generatedElement.setAttribute(attributeKey, attributeValue); // Set the attribute
                 }
                 else{ // If the attributeKey IS "content"
                     var innerComponentContent = attributeValue; // Set innerComponentContent to the attributes content
@@ -72,12 +79,12 @@ module rocket.generator {
                     innerComponentContent = innerComponentContent.replace("&lt;", ""); // Remove < (entity) symbol
                     innerComponentContent = innerComponentContent.replace("&gt;", ""); // Remove > (entity) symbol
 
-                    componentElement.textContent = innerComponentContent; // Set the innerText of the componentElement
+                    generatedElement.textContent = innerComponentContent; // Set the innerText of the componentElement
                 }
             }
         }
 
-        return componentElement; // Return the componentElement
+        return generatedElement; // Return the componentElement
     }
 
     // #endregion

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+currentDirectory=$(pwd) # Get the current directory
+currentDirectory=${currentDirectory%build*} #Remove the build folder, if it exists, from the directory path
+
+cd "$currentDirectory"
+
+createSnapshot(){ # Create a snapshot of the branch and package it
+	snapshotType=$1 # Type of the snapshot, whether it be devel or stable
+	rocketVersion=$2 # Rocket version
+
+	echo "Building Rocket snapshot as $snapshotType and v $rocketVersion"
+
+	mkdir -p "build/active-snapshot/Rocket" # Create a temporary snapshot directory
+	echo "$rocketVersion" > VERSION.txt # Update the VERSION.txt file
+
+	cp -r build/rocket.css build/rocket.min.js build/rocket.min.js.gz ./build/active-snapshot/Rocket # Copy over particular build content to the snapshot
+	cp -r src/less/fonts src/less/img README.md License.txt VERSION.txt ./build/active-snapshot/Rocket # Copy over particular non-build data to the snapshot
+
+	tar --create --gzip --recursion --directory=build/active-snapshot -f "$snapshotType".tar.gz Rocket
+	rm -rf build/active-snapshot
+
+	echo "Build finished."
+}
+
+read -p "Is this meant to be a Rocket stable build? [y/N] " isStable
+read -p "What is the Rocket version number? " rocketVersion
+
+snapshotType=""
+
+if [ "$isStable" == "y" ]; then # If we are building a stable tar.gz
+	snapshotType="stable"
+else
+	snapshotType="devel"
+fi
+
+createSnapshot $snapshotType $rocketVersion

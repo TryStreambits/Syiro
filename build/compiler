@@ -4,10 +4,43 @@ currentDirectory=$(pwd) # Get the current directory
 currentDirectory=${currentDirectory%build*} #Remove the build folder, if it exists, from the directory path
 
 cd "$currentDirectory"
-source "build/compiler/compilerFunctions"
 
 anyFilesChanged=false # Global anyFilesChanged tracks if any files are changed. If so we recompiling a devel.tar.gz.
 declare -a filesThatHaveChanged # Create an array to hold the names of the files that have changed
+
+fileChanged(){ # Function that checks if a file is new or has been changed
+	sourceLocation=$1
+	fileFullPath=$2
+
+	mkdir -p build/sha1sums/"$sourceLocation" # Make the type specific sha1sums folder if it doesn't exist already
+
+	file=${fileFullPath#*/} # Set file to be the name of the file without the path
+	fileShaSumPath="build/sha1sums/$sourceLocation/$file" # Set the full patch of the potential sha1sum of the file
+
+	latestFileSum=$(cat "src/$sourceLocation/$fileFullPath" | sha1sum) # Get the sha1sum of the file
+	latestFileSum=${latestFileSum% -} # Remove everything after  -, which is sha1sum's reference to the file that was hashed
+	latestFileSum=${latestFileSum:0:-1} # Remove the whitespace from the ending of the sha1sum
+
+	FILE_CHANGED=""
+
+	if [ -f "$fileShaSumPath" ]; then # If the sha1sum file of file exists
+		currentRecordedSumOfFile=$(cat "$fileShaSumPath") # Get the sha1sum of the file stored
+
+		if [ "$latestFileSum" != "$currentRecordedSumOfFile" ]; then # If the sums don't match (file diff)
+			FILE_CHANGED="CHANGED"
+		else
+			FILE_CHANGED="NOT_CHANGED"
+		fi
+	else # If the sha1sum of the file does not exist
+		FILE_CHANGED="CHANGED" # Assume the file has been changed, since there is no sum and it could be a new file
+	fi
+
+	if [ $FILE_CHANGED == "CHANGED" ]; then # If the file has been changed or is new, create an sha1sum of the file
+		echo "$latestFileSum" > "$fileShaSumPath" # Write the contents
+	fi
+
+	return
+}
 
 recursiveCompiling(){ # Recursive function for code compiling
 	sourceLocation=$1 # Set sourceLocation as the second location

@@ -67,11 +67,7 @@ module rocket.listitem {
 				}
 			}
 			else if (propertyKey == "label"){ // If we are adding a label
-				var labelComponent : HTMLElement = rocket.generator.ElementCreator(null, "label", // Create a label within the "label" (labelception) to hold the defined text.
-					{
-						"content" : properties["label"] // Set the text content of the Dropdown's label label (yes, two intentional labels) to the text defined
-					}
-				);
+				var labelComponent : HTMLElement = rocket.generator.ElementCreator("label", { "content" : properties["label"] }); // Create a label within the "label" (labelception) to hold the defined text.
 				componentElement.insertBefore(labelComponent, componentElement.firstChild); // Prepend the label to the List Item component
 			}
 		}
@@ -98,7 +94,7 @@ module rocket.listitem {
 					listItemLabelElement = listItemElement.querySelector("label"); // Set listItemLabelElement as the queried label tag from listItemElement
 				}
 				else{
-					listItemLabelElement = rocket.generator.ElementCreator(null, "label"); // Create a label and assign it to the listItemLabelElement
+					listItemLabelElement = rocket.generator.ElementCreator("label"); // Create a label and assign it to the listItemLabelElement
 					listItemElement.insertBefore(listItemLabelElement, listItemElement.firstChild); // Prepend the label
 				}
 

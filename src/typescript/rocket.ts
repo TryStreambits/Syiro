@@ -1,5 +1,5 @@
 /*
-	This is the aggregate of all the Rocket modules into a unified interface
+	This is the aggregate of all the Rocket modules into a unified module
 */
 /// <reference path="component.ts" />
 /// <reference path="device.ts" />
@@ -43,7 +43,7 @@ module rocket {
 		}
 
 		if (documentHeadSection.querySelector('meta[name="viewport"]') == null){ // If the viewportMetaTag does NOT exist
-			var viewportMetaTag : HTMLElement = rocket.generator.ElementCreator(null, "meta", { "name" : "viewport", "content-attr" : "width=device-width, initial-scale=1,user-scalable=no"}); // Create a meta tag, setting attributes to enable scaling and disable zooming
+			var viewportMetaTag : HTMLElement = rocket.generator.ElementCreator("meta", { "name" : "viewport", "content-attr" : "width=device-width, initial-scale=1,user-scalable=no"} ); // Create a meta tag, setting attributes to enable scaling and disable zooming
 			documentHeadSection.appendChild(viewportMetaTag); // Append the meta tag
 		}
 

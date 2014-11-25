@@ -17,7 +17,7 @@ module rocket.footer {
 			if (propertyKey == "items"){ // If we are adding items to the Footer
 				for (var individualItem in properties["items"]){ // For each individualItem in navigationItems Object array
 					if (properties["items"][individualItem]["type"] == "link"){ // If we are adding a link
-						var generatedElement : HTMLElement = rocket.generator.ElementCreator(null, "a", // Generate a generic link element
+						var generatedElement : HTMLElement = rocket.generator.ElementCreator("a", // Generate a generic link element
 							{
 								"href" : properties["items"][individualItem]["link"], // Set the href (link)
 								"content" : properties["items"][individualItem]["content"] // Also set the inner content of the <a> tag to title
@@ -29,7 +29,7 @@ module rocket.footer {
 				}
 			}
 			else if (propertyKey == "content"){ // If we are adding a Footer label
-				var generatedElement : HTMLElement = rocket.generator.ElementCreator(null, "label", { "content" : properties["content"] }); // Generate a generic label element
+				var generatedElement : HTMLElement = rocket.generator.ElementCreator("label", { "content" : properties["content"] }); // Generate a generic label element
 				componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the footer
 			}
 		}
@@ -50,7 +50,7 @@ module rocket.footer {
 				var labelComponent : Element = document.querySelector("pre"); // Fetch the labelComponent if it exists
 
 				if (labelComponent == null){ // If the labelComponent does not exist
-					labelComponent = rocket.generator.ElementCreator(null, "pre", { "content" : labelText }); // Create a label Element with the content set to labelText
+					labelComponent = rocket.generator.ElementCreator("pre", { "content" : labelText }); // Create a label Element with the content set to labelText
 					parentElement.insertBefore(labelComponent, parentElement.firstChild); // Pre-emptively insert the empty label
 				}
 				else{ // If the labelComponent does exist

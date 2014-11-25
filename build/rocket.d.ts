@@ -51,7 +51,7 @@ declare module rocket.device {
 declare module rocket.generator {
     var lastUniqueIds: Object;
     function IdGen(type: string): string;
-    function ElementCreator(componentId: any, componentType: string, attributes?: Object): HTMLElement;
+    function ElementCreator(...args: any[]): HTMLElement;
 }
 declare module rocket.header {
     function Generate(properties: Object): Object;

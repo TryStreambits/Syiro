@@ -23,7 +23,7 @@ module rocket.header {
 						delete rocket.component.storedComponents[dropdownComponent["id"]]; // Delete the Component from the storedComponents
 					}
 					else if (properties["items"][individualItem]["type"] == "link"){ // If we are adding a link
-						var generatedElement : HTMLElement = rocket.generator.ElementCreator(null, "a", // Generate a generic link element
+						var generatedElement : HTMLElement = rocket.generator.ElementCreator("a", // Generate a generic link element
 							{
 								"href" : properties["items"][individualItem]["link"], // Set the href (link)
 								"content" : properties["items"][individualItem]["content"] // Also set the inner content of the <a> tag to title
@@ -35,7 +35,7 @@ module rocket.header {
 				}
 			}
 			else if (propertyKey == "logo"){ // If we are adding a Logo to the Header
-				var generatedElement : HTMLElement = rocket.generator.ElementCreator(null, "img",
+				var generatedElement : HTMLElement = rocket.generator.ElementCreator("img",
 					{
 						"data-rocket-minor-component" : "logo", // Set the minor component to logo
 						"src" : properties["logo"] // Set the src to the one provided as the value of "logo"
@@ -60,12 +60,7 @@ module rocket.header {
 		var imageElement : Element = headerElement.querySelector('img[data-rocket-minor-component="logo"]'); // Set imageElement as the IMG element we will either fetch or generate
 
 		if (imageElement == null){ // If there is NOT already a logo in the header component
-			imageElement = rocket.generator.ElementCreator(null, "img", // Create an imageElement
-				{
-					"data-rocket-minor-component" : "logo", // Make sure it is a minor logo component
-					"src" : image // Set the image source
-				}
-			);
+			imageElement = rocket.generator.ElementCreator("img", { "data-rocket-minor-component" : "logo", "src" : image }); // Create an imageElement
 
 			headerElement.insertBefore(imageElement, headerElement.firstChild); // Prepend the logo component
 		}

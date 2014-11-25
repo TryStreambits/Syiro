@@ -3,7 +3,7 @@
 */
 
 /// <reference path="rocket.ts" />
-/// <reference path="interfaces/component-object.ts" />
+/// <reference path="interfaces.ts" />
 
 module rocket.component {
 	export var listenerStrings : Object = { // Set rocket.component.listenerStrings as an Object containing commonly used event lister combinations
@@ -187,7 +187,7 @@ module rocket.component {
 
 	// #region Component Add Listener Function
 
-	export function AddListeners(... args : any[]) : boolean { // Takes (optional) space-separated listeners, component Object, and the handler function.
+	export function AddListeners(... args : any[]) : boolean { // Takes (optional) space-separated listeners, Component Object or a generic Element, and the handler function.
 		var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
 		var listeners : any; // Define listeners as a string
 		var component : Object; // Define Component as a Component Object

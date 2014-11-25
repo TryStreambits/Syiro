@@ -2,7 +2,7 @@
  This is the module for information and functionality Rocket provides regarding the device using Rocket.
 */
 
-/// <reference path="interfaces/component-object.ts" />
+/// <reference path="interfaces.ts" />
 
 // #region Rocket Device Information and Functionality
 

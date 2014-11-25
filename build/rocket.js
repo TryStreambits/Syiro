@@ -395,24 +395,34 @@ var rocket;
             return (type + newUniqueIdOfType.toString());
         }
         generator.IdGen = IdGen;
-        function ElementCreator(componentId, componentType, attributes) {
-            var componentElement;
-            if (componentId !== null) {
+        function ElementCreator() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var attributes;
+            var generatedElement;
+            if (((args.length == 2) && (typeof args[1] == "string")) || (args.length == 3)) {
+                var componentId = args[0];
+                var componentType = args[1];
+                attributes = args[2];
                 if ((componentType == "header") || (componentType == "footer")) {
-                    componentElement = document.createElement(componentType);
+                    generatedElement = document.createElement(componentType);
                 }
                 else if (componentType == "searchbox") {
-                    componentElement = document.createElement("input");
-                    componentElement.setAttribute("type", "text");
+                    generatedElement = document.createElement("input");
+                    generatedElement.setAttribute("type", "text");
                 }
                 else {
-                    componentElement = document.createElement("div");
+                    generatedElement = document.createElement("div");
                 }
-                componentElement.setAttribute("data-rocket-component-id", componentId);
-                componentElement.setAttribute("data-rocket-component", componentType);
+                generatedElement.setAttribute("data-rocket-component-id", componentId);
+                generatedElement.setAttribute("data-rocket-component", componentType);
             }
             else {
-                componentElement = document.createElement(componentType);
+                console.log(args);
+                attributes = args[1];
+                generatedElement = document.createElement(args[0]);
             }
             if (attributes !== undefined) {
                 for (var attributeKey in attributes) {
@@ -421,7 +431,7 @@ var rocket;
                         if (attributeKey == "content-attr") {
                             attributeKey = "content";
                         }
-                        componentElement.setAttribute(attributeKey, attributeValue);
+                        generatedElement.setAttribute(attributeKey, attributeValue);
                     }
                     else {
                         var innerComponentContent = attributeValue;
@@ -429,11 +439,11 @@ var rocket;
                         innerComponentContent = innerComponentContent.replace(">", "");
                         innerComponentContent = innerComponentContent.replace("&lt;", "");
                         innerComponentContent = innerComponentContent.replace("&gt;", "");
-                        componentElement.textContent = innerComponentContent;
+                        generatedElement.textContent = innerComponentContent;
                     }
                 }
             }
-            return componentElement;
+            return generatedElement;
         }
         generator.ElementCreator = ElementCreator;
     })(generator = rocket.generator || (rocket.generator = {}));
@@ -454,7 +464,7 @@ var rocket;
                             delete rocket.component.storedComponents[dropdownComponent["id"]];
                         }
                         else if (properties["items"][individualItem]["type"] == "link") {
-                            var generatedElement = rocket.generator.ElementCreator(null, "a", {
+                            var generatedElement = rocket.generator.ElementCreator("a", {
                                 "href": properties["items"][individualItem]["link"],
                                 "content": properties["items"][individualItem]["content"]
                             });
@@ -463,7 +473,7 @@ var rocket;
                     }
                 }
                 else if (propertyKey == "logo") {
-                    var generatedElement = rocket.generator.ElementCreator(null, "img", {
+                    var generatedElement = rocket.generator.ElementCreator("img", {
                         "data-rocket-minor-component": "logo",
                         "src": properties["logo"]
                     });
@@ -478,10 +488,7 @@ var rocket;
             var headerElement = rocket.component.Fetch(component);
             var imageElement = headerElement.querySelector('img[data-rocket-minor-component="logo"]');
             if (imageElement == null) {
-                imageElement = rocket.generator.ElementCreator(null, "img", {
-                    "data-rocket-minor-component": "logo",
-                    "src": image
-                });
+                imageElement = rocket.generator.ElementCreator("img", { "data-rocket-minor-component": "logo", "src": image });
                 headerElement.insertBefore(imageElement, headerElement.firstChild);
             }
             else {
@@ -511,7 +518,7 @@ var rocket;
                 if (propertyKey == "items") {
                     for (var individualItem in properties["items"]) {
                         if (properties["items"][individualItem]["type"] == "link") {
-                            var generatedElement = rocket.generator.ElementCreator(null, "a", {
+                            var generatedElement = rocket.generator.ElementCreator("a", {
                                 "href": properties["items"][individualItem]["link"],
                                 "content": properties["items"][individualItem]["content"]
                             });
@@ -520,7 +527,7 @@ var rocket;
                     }
                 }
                 else if (propertyKey == "content") {
-                    var generatedElement = rocket.generator.ElementCreator(null, "label", { "content": properties["content"] });
+                    var generatedElement = rocket.generator.ElementCreator("label", { "content": properties["content"] });
                     componentElement.insertBefore(generatedElement, componentElement.firstChild);
                 }
             }
@@ -534,7 +541,7 @@ var rocket;
                     var parentElement = rocket.component.Fetch(component);
                     var labelComponent = document.querySelector("pre");
                     if (labelComponent == null) {
-                        labelComponent = rocket.generator.ElementCreator(null, "pre", { "content": labelText });
+                        labelComponent = rocket.generator.ElementCreator("pre", { "content": labelText });
                         parentElement.insertBefore(labelComponent, parentElement.firstChild);
                     }
                     else {
@@ -608,7 +615,7 @@ var rocket;
                     if (properties["default"] == undefined) {
                         properties["default"] = false;
                     }
-                    var buttonToggle = rocket.generator.ElementCreator(null, "div", {
+                    var buttonToggle = rocket.generator.ElementCreator("div", {
                         "data-rocket-minor-component": "buttonToggle",
                         "data-rocket-component-status": properties["default"].toString()
                     });
@@ -682,9 +689,7 @@ var rocket;
                     }
                 }
                 else if (propertyKey == "label") {
-                    var labelComponent = rocket.generator.ElementCreator(null, "label", {
-                        "content": properties["label"]
-                    });
+                    var labelComponent = rocket.generator.ElementCreator("label", { "content": properties["label"] });
                     componentElement.insertBefore(labelComponent, componentElement.firstChild);
                 }
             }
@@ -702,7 +707,7 @@ var rocket;
                         listItemLabelElement = listItemElement.querySelector("label");
                     }
                     else {
-                        listItemLabelElement = rocket.generator.ElementCreator(null, "label");
+                        listItemLabelElement = rocket.generator.ElementCreator("label");
                         listItemElement.insertBefore(listItemLabelElement, listItemElement.firstChild);
                     }
                     listItemLabelElement.textContent = content;
@@ -753,20 +758,20 @@ var rocket;
                 }
                 else if (propertyKey == "label") {
                     var labelProperties = properties["label"];
-                    var dropdownLabel = rocket.generator.ElementCreator(null, "div", {
+                    var dropdownLabel = rocket.generator.ElementCreator("div", {
                         "data-rocket-minor-component": "dropdown-label"
                     });
                     if (labelProperties["icon"] !== undefined) {
                         dropdownLabel.style.backgroundImage = labelProperties["icon"];
                     }
                     if (labelProperties["image"] !== undefined) {
-                        var dropdownLabelImage = rocket.generator.ElementCreator(null, "img", {
+                        var dropdownLabelImage = rocket.generator.ElementCreator("img", {
                             "src": labelProperties["image"]
                         });
                         dropdownLabel.appendChild(dropdownLabelImage);
                     }
                     if (labelProperties["content"] !== undefined) {
-                        var dropdownLabelText = rocket.generator.ElementCreator(null, "label", {
+                        var dropdownLabelText = rocket.generator.ElementCreator("label", {
                             "content": labelProperties["content"]
                         });
                         dropdownLabel.appendChild(dropdownLabelText);
@@ -807,7 +812,7 @@ var rocket;
             var dropdownLabelImage = dropdownLabel.querySelector("img");
             if (content !== false) {
                 if (dropdownLabelImage == null) {
-                    dropdownLabelImage = rocket.generator.ElementCreator(null, "img");
+                    dropdownLabelImage = rocket.generator.ElementCreator("img");
                     dropdownLabel.insertBefore(dropdownLabelImage, dropdownLabel.firstChild);
                 }
                 dropdownLabelImage.setAttribute("src", content);
@@ -1076,7 +1081,7 @@ var rocket;
                 else {
                     sourceType = "quicktime";
                 }
-                var sourceTag = rocket.generator.ElementCreator(null, "source", {
+                var sourceTag = rocket.generator.ElementCreator("source", {
                     "src": source,
                     "type": (type + "/" + sourceType)
                 });
@@ -1097,8 +1102,8 @@ var rocket;
             var playButton = rocket.button.Generate({
                 "data-rocket-minor-component": "player-button-play"
             });
-            var inputRange = rocket.generator.ElementCreator(null, "input", { "type": "range", "value": "0" });
-            var timeStamp = rocket.generator.ElementCreator(null, "time", { "content": "00:00 / 00:00" });
+            var inputRange = rocket.generator.ElementCreator("input", { "type": "range", "value": "0" });
+            var timeStamp = rocket.generator.ElementCreator("time", { "content": "00:00 / 00:00" });
             var volumeButton = rocket.button.Generate({
                 "data-rocket-minor-component": "player-button-volume"
             });
@@ -1166,7 +1171,7 @@ var rocket;
             if (properties["sources"] !== undefined) {
                 var componentId = rocket.generator.IdGen("audio-player");
                 var componentElement = rocket.generator.ElementCreator(componentId, "audio-player");
-                var audioPlayer = rocket.generator.ElementCreator(null, "audio", {
+                var audioPlayer = rocket.generator.ElementCreator("audio", {
                     "preload": "metadata",
                     "volume": "0.5"
                 });
@@ -1177,19 +1182,19 @@ var rocket;
                 }
                 componentElement.appendChild(audioPlayer);
                 if ((properties["art"] !== undefined) && (properties["title"] !== undefined)) {
-                    var playerInformation = rocket.generator.ElementCreator(null, "div", {
+                    var playerInformation = rocket.generator.ElementCreator("div", {
                         "data-rocket-minor-component": "player-information"
                     });
-                    var playerTextualInformation = rocket.generator.ElementCreator(null, "section");
-                    playerInformation.appendChild(rocket.generator.ElementCreator(null, "img", { "src": properties["art"] }));
-                    var audioTitle = rocket.generator.ElementCreator(null, "b", { "content": properties["title"] });
+                    var playerTextualInformation = rocket.generator.ElementCreator("section");
+                    playerInformation.appendChild(rocket.generator.ElementCreator("img", { "src": properties["art"] }));
+                    var audioTitle = rocket.generator.ElementCreator("b", { "content": properties["title"] });
                     playerTextualInformation.appendChild(audioTitle);
                     if (properties["artist"] !== undefined) {
-                        var artistInfo = rocket.generator.ElementCreator(null, "label", { "content": properties["artist"] });
+                        var artistInfo = rocket.generator.ElementCreator("label", { "content": properties["artist"] });
                         playerTextualInformation.appendChild(artistInfo);
                     }
                     if (properties["album"] !== undefined) {
-                        var albumInfo = rocket.generator.ElementCreator(null, "label", { "content": properties["album"] });
+                        var albumInfo = rocket.generator.ElementCreator("label", { "content": properties["album"] });
                         playerTextualInformation.appendChild(albumInfo);
                     }
                     playerInformation.appendChild(playerTextualInformation);
@@ -1217,16 +1222,10 @@ var rocket;
                 var componentId = rocket.generator.IdGen("video-player");
                 var componentElement = rocket.generator.ElementCreator(componentId, "video-player");
                 if (properties["art"] !== undefined) {
-                    var posterImageElement = rocket.generator.ElementCreator(null, "img", {
-                        "data-rocket-minor-component": "video-poster",
-                        "src": properties["art"]
-                    });
+                    var posterImageElement = rocket.generator.ElementCreator("img", { "data-rocket-minor-component": "video-poster", "src": properties["art"] });
                     componentElement.appendChild(posterImageElement);
                 }
-                var videoPlayer = rocket.generator.ElementCreator(null, "video", {
-                    "preload": "metadata",
-                    "volume": "0.5"
-                });
+                var videoPlayer = rocket.generator.ElementCreator("video", { "preload": "metadata", "volume": "0.5" });
                 videoPlayer.autoplay = false;
                 var arrayofSourceElements = rocket.player.FetchSources("video", properties["sources"]);
                 for (var sourceElementKey in arrayofSourceElements) {
@@ -1298,7 +1297,7 @@ var rocket;
             document.querySelector("html").insertBefore(documentHeadSection, document.querySelector("head").querySelector("body"));
         }
         if (documentHeadSection.querySelector('meta[name="viewport"]') == null) {
-            var viewportMetaTag = rocket.generator.ElementCreator(null, "meta", { "name": "viewport", "content-attr": "width=device-width, initial-scale=1,user-scalable=no" });
+            var viewportMetaTag = rocket.generator.ElementCreator("meta", { "name": "viewport", "content-attr": "width=device-width, initial-scale=1,user-scalable=no" });
             documentHeadSection.appendChild(viewportMetaTag);
         }
         if (MutationObserver !== undefined) {

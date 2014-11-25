@@ -33,7 +33,7 @@ module rocket.button {
 					properties["default"] = false; // Set the default state to false
 				}
 
-				var buttonToggle = rocket.generator.ElementCreator(null, "div", // Create a button toggle (differs from the toggle button itself in that it is the button that gets pressed to toggle the toggle button)
+				var buttonToggle = rocket.generator.ElementCreator("div", // Create a button toggle (differs from the toggle button itself in that it is the button that gets pressed to toggle the toggle button)
 					{
 						"data-rocket-minor-component" : "buttonToggle", // Set the buttonToggle data-rocket-minor-component attribute to buttonToggle
 						"data-rocket-component-status" : properties["default"].toString() // Set the buttonToggle default state to either the one defined or false

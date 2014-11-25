@@ -15,6 +15,9 @@ module rocket.player {
         var componentElement : Element = rocket.component.Fetch(component); // Fetch the Component Element
         var innerContentElement : HTMLMediaElement = rocket.player.GetInnerContentElement(component); // Fetch the Audio or Video Player Element
 
+        var clickDownListeners = ["mousedown", "MSPointerDown", "touchstart"]; // Listeners for mousedown events
+        var clickUpListeners = ["mouseup", "MSPointerUp", "touchend"]; // Listeners for mouseup events
+
         // #region Player Controls List
         var playerControlArea = componentElement.querySelector('div[data-rocket-component="player-control"]'); // Get the Player Control section
         var playerControlComponent : Object = rocket.component.FetchComponentObject(playerControlArea); // Get the Player Control Component Object
@@ -63,6 +66,64 @@ module rocket.player {
 
         // #endregion
 
+        // #region Video Player Specific Functionality
+
+        if (component["type"] == "video-player"){ // If this is a Video Player Component
+
+            // #region Poster Art Check
+
+            var posterImageElement : Element = componentElement.querySelector('img[data-rocket-minor-component="video-poster"]'); // Get the video poster img tag if it exists
+
+            if (posterImageElement !== null){ // If the posterImageElement exists
+                rocket.component.CSS(playerControlComponent, "opacity", "0.8"); // Set opacity to 80%
+
+                for (var listenerKey in clickUpListeners){ // For each listener
+                    posterImageElement.addEventListener(clickUpListeners[listenerKey],
+                        function(){
+                            var playerElementComponent : Object = arguments[0]; // Get the Component we passed
+                            var posterImageElement : Element = arguments[1]; // Get the posterImageElement we passed
+                            var e : MouseEvent = arguments[2]; // Get the Mouse Event typically passed to the function
+
+                            if (e.button == 0){
+                                posterImageElement.setAttribute("style", "display: none"); // Hide the element
+                                rocket.player.PlayOrPause(playerElementComponent); // Play the video
+                            }
+                        }.bind(this, component, posterImageElement) // Call with "this", the Player Component Object, and the posterImageElement
+                    );
+                }
+            }
+
+            // #endregion
+
+            // #region Video Click Handling
+
+            for (var listenerKey in clickUpListeners){ // For each listener
+                innerContentElement.addEventListener(clickUpListeners[listenerKey],
+                    function(){
+                        var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
+                        if (e.button == 0){
+                            var playerElementComponent : Object = arguments[0]; // Get the Component we passed
+                            rocket.player.PlayOrPause(playerElementComponent); // Play the video
+                        }
+                    }.bind(this, component) // Call with "this", the Player Component Object, and the posterImageElement
+                );
+            }
+
+            // #endregion
+
+            // #region Video ContextMenu Prevention
+
+            componentElement.addEventListener("contextmenu", // When the contextmenu is requested
+                function(e : Event){
+                    e.preventDefault(); // Prevent the default action, like showing a context menu for the poster image, or context menu for the video
+                }
+            );
+
+            // #endregion
+        }
+
+        // #endregion
+
         // #region Player Control Listeners
 
             // #region Play Button Listener
@@ -89,11 +150,8 @@ module rocket.player {
 
             // #region Player Range Initialization
 
-            var playerRangeDownListeners = ["mousedown", "MSPointerDown", "touchstart"]; // Listeners for mousedown events
-            var playerRangeUpListeners = ["mouseup", "MSPointerUp", "touchend"]; // Listeners for mouseup events
-
-            for (var listenerKey in playerRangeDownListeners){ // For each listener
-                playerRange.addEventListener(playerRangeDownListeners[listenerKey], // When the individual first starts changing the player range value
+            for (var listenerKey in clickDownListeners){ // For each listener
+                playerRange.addEventListener(clickDownListeners[listenerKey], // When the individual first starts changing the player range value
                     function(){
                         var playerControlComponent : Object = arguments[0]; // Get the Player Control Component passed by binding
                         var playerControl : Element = rocket.component.Fetch(playerControlComponent); // Fetch the Player Control Element
@@ -104,8 +162,8 @@ module rocket.player {
                 );
             }
 
-            for (var listenerKey in playerRangeUpListeners){ // For each listener
-                playerRange.addEventListener(playerRangeUpListeners[listenerKey], rocket.player.TimeOrVolumeChanger.bind(this, playerControlComponent)); // When the individual lets go of the mouse / tap, call the TimeOrVolumeChanger()
+            for (var listenerKey in clickUpListeners){ // For each listener
+                playerRange.addEventListener(clickUpListeners[listenerKey], rocket.player.TimeOrVolumeChanger.bind(this, playerControlComponent)); // When the individual lets go of the mouse / tap, call the TimeOrVolumeChanger()
             }
 
             // #endregion
@@ -283,6 +341,17 @@ module rocket.player {
                 var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
                 var playerMediaLengthInformation : Object = rocket.player.GetPlayerLengthInfo(component); // Get information about the appropriate settings for the input range
 
+                // #region Poster Image Hiding
+
+                var posterImageElement : HTMLElement = playerComponentElement.querySelector('img[data-rocket-minor-component="video-poster"]'); // Get the video poster img tag if it exists
+
+                if (posterImageElement !== null){ // If the posterImageElement is defined
+                    posterImageElement.setAttribute("style", "display: none"); // Hide the element
+                    rocket.component.CSS(playerControlComponent, "opacity", false); // Remove opacity setting
+                }
+
+                // #endregion
+
                 for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
                     playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
 
@@ -292,14 +361,13 @@ module rocket.player {
                 }
             }
 
-            if (innerContentElement.paused == false){ // If the audio or video Element is playing
+            if (innerContentElement.paused !== true){ // If the audio or video Element is playing
                 innerContentElement.pause(); // Pause the audio or video Element
                 rocket.component.CSS(playButtonComponentObject, "background-image", false); // Remove the background-image style / reset to play
             }
             else{ // If the audio or video Element is paused
                 innerContentElement.play(); // Play the audio or video Element
-
-                rocket.component.CSS(playButtonComponentObject, "background-image", "url(img/pause.png)"); // Set background-image to pause
+                rocket.component.CSS(playButtonComponentObject, "background-image", "url(css/img/pause.png)"); // Set background-image to pause
             }
         }
     }
@@ -506,7 +574,13 @@ module rocket.videoplayer {
             };
 
             if (properties["art"] !== undefined){ // If art has been defined
-                videoPlayerAttributes["poster"] = properties["art"]; // Define the poster attribute as the art
+                var posterImageElement : HTMLElement = rocket.generator.ElementCreator(null, "img", // Create an img Element with the src set to the artwork
+                    {
+                        "data-rocket-minor-component" : "video-poster",
+                        "src" : properties["art"]
+                    }
+                );
+                componentElement.appendChild(posterImageElement); // Append to the Video Player container
             }
 
             var videoPlayer : HTMLElement = rocket.generator.ElementCreator(null, "video", videoPlayerAttributes); // Create the video player

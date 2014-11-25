@@ -840,6 +840,8 @@ var rocket;
         function Init(component) {
             var componentElement = rocket.component.Fetch(component);
             var innerContentElement = rocket.player.GetInnerContentElement(component);
+            var clickDownListeners = ["mousedown", "MSPointerDown", "touchstart"];
+            var clickUpListeners = ["mouseup", "MSPointerUp", "touchend"];
             var playerControlArea = componentElement.querySelector('div[data-rocket-component="player-control"]');
             var playerControlComponent = rocket.component.FetchComponentObject(playerControlArea);
             var playerRange = playerControlArea.querySelector('input[type="range"]');
@@ -861,6 +863,35 @@ var rocket;
                     playerRange.value = 0;
                 }
             }.bind(this, component));
+            if (component["type"] == "video-player") {
+                var posterImageElement = componentElement.querySelector('img[data-rocket-minor-component="video-poster"]');
+                if (posterImageElement !== null) {
+                    rocket.component.CSS(playerControlComponent, "opacity", "0.8");
+                    for (var listenerKey in clickUpListeners) {
+                        posterImageElement.addEventListener(clickUpListeners[listenerKey], function () {
+                            var playerElementComponent = arguments[0];
+                            var posterImageElement = arguments[1];
+                            var e = arguments[2];
+                            if (e.button == 0) {
+                                posterImageElement.setAttribute("style", "display: none");
+                                rocket.player.PlayOrPause(playerElementComponent);
+                            }
+                        }.bind(this, component, posterImageElement));
+                    }
+                }
+                for (var listenerKey in clickUpListeners) {
+                    innerContentElement.addEventListener(clickUpListeners[listenerKey], function () {
+                        var e = arguments[1];
+                        if (e.button == 0) {
+                            var playerElementComponent = arguments[0];
+                            rocket.player.PlayOrPause(playerElementComponent);
+                        }
+                    }.bind(this, component));
+                }
+                componentElement.addEventListener("contextmenu", function (e) {
+                    e.preventDefault();
+                });
+            }
             var playButtonComponent = rocket.component.FetchComponentObject(playerControlArea.querySelector('div[data-rocket-minor-component="player-button-play"]'));
             rocket.component.AddListeners(playButtonComponent, function () {
                 var playButtonComponent = arguments[0];
@@ -869,18 +900,16 @@ var rocket;
                 var playerElementComponent = rocket.component.FetchComponentObject(playerElement);
                 rocket.player.PlayOrPause(playerElementComponent, playButtonComponent);
             });
-            var playerRangeDownListeners = ["mousedown", "MSPointerDown", "touchstart"];
-            var playerRangeUpListeners = ["mouseup", "MSPointerUp", "touchend"];
-            for (var listenerKey in playerRangeDownListeners) {
-                playerRange.addEventListener(playerRangeDownListeners[listenerKey], function () {
+            for (var listenerKey in clickDownListeners) {
+                playerRange.addEventListener(clickDownListeners[listenerKey], function () {
                     var playerControlComponent = arguments[0];
                     var playerControl = rocket.component.Fetch(playerControlComponent);
                     var playerRange = playerControl.querySelector("input");
                     playerRange.parentElement.parentElement.setAttribute("data-rocket-component-status", "true");
                 }.bind(this, component));
             }
-            for (var listenerKey in playerRangeUpListeners) {
-                playerRange.addEventListener(playerRangeUpListeners[listenerKey], rocket.player.TimeOrVolumeChanger.bind(this, playerControlComponent));
+            for (var listenerKey in clickUpListeners) {
+                playerRange.addEventListener(clickUpListeners[listenerKey], rocket.player.TimeOrVolumeChanger.bind(this, playerControlComponent));
             }
             var volumeButtonComponent = rocket.component.FetchComponentObject(playerControlArea.querySelector('div[data-rocket-minor-component="player-button-volume"]'));
             rocket.component.AddListeners(volumeButtonComponent, function () {
@@ -993,6 +1022,11 @@ var rocket;
                     var playerControlComponent = rocket.component.FetchComponentObject(playButton.parentElement);
                     var playerRange = playerComponentElement.querySelector('input[type="range"]');
                     var playerMediaLengthInformation = rocket.player.GetPlayerLengthInfo(component);
+                    var posterImageElement = playerComponentElement.querySelector('img[data-rocket-minor-component="video-poster"]');
+                    if (posterImageElement !== null) {
+                        posterImageElement.setAttribute("style", "display: none");
+                        rocket.component.CSS(playerControlComponent, "opacity", false);
+                    }
                     for (var playerRangeAttribute in playerMediaLengthInformation) {
                         playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]);
                         if (playerRangeAttribute == "max") {
@@ -1000,13 +1034,13 @@ var rocket;
                         }
                     }
                 }
-                if (innerContentElement.paused == false) {
+                if (innerContentElement.paused !== true) {
                     innerContentElement.pause();
                     rocket.component.CSS(playButtonComponentObject, "background-image", false);
                 }
                 else {
                     innerContentElement.play();
-                    rocket.component.CSS(playButtonComponentObject, "background-image", "url(img/pause.png)");
+                    rocket.component.CSS(playButtonComponentObject, "background-image", "url(css/img/pause.png)");
                 }
             }
         }
@@ -1145,7 +1179,11 @@ var rocket;
                     "volume": "0.5"
                 };
                 if (properties["art"] !== undefined) {
-                    videoPlayerAttributes["poster"] = properties["art"];
+                    var posterImageElement = rocket.generator.ElementCreator(null, "img", {
+                        "data-rocket-minor-component": "video-poster",
+                        "src": properties["art"]
+                    });
+                    componentElement.appendChild(posterImageElement);
                 }
                 var videoPlayer = rocket.generator.ElementCreator(null, "video", videoPlayerAttributes);
                 videoPlayer.autoplay = false;

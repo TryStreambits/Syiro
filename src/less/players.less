@@ -182,12 +182,33 @@ div[data-rocket-component="video-player"]{ // Video Player
     height: 300px;
     width: 450px;
 
+    & > img[data-rocket-minor-component="video-poster"]{ // Video Poster
+        float: left;
+        height: 300px;
+        width: 450px;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        z-index: 5; // Force above the video
+        left: 0; // Force to left
+    }
+
     & > video { // Inner video
         float: left;
         width: 450px;
+
+        &:focus { // When the video is focused, typically on right-click, disable the border / outline
+            border: 0;
+            outline: 0;
+        }
     }
 
-    & > div[data-rocket-component="player-control"] >  input { // Specify input range width for video player
-        width: 220px !important;
+    & > div[data-rocket-component="player-control"] { // Overrides for Video Player's Player Control
+        position: relative;
+        z-index: 6; // Force above video poster
+
+        & >  input { // Specify input range width for video player
+            width: 220px !important;
+        }
     }
 }

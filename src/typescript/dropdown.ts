@@ -11,70 +11,71 @@ module rocket.dropdown {
 	// #region Dropdown Generator
 
 	export function Generate(properties : Object) : Object { // Generate a Dropdown Component and return a Component Object
-		var componentId : string = rocket.generator.IdGen("dropdown"); // Generate a component Id
-		var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "dropdown"); // Generate a Dropdown Element
+		if ((properties["label"] !== undefined) && ((properties["items"] !== undefined) || (properties["list"] !== undefined))){ // If the labeling properties and necessary List or List Item(s) Object(s) are provided
+			var componentId : string = rocket.generator.IdGen("dropdown"); // Generate a component Id
+			var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "dropdown"); // Generate a Dropdown Element
+			var labelProperties : string = properties["label"]; // Get the label properties
 
-		for (var propertyKey in properties){ // Recursive go through each propertyKey
-			if (propertyKey == "items"){ // If we are adding List Items to the Dropdown Inner List
-				var newListComponent = rocket.list.Generate({ "items" : properties["items"]}); // Simply generate a new List component from the provided list items
-				var newListElement = rocket.component.Fetch(newListComponent); // Fetch the new List component element
+			// #region Dropdown Creation
 
-				componentElement.appendChild(newListElement);
-
-				delete rocket.component.storedComponents[newListComponent["id"]]; // Delete the Component from the storedComponents
+			if (labelProperties["image"] !== undefined){ // If an image (like an avatar) is defined in the labelProperties
+				var primaryImage : HTMLElement = rocket.generator.ElementCreator("img", { "src" : labelProperties["image"] }); // Create an img Element with the image source
+				componentElement.appendChild(primaryImage); // Append the primary image
 			}
-			else if (propertyKey == "label"){ // If we are adding a Label to the Dropdown
-				var labelProperties : string = properties["label"]; // Get the label properties
-				var dropdownLabel : HTMLElement = rocket.generator.ElementCreator("div", // Create a documentLabel
-					{
-						"data-rocket-minor-component": "dropdown-label" // Set the Dropdown label to a minor-component.
-					}
-				);
 
-				if (labelProperties["icon"] !== undefined){ // If an icon is defined for the dropdown label
-					dropdownLabel.style.backgroundImage = labelProperties["icon"]; // Set the background image to the icon src provided
-				}
-
-				if (labelProperties["image"] !== undefined){ // If an image is defined for the dropdown label
-					var dropdownLabelImage : Element = rocket.generator.ElementCreator("img", // Create an img element
-						{
-							"src" : labelProperties["image"] // Set the src property
-						}
-					);
-					dropdownLabel.appendChild(dropdownLabelImage); // Append the dropdown image
-				}
-
-				if (labelProperties["content"] !== undefined){ // If text is defined for the dropdown
-					var dropdownLabelText : HTMLElement = rocket.generator.ElementCreator("label", // Create a label within the "label" (labelception) to hold the defined text.
-						{
-							"content" : labelProperties["content"] // Set the text content of the Dropdown's label label (yes, two intentional labels) to the text defined
-						}
-					);
-					dropdownLabel.appendChild(dropdownLabelText); // Append the label to the label.
-				}
-
-				componentElement.insertBefore(dropdownLabel, componentElement.firstChild); // Prepend the dropdown label to the dropdown
+			if (labelProperties["content"] !== undefined){ // If content is defined in the labelProperties
+				var dropdownLabelText : HTMLElement = rocket.generator.ElementCreator("label", { "content" : labelProperties["content"] }); // Create a label for the Dropdown content
+				componentElement.appendChild(dropdownLabelText); // Append the label to the Dropdown
 			}
-			else if (propertyKey == "list") { // If we are adding a List component
-				var listComponent : Element = rocket.component.Fetch(properties[propertyKey]); // Get the list component from the embedded List component Object
-				componentElement.appendChild(listComponent); // Append the List component to the Dropdown
 
-				delete rocket.component.storedComponents[properties[propertyKey]["id"]]; // Delete the Component from the storedComponents
+			if (labelProperties["icon"] !== undefined){ // If an icon is defined in the labelProperties
+				var dropdownIcon : HTMLElement = rocket.generator.ElementCreator("img", { "src" : labelProperties["icon"] }); // Create an img Element with the icon source
+				componentElement.appendChild(dropdownIcon); // Append the icon
 			}
+
+			// #endregion
+
+			// #region Dropdown List Creation or Linking
+
+			var listComponent : Object; // Define listComponent as the Component Object of the List
+
+			if (properties["items"] !== undefined){ // If List Items are provided in the properties
+				listComponent = rocket.list.Generate({ "items" : properties["items"]}); // Simply generate a new List component from the provided list items and set the listComponent Object to the one provided by Generate
+			}
+			else{ // If a List is provided
+				listComponent = properties["list"]; // Simply set the listComponent to the List Component Object that was provided
+			}
+
+			listComponentElement = rocket.component.Fetch(listComponent); // Fetch the List Component Element
+			document.querySelector("body").appendChild(listComponentElement); // Append the List Element to the end of the document
+
+			// #endregion
+
+			// #region Dropdown List Position (For the Dropdown toggling of the List)
+
+			if (properties["position"] == undefined){ // If the position information is NOT defined
+				properties["position"] = { "vertical" : "bottom", "horizontal" : "center"}; // Default to showing the List centered, below the Dropdown
+			}
+
+			listComponentElement.setAttribute("data-rocket-component-render", position["vertical"] + "-" + position["horizontal"]); // Set the data-rocket-component-render to vertical-horizontal (ex. bottom-center)
+
+			// #endregion
+
+			rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
+			return { "id" : componentId, "type" : "dropdown" }; // Return a Component Object
 		}
-
-		rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
-
-		return { "id" : componentId, "type" : "dropdown" }; // Return a Component Object
+		else{ // If the necessary properties are NOT defined
+			return false; // Return false
+		}
 	}
 
 	// #endregion
 
 	// #region Function for fetching the internal List component of the Dropdown. This function is meant to be only a List component
 
-	export function InnerListComponentFetcher(dropdownComponent) : Object {
-		var dropdownElement : Element = rocket.component.Fetch(dropdownComponent); // Get the Element
-		return rocket.component.FetchComponentObject(dropdownElement.querySelector('div[data-rocket-component="list"]')); // Get the Dropdown's List Component Object
+	export function LinkedListComponentFetcher(component) : Object {
+		var listSelector : string = 'div[data-rocket-component="list"][div-data-rocket-component-owner="' + component["id"] + '"]'; // Generate a List CSS selector with the owner set to the Dropdown Component's Id
+		return rocket.component.FetchComponentObject(dropdownElement.querySelector(listSelector)); // Get the Dropdown's Linked Component Object
 	}
 
 	// #endregion
@@ -83,14 +84,13 @@ module rocket.dropdown {
 
 	export function SetText(component : Object, content : any) : void {
 		var dropdownElement : Element = rocket.component.Fetch(component); // Get the Element
-		var dropdownLabel : Element = dropdownElement.querySelector('*[data-rocket-minor-component="dropdown-label"]'); // Get the dropdown component label
-		var dropdownLabelText : Element = dropdownLabel.querySelector("label"); // Get the label
+		var dropdownLabel : Element = dropdownElement.querySelector("label"); // Get the label
 
 		if (content !== false){ // If the content is not set to FALSE
-			dropdownLabelText.textContent = content; // Set the label content to the content provided
+			dropdownLabel.textContent = content; // Set the label content to the content provided
 		}
 		else if (content == false){ // If the content is set to false
-			dropdownLabel.removeChild(dropdownLabelText); // Remove the label image
+			dropdownElement.removeChild(dropdownLabel); // Remove the label
 		}
 
 		rocket.component.Update(component["id"], dropdownElement); // Update the storedComponent HTMLElement if necessary
@@ -102,9 +102,7 @@ module rocket.dropdown {
 
 	export function SetImage(component : Object, content : any) : void {
 		var dropdownElement : Element = rocket.component.Fetch(component); // Get the Element
-		var dropdownLabel : Element = dropdownElement.querySelector('*[data-rocket-minor-component="dropdown-label"]'); // Get the dropdown component label
-
-		var dropdownLabelImage : Element = dropdownLabel.querySelector("img");
+		var dropdownLabelImage : Element = dropdownElement.querySelector("img:first-of-type"); // Get the first image specified
 
 		if (content !== false){ // If the content is not set to FALSE
 			if (dropdownLabelImage == null){ // If the image element does not exist
@@ -151,19 +149,20 @@ module rocket.dropdown {
 
 	// #endregion
 
-	// #region Function for adding an List Item component to the Dropdown's list, where component equals the Dropdown component
+	// #region Function for adding an List Item component to the Dropdown's linked List, where component equals the Dropdown component
 
 	export function AddItem(component : Object, listItemComponent : Object) : void {
-		var listComponentObject = rocket.dropdown.InnerListComponentFetcher(component); // Fetch the internal List component from the Dropdown
+		var listComponentObject = rocket.dropdown.LinkedListComponentFetcher(component); // Fetch the internal List component from the Dropdown
 		rocket.component.Add(true, listComponentObject, listItemComponent); // Add the List Item component to the inner List
 	}
 
 	// #endregion
 
-	// #region Function for removing a List Item component from the Dropdown's list, where component equals the Dropdown component
+	// #region Function for removing a List Item component from the Dropdown's linked List, where component equals the Dropdown component
 
 	export function RemoveItem(component : Object, listItemComponent : Object) : void {
-		rocket.list.RemoveItem(listItemComponent); // Remove the List Item component from the inner List (which we auto-magically get in ```rocket.component.Remove()```)
+		var listComponentObject = rocket.dropdown.LinkedListComponentFetcher(component); // Fetch the internal List component from the Dropdown
+		rocket.component.Remove(listComponentObject, listItemComponent); // Remove the List Item component from the List Component
 	}
 
 	// #endregion

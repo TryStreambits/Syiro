@@ -14,6 +14,10 @@ interface Navigator {
 interface HTMLElement {
     autoplay: boolean;
 }
+interface ClientRect {
+    x: number;
+    y: number;
+}
 interface Window {
     crypto: any;
 }
@@ -24,10 +28,9 @@ declare module rocket.plugin.alternativeInit {
 declare module rocket.component {
     var listenerStrings: Object;
     var storedComponents: Object;
-    var dropdownToggler: Function;
     function Define(type: string, selector: string): Object;
     function Animate(component: Object, animation: string, postAnimationFunction?: Function): void;
-    function CSS(componentObject: Object, property: string, newValue?: any): any;
+    function CSS(component: any, property: string, newValue?: any): any;
     function Fetch(component: Object): any;
     function FetchComponentObject(componentElement: any): Object;
     function Update(componentId: string, componentElement: Element): void;
@@ -80,7 +83,8 @@ declare module rocket.listitem {
 }
 declare module rocket.dropdown {
     function Generate(properties: Object): Object;
-    function InnerListComponentFetcher(dropdownComponent: any): Object;
+    function Toggle(): void;
+    function FetchLinkedListComponentObject(component: any): Object;
     function SetText(component: Object, content: any): void;
     function SetImage(component: Object, content: any): void;
     function SetIcon(component: Object, content: string): void;

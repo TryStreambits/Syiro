@@ -23,7 +23,7 @@ module rocket.button {
 
 		for (var propertyKey in properties){ // Recursive go through each propertyKey
 			if ((propertyKey == "icon") && (properties["type"] == "basic")){ // If we are adding an icon and the button type is basic
-				componentElement.style.backgroundImage = properties["icon"]; // Set the backgroundImage to the icon URL specified
+				rocket.component.CSS(componentElement, "background-image", "url(" + properties["icon"] + ")"); // Set the backgroundImage to the icon URL specified
 			}
 			else if (propertyKey == "content"){ // If we are adding a label
 				componentElement.textContent = properties["content"]; // Set the textContent of the button

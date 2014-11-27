@@ -21,23 +21,10 @@ header[data-rocket-component="header"]{ // Rocket Header Component
 	 	min-height: 80px; // Set the minimal height to 80px
 		margin-top: 0 !important; /* Force the list to be vertically aligned */
 
-		&[data-rocket-component-active] > div[data-rocket-minor-component="dropdown-label"] { // If the Dropdown is "active", change the Dropdown Label
-
-			.icon("dropdown-inverted"); // Change the Dropdown image
-
-			background-color: @rocketPrimaryColor; // Ensure the active Dropdown is differentiated from the other Dropdowns
-			color: @rocketWhite; // Ensure the text viewable
-		}
-
-		& > div[data-rocket-minor-component="dropdown-label"]{ // Dropdown Label Changes
+		& > label{ // Dropdown Label Changes
 			height: 80px; // Match height of the Header component
 			line-height: 80px; // Match height of component
 		}
-
-		& > div[data-rocket-component="list"] > div[data-rocket-component="list-item"]:last-of-type{ // Modify the last List Item of the List slightly
-			margin-bottom: 5px; // Ensure the Dropdown's Inner List has proper bottom "padding"
-		}
-
 	}
 
   	// #endregion

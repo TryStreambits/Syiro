@@ -4,53 +4,48 @@
 div[data-rocket-component="dropdown"]{ // Rocket Dropdown Component
 	float: left;
 	height: auto;
-	width: 200px;
+	min-height: 40px; // Minimum height of 40px
+	min-width: 40px; // Minimum width of 40px
+	max-width: 200px; // Maximum width of 200px
+	width: auto;
 	color: @rocketSecondaryColor;
 	font-size: 16px;
 	text-indent: 10px;
 	line-height: 40px;
+
+	.icon("dropdown", 22); // Add the default dropdown icon
 	background-color: @rocketGrey;
 
-	&[data-rocket-component-active]{ // If the Dropdown is "active"
+	cursor: default; // Default to "arrow" cursor
 
-		.icon("dropdown-inverted"); // Set the Dropdown to the inverted color image
+	&[active]{ // If the Dropdown is "active", change the Dropdown Label
+		color: @rocketWhite; // Ensure the text viewable
+		background-color: @rocketPrimaryColor; // Ensure the active Dropdown is differentiated from the other Dropdowns
 
-		& > div[data-rocket-component="list"]{ // Modify the inner List component
-			display : block !important; // Ensure it is showing
-		}
-	}
+		.icon("dropdown-inverted"); // Change the Dropdown image
+}
 
-	& > div[data-rocket-minor-component="dropdown-label"]{ // Rocket Dropdown Label
-		float: left;
-		height: 40px;
-		min-width: 200px;
-		cursor: default; // Default to "arrow" cursor
-
-		.icon(); // Add the default dropdown icon
-
-		background-position: 95% center;
+	&:not(:empty) { // If the Dropdown has children
+		background-position: 95% center; // Have the Dropdown icon float to the right
 
 		& > img{ // Rocket Dropdown Label Image (Optional)
 			float: left;
 			height: 40px;
 			width: 40px;
 		}
-
-		&::selection{ // If the dropdown is double-clicked, that acts as a text selection
-			background-color: transparent; // Mask that the text was selected by making the background-color transparent.
-		}
 	}
 
-	& > div[data-rocket-component="list"]{ // The Dropdown's List (This is only Dropdown specific CSS)
-		display: none; // Default to not displaying
-		background-color: @rocketWhite;
-		border-top: 2px solid @rocketBorderColor;
-		position: relative; // Align with the the entire dropdown element
-		z-index: 10; // Ensure it floats above other content
+	&:empty { // If the Dropdown is icon-only
+		background-position: center center; // Have the Dropdown icon be centered
+	}
 
-		// Modifier for toggle buttons that do not have a TRUE status within list items in a Dropdown's List
-		& > div[data-rocket-component="list-item"] > div[data-rocket-component="button"][data-rocket-component-type="toggle"]:not([data-rocket-component-status="toggle"]){
-			border: 1px solid @rocketBorderColor; // Allow easy differentiation between list-item background and toggle button
-		}
+	&::selection{ // If the dropdown is double-clicked, that acts as a text selection
+		background-color: transparent; // Mask that the text was selected by making the background-color transparent.
+	}
+
+	& > label{ // Rocket Dropdown Label
+		float: left;
+		height: 40px;
+		min-width: 200px;
 	}
 }

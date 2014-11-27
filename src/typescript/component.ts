@@ -13,24 +13,6 @@ module rocket.component {
 
 	export var storedComponents : Object = {}; // An object that stores generated component(s) / component(s) information
 
-	// #region Common Component Handlers
-
-	export var dropdownToggler : Function = function(){ // Create a function that will handle the dropdown toggling
-		var component : Object = arguments[0]; // Get the component that was passed to this function as a bound argument
-		var dropdownElement : Element = rocket.component.Fetch(component); // Get the dropdownElement based on the component Object
-
-		if (dropdownElement.hasAttribute("data-rocket-component-active")){ // If the Dropdown Component has an "data-rocket-component-active" attribute, that means the Dropdown's inner List is showing
-			dropdownElement = rocket.component.Fetch(component); // Get the dropdown Element based on the Rocket Component Object that was passed
-			dropdownElement.removeAttribute("data-rocket-component-active"); // Remove the active attribute from the Dropdown, making the inner List hidden
-		}
-		else{ // If the Dropdown Component does NOT have an "data-rocket-component-active" attribute
-			dropdownElement = rocket.component.Fetch(component); // Get the dropdown Element based on the Rocket Component Object that was passed
-			dropdownElement.setAttribute("data-rocket-component-active", ""); // Add the data-rocket-component-active attribute to the Dropdown component, setting the List to display
-		}
-	};
-
-	// #endregion
-
 	// #region Defining existing Rocket components
 
 	export function Define(type : string, selector : string) : Object {
@@ -45,7 +27,7 @@ module rocket.component {
 		component["id"] = componentID; // Add the component ID to the object that we will be returning to the developer
 
 		if (type == "dropdown"){ // If we are defining a Dropdown Rocket component
-			rocket.component.AddListeners(rocket.component.listenerStrings["up"], component, rocket.component.dropdownToggler); // Immediately listen to the Dropdown
+			rocket.component.AddListeners(rocket.component.listenerStrings["up"], component, rocket.dropdown.Toggle); // Immediately listen to the Dropdown
 		}
 
 		return component; // Return the component Object
@@ -92,55 +74,81 @@ module rocket.component {
 
 	// #region Component CSS Fetcher / Modifier
 
-	export function CSS(componentObject : Object, property : string, newValue ?: any){
-		var componentElement = rocket.component.Fetch(componentObject); // Get the componentElement
+	export function CSS(component : any, property : string, newValue ?: any){
+		var modifiableElement : Element; // Define modifiableElement as the Element we are going to modify
+		var returnedValue : any; // Define returnedValue as value we are returning
+		var modifiedStyling : boolean = false; // Define modifiedStyling as a boolean value to indicate whether we modified the Element's styling or not. Defaults to false.
 
-		if (componentElement !== null){ // If the componentElement exists in storedComponents or DOM
-			var currentValue : string;  // Define currentValue as the value of the property we are potentially looking for (not applicable for prop setting)
-			var currentComponentCSS = componentElement.getAttribute("style"); // Get the current CSS of the Component
+		if (component["type"] !== undefined){ // If we were provided a Component Object
+			modifiableElement = rocket.component.Fetch(component); // Fetch the Element and assign it to modifiableElement
+		}
+		else{ // If the component is NOT a Rocket Component Object
+			modifiableElement = component; // Treat the component as an Element
+		}
 
-			if ((currentComponentCSS == null) || (currentComponentCSS == undefined)){ // If there is no style attribute in the component
-				currentComponentCSS = ""; // Set to a blank string
+		if (modifiableElement !== null){ // If the modifiableElement is not null (a potential result of rocket.component.Fetch if the Element of the Component does not exist)
+			// #region Element Styling (Since it isn't an HTMLElement) To Element Styling "Object"
+
+			var currentElementStyling = modifiableElement.getAttribute("style");
+			var elementStylingObject = {}; // Define elementStylingObject as an empty Object
+
+			if (currentElementStyling !== null){ // If the modifiableElement has the style attribute
+				var currentElementStylingArray = currentElementStyling.split(";"); // Split currentElementStyling into an array where the separator is the semi-colon
+
+				for (var styleKey in currentElementStylingArray){ // For each CSS property / value in the styling
+					var cssPropertyValue = currentElementStylingArray[styleKey]; // Define cssPropertyValue as this index in currentElementStylingArray
+					if (cssPropertyValue !== ""){ // If the array item value is not empty
+						var propertyValueArray = cssPropertyValue.split(":"); // Split the propery / value based on the colon to an array
+						elementStylingObject[propertyValueArray[0].trim()] = propertyValueArray[1].trim(); // Cleanup the whitespace in the property and value,add it as a key/val in the elementStylingObject
+					}
+				}
 			}
 
-			var indexOfProperty = currentComponentCSS.indexOf(property); // Get the index of the property within the CSS
+			// #endregion
 
-			if (indexOfProperty !== -1){ // If the property exists in the CSS style
-				var endOfProperty = currentComponentCSS.indexOf(";", indexOfProperty); // Get the end of the property based on the location of ; relative to the indexOfProperty
+			var stylePropertyValue : any = elementStylingObject[property]; // Define stylePropertyValue as the value of the property (if any) in the elementStylingObject
 
-				/* Get the current property value as a substring of currentComponentCSS based on indexOfProperty + the length of the property (ex. background-image) + 2 ( SPACE ; )
-					and the index of the first semi-colon after the indexOfProperty (endOfProperty)
-				*/
-				currentValue = currentComponentCSS.substring((indexOfProperty + (property.length + 2)), endOfProperty);
+			if (newValue == undefined){ // If we are fetching the current value rather than modifying or removing it
+				if (stylePropertyValue !== undefined){ // If the elementStylingObject has the property
+					returnedValue = stylePropertyValue; // Define returnedValue as the value of the property
+				}
+				else{ // If the property we are looking for does not exist
+					returnedValue = false; // Define the returnedValuse as false
+				}
 			}
-			else{ // If the property does NOT exist in the CSS style
-				currentValue = "";
+			else if (typeof newValue == "string"){ // If we are updated the value
+				elementStylingObject[property] = newValue; // Assign the newValue to the property
+				modifiedStyling = true; // Indicate that we've modified the Element's styling
+			}
+			else{ // If we are removing the value
+				if (stylePropertyValue !== undefined){ // If the elementStylingObject has the property
+					elementStylingObject[property] = null; // Define the property as null
+					modifiedStyling = true; // Indicate that we've modified the Element's styling
+				}
 			}
 
-			if (newValue == undefined){ // If a new value is NOT defined for the component, meaning we are getting the current value
-				return currentValue; // Return the current value
-			}
-			else{ // If a new value IS defined, we are going to update the component's style
-				var updatedStyleValue : string = "";
+			if (modifiedStyling == true){ // If we have modified the styling Object
+				var updatedCSSStyle : string = ""; // Define updatedCSSStyle as the new style we will apply
 
-				if (currentValue !== ""){ // If the property exists (since it'd have a value)
-					updatedStyleValue = currentComponentCSS.replace(property + ": " + currentValue + ";", ""); // Remove the current prop / val
+				for (var cssProperty in elementStylingObject){ // For each CSS property / value in the elementStylingObject
+					if (elementStylingObject[cssProperty] !== null){ // If the value is NOT null (not deletion)
+						updatedCSSStyle = updatedCSSStyle + cssProperty + ": " + elementStylingObject[cssProperty] + ";"; // Append the property + value to the updatedCSSStyle and ensure we have closing semi-colon
+					}
 				}
 
-				if (typeof newValue == "string"){ // If the newValue is not FALSE, meaning we are either replacing the current property value with a new one OR adding it if it didn't exist in the first place
-					updatedStyleValue = currentComponentCSS + property + ": " + newValue + ";" // Set the updatedStyleValue with an appended property: value; string and currentComponentCSS
+				if (updatedCSSStyle !== ""){ // If the styling is not empty
+					modifiableElement.setAttribute("style", updatedCSSStyle); // Set the style attribute
 				}
-
-				componentElement.setAttribute("style", updatedStyleValue); // Update the componentElement style
-
-				rocket.component.Update(componentObject["id"], componentElement); // Update the stored component (if applicable)
-
-				return newValue; // Return the new value we defined
+				else{ // If the styling is empty
+					modifiableElement.removeAttribute("style"); // Remove the style attribute
+				}
 			}
 		}
-		else{ // If the componentElement does NOT exist in storedComponents or DOM
-			return false; // Return a false that we could NOT properly set or remove a CSS styling
+		else{ // If the modifiableElement doesn't exist
+			returnedValue = false; // Set returnedValue to false
 		}
+
+		return returnedValue;
 	}
 
 	// #endregion
@@ -191,7 +199,7 @@ module rocket.component {
 		var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
 		var listeners : any; // Define listeners as a string
 		var component : Object; // Define Component as a Component Object
-		var listenerCallback : Function;; // Default to having the listenerCallback be the handler we are passed.
+		var listenerCallback : Function; // Default to having the listenerCallback be the handler we are passed.
 
 		if ((args.length == 2) || (args.length == 3)){ // If an appropriate amount of arguments are provided
 			if (args.length == 2){ // If two arguments are passed to the AddListeners function
@@ -214,10 +222,7 @@ module rocket.component {
 			var componentElement : any = rocket.component.Fetch(component); // Get the Component Element
 
 			if (componentElement !== null){ // If the componentElement exists in storedComponents or DOM
-				if (component["type"] == "dropdown"){ // If we are adding an event listener to a dropdown
-					componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]'); // Get the Dropdown's inner Label
-				}
-				else if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
+				if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
 					if (componentElement.querySelector("div") !== null){ // If there is a div defined in the List Item, meaning there is a control within the list item
 						allowListening = false; // Set allowListening to false. We shouldn't allow the entire List Item to listen to the same events as the inner control.
 					}
@@ -343,7 +348,7 @@ module rocket.component {
 			}
 			else if (childComponent["type"] == "list-item"){ // If the childComponent is a ListItem
 				if (parentComponent["type"] == "dropdown"){ // If the parentComponent is a Dropdown
-					parentElement = rocket.component.Fetch(rocket.dropdown.InnerListComponentFetcher(parentComponent)); // Reset parentElement to be the Dropdown's inner List
+					parentElement = rocket.component.Fetch(rocket.dropdown.FetchLinkedListComponentObject(parentComponent)); // Reset parentElement to be the Dropdown's inner List (fetch the List Component Object and then Element)
 				}
 
 				if ((parentComponent["type"] == "dropdown") || (parentComponent["type"] == "list")){ // If the parentComponent is a Dropdown or a List
@@ -416,7 +421,7 @@ module rocket.component {
 				var individualComponent : Object = componentList[individualComponentIndex]; // Get this specific Object
 				var individualComponentElement : Element = rocket.component.Fetch(individualComponent); // Fetch the Rocket Component Element
 
-				if (individualComponentElement !== null){ // If the Component Element returned via Fetch actually exists in the DOM or storedComponents
+				if (individualComponentElement !== null){ // If the Component Element returned via Fetch exists in the DOM or storedComponents
 					if (rocket.component.storedComponents[individualComponent["id"]] == undefined){ // If the Element does exist in DOM, rather in the storedComponents
 						var parentElement : Element = individualComponentElement.parentElement; // Get the individualComponentElement's parentElement
 						parentElement.removeChild(individualComponentElement); // Remove this Component from the DOM

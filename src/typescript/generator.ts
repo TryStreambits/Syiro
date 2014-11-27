@@ -56,7 +56,6 @@ module rocket.generator {
             generatedElement.setAttribute("data-rocket-component", componentType); // Set the Rocket Component to the type specified (ex. header)
         }
         else{ // If we're not creating a Rocket Component
-        console.log(args);
             attributes = args[1]; // Set attributes equal to the second argument passed
             generatedElement = document.createElement(args[0]); // Create an element based on the componentType (in this case, it is really just a element tag name)
         }

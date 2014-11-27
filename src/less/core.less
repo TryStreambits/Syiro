@@ -17,19 +17,18 @@
 
 // #region Icon Parametric Mixin - Allows easy including of a particular icon
 
-.icon(@iconImage : "dropdown", @iconSize : 24){
+.icon(@iconImage : "dropdown", @iconSize : 22){
 	background-image : url("img/@{iconImage}.png"); // Set the background-image to img/iconImage.png
 	background-size: unit(@iconSize, px); // Set the background-size to the iconSize
 	background-repeat: no-repeat; // Don't repeat the icon
+	image-rendering : optimizequality; // Optimize quality
 }
 
 //#endregion
 
 // #region Multi-component font utilization
 
-div[data-rocket-component="button"], div[data-rocket-component="dropdown"],
-header[data-rocket-component="header"], footer[data-rocket-component="footer"],
-input[data-rocket-component="searchbox"], div[data-rocket-component="audio-player"], div[data-rocket-component="video-player"]{
+*[data-rocket-component]{ // Have all components utilize a uniform font
 	font-family: 'Source Sans Pro', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
 }
 

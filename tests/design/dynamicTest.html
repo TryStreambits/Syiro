@@ -11,21 +11,22 @@
 		<script>
 			rocket.Init();
 
-			var generatedHeaderDropdown = rocket.dropdown.Generate(
+			var generatedLabelHeaderDropdown = rocket.dropdown.Generate(
 					{
-						"label" : {
-							"content" : "Test Dropdown"
-						},
-						"items" : [
-							{
-								"label" : "Test Item"
-							},
-							{
-								"label" : "Second Test Item"
-							}
-						]
+						"label" : "Test Dropdown",
+						"items" : [	{ "label" : "Test Item" }, { "label" : "Second Test Item" }	]
 					}
 			);
+
+			var generatedIconHeaderDropdown = rocket.dropdown.Generate(
+				{
+					"icon" : "css/img/menu.png", // Icon only Dropdown
+					"position" : { "vertical" : "below", "horizontal" : "left"}, // Different positioning
+					"items" : [	{ "label" : "These do nothing." }, { "label" : "Intentional, FYI." }	]
+				}
+			);
+
+			rocket.CSS(generatedIconHeaderDropdown, "float", "right"); // Float the Icon Header to the right
 
 			var generatedHeader = rocket.header.Generate(
 					{
@@ -37,7 +38,11 @@
 							},
 							{
 								"type" : "dropdown",
-								"component" : generatedHeaderDropdown
+								"component" : generatedLabelHeaderDropdown
+							},
+							{
+								"type" : "dropdown",
+								"component" : generatedIconHeaderDropdown
 							}
 						]
 					}
@@ -85,9 +90,8 @@
 			rocket.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
 
 			rocket.AddListeners(generatedButton, function(x){console.log("First Button Hit!")}); // Listen to the Basic Button
-			rocket.AddListeners(generatedButtonTwo,
+			rocket.AddListeners(generatedButtonTwo, // Listen to the Basic Button
 				function(x){
-					console.log(arguments);
 					var component = arguments[0];
 					var currentColor = rocket.CSS(component, "background-color"); // Get the current color of the button (if anything)
 
@@ -98,12 +102,12 @@
 						rocket.CSS(component, "background-color", false); // Remove the red
 					}
 				}
-			); // Listen to the Basic Button
+			);
 
 			rocket.AddListeners(generatedSearchbox, function(x){console.log(arguments[1])}); // Listen to the Searchbox value change
 
-			var testListItem = rocket.Define("list-item", 'header > div[data-rocket-component="dropdown"] > div[data-rocket-component="list"] > div:first-of-type');
-			var secondListItem = rocket.Define("list-item", 'header > div[data-rocket-component="dropdown"] > div[data-rocket-component="list"] > div:nth-of-type(2)');
+			var testListItem = rocket.Define("list-item", 'div[data-rocket-component="list"] > div:first-of-type');
+			var secondListItem = rocket.Define("list-item", 'div[data-rocket-component="list"] > div:nth-of-type(2)');
 
 			rocket.listitem.SetLabel(testListItem, "First!");
 			rocket.listitem.SetControl(testListItem, generatedToggle);

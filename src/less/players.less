@@ -182,6 +182,18 @@ div[data-rocket-component="video-player"]{ // Video Player
     height: 300px;
     width: 450px;
 
+    & > div[data-rocket-minor-component="video-ad"]{ // Video "Ad" Label
+        float: left;
+        height: 40px;
+        width: 50px;
+        color: #fafafa;
+        text-align: center; // Center text
+        line-height: 40px;
+        background-color: rgba(51,51,51,0.6); // #333333 at 60% opacity
+        position: fixed;
+        z-index: 4; // Sit below video poster, will only show when video-poster disappears
+    }
+
     & > img[data-rocket-minor-component="video-poster"]{ // Video Poster
         float: left;
         height: 300px;

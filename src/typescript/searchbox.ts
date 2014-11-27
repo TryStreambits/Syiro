@@ -17,7 +17,7 @@ module rocket.searchbox {
 
 		for (var propertyKey in properties){ // Recursive go through each propertyKey
 			if (propertyKey == "icon"){ // If we are adding an icon
-				componentElement.style.backgroundImage = properties["icon"]; // Set the backgroundImage to the icon URL specified
+				rocket.component.CSS(componentElement, "background-image", "url(" + properties["icon"] + ")"); // Set the backgroundImage to the icon URL specified
 			}
 			else if (propertyKey == "content"){ // If we are adding a placeholder / content
 				componentElement.setAttribute("placeholder", properties["content"]); // Set the searchbox input placeholder to the one defined

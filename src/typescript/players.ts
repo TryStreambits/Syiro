@@ -82,7 +82,7 @@ module rocket.player {
                             var e : MouseEvent = arguments[2]; // Get the Mouse Event typically passed to the function
 
                             if (e.button == 0){
-                                posterImageElement.setAttribute("style", "display: none"); // Hide the element
+                                rocket.component.CSS(posterImageElement, "display", "none"); // Hide the element
                                 rocket.player.PlayOrPause(playerElementComponent); // Play the video
                             }
                         }.bind(this, component, posterImageElement) // Call with "this", the Player Component Object, and the posterImageElement
@@ -343,7 +343,7 @@ module rocket.player {
                 var posterImageElement : HTMLElement = playerComponentElement.querySelector('img[data-rocket-minor-component="video-poster"]'); // Get the video poster img tag if it exists
 
                 if (posterImageElement !== null){ // If the posterImageElement is defined
-                    posterImageElement.setAttribute("style", "display: none"); // Hide the element
+                    rocket.component.CSS(posterImageElement, "display", "none"); // Hide the element
                     rocket.component.CSS(playerControlComponent, "opacity", false); // Remove opacity setting
                 }
 
@@ -391,6 +391,10 @@ module rocket.player {
 
             if (sourceExtension !== "mov"){ // If the source extension is not mov
                 sourceType = sourceExtension; // Append videoExtension to the videoType
+
+                if (sourceExtension == "m3u8"){ // If we are ingesting a live stream
+                    sourceType = null; /// Set sourceType to null
+                }
             }
             else{ // If the source extension IS mov
                 sourceType = "quicktime"; // Append the quicktime string
@@ -399,9 +403,12 @@ module rocket.player {
             var sourceTag = rocket.generator.ElementCreator("source", // Create a source tag
                 {
                     "src" : source, // Set src equal to the source provided
-                    "type" : (type + "/" + sourceType) // Set the type attribute equal to the videoType
                 }
             );
+
+            if (sourceType !== null){
+                sourceType["type"] = (type + "/" + sourceType); // Set the type attribute equal to the videoType
+            }
 
             arrayOfSourceElements.push(sourceTag); // Push this source tag
         }

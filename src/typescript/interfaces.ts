@@ -12,6 +12,12 @@ interface Object { // As ComponentObject is inherently an Object, extend the Obj
 
 interface Element { // Implementation of valid spec not found in lib.d.ts
 	parentElement : Element; // Element's parentElement
+	offsetTop: number;
+	offsetBottom: number;
+	offsetLeft : number;
+	offsetRight : number;
+	offsetHeight : number;
+	offsetWidth : number;
 }
 
 interface Navigator { // Implementation of valid spec not found in lib.d.ts

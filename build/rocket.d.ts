@@ -7,6 +7,12 @@ interface Object {
 }
 interface Element {
     parentElement: Element;
+    offsetTop: number;
+    offsetBottom: number;
+    offsetLeft: number;
+    offsetRight: number;
+    offsetHeight: number;
+    offsetWidth: number;
 }
 interface Navigator {
     doNotTrack: string;
@@ -33,6 +39,7 @@ declare module rocket.component {
     function CSS(component: any, property: string, newValue?: any): any;
     function Fetch(component: Object): any;
     function FetchComponentObject(componentElement: any): Object;
+    function FetchDimensionsAndPosition(component: any): Object;
     function Update(componentId: string, componentElement: Element): void;
     function AddListeners(...args: any[]): boolean;
     function RemoveListeners(component: Object): boolean;
@@ -83,7 +90,7 @@ declare module rocket.listitem {
 }
 declare module rocket.dropdown {
     function Generate(properties: Object): Object;
-    function Toggle(): void;
+    function Toggle(component?: Object): void;
     function FetchLinkedListComponentObject(component: any): Object;
     function SetText(component: Object, content: any): void;
     function SetImage(component: Object, content: any): void;
@@ -121,6 +128,7 @@ declare module rocket {
     var Define: typeof component.Define;
     var Fetch: typeof component.Fetch;
     var FetchComponentObject: typeof component.FetchComponentObject;
+    var FetchDimensionsAndPosition: typeof component.FetchDimensionsAndPosition;
     var Add: typeof component.Add;
     var Remove: typeof component.Remove;
     var Animate: typeof component.Animate;

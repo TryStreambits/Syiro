@@ -72,23 +72,24 @@ module rocket.dropdown {
 
 	// #region Common Component Handlers
 
-	export function Toggle(){ // Function that will handle toggling the Dropdown
+	export function Toggle(component ?: Object){ // Function that will handle toggling the Dropdown
 		var component : Object = arguments[0]; // Get the component that was passed to this function as a bound argument
 		var componentElement : Element = rocket.component.Fetch(component); // Get the componentElement based on the component Object
 
 		var linkedListComponentObject : Object = rocket.dropdown.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown
+		var linkedListComponentElement : Element = rocket.component.Fetch(linkedListComponentObject); // Get the List Component's Element
+
 		var currentIcon = rocket.component.CSS(component, "background-image"); // Get the background-image, assuming it isn't the default
 
-		if (rocket.component.CSS(linkedListComponentObject, "visibility") == "visible"){ // If the CSS of the linked List Component is stating the List is active (visibility is visible)
+		if (rocket.component.CSS(linkedListComponentElement, "visibility") !== false){ // If the CSS of the linked List Component is stating the List is active (visibility is visible)
 			if (currentIcon !== false){ // If the currentIcon exists
 				rocket.component.CSS(component, "background-image", currentIcon.replace("-inverted", "")); // Remove the -inverted from the icon
 			}
 
 			componentElement.removeAttribute("active"); // Remove the "active" attribute
-			rocket.component.CSS(linkedListComponentObject, "visibility", false); // Remove the visibility attribute and hide the List
+			rocket.component.CSS(linkedListComponentElement, "visibility", false); // Remove the visibility attribute and hide the List
 		}
 		else{ // If the linked List is not active / showing
-			var linkedListComponentElement : Element = rocket.component.Fetch(linkedListComponentObject); // Get the List Component's Element
 			var positionInformation : Array<string> = linkedListComponentElement.getAttribute("data-rocket-component-render").split("-"); // Get the position information on where we should render the List, split it into an array
 
 			var listToDropdownVerticalRelation : string = positionInformation[0]; // Get the first key, which is the vertical position in relation to the Dropdown
@@ -96,16 +97,16 @@ module rocket.dropdown {
 
 			// #region Dropdown and List Dimensions & Position Variable Defining
 
-			var dropdownDimensionsAndPosition : ClientRect = componentElement.getBoundingClientRect(); // Get the dimensions and position of the Dropdown Element
-			var listDimensionsAndPosition : ClientRect = linkedListComponentElement.getBoundingClientRect(); // Get the dimensions mainly (mainly for height and width)
+			var dropdownDimensionsAndPosition : Object = rocket.component.FetchDimensionsAndPosition(componentElement); // Get the dimensions and position of the Dropdown Element
+			var listDimensionsAndPosition : Object = rocket.component.FetchDimensionsAndPosition(linkedListComponentElement); // Get the dimensions mainly (mainly for height and width)
 
-			var dropdownHeight : number = dropdownDimensionsAndPosition.height; // Get the height of the Dropdown
-			var dropdownWidth : number = dropdownDimensionsAndPosition.width; // Get the width of the Dropdown
-			var dropdownVerticalPosition : number = dropdownDimensionsAndPosition.y; // Get the vertical position (Y coord) of the Dropdown
-			var dropdownHorizontalPosition : number = dropdownDimensionsAndPosition.x; // Get the horizontal position (X coord) of the Dropdown
+			var dropdownHeight : number = dropdownDimensionsAndPosition["height"]; // Get the height of the Dropdown
+			var dropdownWidth : number = dropdownDimensionsAndPosition["width"]; // Get the width of the Dropdown
+			var dropdownVerticalPosition : number = dropdownDimensionsAndPosition["y"]; // Get the vertical position (Y coord) of the Dropdown
+			var dropdownHorizontalPosition : number = dropdownDimensionsAndPosition["x"]; // Get the horizontal position (X coord) of the Dropdown
 
-			var listHeight : number = listDimensionsAndPosition.height; // Get the height of the List
-			var listWidth : number = listDimensionsAndPosition.width; // Get the width of the List
+			var listHeight : number = listDimensionsAndPosition["height"]; // Get the height of the List
+			var listWidth : number = listDimensionsAndPosition["width"]; // Get the width of the List
 
 			// #endregion
 
@@ -147,9 +148,9 @@ module rocket.dropdown {
 			}
 
 			componentElement.setAttribute("active", ""); // Set the "active" attribute
-			rocket.component.CSS(linkedListComponentObject, "top", listVerticalPosition.toString() + "px"); // Set the top variable to be the Y position + px (ex. 100px)
-			rocket.component.CSS(linkedListComponentObject, "left", listHorizontalPosition.toString() + "px"); // Set the left variable to the X position + px (ex. 400px)
-			rocket.component.CSS(linkedListComponentObject, "visibility", "visible"); // Show the List
+			rocket.component.CSS(linkedListComponentElement, "top", listVerticalPosition.toString() + "px"); // Set the top variable to be the Y position + px (ex. 100px)
+			rocket.component.CSS(linkedListComponentElement, "left", listHorizontalPosition.toString() + "px"); // Set the left variable to the X position + px (ex. 400px)
+			rocket.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Show the List
 		}
 	};
 

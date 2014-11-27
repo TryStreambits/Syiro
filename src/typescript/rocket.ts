@@ -26,8 +26,8 @@ module rocket {
 			var dropdowns : any = document.querySelectorAll('div[data-rocket-component="dropdown"][active]'); // Get all of the Dropdowns that are active
 
 			for (var dropdownIndex = 0; dropdownIndex < dropdowns.length; dropdownIndex++){ // For each of those Dropdown Components that are active
-				var thisDropdown : Element = dropdowns[dropdownIndex]; // Get the dropdown from the array of Dropdowns
-				thisDropdown.removeAttribute("active"); // Remove the "active" attribute
+				var thisDropdownObject : Object = rocket.component.FetchComponentObject(dropdowns[dropdownIndex]); // Get the Component Object of the Dropdown
+				rocket.dropdown.Toggle(thisDropdownObject); // Toggle the Dropdown
 			}
 		});
 
@@ -66,7 +66,7 @@ module rocket {
 
 											if (componentObject !== false){ // If the element is a Rocket component
 												if (componentObject["type"] == "dropdown"){ // If the component is a Dropdown
-													rocket.component.AddListeners(rocket.component.listenerStrings["up"], componentObject, rocket.dropdown.Toggle); // Immediately listen to the Dropdown
+													rocket.component.AddListeners(rocket.component.listenerStrings["press"], componentObject, rocket.dropdown.Toggle); // Immediately listen to the Dropdown
 												}
 												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
 													rocket.player.Init(componentObject); // Initialize the Audio or Video Palyer
@@ -118,6 +118,8 @@ module rocket {
 	export var Fetch = rocket.component.Fetch; // Meta-function for fetching Rocket component HTMLElements
 
 	export var FetchComponentObject = rocket.component.FetchComponentObject; // Meta-function for fetching Rocket Component Objects from Component Elements.
+
+	export var FetchDimensionsAndPosition = rocket.component.FetchDimensionsAndPosition; // Meta-function for fetching the dimensions and position of a Component Object Element or any (HTML)Element.
 
 	export var Add = rocket.component.Add; // Meta-function for adding Rocket components to each other
 

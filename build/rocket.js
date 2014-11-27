@@ -4,7 +4,8 @@ var rocket;
     (function (_component) {
         _component.listenerStrings = {
             "down": ["mousedown", "touchstart", "MSPointerDown"],
-            "up": ["mouseup", "touchend", "MSPointerUp"]
+            "up": ["mouseup", "touchend", "MSPointerUp"],
+            "press": ["click", "touchend", "MSPointerUp"]
         };
         _component.storedComponents = {};
         function Define(type, selector) {
@@ -15,7 +16,7 @@ var rocket;
             selectedElement.setAttribute("data-rocket-component-id", componentID);
             component["id"] = componentID;
             if (type == "dropdown") {
-                rocket.component.AddListeners(rocket.component.listenerStrings["up"], component, rocket.dropdown.Toggle);
+                rocket.component.AddListeners(rocket.component.listenerStrings["press"], component, rocket.dropdown.Toggle);
             }
             return component;
         }
@@ -80,6 +81,7 @@ var rocket;
                 else if (typeof newValue == "string") {
                     elementStylingObject[property] = newValue;
                     modifiedStyling = true;
+                    returnedValue = newValue;
                 }
                 else {
                     if (stylePropertyValue !== undefined) {
@@ -94,7 +96,7 @@ var rocket;
                             updatedCSSStyle = updatedCSSStyle + cssProperty + ": " + elementStylingObject[cssProperty] + ";";
                         }
                     }
-                    if (updatedCSSStyle !== "") {
+                    if (updatedCSSStyle.length !== 0) {
                         modifiableElement.setAttribute("style", updatedCSSStyle);
                     }
                     else {
@@ -128,6 +130,22 @@ var rocket;
             }
         }
         _component.FetchComponentObject = FetchComponentObject;
+        function FetchDimensionsAndPosition(component) {
+            var dimensionsAndPosition = {};
+            var componentElement;
+            if (component["type"] !== undefined) {
+                componentElement = rocket.component.Fetch(component);
+            }
+            else {
+                componentElement = component;
+            }
+            dimensionsAndPosition["x"] = componentElement.offsetLeft;
+            dimensionsAndPosition["y"] = componentElement.offsetTop;
+            dimensionsAndPosition["height"] = componentElement.offsetHeight;
+            dimensionsAndPosition["width"] = componentElement.offsetWidth;
+            return dimensionsAndPosition;
+        }
+        _component.FetchDimensionsAndPosition = FetchDimensionsAndPosition;
         function Update(componentId, componentElement) {
             if (rocket.component.storedComponents[componentId] !== undefined) {
                 rocket.component.storedComponents[componentId] = componentElement;
@@ -148,7 +166,7 @@ var rocket;
                     component = args[0];
                     listenerCallback = args[1];
                     if (component["type"] !== "searchbox") {
-                        listeners = rocket.component.listenerStrings["up"];
+                        listeners = rocket.component.listenerStrings["press"];
                     }
                     else {
                         listeners = ["keyup"];
@@ -792,31 +810,31 @@ var rocket;
             }
         }
         dropdown.Generate = Generate;
-        function Toggle() {
+        function Toggle(component) {
             var component = arguments[0];
             var componentElement = rocket.component.Fetch(component);
             var linkedListComponentObject = rocket.dropdown.FetchLinkedListComponentObject(component);
+            var linkedListComponentElement = rocket.component.Fetch(linkedListComponentObject);
             var currentIcon = rocket.component.CSS(component, "background-image");
-            if (rocket.component.CSS(linkedListComponentObject, "visibility") == "visible") {
+            if (rocket.component.CSS(linkedListComponentElement, "visibility") !== false) {
                 if (currentIcon !== false) {
                     rocket.component.CSS(component, "background-image", currentIcon.replace("-inverted", ""));
                 }
                 componentElement.removeAttribute("active");
-                rocket.component.CSS(linkedListComponentObject, "visibility", false);
+                rocket.component.CSS(linkedListComponentElement, "visibility", false);
             }
             else {
-                var linkedListComponentElement = rocket.component.Fetch(linkedListComponentObject);
                 var positionInformation = linkedListComponentElement.getAttribute("data-rocket-component-render").split("-");
                 var listToDropdownVerticalRelation = positionInformation[0];
                 var listToDropdownHorizontalRelation = positionInformation[1];
-                var dropdownDimensionsAndPosition = componentElement.getBoundingClientRect();
-                var listDimensionsAndPosition = linkedListComponentElement.getBoundingClientRect();
-                var dropdownHeight = dropdownDimensionsAndPosition.height;
-                var dropdownWidth = dropdownDimensionsAndPosition.width;
-                var dropdownVerticalPosition = dropdownDimensionsAndPosition.y;
-                var dropdownHorizontalPosition = dropdownDimensionsAndPosition.x;
-                var listHeight = listDimensionsAndPosition.height;
-                var listWidth = listDimensionsAndPosition.width;
+                var dropdownDimensionsAndPosition = rocket.component.FetchDimensionsAndPosition(componentElement);
+                var listDimensionsAndPosition = rocket.component.FetchDimensionsAndPosition(linkedListComponentElement);
+                var dropdownHeight = dropdownDimensionsAndPosition["height"];
+                var dropdownWidth = dropdownDimensionsAndPosition["width"];
+                var dropdownVerticalPosition = dropdownDimensionsAndPosition["y"];
+                var dropdownHorizontalPosition = dropdownDimensionsAndPosition["x"];
+                var listHeight = listDimensionsAndPosition["height"];
+                var listWidth = listDimensionsAndPosition["width"];
                 var listVerticalPosition;
                 var listHorizontalPosition;
                 if (listToDropdownVerticalRelation == "above") {
@@ -840,9 +858,9 @@ var rocket;
                     rocket.CSS(component, "background-image", currentIcon.replace(currentIconWithoutExtension, currentIconWithoutExtension + "-inverted"));
                 }
                 componentElement.setAttribute("active", "");
-                rocket.component.CSS(linkedListComponentObject, "top", listVerticalPosition.toString() + "px");
-                rocket.component.CSS(linkedListComponentObject, "left", listHorizontalPosition.toString() + "px");
-                rocket.component.CSS(linkedListComponentObject, "visibility", "visible");
+                rocket.component.CSS(linkedListComponentElement, "top", listVerticalPosition.toString() + "px");
+                rocket.component.CSS(linkedListComponentElement, "left", listHorizontalPosition.toString() + "px");
+                rocket.component.CSS(linkedListComponentElement, "visibility", "visible !important");
             }
         }
         dropdown.Toggle = Toggle;
@@ -1336,8 +1354,8 @@ var rocket;
         document.addEventListener("scroll", function () {
             var dropdowns = document.querySelectorAll('div[data-rocket-component="dropdown"][active]');
             for (var dropdownIndex = 0; dropdownIndex < dropdowns.length; dropdownIndex++) {
-                var thisDropdown = dropdowns[dropdownIndex];
-                thisDropdown.removeAttribute("active");
+                var thisDropdownObject = rocket.component.FetchComponentObject(dropdowns[dropdownIndex]);
+                rocket.dropdown.Toggle(thisDropdownObject);
             }
         });
         var documentHeadSection = document.querySelector("head");
@@ -1360,7 +1378,7 @@ var rocket;
                                     var componentObject = rocket.component.FetchComponentObject(passedNode);
                                     if (componentObject !== false) {
                                         if (componentObject["type"] == "dropdown") {
-                                            rocket.component.AddListeners(rocket.component.listenerStrings["up"], componentObject, rocket.dropdown.Toggle);
+                                            rocket.component.AddListeners(rocket.component.listenerStrings["press"], componentObject, rocket.dropdown.Toggle);
                                         }
                                         else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")) {
                                             rocket.player.Init(componentObject);
@@ -1399,6 +1417,7 @@ var rocket;
     rocket.Define = rocket.component.Define;
     rocket.Fetch = rocket.component.Fetch;
     rocket.FetchComponentObject = rocket.component.FetchComponentObject;
+    rocket.FetchDimensionsAndPosition = rocket.component.FetchDimensionsAndPosition;
     rocket.Add = rocket.component.Add;
     rocket.Remove = rocket.component.Remove;
     rocket.Animate = rocket.component.Animate;

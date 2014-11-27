@@ -11,24 +11,19 @@
 		<script>
 			rocket.Init();
 
-			var generatedLabelHeaderDropdown = rocket.dropdown.Generate(
-					{
-						"label" : "Test Dropdown",
-						"items" : [	{ "label" : "Test Item" }, { "label" : "Second Test Item" }	]
-					}
-			);
+			var generatedHeader = {};
+			var generatedDropdownObject = {};
 
-			var generatedIconHeaderDropdown = rocket.dropdown.Generate(
-				{
-					"icon" : "css/img/menu.png", // Icon only Dropdown
-					"position" : { "vertical" : "below", "horizontal" : "left"}, // Different positioning
-					"items" : [	{ "label" : "These do nothing." }, { "label" : "Intentional, FYI." }	]
-				}
-			);
+			if (rocket.device.IsSubHD == false){ // If the device is NOT sub HD
+				generatedDropdownObject = rocket.dropdown.Generate(
+						{
+							"label" : "Test Dropdown",
+							"items" : [	{ "label" : "Test Item" }, { "label" : "Second Test Item" }	],
+							"position" : { "vertical" : "below", "horizontal" : "center"}
+						}
+				);
 
-			rocket.CSS(generatedIconHeaderDropdown, "float", "right"); // Float the Icon Header to the right
-
-			var generatedHeader = rocket.header.Generate(
+				generatedHeader = rocket.header.Generate(
 					{
 						"items" : [
 							{
@@ -38,15 +33,36 @@
 							},
 							{
 								"type" : "dropdown",
-								"component" : generatedLabelHeaderDropdown
-							},
-							{
-								"type" : "dropdown",
-								"component" : generatedIconHeaderDropdown
+								"component" : generatedDropdownObject
 							}
 						]
 					}
-			);
+				);
+
+				var generatedSearchbox = rocket.searchbox.Generate(); // Generate a Searchbox
+			}
+			else{
+				generatedDropdownObject = rocket.dropdown.Generate(
+					{
+						"icon" : "css/img/menu.png", // Icon only Dropdown
+						"position" : { "vertical" : "below", "horizontal" : "right"}, // Different positioning
+						"items" : [	{ "label" : "Test Item" }, { "label" : "Second Test Item" }	]
+					}
+				);
+
+				var generatedHeader = rocket.header.Generate(
+					{
+						"items" : [
+							{
+								"type" : "dropdown",
+								"component" : generatedDropdownObject
+							}
+						]
+					}
+				);
+			}
+
+
 
 			var generatedAudioPlayer = rocket.audioplayer.Generate(
 					{
@@ -58,8 +74,6 @@
 					}
 			);
 
-			rocket.CSS(generatedAudioPlayer, "margin-right", "80%"); // Set CSS margin for Audio Player
-
 			var generatedVideoPlayer = rocket.videoplayer.Generate(
 					{
 						"art" : "img/video-art.png",
@@ -67,27 +81,31 @@
 					}
 			);
 
+			var generatedButton = rocket.button.Generate({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
+			var generatedButtonTwo = rocket.button.Generate({"type" : "basic", "content" : "Test 2"}); // Generate a Basic Button
+			var generatedToggle = rocket.button.Generate({"type" : "toggle"}); // Generate a Toggle Button
+			var generatedFooter = rocket.footer.Generate({"content" : "Strobl Industries"}); // Generate a Footer
+
+			if (rocket.device.IsSubHD == true){ // If the device is sub HD
+				rocket.CSS(generatedDropdownObject, "float", "left"); // Float the Icon Header to the right
+				rocket.CSS(generatedDropdownObject, "margin-left", "20px"); // Have some margin
+			}
+
+			rocket.CSS(generatedAudioPlayer, "margin-right", "80%"); // Set CSS margin for Audio Player
 			rocket.CSS(generatedVideoPlayer, "margin-right", "80%"); // Set CSS margin for Video Player
 
 			var generatedHeaderElement = rocket.Fetch(generatedHeader); // Fetch the Header
 			document.querySelector("body").insertBefore(generatedHeaderElement, document.querySelector("body").firstChild);
 
-			var generatedButton = rocket.button.Generate({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
+			if (generatedSearchbox !== undefined){
+				rocket.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
+			}
+
 			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedButton));
-
-			var generatedButtonTwo = rocket.button.Generate({"type" : "basic", "content" : "Test 2"}); // Generate a Basic Button
 			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedButtonTwo));
-
 			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedAudioPlayer));
 			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedVideoPlayer));
-
-			var generatedToggle = rocket.button.Generate({"type" : "toggle"}); // Generate a Toggle Button
-
-			var generatedFooter = rocket.footer.Generate({"content" : "Strobl Industries"}); // Generate a Footer
 			document.querySelector("body").appendChild(rocket.Fetch(generatedFooter));
-
-			var generatedSearchbox = rocket.searchbox.Generate(); // Generate a Searchbox
-			rocket.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
 
 			rocket.AddListeners(generatedButton, function(x){console.log("First Button Hit!")}); // Listen to the Basic Button
 			rocket.AddListeners(generatedButtonTwo, // Listen to the Basic Button
@@ -113,7 +131,26 @@
 			rocket.listitem.SetControl(testListItem, generatedToggle);
 
 			rocket.AddListeners(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
-			rocket.AddListeners(secondListItem, function(x){console.log("List Item Hit!")}); // Listen to the second List Item
+			rocket.AddListeners(secondListItem,
+				function(){
+							var listItemComponent = arguments[0];
+							document.querySelector("body").querySelector('div[data-rocket-component="page"]').appendChild(
+								rocket.generator.ElementCreator("section",
+								{
+									"content" : "y: " + rocket.component.FetchDimensionsAndPosition(document.querySelector('div[data-rocket-component="dropdown"]'))["y"]
+								}
+							)
+						);
+
+						document.querySelector("body").querySelector('div[data-rocket-component="page"]').appendChild(
+							rocket.generator.ElementCreator("section",
+							{
+								"content" : "x: " + rocket.component.FetchDimensionsAndPosition(document.querySelector('div[data-rocket-component="dropdown"]'))["x"]
+							}
+						)
+					);
+				}
+			); // Listen to the second List Item
 		</script>
 	</body>
 </html>

@@ -8,7 +8,8 @@
 module rocket.component {
 	export var listenerStrings : Object = { // Set rocket.component.listenerStrings as an Object containing commonly used event lister combinations
 		"down" : ["mousedown", "touchstart", "MSPointerDown"],
-		"up" : ["mouseup", "touchend", "MSPointerUp"]
+		"up" : ["mouseup", "touchend", "MSPointerUp"],
+		"press" : ["click", "touchend", "MSPointerUp"]
 	};
 
 	export var storedComponents : Object = {}; // An object that stores generated component(s) / component(s) information
@@ -27,7 +28,7 @@ module rocket.component {
 		component["id"] = componentID; // Add the component ID to the object that we will be returning to the developer
 
 		if (type == "dropdown"){ // If we are defining a Dropdown Rocket component
-			rocket.component.AddListeners(rocket.component.listenerStrings["up"], component, rocket.dropdown.Toggle); // Immediately listen to the Dropdown
+			rocket.component.AddListeners(rocket.component.listenerStrings["press"], component, rocket.dropdown.Toggle); // Immediately listen to the Dropdown
 		}
 
 		return component; // Return the component Object
@@ -77,7 +78,7 @@ module rocket.component {
 	export function CSS(component : any, property : string, newValue ?: any){
 		var modifiableElement : Element; // Define modifiableElement as the Element we are going to modify
 		var returnedValue : any; // Define returnedValue as value we are returning
-		var modifiedStyling : boolean = false; // Define modifiedStyling as a boolean value to indicate whether we modified the Element's styling or not. Defaults to false.
+		var modifiedStyling : any = false; // Define modifiedStyling as a boolean value to indicate whether we modified the Element's styling or not. Defaults to false.
 
 		if (component["type"] !== undefined){ // If we were provided a Component Object
 			modifiableElement = rocket.component.Fetch(component); // Fetch the Element and assign it to modifiableElement
@@ -113,12 +114,13 @@ module rocket.component {
 					returnedValue = stylePropertyValue; // Define returnedValue as the value of the property
 				}
 				else{ // If the property we are looking for does not exist
-					returnedValue = false; // Define the returnedValuse as false
+					returnedValue = false; // Define the returnedValue as false
 				}
 			}
 			else if (typeof newValue == "string"){ // If we are updated the value
 				elementStylingObject[property] = newValue; // Assign the newValue to the property
 				modifiedStyling = true; // Indicate that we've modified the Element's styling
+				returnedValue = newValue; // Define returnedValue as the value we are setting
 			}
 			else{ // If we are removing the value
 				if (stylePropertyValue !== undefined){ // If the elementStylingObject has the property
@@ -136,7 +138,7 @@ module rocket.component {
 					}
 				}
 
-				if (updatedCSSStyle !== ""){ // If the styling is not empty
+				if (updatedCSSStyle.length !== 0){ // If the styling is not empty
 					modifiableElement.setAttribute("style", updatedCSSStyle); // Set the style attribute
 				}
 				else{ // If the styling is empty
@@ -183,6 +185,29 @@ module rocket.component {
 
 	// #endregion
 
+	// #region Element Dimensions and Position Fetching
+
+	export function FetchDimensionsAndPosition(component : any) : Object { // Get the height and width of the Element
+		var dimensionsAndPosition : Object = {}; // Define dimensionsAndPosition as an empty Object
+		var componentElement : Element; // Define componentElement as an Element
+
+		if (component["type"] !== undefined){ // If the Component provided is a Rocket Component Object
+			componentElement = rocket.component.Fetch(component); // Fetch the Component Element
+		}
+		else{ // If the Component provided is NOT a Rocket Component Object
+			componentElement = component; // Set the componentElement to the component (Element) provided
+		}
+
+		dimensionsAndPosition["x"] = componentElement.offsetLeft; // Set the dimensionsAndPosition X to the Element's left offset
+		dimensionsAndPosition["y"] = componentElement.offsetTop; // Set the dimensionsAndPosition Y to the Element's top offset
+		dimensionsAndPosition["height"] = componentElement.offsetHeight; // Set the dimensionsAndPosition height to the Element's height offset
+		dimensionsAndPosition["width"] = componentElement.offsetWidth; // Set the dimensionsAndPosition width to the Element's width offset
+
+		return dimensionsAndPosition;
+	}
+
+	// #endregion
+
 	// #region Update Stored Component's HTMLElement, but only if it exists in the first place.
 
 	export function Update(componentId : string, componentElement : Element){
@@ -207,7 +232,7 @@ module rocket.component {
 				listenerCallback = args[1]; // Handler is the second argument
 
 				if (component["type"] !== "searchbox"){ // If we are adding listeners to a Component that is NOT a Searchbox (which uses a unique listener)
-					listeners = rocket.component.listenerStrings["up"]; // Use click / touch related events
+					listeners = rocket.component.listenerStrings["press"]; // Use click / touch related events
 				}
 				else{ // If the Component IS a Searchbox
 					listeners = ["keyup"]; // Use the keyup listener

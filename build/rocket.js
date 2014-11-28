@@ -838,6 +838,12 @@ var rocket;
                 else {
                     listVerticalPosition = (dropdownVerticalPosition + dropdownHeight);
                 }
+                if (listVerticalPosition < 0) {
+                    listVerticalPosition = 0;
+                }
+                else if ((listVerticalPosition > window.screen.height) || (listVerticalPosition + listHeight > window.screen.height)) {
+                    listVerticalPosition = window.screen.height - listHeight;
+                }
                 var listWidthInRelationToDropdown = (listWidth - dropdownWidth);
                 if (listToDropdownHorizontalRelation == "left") {
                     listHorizontalPosition = (dropdownHorizontalPosition - listWidthInRelationToDropdown);
@@ -847,6 +853,12 @@ var rocket;
                 }
                 else if (listToDropdownHorizontalRelation == "right") {
                     listHorizontalPosition = dropdownHorizontalPosition;
+                }
+                if (listHorizontalPosition < 0) {
+                    listHorizontalPosition = 0;
+                }
+                else if ((listHorizontalPosition > window.screen.width) || (listHorizontalPosition + listWidth > window.screen.width)) {
+                    listHorizontalPosition = window.screen.width - listWidth;
                 }
                 if (currentIcon !== false) {
                     var currentIconWithoutExtension = currentIcon.substr(0, currentIcon.indexOf("."));

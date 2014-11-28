@@ -68,6 +68,16 @@ module rocket.device {
             false);
         }
 
+        rocket.device.FetchScreenDetails(); // Do an initial fetch of the screen details
+
+        window.addEventListener("resize", rocket.device.FetchScreenDetails); // Listen to the window resizing
+    }
+
+    // #endregion
+
+    // #region Screen Dimension Details
+
+    export function FetchScreenDetails(){
         if (window.screen.height < 720){ // If the screen height is less than 720px
             rocket.device.IsSubHD = true; // Set IsSubHD to true
             rocket.device.IsHD = false; // Set IsHD to false
@@ -88,7 +98,6 @@ module rocket.device {
     }
 
     // #endregion
-
 }
 
 // #endregion

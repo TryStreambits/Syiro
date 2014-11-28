@@ -29,17 +29,13 @@ module rocket.button {
 				componentElement.textContent = properties["content"]; // Set the textContent of the button
 			}
 			else if ((propertyKey == "type") && (properties["type"] == "toggle")) { // If the Button type is toggle
-				if (properties["default"] == undefined){ // If a default state for the button is NOT defined
-					properties["default"] = false; // Set the default state to false
+				var buttonToggleAttributes = { "data-rocket-minor-component" : "buttonToggle"}; // Create an Object to hold the attributes we'll pass when creating the buttonToggle
+
+				if (properties["default"] == true){ // If a default state for the button is defined as true (already active)
+					buttonToggleAttributes["data-rocket-component-status"] = "true"; // Add the data-rocket-component-status attribute with "true" as the value
 				}
 
-				var buttonToggle = rocket.generator.ElementCreator("div", // Create a button toggle (differs from the toggle button itself in that it is the button that gets pressed to toggle the toggle button)
-					{
-						"data-rocket-minor-component" : "buttonToggle", // Set the buttonToggle data-rocket-minor-component attribute to buttonToggle
-						"data-rocket-component-status" : properties["default"].toString() // Set the buttonToggle default state to either the one defined or false
-					}
-				);
-
+				var buttonToggle = rocket.generator.ElementCreator("div", buttonToggleAttributes); // Create the buttonToggle of the Toggle Button
 				componentElement.appendChild(buttonToggle); // Append the buttonToggle to the toggle button
 			}
 			else{ // If it is none of the above properties

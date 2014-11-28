@@ -28,11 +28,6 @@ interface HTMLElement { // Implementation of HTMLElement
 	autoplay : boolean; // Technically not in spec except for HTMLAudioElement and HTMLVideoElement
 }
 
-interface ClientRect { // Implementation of TextRectange spec in ClientRect
-	x : number;
-	y : number;
-}
-
 interface Window { // Implementation of valid spec not found in lib.d.ts
 	crypto : any; // Define crypto as any
 }

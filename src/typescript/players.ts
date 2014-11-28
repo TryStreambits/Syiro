@@ -92,7 +92,7 @@ module rocket.player {
 
             // #endregion
 
-            // #region Video Click Handling
+            // #region Video Element Click / Tap Handling
 
             for (var listenerKey in rocket.component.listenerStrings["up"]){ // For each listener
                 innerContentElement.addEventListener(rocket.component.listenerStrings["up"][listenerKey],
@@ -117,6 +117,7 @@ module rocket.player {
             );
 
             // #endregion
+
         }
 
         // #endregion
@@ -182,7 +183,7 @@ module rocket.player {
 
                     var playerTimeElement = playerElement.querySelector("time"); // Get the time Element
 
-                    if (rocket.player.IsDoingTimeChange(playerElementComponent) == true){ // If we are NOT already actively doing a volume change
+                    if (playerElement.hasAttribute("data-rocket-component-changevolume") !== true){ // If we are NOT already actively doing a volume change
                         playerElement.setAttribute("data-rocket-component-status", "true"); // Set the status to true to imply that the audio / video time changing should not change playerRange
                         playerElement.setAttribute("data-rocket-component-changevolume", ""); // Set the player component-changing so the TimeOrVolumeChanger() knows to change volume settings
 
@@ -191,7 +192,7 @@ module rocket.player {
 
                         playerTimeElement.setAttribute("data-rocket-component-disabled", ""); // Set to a "disabled" UI
 
-                        playerRangeAttributes["max"] = "100"; // Set max to 1
+                        playerRangeAttributes["max"] = "100"; // Set max to 100
                         playerRangeAttributes["step"] = "1"; // Set step to 1
                         playerRange.value = (rocket.player.GetInnerContentElement(playerElementComponent).volume * 100).toString(); // Set the value to the volume (which is 0.1 to 1.0) times 10
                     }
@@ -273,7 +274,7 @@ module rocket.player {
 
         var valueNum : any = Number(playerRange.value); // Define valueNum as "any" (actually Number), which we do calculation for later
 
-        if (rocket.player.IsDoingTimeChange(playerComponentObject) == true){ // If we are doing a time change
+        if (playerElement.hasAttribute("data-rocket-component-changevolume") == false){ // If we are doing a time change
             valueNum = valueNum.toFixed(); // Ensure the valueNum is fixed / precise
             contentElement.currentTime = valueNum; // Set the contentElement's currentTime to the converted playerRange value
         }
@@ -300,21 +301,6 @@ module rocket.player {
         }
         else{ // If the Player is NOT paused
             return true; // Return that the Player IS playing
-        }
-    }
-
-    // #endregion
-
-    // #region Get Information about if the Player slider is doing time change or volume changing
-
-    export function IsDoingTimeChange(component : Object) : boolean {
-        var componentElement = rocket.component.Fetch(component); // Get the Component's Element
-
-        if (componentElement.hasAttribute("data-rocket-component-changevolume") !== true){ // If the changevolume attribute does not exist, meaning we ARE doing a time change
-            return true;
-        }
-        else{ // If changevolume attribute exists, meaning we are NOT doing a time change
-            return false;
         }
     }
 

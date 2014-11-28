@@ -254,60 +254,49 @@ module rocket.component {
 				}
 
 				if (allowListening == true){ // If allowListening is TRUE
-					var listenerArray : Array<string>; // Define listenerArray as an array of strings
-
-					if ((typeof listeners).toLowerCase() == "object"){ // If the listeners is an array / object
-						listenerArray = listeners; // Set the listenerArray to listeners
-					}
-					else{ // If the listeners is NOT an array / object
-						listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
+					if ((typeof listeners).toLowerCase() == "string"){ // If the listeners is an array / object
+						listeners = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
 					}
 
-					listenerArray.forEach( // For each listener
+					listeners.forEach( // For each listener
 						function(individualListener : string){
 							componentElement.addEventListener(individualListener, // Attach an event listener to the component
 								function(){
 									var component : Object = arguments[0]; // Set the Rocket Component Object to the first argument passed
 									var listenerCallback : Function = arguments[1]; // Set the Callback to the second argument passed
 									var componentElement : any = rocket.component.Fetch(component); // Set the componentElement to the component Element we fetched
+									var passableValue : any = null; // Set passableValue to any type, defaults to null
 
-									if (componentElement !== null){ // If the listener wasn't magically called while the Element did not exist
-										var passableValue : any = null; // Set passableValue to any type, defaults to null
+									if ((component["type"] == "button") && (componentElement.getAttribute("data-rocket-component-type") == "toggle")){ // If it is a toggle button
+										var animationString : string;
 
-										if ((component["type"] == "button") && (componentElement.getAttribute("data-rocket-component-type") == "toggle")){ // If it is a toggle button
-											var animationString : string;
+										if (componentElement.hasAttribute("data-rocket-component-status") == false){ // If the button is NOT active (has no status)
+											animationString = "toggle-forward-animation"; // Animate forward the toggle
+											passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
+										}
+										else{ // If the button is active and we are setting it as inactive
+											animationString = "toggle-backward-animation"; // Animate backward the toggle
+											passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
+										}
 
-											if (componentElement.getAttribute("data-rocket-component-status") !== "true"){ // If the button is NOT active (has no status or one that is false)
-												animationString = "toggle-forward-animation"; // Animate forward the toggle
-												passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
-											}
-											else{ // If the button is active and we are setting it as inactive
-												animationString = "toggle-backward-animation"; // Animate backward the toggle
-												passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
-											}
+										rocket.component.Animate(component, animationString,
+											function(component : Object){ // Post-Animation Function
+												var buttonElement : Element = rocket.component.Fetch(component); // Get the buttonElement based on the component Object
 
-											rocket.component.Animate(component, animationString,
-												function(component : Object){ // Post-Animation Function
-													var buttonElement : Element = rocket.component.Fetch(component); // Get the buttonElement based on the component Object
-
-													if (buttonElement.getAttribute("data-rocket-component-status") !== "true"){ // If the status is not "true" / active
-														buttonElement.setAttribute("data-rocket-component-status", "true"); // Set to true
-													}
-													else{ // If the status IS true
-														buttonElement.setAttribute("data-rocket-component-status", "false"); // Set to false
-													}
+												if (buttonElement.hasAttribute("data-rocket-component-status") == false){ // If the status is not "true" / active
+													buttonElement.setAttribute("data-rocket-component-status", "true"); // Set to true
 												}
-											);
-										}
-										else if (component["type"] == "searchbox"){ // If the component is a Rocket Searchbox
-											passableValue = componentElement.value; // Get the current value of the input
-										}
-										else{ // If it is NOT a Toggle Button or Searchbox
-											passableValue = null; // Just set to null
-										}
-
-										listenerCallback.call(rocket, component, passableValue); // Call the listenerCallback and pass along the passableValue and the component Object
+												else{ // If the status IS true
+													buttonElement.removeAttribute("data-rocket-component-status"); // Remove the buttonElement component status
+												}
+											}
+										);
 									}
+									else if (component["type"] == "searchbox"){ // If the component is a Rocket Searchbox
+										passableValue = componentElement.value; // Get the current value of the input
+									}
+
+									listenerCallback.call(rocket, component, passableValue); // Call the listenerCallback and pass along the passableValue and the component Object
 								}.bind(rocket, component, listenerCallback) // Bind to Rocket, pass the component and listenerCallback
 							);
 						}
@@ -373,15 +362,16 @@ module rocket.component {
 			}
 			else if (childComponent["type"] == "list-item"){ // If the childComponent is a ListItem
 				if (parentComponent["type"] == "dropdown"){ // If the parentComponent is a Dropdown
-					parentElement = rocket.component.Fetch(rocket.dropdown.FetchLinkedListComponentObject(parentComponent)); // Reset parentElement to be the Dropdown's inner List (fetch the List Component Object and then Element)
+					parentComponent = rocket.dropdown.FetchLinkedListComponentObject(parentComponent); // Change parentComponent type to the one we get from FetchLinkedListComponentObject
+					parentElement = rocket.component.Fetch(parentComponent); // Change parentElement to be the Dropdown's linked List Component Element
 				}
 
-				if ((parentComponent["type"] == "dropdown") || (parentComponent["type"] == "list")){ // If the parentComponent is a Dropdown or a List
+				if (parentComponent["type"] == "list"){ // If the parentComponent is a List
 					allowAdding = true; // Allow adding the childComponent
 				}
 			}
 			else if (childComponent["link"] !== undefined){ // If a component "link" key is defined, meaning it is a link
-				childElement = rocket.generator.ElementCreator(null, "a", // Create a link element
+				childElement = rocket.generator.ElementCreator("a", // Create a link element
 					{
 						"title" : childComponent["title"], // Set the title as the one specified in the component object
 						"href" : childComponent["link"], // Add the link as href
@@ -434,9 +424,9 @@ module rocket.component {
 
 		if (componentsToRemove["id"] !== undefined){ // If the componentsToRemove actually has an "id" key / value, meaning it is a single Component Object
 			allowRemoval = true; // Set allowRemoval to true
-			componentList = Array(componentsToRemove); // Set componentList to an Array consisting of the single Component Object
+			componentList = [componentsToRemove]; // Set componentList to an Array consisting of the single Component Object
 		}
-		else if (((typeof componentsToRemove).toLowerCase() == "object") && (componentsToRemove.length > 0)){ // If the componentsToRemove is an object (a.k.a array) and has a length (which an array does)
+		else if ((typeof componentsToRemove == "object") && (componentsToRemove.length > 0)){ // If the componentsToRemove is an object (a.k.a array) and has a length (which an array does)
 			allowRemoval = true; // Set allowRemoval to true
 			componentList = componentsToRemove; // Set componentList to the componentsToRemove
 		}

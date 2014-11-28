@@ -185,48 +185,39 @@ var rocket;
                         }
                     }
                     if (allowListening == true) {
-                        var listenerArray;
-                        if ((typeof listeners).toLowerCase() == "object") {
-                            listenerArray = listeners;
+                        if ((typeof listeners).toLowerCase() == "string") {
+                            listeners = listeners.trim().split(" ");
                         }
-                        else {
-                            listeners.trim().split(" ");
-                        }
-                        listenerArray.forEach(function (individualListener) {
+                        listeners.forEach(function (individualListener) {
                             componentElement.addEventListener(individualListener, function () {
                                 var component = arguments[0];
                                 var listenerCallback = arguments[1];
                                 var componentElement = rocket.component.Fetch(component);
-                                if (componentElement !== null) {
-                                    var passableValue = null;
-                                    if ((component["type"] == "button") && (componentElement.getAttribute("data-rocket-component-type") == "toggle")) {
-                                        var animationString;
-                                        if (componentElement.getAttribute("data-rocket-component-status") !== "true") {
-                                            animationString = "toggle-forward-animation";
-                                            passableValue = true;
-                                        }
-                                        else {
-                                            animationString = "toggle-backward-animation";
-                                            passableValue = false;
-                                        }
-                                        rocket.component.Animate(component, animationString, function (component) {
-                                            var buttonElement = rocket.component.Fetch(component);
-                                            if (buttonElement.getAttribute("data-rocket-component-status") !== "true") {
-                                                buttonElement.setAttribute("data-rocket-component-status", "true");
-                                            }
-                                            else {
-                                                buttonElement.setAttribute("data-rocket-component-status", "false");
-                                            }
-                                        });
-                                    }
-                                    else if (component["type"] == "searchbox") {
-                                        passableValue = componentElement.value;
+                                var passableValue = null;
+                                if ((component["type"] == "button") && (componentElement.getAttribute("data-rocket-component-type") == "toggle")) {
+                                    var animationString;
+                                    if (componentElement.hasAttribute("data-rocket-component-status") == false) {
+                                        animationString = "toggle-forward-animation";
+                                        passableValue = true;
                                     }
                                     else {
-                                        passableValue = null;
+                                        animationString = "toggle-backward-animation";
+                                        passableValue = false;
                                     }
-                                    listenerCallback.call(rocket, component, passableValue);
+                                    rocket.component.Animate(component, animationString, function (component) {
+                                        var buttonElement = rocket.component.Fetch(component);
+                                        if (buttonElement.hasAttribute("data-rocket-component-status") == false) {
+                                            buttonElement.setAttribute("data-rocket-component-status", "true");
+                                        }
+                                        else {
+                                            buttonElement.removeAttribute("data-rocket-component-status");
+                                        }
+                                    });
                                 }
+                                else if (component["type"] == "searchbox") {
+                                    passableValue = componentElement.value;
+                                }
+                                listenerCallback.call(rocket, component, passableValue);
                             }.bind(rocket, component, listenerCallback));
                         });
                     }
@@ -269,14 +260,15 @@ var rocket;
                 }
                 else if (childComponent["type"] == "list-item") {
                     if (parentComponent["type"] == "dropdown") {
-                        parentElement = rocket.component.Fetch(rocket.dropdown.FetchLinkedListComponentObject(parentComponent));
+                        parentComponent = rocket.dropdown.FetchLinkedListComponentObject(parentComponent);
+                        parentElement = rocket.component.Fetch(parentComponent);
                     }
-                    if ((parentComponent["type"] == "dropdown") || (parentComponent["type"] == "list")) {
+                    if (parentComponent["type"] == "list") {
                         allowAdding = true;
                     }
                 }
                 else if (childComponent["link"] !== undefined) {
-                    childElement = rocket.generator.ElementCreator(null, "a", {
+                    childElement = rocket.generator.ElementCreator("a", {
                         "title": childComponent["title"],
                         "href": childComponent["link"],
                         "content": childComponent["title"]
@@ -317,9 +309,9 @@ var rocket;
             var componentList;
             if (componentsToRemove["id"] !== undefined) {
                 allowRemoval = true;
-                componentList = Array(componentsToRemove);
+                componentList = [componentsToRemove];
             }
-            else if (((typeof componentsToRemove).toLowerCase() == "object") && (componentsToRemove.length > 0)) {
+            else if ((typeof componentsToRemove == "object") && (componentsToRemove.length > 0)) {
                 allowRemoval = true;
                 componentList = componentsToRemove;
             }
@@ -384,6 +376,11 @@ var rocket;
                     rocket.device.IsOnline = false;
                 }, false);
             }
+            rocket.device.FetchScreenDetails();
+            window.addEventListener("resize", rocket.device.FetchScreenDetails);
+        }
+        device.Detect = Detect;
+        function FetchScreenDetails() {
             if (window.screen.height < 720) {
                 rocket.device.IsSubHD = true;
                 rocket.device.IsHD = false;
@@ -402,7 +399,7 @@ var rocket;
                 }
             }
         }
-        device.Detect = Detect;
+        device.FetchScreenDetails = FetchScreenDetails;
     })(device = rocket.device || (rocket.device = {}));
 })(rocket || (rocket = {}));
 var rocket;
@@ -639,13 +636,11 @@ var rocket;
                     componentElement.textContent = properties["content"];
                 }
                 else if ((propertyKey == "type") && (properties["type"] == "toggle")) {
-                    if (properties["default"] == undefined) {
-                        properties["default"] = false;
+                    var buttonToggleAttributes = { "data-rocket-minor-component": "buttonToggle" };
+                    if (properties["default"] == true) {
+                        buttonToggleAttributes["data-rocket-component-status"] = "true";
                     }
-                    var buttonToggle = rocket.generator.ElementCreator("div", {
-                        "data-rocket-minor-component": "buttonToggle",
-                        "data-rocket-component-status": properties["default"].toString()
-                    });
+                    var buttonToggle = rocket.generator.ElementCreator("div", buttonToggleAttributes);
                     componentElement.appendChild(buttonToggle);
                 }
                 else {
@@ -999,7 +994,7 @@ var rocket;
                 var playerRange = playerElement.querySelector("input");
                 var playerRangeAttributes = {};
                 var playerTimeElement = playerElement.querySelector("time");
-                if (rocket.player.IsDoingTimeChange(playerElementComponent) == true) {
+                if (playerElement.hasAttribute("data-rocket-component-changevolume") !== true) {
                     playerElement.setAttribute("data-rocket-component-status", "true");
                     playerElement.setAttribute("data-rocket-component-changevolume", "");
                     volumeButton.parentElement.querySelector('div[data-rocket-minor-component="player-button-play"]').setAttribute("data-rocket-component-disabled", "");
@@ -1055,7 +1050,7 @@ var rocket;
             var playerComponentObject = rocket.component.FetchComponentObject(playerElement);
             var contentElement = rocket.player.GetInnerContentElement(playerComponentObject);
             var valueNum = Number(playerRange.value);
-            if (rocket.player.IsDoingTimeChange(playerComponentObject) == true) {
+            if (playerElement.hasAttribute("data-rocket-component-changevolume") == false) {
                 valueNum = valueNum.toFixed();
                 contentElement.currentTime = valueNum;
             }
@@ -1079,16 +1074,6 @@ var rocket;
             }
         }
         player.IsPlaying = IsPlaying;
-        function IsDoingTimeChange(component) {
-            var componentElement = rocket.component.Fetch(component);
-            if (componentElement.hasAttribute("data-rocket-component-changevolume") !== true) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        player.IsDoingTimeChange = IsDoingTimeChange;
         function PlayOrPause(component, playButtonComponentObject) {
             var playerComponentElement = rocket.component.Fetch(component);
             var innerContentElement = rocket.player.GetInnerContentElement(component);

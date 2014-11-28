@@ -20,10 +20,6 @@ interface Navigator {
 interface HTMLElement {
     autoplay: boolean;
 }
-interface ClientRect {
-    x: number;
-    y: number;
-}
 interface Window {
     crypto: any;
 }
@@ -57,6 +53,7 @@ declare module rocket.device {
     var IsHD: boolean;
     var IsFullHDOrAbove: boolean;
     function Detect(): void;
+    function FetchScreenDetails(): void;
 }
 declare module rocket.generator {
     var lastUniqueIds: Object;
@@ -104,7 +101,6 @@ declare module rocket.player {
     function GetPlayerLengthInfo(component: Object): Object;
     function TimeOrVolumeChanger(): void;
     function IsPlaying(component: Object): boolean;
-    function IsDoingTimeChange(component: Object): boolean;
     function PlayOrPause(component: Object, playButtonComponentObject?: Object): void;
     function FetchSources(type: string, sources: any): HTMLElement[];
 }

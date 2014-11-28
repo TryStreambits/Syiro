@@ -61,7 +61,6 @@ module rocket.header {
 
 		if (imageElement == null){ // If there is NOT already a logo in the header component
 			imageElement = rocket.generator.ElementCreator("img", { "data-rocket-minor-component" : "logo", "src" : image }); // Create an imageElement
-
 			headerElement.insertBefore(imageElement, headerElement.firstChild); // Prepend the logo component
 		}
 		else{ // If the image element is already defined

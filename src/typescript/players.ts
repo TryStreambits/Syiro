@@ -138,7 +138,7 @@ module rocket.player {
             // #region Player Range Initialization
 
             var playerRange = playerControlArea.querySelector('input[type="range"]'); // Get the input range
-            
+
             rocket.component.AddListeners(rocket.component.listenerStrings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
                 function(){
                     var playerRangeElement : Element = arguments[0]; // Get the Player Range element passed
@@ -200,6 +200,16 @@ module rocket.player {
                     }
                 }
             );
+
+            // #endregion
+
+            // #region Player Share Dialog
+
+            var shareButton = componentElement.querySelector('div[data-rocket-minor-component="player-button-menu"]'); // Get the shareButton if it exists
+
+            if (shareButton !== null){ // If the share button exists
+                rocket.component.AddListeners(rocket.component.FetchComponentObject(shareButton), rocket.player.ToggleShareDialog.bind(this, component)); // Add an event listener to the button that calls ToggleShareDialog, binding to the Player Component
+            }
 
             // #endregion
 
@@ -412,7 +422,11 @@ module rocket.player {
         var arrayofSourceElements : Array<HTMLElement> = rocket.player.FetchSources(component["type"].replace("-player", ""), sources); // Get an array of Source Elements
 
         rocket.player.Reset(component); // Reset the component
-        rocket.component.CSS(playerElement.querySelector('img[data-rocket-minor-component="video-poster"]'), "visibility", "hidden"); // Hide the Video Poster
+
+        if (component["type"] == "video-player"){ // If this is a video player
+            rocket.component.CSS(playerElement.querySelector('img[data-rocket-minor-component="video-poster"]'), "visibility", "hidden"); // Hide the Video Poster
+        }
+
         playerInnerContentElement.innerHTML = ""; // Remove all inner source tags from the InnerContentElement (audio or video tag) by resetting the innerHTML
 
         for (var sourceElementKey in arrayofSourceElements){ // For each sourceElement in arrayofSourceElements
@@ -446,6 +460,26 @@ module rocket.player {
 
     // #endregion
 
+    // #region Toggle Share Dialog
+
+    export function ToggleShareDialog(component ?: Object){
+        var component : Object = arguments[0]; // Define the Player Component Object as the first argument
+        var componentElement : Element = rocket.component.Fetch(component); // Fetch the Player Element
+
+        var shareDialog : Element = componentElement.querySelector('div[data-rocket-minor-component="player-share"]'); // Get the Share Dialog
+        var shareButton : Element = componentElement.querySelector('div[data-rocket-minor-component="player-button-menu"]'); // Get the share button element
+
+        if (rocket.component.CSS(shareDialog, "visibility") !== "visible"){ // If the Share Dialog is currently not showing
+            shareButton.setAttribute("data-rocket-component-status", "true"); // Set the share button status to true
+            rocket.component.CSS(shareDialog, "visibility", "visible"); // Show the share dialog
+        }
+        else{ // If the Share dialog currently IS showing
+            shareButton.removeAttribute("data-rocket-component-status"); // Remove the share button status
+            rocket.component.CSS(shareDialog, "visibility", false); // Hide the share dialog (removing the visibility attribute, putting the Share Dialog back to default state)
+        }
+    }
+
+    // #endregion
 }
 
 // #endregion
@@ -456,7 +490,7 @@ module rocket.playercontrol {
 
     // #region Player Control Generator
 
-    export function Generate() : Object {
+    export function Generate(properties ?: Object) : Object {
         var componentId : string = rocket.generator.IdGen("player-control"); // Generate an ID for the Player Control
         var componentElement = rocket.generator.ElementCreator(componentId, "player-control"); // Generate the basic playerControl container
 
@@ -478,6 +512,18 @@ module rocket.playercontrol {
         componentElement.appendChild(rocket.component.Fetch(playButton)); // Append the play button
         componentElement.appendChild(inputRange); // Append the input range
         componentElement.appendChild(timeStamp); // Append the timestamp time element
+
+        // #region Player Share Element Creation (If Applicable)
+
+        if (properties["share"] !== undefined){ // If the share attribute is defined
+            if (properties["share"]["type"] == "list"){ // If the component provided is a List
+                var shareMenuButton = rocket.button.Generate( { "data-rocket-minor-component" : "player-button-menu"} ); // Generate a Share Menu Button
+                componentElement.appendChild(rocket.component.Fetch(shareMenuButton)); // Append the shareMenuButton to the playerControlElement
+            }
+        }
+
+        // #endregion
+
         componentElement.appendChild(rocket.component.Fetch(volumeButton)); // Append the volume control
 
         rocket.component.storedComponents[componentId] = componentElement; // Store the Player Control
@@ -530,12 +576,18 @@ module rocket.audioplayer {
     export function Generate(properties : Object) : Object { // Generate a Audio Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the audio property is defined
             var componentId : string = rocket.generator.IdGen("audio-player"); // Generate a component Id
-            var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "audio-player"); // Generate an Audio Player Element
+            var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "audio-player", // Generate an Audio Player Element
+                {
+                    "id" : componentId, // Set the id (followed by name below) to act as a fragment ID for a page to jump to
+                    "name" : componentId,
+                }
+            );
 
             // #region Audio Element and Source Creation
 
             var audioPlayer : HTMLElement = rocket.generator.ElementCreator("audio", // Create the audio player
                 {
+
                     "preload" : "metadata", // Only download metadata
                     "volume" : "0.5" // Set volume to 50%
                 }
@@ -586,8 +638,26 @@ module rocket.audioplayer {
 
             // #endregion
 
-            var playerControlComponent : Object = rocket.playercontrol.Generate(); // Pass along the "audio" type so we know NOT to append the fullscreen
+            var playerControlComponent : Object = rocket.playercontrol.Generate(properties);
             var playerControlElement : Element = rocket.component.Fetch(playerControlComponent); // Fetch the HTMLElement
+
+            // #region Player Share Element Creation (If Applicable)
+
+            if (properties["share"] !== undefined){ // If the share attribute is defined
+                if (properties["share"]["type"] == "list"){ // If the component provided is a List
+                    var playerShareDialog : Element = rocket.generator.ElementCreator("div", { "data-rocket-minor-component" : "player-share" } ); // Create a div element with the minor-component of player-share-dialog
+                    var playerShareLabel : Element = rocket.generator.ElementCreator("label", { "content" : "Share" }); // Create a label with the content "Share"
+                    playerShareDialog.appendChild(playerShareLabel);
+                    playerShareDialog.appendChild(rocket.component.Fetch(properties["share"])); // Append the List Element to the playerShareDialog
+                    rocket.CSS(playerShareDialog, "height", "100px"); // Set the height of the share dialog to be 100px
+                    rocket.CSS(playerShareDialog, "width", "400px"); // Set the width of the share dialog to be the same as the Audio Player
+
+                    componentElement.insertBefore(playerShareDialog, componentElement.firstChild); // Prepend the Share Dialog
+                }
+            }
+
+            // #endregion
+
             componentElement.appendChild(playerControlElement); // Append the player control
 
             rocket.component.storedComponents[componentId] = componentElement;
@@ -615,7 +685,12 @@ module rocket.videoplayer {
     export function Generate(properties : Object) : Object { // Generate a Video Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the video property is defined
             var componentId : string = rocket.generator.IdGen("video-player"); // Generate a component Id
-            var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "video-player"); // Generate an Video Player Element
+            var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "video-player",
+                {
+                    "id" : componentId, // Set the id (followed by name below) to act as a fragment ID for a page to jump to
+                    "name" : componentId
+                }
+            ); // Generate an Video Player Element
 
             // #region Video Dimensions Calculation
             var videoHeight : number = properties["height"]; // Define videoHeight as the height the video in the Video Player should be
@@ -670,8 +745,25 @@ module rocket.videoplayer {
 
             componentElement.appendChild(videoPlayer); // Append the video player
 
-            var playerControlComponent : Object = rocket.playercontrol.Generate(); // Pass along the "video" type so we know NOT to append the fullscreen
+            var playerControlComponent : Object = rocket.playercontrol.Generate(properties);
             var playerControlElement : Element = rocket.component.Fetch(playerControlComponent); // Fetch the HTMLElement
+
+            // #region Player Share Element Creation (If Applicable)
+
+            if (properties["share"] !== undefined){ // If the share attribute is defined
+                if (properties["share"]["type"] == "list"){ // If the component provided is a List
+                    var playerShareDialog : Element = rocket.generator.ElementCreator("div", { "data-rocket-minor-component" : "player-share" } ); // Create a div element with the minor-component of player-share-dialog
+                    var playerShareLabel : Element = rocket.generator.ElementCreator("label", { "content" : "Share" }); // Create a label with the content "Share"
+                    playerShareDialog.appendChild(playerShareLabel);
+                    playerShareDialog.appendChild(rocket.component.Fetch(properties["share"])); // Append the List Element to the playerShareDialog
+                    rocket.CSS(playerShareDialog, "height", videoHeight.toString() + "px"); // Set the height of the share dialog to be the same as the video
+                    rocket.CSS(playerShareDialog, "width", videoWidth.toString() + "px"); // Set the width of the share dialog to be the same as the video
+
+                    componentElement.insertBefore(playerShareDialog, componentElement.firstChild); // Prepend the Share Dialog
+                }
+            }
+
+            // #endregion
 
             componentElement.appendChild(playerControlElement); // Append the player control
 

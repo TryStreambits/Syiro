@@ -62,13 +62,37 @@
 				);
 			}
 
+			/* Share Dialogs List Generation */
+
+			var sharedDialogItems = [
+				{
+					"image" : "img/facebook.png",
+					"label" : "Facebook"
+				},
+				{
+					"image" : "img/google-plus.png",
+					"label" : "Google+"
+				},
+				{
+					"image" : "img/twitter.png",
+					"label" : "Twitter"
+				}
+			];
+
+			var audioShareDialogList = rocket.list.Generate({ "items" : sharedDialogItems } );
+
+			var videoShareDialogList = rocket.list.Generate({ "items" : sharedDialogItems } );
+
+			/* End of Share Dialogs List Generation */
+
 			var generatedAudioPlayer = rocket.audioplayer.Generate(
 					{
 						"sources": "http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",
 						"art" : "http://upload.wikimedia.org/wikipedia/en/thumb/a/ac/XiphophorusLogoSVG.svg/132px-XiphophorusLogoSVG.svg.png",
 						"title" : "Example OGG File",
 						"artist" : "JesseW",
-						"album": "Wikipedia"
+						"album": "Wikipedia",
+						"share" : audioShareDialogList
 					}
 			);
 
@@ -76,7 +100,7 @@
 					{
 						"art" : "img/video-art.png",
 						"sources" : ["http://download.blender.org/peach/trailer/trailer_400p.ogg", "http://download.blender.org/peach/trailer/trailer_480p.mov"],
-						"width" : 600
+						"share" : videoShareDialogList
 					}
 			);
 
@@ -116,8 +140,8 @@
 
 			rocket.AddListeners(generatedSearchbox, function(x){console.log(arguments[1])}); // Listen to the Searchbox value change
 
-			var testListItem = rocket.Define("list-item", 'div[data-rocket-component="list"] > div:first-of-type');
-			var secondListItem = rocket.Define("list-item", 'div[data-rocket-component="list"] > div:nth-of-type(2)');
+			var testListItem = rocket.Define("list-item", 'div[data-rocket-component="list"][data-rocket-component-owner] > div:first-of-type');
+			var secondListItem = rocket.Define("list-item", 'div[data-rocket-component="list"][data-rocket-component-owner] > div:nth-of-type(2)');
 
 			rocket.listitem.SetLabel(testListItem, "First!");
 			rocket.listitem.SetControl(testListItem, generatedToggle);

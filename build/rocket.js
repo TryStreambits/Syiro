@@ -195,9 +195,6 @@ var rocket;
                     }
                     for (var individualListenerIndex in listeners) {
                         var individualListener = listeners[individualListenerIndex];
-                        if (componentElement == null) {
-                            console.log(args);
-                        }
                         componentElement.addEventListener(individualListener, function () {
                             var component = arguments[0];
                             var listenerCallback = arguments[1];
@@ -713,16 +710,29 @@ var rocket;
             var componentElement = rocket.generator.ElementCreator(componentId, "list-item");
             for (var propertyKey in properties) {
                 if (propertyKey == "control") {
-                    var controlComponentObject = properties[propertyKey];
-                    if (controlComponentObject["type"] == "button") {
-                        var controlComponentElement = rocket.component.Fetch(controlComponentObject);
-                        componentElement.appendChild(controlComponentElement);
-                        delete rocket.component.storedComponents[controlComponentObject["id"]];
+                    if (properties["image"] == undefined) {
+                        var controlComponentObject = properties[propertyKey];
+                        if (controlComponentObject["type"] == "button") {
+                            var controlComponentElement = rocket.component.Fetch(controlComponentObject);
+                            componentElement.appendChild(controlComponentElement);
+                            delete rocket.component.storedComponents[controlComponentObject["id"]];
+                        }
+                    }
+                }
+                else if (propertyKey == "image") {
+                    if (properties["control"] == undefined) {
+                        var imageComponent = rocket.generator.ElementCreator("img", { "src": properties["image"] });
+                        componentElement.insertBefore(imageComponent, componentElement.firstChild);
                     }
                 }
                 else if (propertyKey == "label") {
                     var labelComponent = rocket.generator.ElementCreator("label", { "content": properties["label"] });
-                    componentElement.insertBefore(labelComponent, componentElement.firstChild);
+                    if (componentElement.querySelector("img") == null) {
+                        componentElement.insertBefore(labelComponent, componentElement.firstChild);
+                    }
+                    else {
+                        componentElement.appendChild(labelComponent);
+                    }
                 }
             }
             rocket.component.storedComponents[componentId] = componentElement;
@@ -1072,6 +1082,10 @@ var rocket;
                     playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]);
                 }
             });
+            var shareButton = componentElement.querySelector('div[data-rocket-minor-component="player-button-menu"]');
+            if (shareButton !== null) {
+                rocket.component.AddListeners(rocket.component.FetchComponentObject(shareButton), rocket.player.ToggleShareDialog.bind(this, component));
+            }
         }
         player.Init = Init;
         function FetchInnerContentElement(component) {
@@ -1212,7 +1226,9 @@ var rocket;
             }
             var arrayofSourceElements = rocket.player.FetchSources(component["type"].replace("-player", ""), sources);
             rocket.player.Reset(component);
-            rocket.component.CSS(playerElement.querySelector('img[data-rocket-minor-component="video-poster"]'), "visibility", "hidden");
+            if (component["type"] == "video-player") {
+                rocket.component.CSS(playerElement.querySelector('img[data-rocket-minor-component="video-poster"]'), "visibility", "hidden");
+            }
             playerInnerContentElement.innerHTML = "";
             for (var sourceElementKey in arrayofSourceElements) {
                 playerInnerContentElement.appendChild(arrayofSourceElements[sourceElementKey]);
@@ -1234,13 +1250,28 @@ var rocket;
             playerInnerContentElement.volume = volume;
         }
         player.SetVolume = SetVolume;
+        function ToggleShareDialog(component) {
+            var component = arguments[0];
+            var componentElement = rocket.component.Fetch(component);
+            var shareDialog = componentElement.querySelector('div[data-rocket-minor-component="player-share"]');
+            var shareButton = componentElement.querySelector('div[data-rocket-minor-component="player-button-menu"]');
+            if (rocket.component.CSS(shareDialog, "visibility") !== "visible") {
+                shareButton.setAttribute("data-rocket-component-status", "true");
+                rocket.component.CSS(shareDialog, "visibility", "visible");
+            }
+            else {
+                shareButton.removeAttribute("data-rocket-component-status");
+                rocket.component.CSS(shareDialog, "visibility", false);
+            }
+        }
+        player.ToggleShareDialog = ToggleShareDialog;
     })(player = rocket.player || (rocket.player = {}));
 })(rocket || (rocket = {}));
 var rocket;
 (function (rocket) {
     var playercontrol;
     (function (playercontrol) {
-        function Generate() {
+        function Generate(properties) {
             var componentId = rocket.generator.IdGen("player-control");
             var componentElement = rocket.generator.ElementCreator(componentId, "player-control");
             var playButton = rocket.button.Generate({
@@ -1254,6 +1285,12 @@ var rocket;
             componentElement.appendChild(rocket.component.Fetch(playButton));
             componentElement.appendChild(inputRange);
             componentElement.appendChild(timeStamp);
+            if (properties["share"] !== undefined) {
+                if (properties["share"]["type"] == "list") {
+                    var shareMenuButton = rocket.button.Generate({ "data-rocket-minor-component": "player-button-menu" });
+                    componentElement.appendChild(rocket.component.Fetch(shareMenuButton));
+                }
+            }
             componentElement.appendChild(rocket.component.Fetch(volumeButton));
             rocket.component.storedComponents[componentId] = componentElement;
             return { "id": componentId, "type": "player-control" };
@@ -1287,7 +1324,10 @@ var rocket;
         function Generate(properties) {
             if (properties["sources"] !== undefined) {
                 var componentId = rocket.generator.IdGen("audio-player");
-                var componentElement = rocket.generator.ElementCreator(componentId, "audio-player");
+                var componentElement = rocket.generator.ElementCreator(componentId, "audio-player", {
+                    "id": componentId,
+                    "name": componentId,
+                });
                 var audioPlayer = rocket.generator.ElementCreator("audio", {
                     "preload": "metadata",
                     "volume": "0.5"
@@ -1317,8 +1357,19 @@ var rocket;
                     playerInformation.appendChild(playerTextualInformation);
                     componentElement.appendChild(playerInformation);
                 }
-                var playerControlComponent = rocket.playercontrol.Generate();
+                var playerControlComponent = rocket.playercontrol.Generate(properties);
                 var playerControlElement = rocket.component.Fetch(playerControlComponent);
+                if (properties["share"] !== undefined) {
+                    if (properties["share"]["type"] == "list") {
+                        var playerShareDialog = rocket.generator.ElementCreator("div", { "data-rocket-minor-component": "player-share" });
+                        var playerShareLabel = rocket.generator.ElementCreator("label", { "content": "Share" });
+                        playerShareDialog.appendChild(playerShareLabel);
+                        playerShareDialog.appendChild(rocket.component.Fetch(properties["share"]));
+                        rocket.CSS(playerShareDialog, "height", "100px");
+                        rocket.CSS(playerShareDialog, "width", "400px");
+                        componentElement.insertBefore(playerShareDialog, componentElement.firstChild);
+                    }
+                }
                 componentElement.appendChild(playerControlElement);
                 rocket.component.storedComponents[componentId] = componentElement;
                 return { "id": componentId, "type": "audio-player" };
@@ -1337,7 +1388,10 @@ var rocket;
         function Generate(properties) {
             if (properties["sources"] !== undefined) {
                 var componentId = rocket.generator.IdGen("video-player");
-                var componentElement = rocket.generator.ElementCreator(componentId, "video-player");
+                var componentElement = rocket.generator.ElementCreator(componentId, "video-player", {
+                    "id": componentId,
+                    "name": componentId
+                });
                 var videoHeight = properties["height"];
                 var videoWidth = properties["width"];
                 if (videoHeight == undefined) {
@@ -1368,8 +1422,19 @@ var rocket;
                     videoPlayer.appendChild(arrayofSourceElements[sourceElementKey]);
                 }
                 componentElement.appendChild(videoPlayer);
-                var playerControlComponent = rocket.playercontrol.Generate();
+                var playerControlComponent = rocket.playercontrol.Generate(properties);
                 var playerControlElement = rocket.component.Fetch(playerControlComponent);
+                if (properties["share"] !== undefined) {
+                    if (properties["share"]["type"] == "list") {
+                        var playerShareDialog = rocket.generator.ElementCreator("div", { "data-rocket-minor-component": "player-share" });
+                        var playerShareLabel = rocket.generator.ElementCreator("label", { "content": "Share" });
+                        playerShareDialog.appendChild(playerShareLabel);
+                        playerShareDialog.appendChild(rocket.component.Fetch(properties["share"]));
+                        rocket.CSS(playerShareDialog, "height", videoHeight.toString() + "px");
+                        rocket.CSS(playerShareDialog, "width", videoWidth.toString() + "px");
+                        componentElement.insertBefore(playerShareDialog, componentElement.firstChild);
+                    }
+                }
                 componentElement.appendChild(playerControlElement);
                 rocket.component.storedComponents[componentId] = componentElement;
                 return { "id": componentId, "type": "video-player" };

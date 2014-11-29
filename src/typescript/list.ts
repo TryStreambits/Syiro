@@ -57,18 +57,32 @@ module rocket.listitem {
 
 		for (var propertyKey in properties){ // Recursive go through each propertyKey
 			if (propertyKey == "control"){ // If we are adding a control
-				var controlComponentObject = properties[propertyKey]; // Get the Rocket component's Object
+				if (properties["image"] == undefined){ // If we are not adding an image, then allow for adding a control
+					var controlComponentObject = properties[propertyKey]; // Get the Rocket component's Object
 
-				if (controlComponentObject["type"] == "button"){ // If the component is either a basic or toggle button
-					var controlComponentElement : Element= rocket.component.Fetch(controlComponentObject); // Get the component's (HTML)Element
-					componentElement.appendChild(controlComponentElement); // Append the component to the List Item
+					if (controlComponentObject["type"] == "button"){ // If the component is either a basic or toggle button
+						var controlComponentElement : Element= rocket.component.Fetch(controlComponentObject); // Get the component's (HTML)Element
+						componentElement.appendChild(controlComponentElement); // Append the component to the List Item
 
-					delete rocket.component.storedComponents[controlComponentObject["id"]]; // Delete the Component from the storedComponents
+						delete rocket.component.storedComponents[controlComponentObject["id"]]; // Delete the Component from the storedComponents
+					}
+				}
+			}
+			else if (propertyKey == "image"){ // If we are adding an image
+				if (properties["control"] == undefined){ // If we are not adding a control, then allow for adding an image
+					var imageComponent : HTMLElement = rocket.generator.ElementCreator("img", { "src" : properties["image"]} ); // Create an image with the source set the properties["image"]
+					componentElement.insertBefore(imageComponent, componentElement.firstChild); // Prepend the label to the List Item component
 				}
 			}
 			else if (propertyKey == "label"){ // If we are adding a label
 				var labelComponent : HTMLElement = rocket.generator.ElementCreator("label", { "content" : properties["label"] }); // Create a label within the "label" (labelception) to hold the defined text.
-				componentElement.insertBefore(labelComponent, componentElement.firstChild); // Prepend the label to the List Item component
+
+				if (componentElement.querySelector("img") == null){ // If we have not added an image to the List Item
+					componentElement.insertBefore(labelComponent, componentElement.firstChild); // Prepend the label to the List Item component
+				}
+				else{ // If an image does exist
+					componentElement.appendChild(labelComponent); // Append the label after the image
+				}
 			}
 		}
 

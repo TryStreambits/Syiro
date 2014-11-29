@@ -18,6 +18,13 @@ div[data-rocket-component="list"]{ // Rocket List Component
 		text-indent: 10px;
 		overflow: hidden;
 
+		& > img { // Rocket List Item - Image
+			float: left;
+			height: 40px;
+			width: 40px;
+			margin-right: 10px;
+		}
+
 		& > a{ // Rocket List Item - Links
 			width: 100%; // Only allow the link to be in this particular List Item component (disallow secondary controls)
 			color: @rocketPrimaryColor !important; // Force link color (primary color)
@@ -25,7 +32,7 @@ div[data-rocket-component="list"]{ // Rocket List Component
 			text-decoration: none; // No text decoration
 		}
 
-		& > *:nth-child(2){ // Secondary control within List Item component
+		& > div[data-rocket-component="button"]{ // Secondary control within List Item component
 			float: right !important; // Float the component to the right
 		}
 	}

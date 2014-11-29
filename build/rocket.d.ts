@@ -110,9 +110,10 @@ declare module rocket.player {
     function SetSources(component: Object, sources: any): void;
     function SetTime(component: Object, time: number): void;
     function SetVolume(component: Object, volume: number): void;
+    function ToggleShareDialog(component?: Object): void;
 }
 declare module rocket.playercontrol {
-    function Generate(): Object;
+    function Generate(properties?: Object): Object;
     function TimeLabelUpdater(component: Object, timePart: number, value: any): void;
 }
 declare module rocket.audioplayer {

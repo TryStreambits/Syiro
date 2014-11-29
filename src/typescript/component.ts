@@ -267,10 +267,6 @@ module rocket.component {
 				for (var individualListenerIndex in listeners){ // For each listener in the listeners array
 					var individualListener : string = listeners[individualListenerIndex];
 
-					if (componentElement == null){
-						console.log(args);
-					}
-
 					componentElement.addEventListener(individualListener, // Attach an event listener to the component
 						function(){
 							var component : any = arguments[0]; // Set component as first argument passed

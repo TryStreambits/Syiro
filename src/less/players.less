@@ -179,8 +179,7 @@ div[data-rocket-component="audio-player"]{ // Audio Player
 
 div[data-rocket-component="video-player"]{ // Video Player
     float: left;
-    height: 300px;
-    width: 450px;
+    background-color: black; // Set the Video Player Component to have a black background to match video letterboxing color
 
     & > div[data-rocket-minor-component="video-ad"]{ // Video "Ad" Label
         float: left;
@@ -196,8 +195,6 @@ div[data-rocket-component="video-player"]{ // Video Player
 
     & > img[data-rocket-minor-component="video-poster"]{ // Video Poster
         float: left;
-        height: 300px;
-        width: 450px;
         margin: 0;
         padding: 0;
         position: absolute;
@@ -207,7 +204,8 @@ div[data-rocket-component="video-player"]{ // Video Player
 
     & > video { // Inner video
         float: left;
-        width: 450px;
+        width: 100%; // 100% width of Player Component
+        background-color: black; // Set background color of video to black in the event it doesn't have the proper aspect ratio, to make any letterboxing less jarring
 
         &:focus { // When the video is focused, typically on right-click, disable the border / outline
             border: 0;

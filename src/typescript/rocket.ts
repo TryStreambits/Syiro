@@ -11,6 +11,7 @@
 /// <reference path="list.ts" />
 /// <reference path="players.ts" />
 /// <reference path="searchbox.ts" />
+/// <reference path="utilities.ts" />
 
 module rocket {
 
@@ -22,14 +23,16 @@ module rocket {
 
 		// #region Document Scroll Event Listening
 
-		document.addEventListener("scroll", function(){ // Add an event listener to the document for when the document is scrolling
-			var dropdowns : any = document.querySelectorAll('div[data-rocket-component="dropdown"][active]'); // Get all of the Dropdowns that are active
+		rocket.component.AddListeners("scroll", document, // Add an event listener to the document for when the document is scrolling
+			function(){
+				var dropdowns : any = document.querySelectorAll('div[data-rocket-component="dropdown"][active]'); // Get all of the Dropdowns that are active
 
-			for (var dropdownIndex = 0; dropdownIndex < dropdowns.length; dropdownIndex++){ // For each of those Dropdown Components that are active
-				var thisDropdownObject : Object = rocket.component.FetchComponentObject(dropdowns[dropdownIndex]); // Get the Component Object of the Dropdown
-				rocket.dropdown.Toggle(thisDropdownObject); // Toggle the Dropdown
+				for (var dropdownIndex = 0; dropdownIndex < dropdowns.length; dropdownIndex++){ // For each of those Dropdown Components that are active
+					var thisDropdownObject : Object = rocket.component.FetchComponentObject(dropdowns[dropdownIndex]); // Get the Component Object of the Dropdown
+					rocket.dropdown.Toggle(thisDropdownObject); // Toggle the Dropdown
+				}
 			}
-		});
+		);
 
 		// #endregion
 

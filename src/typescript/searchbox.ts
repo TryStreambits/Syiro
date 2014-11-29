@@ -15,6 +15,14 @@ module rocket.searchbox {
 		var componentId : string = rocket.generator.IdGen("searchbox"); // Generate a component Id
 		var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "searchbox"); // Generate a Searchbox Element
 
+		if (properties == undefined){ // If no properties were passed during the Generate call
+			properties = {}; // Set as an empty Object
+		}
+
+		if (properties["content"] == undefined){ // If a placeholder text is not provided
+			properties["content"] = "Search here..."; // Default to "Search here..." message
+		}
+
 		for (var propertyKey in properties){ // Recursive go through each propertyKey
 			if (propertyKey == "icon"){ // If we are adding an icon
 				rocket.component.CSS(componentElement, "background-image", "url(" + properties["icon"] + ")"); // Set the backgroundImage to the icon URL specified

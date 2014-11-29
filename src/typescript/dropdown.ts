@@ -120,17 +120,20 @@ module rocket.dropdown {
 				// #region Vertical
 
 				if (listToDropdownVerticalRelation == "above"){ // If we are putting the List above the Dropdown
-					listVerticalPosition = (dropdownVerticalPosition - listHeight); // Set the position be the Y coord position minus the height of the List (ex: Y = 300. LH = 200. LVP = 300 - 200)
+					if ((dropdownVerticalPosition == 0) || (dropdownVerticalPosition - listHeight < 0)){ // If the vertical position of the Dropdown is zero or the List vertical position would end up being less than zero, and we are wanting to put the List above the Dropdown
+						listVerticalPosition = dropdownHeight; // Set the listVerticalPosition to sit below the Dropdown
+					}
+					else{ // If the dropdownVerticalPosition is not zero or the List would not clip
+						listVerticalPosition = (dropdownVerticalPosition - listHeight); // Set the position be the Y coord position minus the height of the List (ex: Y = 300. LH = 200. LVP = 300 - 200)
+					}
 				}
 				else{ // If we are putting the List below the Dropdown
-					listVerticalPosition = (dropdownVerticalPosition + dropdownHeight); // Set the position to be the Y coord position plus the height the Dropdown (ex. Y = 300. DH = 40. LVP = 300 + 40)
-				}
-
-				if (listVerticalPosition < 0){ // If the list is going to clip above the page
-					listVerticalPosition = 0; // Set to zero
-				}
-				else if ((listVerticalPosition > window.screen.height) || (listVerticalPosition + listHeight > window.screen.height)){ // If the list is going to end up clipping below the page view
-					listVerticalPosition = window.screen.height - listHeight; // Ensure the List is right up against the bottom edge of the screen but not clipping.
+					if ((dropdownVerticalPosition == (window.screen.height - dropdownHeight)) || ((dropdownVerticalPosition + listHeight) > window.screen.height)){ // If the Dropdown is right up against the bottom of the screen or the List vertical position would end up clipping the List below the page,
+						listVerticalPosition = (dropdownVerticalPosition - listHeight); // Set the list to be above the Dropdown so it won't clip.
+					}
+					else{ // If the Dropdown is NOT right up against the bottom of the screen or the List would not clip
+						listVerticalPosition = (dropdownVerticalPosition + dropdownHeight); // Set the position to be the Y coord position plus the height the Dropdown (ex. Y = 300. DH = 40. LVP = 300 + 40)
+					}
 				}
 
 				// #endregion
@@ -140,20 +143,33 @@ module rocket.dropdown {
 				var listWidthInRelationToDropdown = (listWidth - dropdownWidth); // Set the listWidthInRelationToDropdown as the  List width minus the Dropdown width (ex. LW = 200. DW = 40. LWRD = 160)
 
 				if (listToDropdownHorizontalRelation == "left"){ // If we are putting the List to the left of the Dropdown
-					listHorizontalPosition = (dropdownHorizontalPosition - listWidthInRelationToDropdown); // Set the position to be the X coord position minus listWidthInRelationToDropdown (ex. X = 300. LWRD = 160. LWP = 140)
+					if ((dropdownHorizontalPosition + listWidth) <= window.screen.width){ // If the Dropdown's X position plus the list width is less than (or equal to)the screen width (ex. SW = 600. DHP = 400. LW = 200)
+						listHorizontalPosition = dropdownHorizontalPosition; // Have the List horizontal position equal the Dropdown's
+					}
+					else{ // If the List would end up partially clipping outside the page
+						listHorizontalPosition = (dropdownHorizontalPosition - listWidthInRelationToDropdown); // Set the position to be the X coord position minus listWidthInRelationToDropdown (ex. X = 300. LWRD = 160. LWP = 140) // RIGHT edge instead of LEFT
+					}
 				}
 				else if (listToDropdownHorizontalRelation == "center"){ // If we are putting the List in the center of the Dropdown
-					listHorizontalPosition = (dropdownHorizontalPosition + (listWidthInRelationToDropdown / 2)); // Set the position to be the X coord position plus listWidthInRelationToDropdown divided by 2. (ex. X  = 300. LWRD / 2 = 80. LWP = 380.)
+					var listSideLength = (listWidthInRelationToDropdown / 2); // Get the amount of pixels that each side of the List would have
+
+					if ((dropdownHorizontalPosition - listSideLength) < 0){ // If the List would partially clip to the left of the page
+						listHorizontalPosition = dropdownHorizontalPosition; // Set the List to align on the LEFT edge of the Dropdown instead, to prevent clipping
+					}
+					else if ((dropdownHorizontalPosition + listSideLength) > window.screen.width){ // If the List would partially clip to the right of the page
+						listHorizontalPosition = (dropdownHorizontalPosition - listWidthInRelationToDropdown); // Set the position to be the X coord position minus listWidthInRelationToDropdown (ex. X = 300. LWRD = 160. LWP = 140) // RIGHT edge instead of LEFT
+					}
+					else{ // If the List would NOT clip
+						listHorizontalPosition = (dropdownHorizontalPosition - listSideLength); // Set the position to be the X coord position minus listWidthInRelationToDropdown divided by 2. (ex. X  = 300. LWRD / 2 = 80. LWP = 220.)
+					}
 				}
 				else if (listToDropdownHorizontalRelation == "right"){ // If we are putting the List to the right of the Dropdown
-					listHorizontalPosition = dropdownHorizontalPosition; // Set the position to the X coord position, since we are having the left edge of the List meet the left edge of the Dropdown
-				}
-
-				if (listHorizontalPosition < 0){ // If the list is going to end up clipping outside the left side of the page
-					listHorizontalPosition = 0; // Set to zero, no matter the listToDropdownHorizontalRelation
-				}
-				else if ((listHorizontalPosition > window.screen.width) || (listHorizontalPosition + listWidth > window.screen.width)){ // If the list is going to end up clipping outside the right side of the page
-					listHorizontalPosition = window.screen.width - listWidth; // Ensure the List is right up against the right side of the screen but not clipping.
+					if ((dropdownHorizontalPosition - (listWidth - dropdownWidth)) < 0){ // If aligning the right edge of the Dropdown and List would cause the left part of the List to clip to the left side of the page
+						listHorizontalPosition = dropdownHorizontalPosition; // Have the List align to the LEFT edge of the Dropdown instead
+					}
+					else{ // If the List would NOT clip
+						listHorizontalPosition = (dropdownHorizontalPosition - listWidthInRelationToDropdown); // Set the position to be the X coord position minus listWidthInRelationToDropdown (ex. X = 300. LWRD = 160. LWP = 140)
+					}
 				}
 
 				// #endregion

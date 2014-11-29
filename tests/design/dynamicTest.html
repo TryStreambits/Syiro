@@ -75,12 +75,13 @@
 			var generatedVideoPlayer = rocket.videoplayer.Generate(
 					{
 						"art" : "img/video-art.png",
-						"sources" : ["http://download.blender.org/peach/trailer/trailer_400p.ogg", "http://download.blender.org/peach/trailer/trailer_480p.mov"]
+						"sources" : ["http://download.blender.org/peach/trailer/trailer_400p.ogg", "http://download.blender.org/peach/trailer/trailer_480p.mov"],
+						"width" : 600
 					}
 			);
 
 			var generatedButton = rocket.button.Generate({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
-			var generatedButtonTwo = rocket.button.Generate({"type" : "basic", "content" : "Test 2"}); // Generate a Basic Button
+			var generatedButtonTwo = rocket.button.Generate({"type" : "basic", "content" : "Change Source"}); // Generate a Basic Button that changes the video source
 			var generatedToggle = rocket.button.Generate({"type" : "toggle"}); // Generate a Toggle Button
 			var generatedFooter = rocket.footer.Generate({"content" : "Strobl Industries"}); // Generate a Footer
 
@@ -100,23 +101,16 @@
 			}
 
 			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedButton));
-			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedButtonTwo));
 			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedAudioPlayer));
 			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedVideoPlayer));
+			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedButtonTwo));
 			document.querySelector("body").appendChild(rocket.Fetch(generatedFooter));
 
 			rocket.AddListeners(generatedButton, function(x){console.log("First Button Hit!")}); // Listen to the Basic Button
 			rocket.AddListeners(generatedButtonTwo, // Listen to the Basic Button
 				function(x){
 					var component = arguments[0];
-					var currentColor = rocket.CSS(component, "background-color"); // Get the current color of the button (if anything)
-
-					if (currentColor !== "red"){ // If the color is NOT red
-						rocket.CSS(component, "background-color", "red"); // Change to red
-					}
-					else{ // If the color is red
-						rocket.CSS(component, "background-color", false); // Remove the red
-					}
+					rocket.player.SetSources(generatedVideoPlayer, ["https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv", "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4"]); // Change the source
 				}
 			);
 

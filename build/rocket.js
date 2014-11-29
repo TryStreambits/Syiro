@@ -177,23 +177,33 @@ var rocket;
                     component = args[1];
                     listenerCallback = args[2];
                 }
-                var componentElement = rocket.component.Fetch(component);
-                if (componentElement !== null) {
+                var componentElement;
+                if ((component["id"] !== undefined) && (component["id"] !== "") && (component["type"] !== undefined)) {
+                    componentElement = rocket.component.Fetch(component);
                     if (component["type"] == "list-item") {
                         if (componentElement.querySelector("div") !== null) {
                             allowListening = false;
                         }
                     }
-                    if (allowListening == true) {
-                        if ((typeof listeners).toLowerCase() == "string") {
-                            listeners = listeners.trim().split(" ");
+                }
+                else {
+                    componentElement = component;
+                }
+                if (allowListening == true) {
+                    if ((typeof listeners).toLowerCase() == "string") {
+                        listeners = listeners.trim().split(" ");
+                    }
+                    for (var individualListenerIndex in listeners) {
+                        var individualListener = listeners[individualListenerIndex];
+                        if (componentElement == null) {
+                            console.log(args);
                         }
-                        listeners.forEach(function (individualListener) {
-                            componentElement.addEventListener(individualListener, function () {
-                                var component = arguments[0];
-                                var listenerCallback = arguments[1];
+                        componentElement.addEventListener(individualListener, function () {
+                            var component = arguments[0];
+                            var listenerCallback = arguments[1];
+                            var passableValue = null;
+                            if (component["type"] !== undefined) {
                                 var componentElement = rocket.component.Fetch(component);
-                                var passableValue = null;
                                 if ((component["type"] == "button") && (componentElement.getAttribute("data-rocket-component-type") == "toggle")) {
                                     var animationString;
                                     if (componentElement.hasAttribute("data-rocket-component-status") == false) {
@@ -217,13 +227,13 @@ var rocket;
                                 else if (component["type"] == "searchbox") {
                                     passableValue = componentElement.value;
                                 }
-                                listenerCallback.call(rocket, component, passableValue);
-                            }.bind(rocket, component, listenerCallback));
-                        });
+                            }
+                            if (passableValue == null) {
+                                passableValue = arguments[2];
+                            }
+                            listenerCallback.call(rocket, component, passableValue);
+                        }.bind(rocket, component, listenerCallback));
                     }
-                }
-                else {
-                    allowListening = false;
                 }
             }
             else {
@@ -369,15 +379,15 @@ var rocket;
             }
             if (navigator.onLine !== undefined) {
                 rocket.device.IsOnline = navigator.onLine;
-                document.addEventListener("online", function () {
+                rocket.component.AddListeners("online", document, function () {
                     rocket.device.IsOnline = true;
-                }, false);
-                document.addEventListener("offline", function () {
+                });
+                rocket.component.AddListeners("offline", document, function () {
                     rocket.device.IsOnline = false;
-                }, false);
+                });
             }
             rocket.device.FetchScreenDetails();
-            window.addEventListener("resize", rocket.device.FetchScreenDetails);
+            rocket.component.AddListeners("resize", window, rocket.device.FetchScreenDetails);
         }
         device.Detect = Detect;
         function FetchScreenDetails() {
@@ -833,32 +843,49 @@ var rocket;
                 var listVerticalPosition;
                 var listHorizontalPosition;
                 if (listToDropdownVerticalRelation == "above") {
-                    listVerticalPosition = (dropdownVerticalPosition - listHeight);
+                    if ((dropdownVerticalPosition == 0) || (dropdownVerticalPosition - listHeight < 0)) {
+                        listVerticalPosition = dropdownHeight;
+                    }
+                    else {
+                        listVerticalPosition = (dropdownVerticalPosition - listHeight);
+                    }
                 }
                 else {
-                    listVerticalPosition = (dropdownVerticalPosition + dropdownHeight);
-                }
-                if (listVerticalPosition < 0) {
-                    listVerticalPosition = 0;
-                }
-                else if ((listVerticalPosition > window.screen.height) || (listVerticalPosition + listHeight > window.screen.height)) {
-                    listVerticalPosition = window.screen.height - listHeight;
+                    if ((dropdownVerticalPosition == (window.screen.height - dropdownHeight)) || ((dropdownVerticalPosition + listHeight) > window.screen.height)) {
+                        listVerticalPosition = (dropdownVerticalPosition - listHeight);
+                    }
+                    else {
+                        listVerticalPosition = (dropdownVerticalPosition + dropdownHeight);
+                    }
                 }
                 var listWidthInRelationToDropdown = (listWidth - dropdownWidth);
                 if (listToDropdownHorizontalRelation == "left") {
-                    listHorizontalPosition = (dropdownHorizontalPosition - listWidthInRelationToDropdown);
+                    if ((dropdownHorizontalPosition + listWidth) <= window.screen.width) {
+                        listHorizontalPosition = dropdownHorizontalPosition;
+                    }
+                    else {
+                        listHorizontalPosition = (dropdownHorizontalPosition - listWidthInRelationToDropdown);
+                    }
                 }
                 else if (listToDropdownHorizontalRelation == "center") {
-                    listHorizontalPosition = (dropdownHorizontalPosition + (listWidthInRelationToDropdown / 2));
+                    var listSideLength = (listWidthInRelationToDropdown / 2);
+                    if ((dropdownHorizontalPosition - listSideLength) < 0) {
+                        listHorizontalPosition = dropdownHorizontalPosition;
+                    }
+                    else if ((dropdownHorizontalPosition + listSideLength) > window.screen.width) {
+                        listHorizontalPosition = (dropdownHorizontalPosition - listWidthInRelationToDropdown);
+                    }
+                    else {
+                        listHorizontalPosition = (dropdownHorizontalPosition - listSideLength);
+                    }
                 }
                 else if (listToDropdownHorizontalRelation == "right") {
-                    listHorizontalPosition = dropdownHorizontalPosition;
-                }
-                if (listHorizontalPosition < 0) {
-                    listHorizontalPosition = 0;
-                }
-                else if ((listHorizontalPosition > window.screen.width) || (listHorizontalPosition + listWidth > window.screen.width)) {
-                    listHorizontalPosition = window.screen.width - listWidth;
+                    if ((dropdownHorizontalPosition - (listWidth - dropdownWidth)) < 0) {
+                        listHorizontalPosition = dropdownHorizontalPosition;
+                    }
+                    else {
+                        listHorizontalPosition = (dropdownHorizontalPosition - listWidthInRelationToDropdown);
+                    }
                 }
                 if (currentIcon !== false) {
                     var currentIconWithoutExtension = currentIcon.substr(0, currentIcon.indexOf("."));
@@ -923,58 +950,80 @@ var rocket;
 })(rocket || (rocket = {}));
 var rocket;
 (function (rocket) {
+    var utilities;
+    (function (utilities) {
+        function SecondsToTimeFormat(seconds) {
+            var timeObject = {};
+            if (seconds >= 3600) {
+                timeObject["hours"] = Number((seconds / 3600).toPrecision(1));
+                timeObject["minutes"] = Number(((seconds - (3600 * timeObject["hours"])) / 60).toPrecision(1));
+                timeObject["seconds"] = Number((seconds - (3600 * timeObject["hours"])) - (60 * timeObject["minutes"]));
+            }
+            else if ((seconds >= 60) && (seconds < 3600)) {
+                timeObject["minutes"] = Number((seconds / 60).toPrecision(1));
+                timeObject["seconds"] = Number((seconds - (timeObject["minutes"] * 60)));
+            }
+            else {
+                timeObject["minutes"] = 0;
+                timeObject["seconds"] = seconds;
+            }
+            timeObject["seconds"] = Math.floor(timeObject["seconds"]);
+            for (var timeObjectKey in timeObject) {
+                var timeObjectValue = timeObject[timeObjectKey];
+                var timeObjectValueString = timeObjectValue.toString();
+                if (timeObjectValue < 10) {
+                    timeObjectValueString = "0" + timeObjectValueString;
+                }
+                timeObject[timeObjectKey] = timeObjectValueString;
+            }
+            return timeObject;
+        }
+        utilities.SecondsToTimeFormat = SecondsToTimeFormat;
+    })(utilities = rocket.utilities || (rocket.utilities = {}));
+})(rocket || (rocket = {}));
+var rocket;
+(function (rocket) {
     var player;
     (function (player) {
         function Init(component) {
             var componentElement = rocket.component.Fetch(component);
-            var innerContentElement = rocket.player.GetInnerContentElement(component);
+            var innerContentElement = rocket.player.FetchInnerContentElement(component);
             var playerControlArea = componentElement.querySelector('div[data-rocket-component="player-control"]');
             var playerControlComponent = rocket.component.FetchComponentObject(playerControlArea);
-            var playerRange = playerControlArea.querySelector('input[type="range"]');
-            innerContentElement.addEventListener("timeupdate", function () {
-                var playerComponent = arguments[0];
-                var playerComponentElement = rocket.component.Fetch(playerComponent);
+            rocket.component.AddListeners("timeupdate", innerContentElement, function () {
+                var playerComponentElement = arguments[0].parentElement;
+                var playerComponent = rocket.component.FetchComponentObject(playerComponentElement);
                 var playerControlElement = playerComponentElement.querySelector('div[data-rocket-component="player-control"]');
                 var playerControlComponent = rocket.component.FetchComponentObject(playerControlElement);
-                var playerElement = rocket.player.GetInnerContentElement(playerComponent);
+                var playerElement = rocket.player.FetchInnerContentElement(playerComponent);
                 var currentTime = playerElement.currentTime;
-                if (playerComponentElement.hasAttribute("data-rocket-component-status") == false) {
-                    playerComponentElement.querySelector('div[data-rocket-component="player-control"]').querySelector("input").value = currentTime;
-                }
                 rocket.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime);
-                if (playerElement.ended == true) {
-                    var playButtonElement = playerControlElement.querySelector('div[data-rocket-minor-component="player-button-play"]');
-                    rocket.component.CSS(rocket.component.FetchComponentObject(playButtonElement), "background-image", false);
-                    var playerRange = playerControlElement.querySelector('input[type="range"]');
-                    playerRange.value = 0;
+                if (playerComponentElement.hasAttribute("data-rocket-component-status") == false) {
+                    playerComponentElement.querySelector('div[data-rocket-component="player-control"]').querySelector("input").value = Math.floor(currentTime);
                 }
-            }.bind(this, component));
+                if (playerElement.ended == true) {
+                    rocket.player.Reset(playerComponent);
+                }
+            });
             if (component["type"] == "video-player") {
                 var posterImageElement = componentElement.querySelector('img[data-rocket-minor-component="video-poster"]');
                 if (posterImageElement !== null) {
                     rocket.component.CSS(playerControlComponent, "opacity", "0.8");
-                    for (var listenerKey in rocket.component.listenerStrings["up"]) {
-                        posterImageElement.addEventListener(rocket.component.listenerStrings["up"][listenerKey], function () {
-                            var playerElementComponent = arguments[0];
-                            var posterImageElement = arguments[1];
-                            var e = arguments[2];
-                            if (e.button == 0) {
-                                rocket.component.CSS(posterImageElement, "display", "none");
-                                rocket.player.PlayOrPause(playerElementComponent);
-                            }
-                        }.bind(this, component, posterImageElement));
+                    rocket.component.AddListeners(rocket.component.listenerStrings["press"], posterImageElement, function () {
+                        var posterImageElement = arguments[0];
+                        rocket.component.CSS(posterImageElement, "visibility", "hidden");
+                        rocket.player.PlayOrPause(rocket.component.FetchComponentObject(posterImageElement.parentElement));
+                    });
+                }
+                rocket.component.AddListeners(rocket.component.listenerStrings["up"], innerContentElement, function () {
+                    var innerContentElement = arguments[0];
+                    var e = arguments[1];
+                    if (e.button == 0) {
+                        rocket.player.PlayOrPause(rocket.component.FetchComponentObject(innerContentElement.parentElement));
                     }
-                }
-                for (var listenerKey in rocket.component.listenerStrings["up"]) {
-                    innerContentElement.addEventListener(rocket.component.listenerStrings["up"][listenerKey], function () {
-                        var e = arguments[1];
-                        if (e.button == 0) {
-                            var playerElementComponent = arguments[0];
-                            rocket.player.PlayOrPause(playerElementComponent);
-                        }
-                    }.bind(this, component));
-                }
-                componentElement.addEventListener("contextmenu", function (e) {
+                });
+                rocket.component.AddListeners("contextmenu", componentElement, function () {
+                    var e = arguments[1];
                     e.preventDefault();
                 });
             }
@@ -986,17 +1035,12 @@ var rocket;
                 var playerElementComponent = rocket.component.FetchComponentObject(playerElement);
                 rocket.player.PlayOrPause(playerElementComponent, playButtonComponent);
             });
-            for (var listenerKey in rocket.component.listenerStrings["down"]) {
-                playerRange.addEventListener(rocket.component.listenerStrings["down"][listenerKey], function () {
-                    var playerControlComponent = arguments[0];
-                    var playerControl = rocket.component.Fetch(playerControlComponent);
-                    var playerRange = playerControl.querySelector("input");
-                    playerRange.parentElement.parentElement.setAttribute("data-rocket-component-status", "true");
-                }.bind(this, component));
-            }
-            for (var listenerKey in rocket.component.listenerStrings["up"]) {
-                playerRange.addEventListener(rocket.component.listenerStrings["up"][listenerKey], rocket.player.TimeOrVolumeChanger.bind(this, playerControlComponent));
-            }
+            var playerRange = playerControlArea.querySelector('input[type="range"]');
+            rocket.component.AddListeners(rocket.component.listenerStrings["down"], playerRange, function () {
+                var playerRangeElement = arguments[0];
+                playerRange.parentElement.parentElement.setAttribute("data-rocket-component-status", "true");
+            });
+            rocket.component.AddListeners(rocket.component.listenerStrings["up"], playerRange, rocket.player.TimeOrVolumeChanger);
             var volumeButtonComponent = rocket.component.FetchComponentObject(playerControlArea.querySelector('div[data-rocket-minor-component="player-button-volume"]'));
             rocket.component.AddListeners(volumeButtonComponent, function () {
                 var volumeButtonComponent = arguments[0];
@@ -1014,7 +1058,7 @@ var rocket;
                     playerTimeElement.setAttribute("data-rocket-component-disabled", "");
                     playerRangeAttributes["max"] = "100";
                     playerRangeAttributes["step"] = "1";
-                    playerRange.value = (rocket.player.GetInnerContentElement(playerElementComponent).volume * 100).toString();
+                    playerRange.value = (rocket.player.FetchInnerContentElement(playerElementComponent).volume * 100).toString();
                 }
                 else {
                     volumeButton.parentElement.querySelector('div[data-rocket-minor-component="player-button-play"]').removeAttribute("data-rocket-component-disabled");
@@ -1030,14 +1074,14 @@ var rocket;
             });
         }
         player.Init = Init;
-        function GetInnerContentElement(component) {
+        function FetchInnerContentElement(component) {
             var componentElement = rocket.component.Fetch(component);
             return componentElement.querySelector(component["type"].replace("-player", ""));
         }
-        player.GetInnerContentElement = GetInnerContentElement;
+        player.FetchInnerContentElement = FetchInnerContentElement;
         function GetPlayerLengthInfo(component) {
             var playerLengthInfo = {};
-            var contentDuration = Math.floor(Number(rocket.player.GetInnerContentElement(component).duration));
+            var contentDuration = Math.floor(Number(rocket.player.FetchInnerContentElement(component).duration));
             playerLengthInfo["max"] = contentDuration;
             if (contentDuration < 60) {
                 playerLengthInfo["step"] = 1;
@@ -1055,20 +1099,17 @@ var rocket;
         }
         player.GetPlayerLengthInfo = GetPlayerLengthInfo;
         function TimeOrVolumeChanger() {
-            var playerControlComponent = arguments[0];
-            var playerControlElement = rocket.component.Fetch(playerControlComponent);
-            var playerRange = playerControlElement.querySelector("input");
+            var playerRange = arguments[0];
+            var playerControlElement = playerRange.parentElement;
             var playerElement = playerControlElement.parentElement;
             var playerComponentObject = rocket.component.FetchComponentObject(playerElement);
-            var contentElement = rocket.player.GetInnerContentElement(playerComponentObject);
+            var contentElement = rocket.player.FetchInnerContentElement(playerComponentObject);
             var valueNum = Number(playerRange.value);
             if (playerElement.hasAttribute("data-rocket-component-changevolume") == false) {
-                valueNum = valueNum.toFixed();
-                contentElement.currentTime = valueNum;
+                rocket.player.SetTime(playerComponentObject, valueNum.toFixed());
             }
             else {
-                valueNum = (valueNum / 100);
-                contentElement.volume = valueNum;
+                rocket.player.SetVolume(playerComponentObject, (valueNum / 100));
             }
             if (playerElement.hasAttribute("data-rocket-component-changevolume") !== true) {
                 playerElement.removeAttribute("data-rocket-component-status");
@@ -1078,29 +1119,24 @@ var rocket;
         function IsPlaying(component) {
             var componentElement = rocket.component.Fetch(component);
             var isPaused = componentElement.querySelector(component["type"].replace("-player", "")).paused;
-            if (isPaused == true) {
-                return false;
-            }
-            else {
-                return true;
-            }
+            return !isPaused;
         }
         player.IsPlaying = IsPlaying;
         function PlayOrPause(component, playButtonComponentObject) {
             var playerComponentElement = rocket.component.Fetch(component);
-            var innerContentElement = rocket.player.GetInnerContentElement(component);
+            var innerContentElement = rocket.player.FetchInnerContentElement(component);
             if (playButtonComponentObject == undefined) {
                 playButtonComponentObject = rocket.component.FetchComponentObject(playerComponentElement.querySelector('div[data-rocket-minor-component="player-button-play"]'));
             }
             var playButton = rocket.component.Fetch(playButtonComponentObject);
             if (playButton.hasAttribute("data-rocket-component-disabled") == false) {
-                if (innerContentElement.played.length == 0) {
+                if (innerContentElement.currentTime == 0) {
                     var playerControlComponent = rocket.component.FetchComponentObject(playButton.parentElement);
                     var playerRange = playerComponentElement.querySelector('input[type="range"]');
                     var playerMediaLengthInformation = rocket.player.GetPlayerLengthInfo(component);
                     var posterImageElement = playerComponentElement.querySelector('img[data-rocket-minor-component="video-poster"]');
                     if (posterImageElement !== null) {
-                        rocket.component.CSS(posterImageElement, "display", "none");
+                        rocket.component.CSS(posterImageElement, "visibility", "hidden");
                         rocket.component.CSS(playerControlComponent, "opacity", false);
                     }
                     for (var playerRangeAttribute in playerMediaLengthInformation) {
@@ -1133,27 +1169,71 @@ var rocket;
             for (var sourceKey in sourcesList) {
                 var source = sourcesList[sourceKey];
                 var sourceExtension = source.substr(source.lastIndexOf(".")).replace(".", "");
-                var sourceType;
-                if (sourceExtension !== "mov") {
-                    sourceType = sourceExtension;
-                    if (sourceExtension == "m3u8") {
-                        sourceType = null;
+                var sourceTagAttributes = { "src": source };
+                if (source.substr(-1) !== ";") {
+                    if ((sourceExtension !== "mov") && (sourceExtension !== "m3u8")) {
+                        sourceTagAttributes["type"] = sourceExtension;
+                    }
+                    else if (sourceExtension == "mov") {
+                        sourceTagAttributes["type"] = "quicktime";
+                    }
+                    if (sourceTagAttributes["type"] !== undefined) {
+                        sourceTagAttributes["type"] = type + "/" + sourceTagAttributes["type"];
                     }
                 }
-                else {
-                    sourceType = "quicktime";
-                }
-                var sourceTag = rocket.generator.ElementCreator("source", {
-                    "src": source,
-                });
-                if (sourceType !== null) {
-                    sourceType["type"] = (type + "/" + sourceType);
-                }
+                var sourceTag = rocket.generator.ElementCreator("source", sourceTagAttributes);
                 arrayOfSourceElements.push(sourceTag);
             }
             return arrayOfSourceElements;
         }
         player.FetchSources = FetchSources;
+        function Reset(component) {
+            var playerElement = rocket.component.Fetch(component);
+            var playerInnerContentElement = rocket.player.FetchInnerContentElement(component);
+            var playerControl = playerElement.querySelector('div[data-rocket-component="player-control"]');
+            var playButton = playerControl.querySelector('div[data-rocket-minor-component="player-button-play"]');
+            var timeLabel = playerControl.querySelector('time');
+            var volumeControl = playerControl.querySelector('div[data-rocket-minor-component="player-button-volume"]');
+            playButton.removeAttribute("data-rocket-component-disabled");
+            rocket.component.CSS(playButton, "background-image", false);
+            timeLabel.removeAttribute("data-rocket-component-disabled");
+            volumeControl.removeAttribute("data-rocket-component-status");
+            playerElement.removeAttribute("data-rocket-component-status");
+            playerElement.removeAttribute("data-rocket-component-changevolume");
+            playerInnerContentElement.pause();
+            rocket.player.SetTime(component, 0);
+        }
+        player.Reset = Reset;
+        function SetSources(component, sources) {
+            var playerElement = rocket.component.Fetch(component);
+            var playerInnerContentElement = rocket.player.FetchInnerContentElement(component);
+            if (typeof sources == "string") {
+                sources = [sources];
+            }
+            var arrayofSourceElements = rocket.player.FetchSources(component["type"].replace("-player", ""), sources);
+            rocket.player.Reset(component);
+            rocket.component.CSS(playerElement.querySelector('img[data-rocket-minor-component="video-poster"]'), "visibility", "hidden");
+            playerInnerContentElement.innerHTML = "";
+            for (var sourceElementKey in arrayofSourceElements) {
+                playerInnerContentElement.appendChild(arrayofSourceElements[sourceElementKey]);
+            }
+            playerInnerContentElement.src = sources[0];
+        }
+        player.SetSources = SetSources;
+        function SetTime(component, time) {
+            var playerElement = rocket.component.Fetch(component);
+            var playerInnerContentElement = rocket.player.FetchInnerContentElement(component);
+            playerInnerContentElement.currentTime = time;
+            playerElement.querySelector('div[data-rocket-component="player-control"]').querySelector("input").value = Math.floor(time);
+            rocket.playercontrol.TimeLabelUpdater(rocket.component.FetchComponentObject(playerElement.querySelector('div[data-rocket-component="player-control"]')), 0, time);
+        }
+        player.SetTime = SetTime;
+        function SetVolume(component, volume) {
+            var playerElement = rocket.component.Fetch(component);
+            var playerInnerContentElement = rocket.player.FetchInnerContentElement(component);
+            playerInnerContentElement.volume = volume;
+        }
+        player.SetVolume = SetVolume;
     })(player = rocket.player || (rocket.player = {}));
 })(rocket || (rocket = {}));
 var rocket;
@@ -1179,38 +1259,11 @@ var rocket;
             return { "id": componentId, "type": "player-control" };
         }
         playercontrol.Generate = Generate;
-        function SecondsToTimeFormat(seconds) {
-            var timeObject = {};
-            if (seconds >= 3600) {
-                timeObject["hours"] = Number((seconds / 3600).toPrecision(1));
-                timeObject["minutes"] = Number(((seconds - (3600 * timeObject["hours"])) / 60).toPrecision(1));
-                timeObject["seconds"] = Number((seconds - (3600 * timeObject["hours"])) - (60 * timeObject["minutes"]));
-            }
-            else if ((seconds >= 60) && (seconds < 3600)) {
-                timeObject["minutes"] = Number((seconds / 60).toPrecision(1));
-                timeObject["seconds"] = Number((seconds - (timeObject["minutes"] * 60)));
-            }
-            else {
-                timeObject["minutes"] = 0;
-                timeObject["seconds"] = seconds;
-            }
-            timeObject["seconds"] = Math.floor(timeObject["seconds"]);
-            for (var timeObjectKey in timeObject) {
-                var timeObjectValue = timeObject[timeObjectKey];
-                var timeObjectValueString = timeObjectValue.toString();
-                if (timeObjectValue < 10) {
-                    timeObjectValueString = "0" + timeObjectValueString;
-                }
-                timeObject[timeObjectKey] = timeObjectValueString;
-            }
-            return timeObject;
-        }
-        playercontrol.SecondsToTimeFormat = SecondsToTimeFormat;
         function TimeLabelUpdater(component, timePart, value) {
             var playerControlElement = rocket.component.Fetch(component);
             var playerTimeElement = playerControlElement.querySelector("time");
             var parsedSecondsToString = "";
-            var timeFormatObject = rocket.playercontrol.SecondsToTimeFormat(value);
+            var timeFormatObject = rocket.utilities.SecondsToTimeFormat(value);
             for (var timeObjectKey in timeFormatObject) {
                 var timeObjectValue = timeFormatObject[timeObjectKey];
                 if (parsedSecondsToString.length !== 0) {
@@ -1285,11 +1338,30 @@ var rocket;
             if (properties["sources"] !== undefined) {
                 var componentId = rocket.generator.IdGen("video-player");
                 var componentElement = rocket.generator.ElementCreator(componentId, "video-player");
+                var videoHeight = properties["height"];
+                var videoWidth = properties["width"];
+                if (videoHeight == undefined) {
+                    videoHeight = 300;
+                }
+                if (videoWidth == undefined) {
+                    videoWidth = Number((videoHeight * 1.77).toFixed());
+                }
+                if (videoWidth > window.screen.width) {
+                    videoWidth = window.screen.width;
+                }
+                var properVideoHeight = Number((videoWidth / 1.77).toFixed());
+                if (videoHeight !== properVideoHeight) {
+                    videoHeight = properVideoHeight;
+                }
                 if (properties["art"] !== undefined) {
                     var posterImageElement = rocket.generator.ElementCreator("img", { "data-rocket-minor-component": "video-poster", "src": properties["art"] });
+                    rocket.component.CSS(posterImageElement, "height", (videoHeight + 50).toString() + "px");
+                    rocket.component.CSS(posterImageElement, "width", videoWidth.toString() + "px");
                     componentElement.appendChild(posterImageElement);
                 }
                 var videoPlayer = rocket.generator.ElementCreator("video", { "preload": "metadata", "volume": "0.5" });
+                rocket.component.CSS(videoPlayer, "height", videoHeight.toString() + "px");
+                rocket.component.CSS(videoPlayer, "width", videoWidth.toString() + "px");
                 videoPlayer.autoplay = false;
                 var arrayofSourceElements = rocket.player.FetchSources("video", properties["sources"]);
                 for (var sourceElementKey in arrayofSourceElements) {
@@ -1316,6 +1388,12 @@ var rocket;
         function Generate(properties) {
             var componentId = rocket.generator.IdGen("searchbox");
             var componentElement = rocket.generator.ElementCreator(componentId, "searchbox");
+            if (properties == undefined) {
+                properties = {};
+            }
+            if (properties["content"] == undefined) {
+                properties["content"] = "Search here...";
+            }
             for (var propertyKey in properties) {
                 if (propertyKey == "icon") {
                     rocket.component.CSS(componentElement, "background-image", "url(" + properties["icon"] + ")");
@@ -1348,7 +1426,7 @@ var rocket;
 (function (rocket) {
     function Init() {
         rocket.device.Detect();
-        document.addEventListener("scroll", function () {
+        rocket.component.AddListeners("scroll", document, function () {
             var dropdowns = document.querySelectorAll('div[data-rocket-component="dropdown"][active]');
             for (var dropdownIndex = 0; dropdownIndex < dropdowns.length; dropdownIndex++) {
                 var thisDropdownObject = rocket.component.FetchComponentObject(dropdowns[dropdownIndex]);

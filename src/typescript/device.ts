@@ -55,22 +55,22 @@ module rocket.device {
         if (navigator.onLine !== undefined){ // If the browser is online
             rocket.device.IsOnline = navigator.onLine; // Set the IsOnline to the browser's online status
 
-            document.addEventListener("online",  // Add an event listener that listens to the "online" event, which means the user went from offline to online, and update the IsOnline value
+            rocket.component.AddListeners("online", document,  // Add an event listener that listens to the "online" event, which means the user went from offline to online, and update the IsOnline value
                 function(){ // When the user goes online
                     rocket.device.IsOnline = true; // Set rocket.device.IsOnline to true
-                },
-            false);
+                }
+            );
 
-            document.addEventListener("offline",  // Add an event listener that listens to the "offline" event, which means the user went from online to offline, and update the IsOnline value
+            rocket.component.AddListeners("offline", document, // Add an event listener that listens to the "offline" event, which means the user went from online to offline, and update the IsOnline value
                 function(){ // When the user goes offline
                     rocket.device.IsOnline = false; // Set rocket.device.IsOnline to false
-                },
-            false);
+                }
+            );
         }
 
         rocket.device.FetchScreenDetails(); // Do an initial fetch of the screen details
 
-        window.addEventListener("resize", rocket.device.FetchScreenDetails); // Listen to the window resizing
+        rocket.component.AddListeners("resize", window, rocket.device.FetchScreenDetails); // Listen to the window resizing
     }
 
     // #endregion

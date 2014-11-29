@@ -5,6 +5,8 @@
     The shared Player functionality is exposed via rocket.player.
 */
 
+/// <reference path="utilities.ts" />
+
 // #region Shared Player Functionality
 
 module rocket.player {
@@ -13,24 +15,22 @@ module rocket.player {
 
     export function Init(component : Object){
         var componentElement : Element = rocket.component.Fetch(component); // Fetch the Component Element
-        var innerContentElement : HTMLMediaElement = rocket.player.GetInnerContentElement(component); // Fetch the Audio or Video Player Element
+        var innerContentElement : HTMLMediaElement = rocket.player.FetchInnerContentElement(component); // Fetch the Audio or Video Player Element
 
         // #region Player Controls List
         var playerControlArea = componentElement.querySelector('div[data-rocket-component="player-control"]'); // Get the Player Control section
         var playerControlComponent : Object = rocket.component.FetchComponentObject(playerControlArea); // Get the Player Control Component Object
 
-        var playerRange = playerControlArea.querySelector('input[type="range"]'); // Get the input range
-
         // #endregion
 
         // #region Audio / Video Time Updating
 
-        innerContentElement.addEventListener("timeupdate", // Add an event listener to track timeupdate
+        rocket.component.AddListeners("timeupdate", innerContentElement, // Add an event listener to track timeupdate
             function(){
                 // #region Player Component & Element Defining
 
-                var playerComponent = arguments[0];
-                var playerComponentElement = rocket.component.Fetch(playerComponent); // Fetch the Player Component Element
+                var playerComponentElement = arguments[0].parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
+                var playerComponent = rocket.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
 
                 // #endregion
 
@@ -41,24 +41,19 @@ module rocket.player {
 
                 // #endregion
 
-                var playerElement = rocket.player.GetInnerContentElement(playerComponent); // Get the Player Audio or Video Element
+                var playerElement = rocket.player.FetchInnerContentElement(playerComponent); // Get the Player Audio or Video Element
                 var currentTime = playerElement.currentTime; // Get the currentTime
-
-                if (playerComponentElement.hasAttribute("data-rocket-component-status") == false){ // If the user is NOT using the input range to change volume or time
-                    playerComponentElement.querySelector('div[data-rocket-component="player-control"]').querySelector("input").value = currentTime; // Set the range input to the currentTime
-                }
 
                 rocket.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime); // Update the label
 
-                if (playerElement.ended == true){ // If playback has ended
-                    var playButtonElement = playerControlElement.querySelector('div[data-rocket-minor-component="player-button-play"]'); // Get the Element of the Play Button from the Player Control
-                    rocket.component.CSS(rocket.component.FetchComponentObject(playButtonElement), "background-image", false); // Get the Component Object of the Play Button and remove the background-image style / reset to play
-
-                    var playerRange = playerControlElement.querySelector('input[type="range"]'); // Get the input range
-                    playerRange.value = 0; // Reset value to zero
+                if (playerComponentElement.hasAttribute("data-rocket-component-status") == false){ // If the user is NOT using the input range to change volume or time
+                    playerComponentElement.querySelector('div[data-rocket-component="player-control"]').querySelector("input").value = Math.floor(currentTime); // Set the range input to the currentTime (rounded down)
                 }
 
-            }.bind(this, component) // Pass along the Player Component and Player Control Component
+                if (playerElement.ended == true){ // If playback has ended
+                    rocket.player.Reset(playerComponent); // Reset the Player
+                }
+            }
         );
 
         // #endregion
@@ -74,44 +69,38 @@ module rocket.player {
             if (posterImageElement !== null){ // If the posterImageElement exists
                 rocket.component.CSS(playerControlComponent, "opacity", "0.8"); // Set opacity to 80%
 
-                for (var listenerKey in rocket.component.listenerStrings["up"]){ // For each listener
-                    posterImageElement.addEventListener(rocket.component.listenerStrings["up"][listenerKey],
-                        function(){
-                            var playerElementComponent : Object = arguments[0]; // Get the Component we passed
-                            var posterImageElement : Element = arguments[1]; // Get the posterImageElement we passed
-                            var e : MouseEvent = arguments[2]; // Get the Mouse Event typically passed to the function
+                rocket.component.AddListeners(rocket.component.listenerStrings["press"], posterImageElement, // Add mousepress listeners to the posterImageElement
+                    function(){
+                        var posterImageElement : Element = arguments[0]; // Set the posterImageElement as the first argument passed
 
-                            if (e.button == 0){
-                                rocket.component.CSS(posterImageElement, "display", "none"); // Hide the element
-                                rocket.player.PlayOrPause(playerElementComponent); // Play the video
-                            }
-                        }.bind(this, component, posterImageElement) // Call with "this", the Player Component Object, and the posterImageElement
-                    );
-                }
+                        rocket.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
+                        rocket.player.PlayOrPause(rocket.component.FetchComponentObject(posterImageElement.parentElement)); // Play the video
+                    }
+                );
             }
 
             // #endregion
 
             // #region Video Element Click / Tap Handling
 
-            for (var listenerKey in rocket.component.listenerStrings["up"]){ // For each listener
-                innerContentElement.addEventListener(rocket.component.listenerStrings["up"][listenerKey],
-                    function(){
-                        var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
-                        if (e.button == 0){
-                            var playerElementComponent : Object = arguments[0]; // Get the Component we passed
-                            rocket.player.PlayOrPause(playerElementComponent); // Play the video
-                        }
-                    }.bind(this, component) // Call with "this", the Player Component Object, and the posterImageElement
-                );
-            }
+            rocket.component.AddListeners(rocket.component.listenerStrings["up"], innerContentElement, // Add mouseup / touchup listeners to the innerContentElement
+                function(){
+                    var innerContentElement : Element = arguments[0]; // Get the innerContentElement passed as argument 1
+                    var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
+
+                    if (e.button == 0){
+                        rocket.player.PlayOrPause(rocket.component.FetchComponentObject(innerContentElement.parentElement)); // Play the video
+                    }
+                }
+            );
 
             // #endregion
 
             // #region Video ContextMenu Prevention
 
-            componentElement.addEventListener("contextmenu", // When the contextmenu is requested
-                function(e : Event){
+            rocket.component.AddListeners("contextmenu", componentElement,
+                function(){
+                    var e : Event = arguments[1]; // Get the Mouse Event typically passed to the function
                     e.preventDefault(); // Prevent the default action, like showing a context menu for the poster image, or context menu for the video
                 }
             );
@@ -148,21 +137,16 @@ module rocket.player {
 
             // #region Player Range Initialization
 
-            for (var listenerKey in rocket.component.listenerStrings["down"]){ // For each listener
-                playerRange.addEventListener(rocket.component.listenerStrings["down"][listenerKey], // When the individual first starts changing the player range value
-                    function(){
-                        var playerControlComponent : Object = arguments[0]; // Get the Player Control Component passed by binding
-                        var playerControl : Element = rocket.component.Fetch(playerControlComponent); // Fetch the Player Control Element
+            var playerRange = playerControlArea.querySelector('input[type="range"]'); // Get the input range
+            
+            rocket.component.AddListeners(rocket.component.listenerStrings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
+                function(){
+                    var playerRangeElement : Element = arguments[0]; // Get the Player Range element passed
+                    playerRange.parentElement.parentElement.setAttribute("data-rocket-component-status", "true"); // Set the status to true to imply that the audio / video time changing should not change playerRange
+                }
+            );
 
-                        var playerRange = playerControl.querySelector("input"); // Get the Player Control Range
-                        playerRange.parentElement.parentElement.setAttribute("data-rocket-component-status", "true"); // Set the status to true to imply that the audio / video time changing should not change playerRange
-                    }.bind(this, component)
-                );
-            }
-
-            for (var listenerKey in rocket.component.listenerStrings["up"]){ // For each listener
-                playerRange.addEventListener(rocket.component.listenerStrings["up"][listenerKey], rocket.player.TimeOrVolumeChanger.bind(this, playerControlComponent)); // When the individual lets go of the mouse / tap, call the TimeOrVolumeChanger()
-            }
+            rocket.component.AddListeners(rocket.component.listenerStrings["up"], playerRange, rocket.player.TimeOrVolumeChanger); // Add mouseup / touchend events to the playerRange, which calls rocket.player.TimeOrVolumeChanger
 
             // #endregion
 
@@ -194,7 +178,7 @@ module rocket.player {
 
                         playerRangeAttributes["max"] = "100"; // Set max to 100
                         playerRangeAttributes["step"] = "1"; // Set step to 1
-                        playerRange.value = (rocket.player.GetInnerContentElement(playerElementComponent).volume * 100).toString(); // Set the value to the volume (which is 0.1 to 1.0) times 10
+                        playerRange.value = (rocket.player.FetchInnerContentElement(playerElementComponent).volume * 100).toString(); // Set the value to the volume (which is 0.1 to 1.0) times 10
                     }
                     else{ // If we are already actively doing a volume change, meaning the user wants to switch back to the normal view
                         volumeButton.parentElement.querySelector('div[data-rocket-minor-component="player-button-play"]').removeAttribute("data-rocket-component-disabled"); // Remove the "disabled" UI
@@ -226,7 +210,7 @@ module rocket.player {
 
     // #region Get Internal Audio or Video Element of Player container Component
 
-    export function GetInnerContentElement(component : Object) : HTMLMediaElement {
+    export function FetchInnerContentElement(component : Object) : HTMLMediaElement {
         var componentElement = rocket.component.Fetch(component); // Get the Player Component
         return componentElement.querySelector(component["type"].replace("-player", "")); // Return the Element fetched from querySelector (audio or video)
     }
@@ -238,7 +222,7 @@ module rocket.player {
     export function GetPlayerLengthInfo(component : Object) : Object{
         var playerLengthInfo : Object = {}; // Define playerLengthInfo as an empty Object to hold length information about the audio or video
 
-        var contentDuration : any = Math.floor(Number(rocket.player.GetInnerContentElement(component).duration)); // Get the Player's internal audio or video Element and its duration property, rounding it down
+        var contentDuration : any = Math.floor(Number(rocket.player.FetchInnerContentElement(component).duration)); // Get the Player's internal audio or video Element and its duration property, rounding it down
         playerLengthInfo["max"] = contentDuration; // Set the maximum to the contentDuration
 
         if (contentDuration < 60){ // If the contentDuration is less than 60 seconds
@@ -262,29 +246,24 @@ module rocket.player {
     // #region Player Time or Volume Changer
 
     export function TimeOrVolumeChanger(){
-        var playerControlComponent = arguments[0]; // Define playerControlComponent as the first argument passed.
-        var playerControlElement = rocket.component.Fetch(playerControlComponent); // Get the Player Control Element
-
-        var playerRange : HTMLInputElement = playerControlElement.querySelector("input"); // Get the Player Control Element's input
+        var playerRange : HTMLInputElement = arguments[0]; // Define playerRangeElement as the Element passed to us
+        var playerControlElement = playerRange.parentElement; // Get the Player Control Element, which is the parent of the playerRange
 
         var playerElement = playerControlElement.parentElement; // Get the Player Control's parent Player container
         var playerComponentObject : Object = rocket.component.FetchComponentObject(playerElement); // Get the Component Object of the Player
-
-        var contentElement : HTMLMediaElement = rocket.player.GetInnerContentElement(playerComponentObject); // Get the Player's Audio or Video Element
+        var contentElement : HTMLMediaElement = rocket.player.FetchInnerContentElement(playerComponentObject); // Get the Player's Audio or Video Element
 
         var valueNum : any = Number(playerRange.value); // Define valueNum as "any" (actually Number), which we do calculation for later
 
         if (playerElement.hasAttribute("data-rocket-component-changevolume") == false){ // If we are doing a time change
-            valueNum = valueNum.toFixed(); // Ensure the valueNum is fixed / precise
-            contentElement.currentTime = valueNum; // Set the contentElement's currentTime to the converted playerRange value
+            rocket.player.SetTime(playerComponentObject, valueNum.toFixed()); // Set the Time
         }
         else{
-            valueNum = (valueNum / 100); // Divide the Number by 100 to get an int from 0.0 to 1.0.
-            contentElement.volume = valueNum; // Set the volume to the converted playerRange value divided by 10
+            rocket.player.SetVolume(playerComponentObject, (valueNum / 100)); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
         }
 
         if (playerElement.hasAttribute("data-rocket-component-changevolume") !== true){ // If we are not currently changing the volume
-            playerElement.removeAttribute("data-rocket-component-status"); // Remove the status to indicate we are no longer the playerRange values
+            playerElement.removeAttribute("data-rocket-component-status"); // Remove the status to indicate we are no longer changing the playerRange values
         }
     }
 
@@ -296,12 +275,7 @@ module rocket.player {
         var componentElement = rocket.component.Fetch(component); // Fetch the Player Element
         var isPaused = componentElement.querySelector(component["type"].replace("-player", "")).paused; // Get the value of paused on the Player (opposite of what we will return)
 
-        if (isPaused == true){ // If the Player is Paused
-            return false; // Return that the Player is not playing
-        }
-        else{ // If the Player is NOT paused
-            return true; // Return that the Player IS playing
-        }
+        return !isPaused; // Return the opposite boolean value (playing = (paused = false), therefore true. paused = (paused = true), therefore false)
     }
 
     // #endregion
@@ -310,7 +284,7 @@ module rocket.player {
 
     export function PlayOrPause(component : Object, playButtonComponentObject ?: Object) {
         var playerComponentElement = rocket.component.Fetch(component); // Get the Component Element of the Player
-        var innerContentElement = rocket.player.GetInnerContentElement(component); // Get the inner audio or video Element
+        var innerContentElement = rocket.player.FetchInnerContentElement(component); // Get the inner audio or video Element
 
         if (playButtonComponentObject == undefined){ // If the Play Button Component is not defined
             playButtonComponentObject = rocket.component.FetchComponentObject(playerComponentElement.querySelector('div[data-rocket-minor-component="player-button-play"]')); // Get the Play Button Component Object
@@ -319,7 +293,7 @@ module rocket.player {
         var playButton : Element = rocket.component.Fetch(playButtonComponentObject); // Get the Play Button Element
 
         if (playButton.hasAttribute("data-rocket-component-disabled") == false){ // If the play button is not disabled (done when tweaking volume)
-            if (innerContentElement.played.length == 0){ // If the video has not been played been yet.
+            if (innerContentElement.currentTime == 0){ // If the video current time is zero when played
                 var playerControlComponent : Object = rocket.component.FetchComponentObject(playButton.parentElement); // Get the Player Control Component based on the Play Button's Parent Element
                 var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
                 var playerMediaLengthInformation : Object = rocket.player.GetPlayerLengthInfo(component); // Get information about the appropriate settings for the input range
@@ -329,7 +303,7 @@ module rocket.player {
                 var posterImageElement : HTMLElement = playerComponentElement.querySelector('img[data-rocket-minor-component="video-poster"]'); // Get the video poster img tag if it exists
 
                 if (posterImageElement !== null){ // If the posterImageElement is defined
-                    rocket.component.CSS(posterImageElement, "display", "none"); // Hide the element
+                    rocket.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
                     rocket.component.CSS(playerControlComponent, "opacity", false); // Remove opacity setting
                 }
 
@@ -373,28 +347,23 @@ module rocket.player {
         for (var sourceKey in sourcesList){ // For each source defined in videoSources
             var source : string = sourcesList[sourceKey]; // Get the source from the videoSources array
             var sourceExtension = source.substr(source.lastIndexOf(".")).replace(".", ""); // Get the last index of ., get the substring based on that, and then remove the period on the extension.
-            var sourceType : string; // Define sourceType as a string equal to the type of the source (ex. mp3, ogg, webm)
 
-            if (sourceExtension !== "mov"){ // If the source extension is not mov
-                sourceType = sourceExtension; // Append videoExtension to the videoType
+            var sourceTagAttributes = { "src" : source}; // Create an initial source tag attributes Object that we'll pass to ElementCreator
 
-                if (sourceExtension == "m3u8"){ // If we are ingesting a live stream
-                    sourceType = null; /// Set sourceType to null
+            if (source.substr(-1) !== ";"){ // If the source does not end with a semi-colon, common to prevent Shoutcast browser detection
+                if ((sourceExtension !== "mov") && (sourceExtension !== "m3u8")){ // If the source extension is not mov or a m3u8
+                    sourceTagAttributes["type"] = sourceExtension; // Append videoExtension to the videoType
+                }
+                else if (sourceExtension == "mov"){ // If the source extension IS mov
+                    sourceTagAttributes["type"] = "quicktime"; // Append the quicktime string
+                }
+
+                if (sourceTagAttributes["type"] !== undefined){ // If we have defined a type for the source
+                    sourceTagAttributes["type"] = type + "/" + sourceTagAttributes["type"] // Prepend the type (audio or video) and a / delimiter
                 }
             }
-            else{ // If the source extension IS mov
-                sourceType = "quicktime"; // Append the quicktime string
-            }
 
-            var sourceTag = rocket.generator.ElementCreator("source", // Create a source tag
-                {
-                    "src" : source, // Set src equal to the source provided
-                }
-            );
-
-            if (sourceType !== null){
-                sourceType["type"] = (type + "/" + sourceType); // Set the type attribute equal to the videoType
-            }
+            var sourceTag = rocket.generator.ElementCreator("source", sourceTagAttributes); // Create a source tag with the attributes we've applied
 
             arrayOfSourceElements.push(sourceTag); // Push this source tag
         }
@@ -403,6 +372,80 @@ module rocket.player {
     }
 
     // #endregion
+
+    // #region Reset Player - Function for resetting the player state to default (except for volume). Handy for source changing
+
+    export function Reset(component : Object){
+        var playerElement = rocket.component.Fetch(component); // Get the Audio or Video Player Component Element
+        var playerInnerContentElement : HTMLMediaElement = rocket.player.FetchInnerContentElement(component); // Get the associated audio or video player
+
+        var playerControl = playerElement.querySelector('div[data-rocket-component="player-control"]'); // Get the Player Control
+        var playButton = playerControl.querySelector('div[data-rocket-minor-component="player-button-play"]'); // Get the Play Button from the Player Control
+        var timeLabel = playerControl.querySelector('time'); // Get the Time Label from the Player Control
+        var volumeControl = playerControl.querySelector('div[data-rocket-minor-component="player-button-volume"]'); // Get the Volume Button from the Player Control
+
+        playButton.removeAttribute("data-rocket-component-disabled"); // Remove the "disabled" UI for the Play Button
+        rocket.component.CSS(playButton, "background-image", false); // Remove the background-image style / reset to play image for Play Button
+
+        timeLabel.removeAttribute("data-rocket-component-disabled"); // Removed the "disabled" UI from the time label
+        volumeControl.removeAttribute("data-rocket-component-status"); // Remove component-status to imply volume icon is not active
+
+        playerElement.removeAttribute("data-rocket-component-status"); // Remove component-status to we are not modifying the playerRange
+        playerElement.removeAttribute("data-rocket-component-changevolume"); // Remove the changevolume attribute.
+
+        playerInnerContentElement.pause(); // Start by pausing the player to prevent timeupdate events
+        rocket.player.SetTime(component, 0); // Reset the time
+    }
+
+    // #endregion
+
+    // #region Set Source - Function for easily setting the source(s) of an Audio or Video Player Component
+
+    export function SetSources(component : Object, sources : any){
+        var playerElement = rocket.component.Fetch(component); // Get the Audio or Video Player Component Element
+        var playerInnerContentElement : HTMLMediaElement = rocket.player.FetchInnerContentElement(component); // Get the associated audio or video player
+
+        if (typeof sources == "string"){ // If only a single source is defined
+            sources = [sources]; // Convert to an array
+        }
+
+        var arrayofSourceElements : Array<HTMLElement> = rocket.player.FetchSources(component["type"].replace("-player", ""), sources); // Get an array of Source Elements
+
+        rocket.player.Reset(component); // Reset the component
+        rocket.component.CSS(playerElement.querySelector('img[data-rocket-minor-component="video-poster"]'), "visibility", "hidden"); // Hide the Video Poster
+        playerInnerContentElement.innerHTML = ""; // Remove all inner source tags from the InnerContentElement (audio or video tag) by resetting the innerHTML
+
+        for (var sourceElementKey in arrayofSourceElements){ // For each sourceElement in arrayofSourceElements
+            playerInnerContentElement.appendChild(arrayofSourceElements[sourceElementKey]); // Append the HTMLElement
+        }
+
+        playerInnerContentElement.src = sources[0]; // Set the initial src of the audio or video player to the first source provided
+    }
+
+    // #endregion
+
+    // #region Set Time - Function for easily setting the time location of an Audio or Video Player Component
+
+    export function SetTime(component : Object, time : number){
+        var playerElement = rocket.component.Fetch(component); // Get the Audio or Video Player Component Element
+        var playerInnerContentElement : HTMLMediaElement = rocket.player.FetchInnerContentElement(component); // Get the associated audio or video player
+        playerInnerContentElement.currentTime = time; // Set the playerInnerContentElement's currentTime to the time provided
+        playerElement.querySelector('div[data-rocket-component="player-control"]').querySelector("input").value = Math.floor(time); // Set the range input to the currentTime (rounded down)
+        rocket.playercontrol.TimeLabelUpdater(rocket.component.FetchComponentObject(playerElement.querySelector('div[data-rocket-component="player-control"]')), 0, time); // Update the label
+    }
+
+    // #endregion
+
+    // #region Set Volume - Function for easily setting the volume of an Audio or Video Player
+
+    export function SetVolume(component : Object, volume : number){
+        var playerElement = rocket.component.Fetch(component); // Get the Audio or Video Player Component Element
+        var playerInnerContentElement : HTMLMediaElement = rocket.player.FetchInnerContentElement(component); // Get the associated audio or video player
+        playerInnerContentElement.volume = volume; // Set the Player volume
+    }
+
+    // #endregion
+
 }
 
 // #endregion
@@ -444,53 +487,16 @@ module rocket.playercontrol {
 
     // #endregion
 
-    // #region Seconds to "Time" Object Format
-
-    export function SecondsToTimeFormat(seconds : number) : Object { // Returns an Object with "hour", "minutes" and "seconds" key / vals
-        var timeObject : Object = {};
-
-        if (seconds >= 3600){ // If there is more than 1 hour in "seconds"
-            timeObject["hours"] = Number((seconds / 3600).toPrecision(1)); // Divide the seconds by 1 hour to get the number of hours (rounded down)
-            timeObject["minutes"] = Number(((seconds - (3600 * timeObject["hours"])) / 60).toPrecision(1)); // Set minutes = the seconds minus by 3600 (1 hour) times number of hours, divided by 60 to get total minutes
-            timeObject["seconds"] = Number((seconds - (3600 * timeObject["hours"])) - (60 * timeObject["minutes"])); // Set seconds = seconds minus by 3600 (1 hour) times number of hours, minus 60 * number of minutes
-        }
-        else if ((seconds >= 60) && (seconds < 3600)){ // If there is greater than 1 minute in seconds, but less than 1 hour
-            timeObject["minutes"] = Number((seconds / 60).toPrecision(1)); // Set number = minutes by dividing minutes by 60 and rounding down
-            timeObject["seconds"] = Number((seconds - (timeObject["minutes"] * 60))); // Set seconds = seconds divided by minutes times 60
-        }
-        else{ // If there is less than 1 minute of content
-            timeObject["minutes"] = 0; // Set minutes to zero
-            timeObject["seconds"] = seconds; // Round down the seconds
-        }
-
-        timeObject["seconds"] = Math.floor(timeObject["seconds"]); // Seconds should always round down
-
-        for (var timeObjectKey in timeObject){ // For each key in the timeObject
-            var timeObjectValue = timeObject[timeObjectKey]; // Set timeObjectValue as the value based on key
-            var timeObjectValueString = timeObjectValue.toString(); // Convert the int to string
-
-            if (timeObjectValue < 10){ // If we are dealing with an int less than 10
-                timeObjectValueString = "0" + timeObjectValueString; // Prepend a 0
-            }
-
-            timeObject[timeObjectKey] = timeObjectValueString; // Set the key/val to the stringified and parsed int
-        }
-
-        return timeObject;
-    }
-
-    // #endregion
-
     // #region Player Time Label Updating
 
-    export function TimeLabelUpdater(component : Object, timePart : number, value : number){
+    export function TimeLabelUpdater(component : Object, timePart : number, value : any){
         var playerControlElement : HTMLElement = rocket.component.Fetch(component); // Get the Player Control's Element
         var playerTimeElement = playerControlElement.querySelector("time"); // Get the time Element
 
         // #region Seconds Parsing to String
 
         var parsedSecondsToString : string = ""; // Define parsedSecondsToString as our converted seconds to Object then concatenated string
-        var timeFormatObject = rocket.playercontrol.SecondsToTimeFormat(value); // Get the time format (rounded down value)
+        var timeFormatObject = rocket.utilities.SecondsToTimeFormat(value); // Get the time format (rounded down value)
 
         for (var timeObjectKey in timeFormatObject){ // For each key in the timeObject
             var timeObjectValue = timeFormatObject[timeObjectKey]; // Set timeObjectValue as the value based on key
@@ -507,7 +513,6 @@ module rocket.playercontrol {
 
         var playerTimeElementParts = playerTimeElement.textContent.split(" / "); // Split time textContent based on " / "
         playerTimeElementParts[timePart] = parsedSecondsToString; // Set the value of the part specified
-
         playerTimeElement.textContent = playerTimeElementParts[0] + " / " + playerTimeElementParts[1];
     }
 
@@ -612,11 +617,36 @@ module rocket.videoplayer {
             var componentId : string = rocket.generator.IdGen("video-player"); // Generate a component Id
             var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "video-player"); // Generate an Video Player Element
 
+            // #region Video Dimensions Calculation
+            var videoHeight : number = properties["height"]; // Define videoHeight as the height the video in the Video Player should be
+            var videoWidth : number = properties["width"]; // Define videoWidth as the width the video in the Video Player should be
+
+            if (videoHeight == undefined){ // If no height is defined for the video
+                videoHeight = 300; // Set the height to 300px
+            }
+
+            if (videoWidth == undefined){ // If no width is defined
+                videoWidth = Number((videoHeight * 1.77).toFixed()); // Ensure a 16:9 aspect ratio
+            }
+
+            if (videoWidth > window.screen.width){ // If the video's width is greater than the screen width
+                videoWidth = window.screen.width; // Set the videoWidth to the screen width
+            }
+
+            var properVideoHeight : number = Number((videoWidth / 1.77).toFixed()); // Proper Component Height to ensure 16:9 aspect ration
+
+            if (videoHeight !== properVideoHeight){ // In the event the player has an incorrect aspect ratio
+                videoHeight = properVideoHeight; // Set the height to enable the video to have the correct ratio
+            }
+
+            // #endregion
 
             // #region Video Art Poster Creation
 
             if (properties["art"] !== undefined){ // If art has been defined
                 var posterImageElement : HTMLElement = rocket.generator.ElementCreator("img", { "data-rocket-minor-component" : "video-poster", "src" : properties["art"] }); // Create an img Element with the src set to the artwork
+                rocket.component.CSS(posterImageElement, "height", (videoHeight + 50).toString() + "px"); // Set the posterImageElement height to be 50px taller than the videoHeight (so it flows under the Player Control)
+                rocket.component.CSS(posterImageElement, "width", videoWidth.toString() + "px"); // Set the posterImageElement width equal to the width of the video
                 componentElement.appendChild(posterImageElement); // Append to the Video Player container
             }
 
@@ -625,6 +655,9 @@ module rocket.videoplayer {
             // #region Video Element and Sources Creation
 
             var videoPlayer : HTMLElement = rocket.generator.ElementCreator("video", { "preload" : "metadata", "volume" : "0.5"} ); // Create the video player, with the preloading to only metadata and volume to 50%
+            rocket.component.CSS(videoPlayer, "height", videoHeight.toString() + "px"); // Set the video player height to be our calculated videoHeight
+            rocket.component.CSS(videoPlayer, "width", videoWidth.toString() + "px"); // Set the video player width to be our calculated videoWidth
+
             videoPlayer.autoplay = false; // Set autoplay of video to false
 
             var arrayofSourceElements : Array<HTMLElement> = rocket.player.FetchSources("video", properties["sources"]); // Get an array of Source Elements
@@ -639,6 +672,7 @@ module rocket.videoplayer {
 
             var playerControlComponent : Object = rocket.playercontrol.Generate(); // Pass along the "video" type so we know NOT to append the fullscreen
             var playerControlElement : Element = rocket.component.Fetch(playerControlComponent); // Fetch the HTMLElement
+
             componentElement.appendChild(playerControlElement); // Append the player control
 
             rocket.component.storedComponents[componentId] = componentElement;

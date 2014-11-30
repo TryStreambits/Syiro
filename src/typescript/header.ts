@@ -19,8 +19,6 @@ module rocket.header {
 					if (properties["items"][individualItem]["type"] == "dropdown"){ // If the individualItem type is a Dropdown
 						var dropdownComponent : Object = properties["items"][individualItem]["component"]; // Get the embedded component object
 						componentElement.appendChild(rocket.component.Fetch(dropdownComponent)); // Append the HTMLElement fetched from rocket.component.Fetch(dropdownComponent)
-
-						delete rocket.component.storedComponents[dropdownComponent["id"]]; // Delete the Component from the storedComponents
 					}
 					else if (properties["items"][individualItem]["type"] == "link"){ // If we are adding a link
 						var generatedElement : HTMLElement = rocket.generator.ElementCreator("a", // Generate a generic link element

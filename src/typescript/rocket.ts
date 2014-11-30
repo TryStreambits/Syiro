@@ -54,7 +54,7 @@ module rocket {
 
 		// #region Watch DOM For Components
 
-		if (MutationObserver !== undefined){ // If MutationObserver is supported by the browser
+		if (typeof MutationObserver !== "undefined"){ // If MutationObserver is supported by the browser
 			var mutationWatcher = new MutationObserver(
 				function(mutations : Array<MutationRecord>){ // Define mutationHandler as a variable that consists of a function that handles mutationRecords
 					mutations.forEach( // For each mutation that occured

@@ -18,13 +18,7 @@ header[data-rocket-component="header"]{ // Rocket Header Component
   	// #region Header Dropdown Modifications
 
 	& > div[data-rocket-component="dropdown"]{
-	 	min-height: 80px; // Set the minimal height to 80px
 		margin-top: 0 !important; /* Force the list to be vertically aligned */
-
-		& > label{ // Dropdown Label Changes
-			height: 80px; // Match height of the Header component
-			line-height: 80px; // Match height of component
-		}
 	}
 
   	// #endregion
@@ -40,7 +34,14 @@ header[data-rocket-component="header"]{ // Rocket Header Component
 
 	// #endregion
 
-  @media (max-width: 1280px){ /* For resolutions with a max of 1280 in width */
+	@media (min-width: 1281px){ /* For resolutions higher than 1280 in width */
+		& > div[data-rocket-component="dropdown"]{ /* Dropdown Modifications */
+			height: 80px !important; // Match height with Header component
+			line-height: 80px !important; // Match height with Header component
+		}
+	}
+
+ 	@media (max-width: 1280px){ /* For resolutions with a max of 1280 in width */
 		&{
 			height: 60px; // Header height is 20px shorter
 			line-height: 60px; // Shorten the line-height
@@ -53,12 +54,8 @@ header[data-rocket-component="header"]{ // Rocket Header Component
 		// #region Header Dropdown Modifications
 
 		& > div[data-rocket-component="dropdown"]{
-			min-height: 60px; // Set the minimal height to 60px
-
-			& > div[data-rocket-minor-component="dropdown-label"]{ // Dropdown Label Changes
-				height: 60px; // Match height of the Header component
-				line-height: 60px; // Match height of component
-			}
+			height: 60px !important; // Match height with the Header component
+			line-height: 60px !important; // Match line height with Header
 		}
 
 		// #endregion

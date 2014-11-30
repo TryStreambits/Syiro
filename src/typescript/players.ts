@@ -208,7 +208,7 @@ module rocket.player {
             var shareButton = componentElement.querySelector('div[data-rocket-minor-component="player-button-menu"]'); // Get the shareButton if it exists
 
             if (shareButton !== null){ // If the share button exists
-                rocket.component.AddListeners(rocket.component.FetchComponentObject(shareButton), rocket.player.ToggleShareDialog.bind(this, component)); // Add an event listener to the button that calls ToggleShareDialog, binding to the Player Component
+                rocket.component.AddListeners(rocket.component.listenerStrings["press"], rocket.component.FetchComponentObject(shareButton), rocket.player.ToggleShareDialog.bind(this, component)); // Add an event listener to the button that calls ToggleShareDialog, binding to the Player Component
             }
 
             // #endregion
@@ -323,7 +323,20 @@ module rocket.player {
                     playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
 
                     if (playerRangeAttribute == "max"){ // If we are updated the max (contentDuration) attribute
-                        rocket.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation[playerRangeAttribute]);
+                        rocket.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
+
+                        // #region Input Range Width Calculation
+
+                        var newTimeWidth = playButton.parentElement.querySelector("time").clientWidth + 25; // Get the current width (add an additional amount to compensate for margins and character width)
+                        var inputRangeWidth = (playButton.parentElement.clientWidth - ((36 * 2) + (14 * 2) +  newTimeWidth)); // Do an initial calculation of the width of the input range, which is the width minus two buttons, their margins (14 each) and time width
+
+                        if (playButton.parentElement.querySelector('div[data-rocket-minor-component="player-button-menu"]') !== null){ // If the share attribute is defined
+                            inputRangeWidth = inputRangeWidth - (36 + 14); // Make sure the inputRange size is changed since we are introducing another button
+                        }
+
+                        rocket.component.CSS(playerRange, "width", inputRangeWidth.toString() + "px !important"); // Update the inputRange CSS
+
+                        // #endregion
                     }
                 }
             }
@@ -490,39 +503,41 @@ module rocket.playercontrol {
 
     // #region Player Control Generator
 
-    export function Generate(properties ?: Object) : Object {
+    export function Generate(properties : Object) : Object {
         var componentId : string = rocket.generator.IdGen("player-control"); // Generate an ID for the Player Control
         var componentElement = rocket.generator.ElementCreator(componentId, "player-control"); // Generate the basic playerControl container
 
-        var playButton = rocket.button.Generate( // Generate a Play Button
-            {
-                "data-rocket-minor-component" : "player-button-play" // Set the icon to the play icon
-            }
-        );
+        var playButton = rocket.button.Generate( { "data-rocket-minor-component" : "player-button-play" } ); // Create a play button
 
-        var inputRange : HTMLElement = rocket.generator.ElementCreator("input", { "type" : "range", "value" : "0"}); // Create an input range
-        var timeStamp : HTMLElement = rocket.generator.ElementCreator("time", { "content" : "00:00 / 00:00"}); // Create a timestamp time element
+        var inputRange : HTMLElement = rocket.generator.ElementCreator("input", { "type" : "range", "value" : "0"} ); // Create an input range
+        var timeStamp : HTMLElement = rocket.generator.ElementCreator("time", { "content" : "00:00 / 00:00"} ); // Create a timestamp time element
 
-        var volumeButton = rocket.button.Generate( // Generate a Volume Button
-            {
-                "data-rocket-minor-component" : "player-button-volume" // Set the icon to the volume icon
-            }
-        );
+        var volumeButton = rocket.button.Generate( { "data-rocket-minor-component" : "player-button-volume" } ); // Generate a Volume Button
 
         componentElement.appendChild(rocket.component.Fetch(playButton)); // Append the play button
         componentElement.appendChild(inputRange); // Append the input range
         componentElement.appendChild(timeStamp); // Append the timestamp time element
 
+        // #region Input Range Width Calculation
+
+        var inputRangeWidth = (properties["width"] - ((36 * 2) + (14 * 2) +  100)); // Do an initial calculation of the width of the input range, which is the width minus two buttons, their margins (14 each) and a minimum 100 (80 for element, 20 for margin)
+
+        // #endregion
+
         // #region Player Share Element Creation (If Applicable)
 
         if (properties["share"] !== undefined){ // If the share attribute is defined
             if (properties["share"]["type"] == "list"){ // If the component provided is a List
+                inputRangeWidth = inputRangeWidth - (36 + 14); // Make sure the inputRange size is changed since we are introducing another button
+
                 var shareMenuButton = rocket.button.Generate( { "data-rocket-minor-component" : "player-button-menu"} ); // Generate a Share Menu Button
                 componentElement.appendChild(rocket.component.Fetch(shareMenuButton)); // Append the shareMenuButton to the playerControlElement
             }
         }
 
         // #endregion
+
+        rocket.component.CSS(inputRange, "width", inputRangeWidth.toString() + "px !important"); // Update the inputRange CSS
 
         componentElement.appendChild(rocket.component.Fetch(volumeButton)); // Append the volume control
 
@@ -585,13 +600,7 @@ module rocket.audioplayer {
 
             // #region Audio Element and Source Creation
 
-            var audioPlayer : HTMLElement = rocket.generator.ElementCreator("audio", // Create the audio player
-                {
-
-                    "preload" : "metadata", // Only download metadata
-                    "volume" : "0.5" // Set volume to 50%
-                }
-            );
+            var audioPlayer : HTMLElement = rocket.generator.ElementCreator("audio", { "preload" : "metadata", "volume" : "0.5" }); // Generate an audio Element with only preloading metadata, setting volume to 50%
             audioPlayer.autoplay = false; // Set autoplay of audio to false
 
             var arrayofSourceElements : Array<HTMLElement> = rocket.player.FetchSources("audio", properties["sources"]); // Get an array of Source Elements
@@ -638,6 +647,16 @@ module rocket.audioplayer {
 
             // #endregion
 
+            if (properties["width"] == undefined){ // If the width attribute is not defined
+                properties["width"] = 400; // Set width property to 400, which we'll pass to the Player Control Generation
+            }
+
+            if (window.screen.width < properties["width"]){ // If the screen width is smaller than the audio player width
+                properties["width"] = window.screen.width - 10; // Set the videoWidth to screen width and some padding on the side
+            }
+
+            rocket.component.CSS(componentElement, "width", properties["width"].toString() + "px"); // Set the width of the Audio Player Component Element
+
             var playerControlComponent : Object = rocket.playercontrol.Generate(properties);
             var playerControlElement : Element = rocket.component.Fetch(playerControlComponent); // Fetch the HTMLElement
 
@@ -650,7 +669,7 @@ module rocket.audioplayer {
                     playerShareDialog.appendChild(playerShareLabel);
                     playerShareDialog.appendChild(rocket.component.Fetch(properties["share"])); // Append the List Element to the playerShareDialog
                     rocket.CSS(playerShareDialog, "height", "100px"); // Set the height of the share dialog to be 100px
-                    rocket.CSS(playerShareDialog, "width", "400px"); // Set the width of the share dialog to be the same as the Audio Player
+                    rocket.CSS(playerShareDialog, "width", properties["width"].toString() + "px"); // Set the width of the share dialog to be the same as the Audio Player
 
                     componentElement.insertBefore(playerShareDialog, componentElement.firstChild); // Prepend the Share Dialog
                 }
@@ -685,12 +704,12 @@ module rocket.videoplayer {
     export function Generate(properties : Object) : Object { // Generate a Video Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the video property is defined
             var componentId : string = rocket.generator.IdGen("video-player"); // Generate a component Id
-            var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "video-player",
+            var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "video-player", // Generate an Video Player Element
                 {
                     "id" : componentId, // Set the id (followed by name below) to act as a fragment ID for a page to jump to
                     "name" : componentId
                 }
-            ); // Generate an Video Player Element
+            );
 
             // #region Video Dimensions Calculation
             var videoHeight : number = properties["height"]; // Define videoHeight as the height the video in the Video Player should be
@@ -705,7 +724,7 @@ module rocket.videoplayer {
             }
 
             if (videoWidth > window.screen.width){ // If the video's width is greater than the screen width
-                videoWidth = window.screen.width; // Set the videoWidth to the screen width
+                videoWidth = window.screen.width - 10; // Set the videoWidth to screen width and some padding on the side
             }
 
             var properVideoHeight : number = Number((videoWidth / 1.77).toFixed()); // Proper Component Height to ensure 16:9 aspect ration
@@ -713,6 +732,8 @@ module rocket.videoplayer {
             if (videoHeight !== properVideoHeight){ // In the event the player has an incorrect aspect ratio
                 videoHeight = properVideoHeight; // Set the height to enable the video to have the correct ratio
             }
+
+            properties["width"] = videoWidth; // Set the properties width to the calculated videoWidth since we will be passing that to the Player Control Generation
 
             // #endregion
 

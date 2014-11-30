@@ -16,7 +16,10 @@ createSnapshot(){ # Create a snapshot of the branch and package it
 
 	cp -r build/rocket.css build/rocket.min.js build/rocket.min.js.gz ./build/active-snapshot/Rocket # Copy over particular build content to the snapshot
 	cp -r src/less/fonts src/less/img README.md License.txt VERSION.txt ./build/active-snapshot/Rocket # Copy over particular non-build data to the snapshot
-
+	mkdir ./build/active-snapshot/Rocket/css # Make the css directory to put the fonts and img in.
+	mv ./build/active-snapshot/Rocket/fonts ./build/active-snapshot/Rocket/css/ # Move the fonts to the css folder
+	mv ./build/active-snapshot/Rocket/img ./build/active-snapshot/Rocket/css/ # Move the images to the css folder
+ 
 	tar --create --gzip --recursion --directory=build/active-snapshot -f "$snapshotType".tar.gz Rocket
 	rm -rf build/active-snapshot
 

@@ -113,7 +113,7 @@ declare module rocket.player {
     function ToggleShareDialog(component?: Object): void;
 }
 declare module rocket.playercontrol {
-    function Generate(properties?: Object): Object;
+    function Generate(properties: Object): Object;
     function TimeLabelUpdater(component: Object, timePart: number, value: any): void;
 }
 declare module rocket.audioplayer {

@@ -67,6 +67,7 @@ div[data-rocket-component="player-control"]{
             margin-top: 21.75px !important; // Center on Player Control
             margin-left: 0 !important;
             margin-right: 0 !important;
+            padding: 0 !important;
         }
 
         &::-moz-range-track { // Firefox
@@ -75,6 +76,11 @@ div[data-rocket-component="player-control"]{
 
         &::-ms-track{ // Internet Explorer
             .trackProperties; // Import the trackProperties
+        }
+
+        &::-ms-fill-lower, &::-ms-fill-upper{ // Internet Explorer - Fill
+            height: 7.5px;
+            background-color: transparent !important; // No background
         }
 
         .trackProperties; // Place in input[type="range"] for Chrome
@@ -99,7 +105,7 @@ div[data-rocket-component="player-control"]{
             height: 16px !important;
             width: 16px !important;
             border: 0 !important;
-            background-color: @rocketPrimaryColor;
+            background-color: @rocketPrimaryColor !important;
             background-image: none; // Mozilla applies an SVG image as the thumbnail. Lets remove that.
             border-radius: 8px; // Make it round
         }
@@ -130,7 +136,7 @@ div[data-rocket-component="player-control"]{
         color: @rocketWhite;
         font-size: 14px;
         line-height: 50px;
-        margin-left: 10px;
+        margin: 0 10px 0 10px;
     }
 }
 
@@ -178,7 +184,6 @@ div[data-rocket-component="audio-player"]{
     height: auto;
     min-height: 50px; // Minimum height of player is the Player Control
     max-height: 150px; // Maximum height of player is the Player Control and Player Information
-    width: 400px;
     background-color: @rocketGrey; // Grey background
 
     & > audio {
@@ -231,10 +236,6 @@ div[data-rocket-component="audio-player"]{
                 font-size: 14px; // Slightly smaller than song title
             }
         }
-    }
-
-    & > div[data-rocket-component="player-control"] >  input { // Specify input range width for audio player
-        width: 150px !important;
     }
 }
 
@@ -289,10 +290,6 @@ div[data-rocket-component="video-player"]{
     & > div[data-rocket-component="player-control"] { // Overrides for Video Player's Player Control
         position: relative;
         z-index: 6; // Force above video poster
-
-        & >  input { // Specify input range width for video player
-            width: 220px !important;
-        }
     }
 }
 

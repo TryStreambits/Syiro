@@ -27,7 +27,7 @@ We have a [document that highlights our policy](https://github.com/StroblIndustr
 
 ### Download ###
 
-You can download our development build (since we are currently in the release candidate phase) of our initial release by grabbing [devel.tar.gz](https://github.com/StroblIndustries/Rocket/blob/master/devel.tar.gz) which provides the necessary minified CSS and JS wrapped in a nice package.
+You can download either our [stable 1.0.0 release](https://github.com/StroblIndustries/Rocket/blob/master/stable.tar.gz) or our [development releases](https://github.com/StroblIndustries/Rocket/blob/master/devel.tar.gz) which provides the necessary minified CSS, images and JS wrapped in a nice package.
 
 The package also comes with a gzipped version of the JavaScript code, so you can easily serve the compressed content.
 
@@ -37,13 +37,14 @@ Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
 Bootstrap  (Not including jQuery) | 114kb + 19.2kb (theme.min.css)| 34.7kb | 8.9kb
 Polymer | Varies depending on use of components | 123.5kb | 35.7kb
-**Rocket** | **7.2kb** | **23.4kb** | **5.3kb**
+**Rocket** | **13.7kb** | **29.8kb** | **6.8kb**
 
 Details:
 
 1. Bootstrap did not provide a gzipped JavaScript file.
 2. Rocket's build script auto-minifies and gzipped JS.
 3. All gzipped  JavaScript was done using [zopfli](https://code.google.com/p/zopfli/) with 15 iterations: `zopfli x.min.js`
+4. This is as of 1.0.0 and will update for releases (*aside from release candidates*).
 
 ### Using Rocket ###
 

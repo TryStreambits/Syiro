@@ -9,7 +9,7 @@ module rocket.component {
 	export var listenerStrings : Object = { // Set rocket.component.listenerStrings as an Object containing commonly used event lister combinations
 		"down" : ["mousedown", "touchstart", "MSPointerDown"],
 		"up" : ["mouseup", "touchend", "MSPointerUp"],
-		"press" : ["click", "touchend", "MSPointerUp"]
+		"press" : ["click"]
 	};
 
 	export var storedComponents : Object = {}; // An object that stores generated component(s) / component(s) information
@@ -80,7 +80,7 @@ module rocket.component {
 		var returnedValue : any; // Define returnedValue as value we are returning
 		var modifiedStyling : any = false; // Define modifiedStyling as a boolean value to indicate whether we modified the Element's styling or not. Defaults to false.
 
-		if (component["type"] !== undefined){ // If we were provided a Component Object
+		if (typeof component.hasAttribute == "undefined"){ // If we were provided a Component Object (since an Object doesn't have the hasAttribute function, but an Element does)
 			modifiableElement = rocket.component.Fetch(component); // Fetch the Element and assign it to modifiableElement
 		}
 		else{ // If the component is NOT a Rocket Component Object
@@ -405,12 +405,6 @@ module rocket.component {
 			}
 			else{ // If we are appending the childComponent
 				parentElement.appendChild(childElement); // Append the Element
-			}
-
-			if (childComponentId !== undefined){ // If we have defined the childComponentId, meaning it is an object and we should do cleanup
-				if (rocket.component.storedComponents[childComponentId] !== undefined){ // If the childComponent has not been placed anywhere prior to the AddComponent
-					delete rocket.component.storedComponents[childComponentId]; // Delete the storedComponent
-				}
 			}
 		}
 		else{ // If allowAdding is either set to false, parentElement == null OR childElement == null

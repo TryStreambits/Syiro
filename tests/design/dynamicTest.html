@@ -4,12 +4,13 @@
 		<title>Dynamic Rocket Testing</title>
 		<link rel="stylesheet" type="text/css" href="css/rocket.css">
 		<script type="text/javascript" src="js/rocket.min.js"></script>
+		<script type="text/javascript" src="js/alternativeInit.min.js"></script>
 		<meta charset="utf-8" />
 	</head>
 	<body>
 		<div data-rocket-component="page"></div>
 		<script>
-			rocket.Init();
+			rocket.Init(); // Use the modern rocket.Init
 
 			var generatedHeader = {};
 			var generatedDropdownObject = {};
@@ -87,7 +88,7 @@
 
 			var generatedAudioPlayer = rocket.audioplayer.Generate(
 					{
-						"sources": "http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",
+						"sources": ["http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg", "http://www.noiseaddicts.com/samples/55.mp3" ],
 						"art" : "http://upload.wikimedia.org/wikipedia/en/thumb/a/ac/XiphophorusLogoSVG.svg/132px-XiphophorusLogoSVG.svg.png",
 						"title" : "Example OGG File",
 						"artist" : "JesseW",
@@ -99,7 +100,7 @@
 			var generatedVideoPlayer = rocket.videoplayer.Generate(
 					{
 						"art" : "img/video-art.png",
-						"sources" : ["http://download.blender.org/peach/trailer/trailer_400p.ogg", "http://download.blender.org/peach/trailer/trailer_480p.mov"],
+						"sources" : ["http://download.blender.org/peach/trailer/trailer_400p.ogg", "http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v"],
 						"share" : videoShareDialogList
 					}
 			);
@@ -130,7 +131,12 @@
 			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedButtonTwo));
 			document.querySelector("body").appendChild(rocket.Fetch(generatedFooter));
 
-			rocket.AddListeners(generatedButton, function(x){console.log("First Button Hit!")}); // Listen to the Basic Button
+			rocket.AddListeners(generatedButton,
+				function(x){
+					var screenInfoElement = rocket.generator.ElementCreator("section", { "content" : window.screen.width.toString()});
+					document.querySelector('div[data-rocket-component="page"]').insertBefore(screenInfoElement, document.querySelector('div[data-rocket-component="page"]').firstChild);
+				}
+			); // Listen to the Basic Button
 			rocket.AddListeners(generatedButtonTwo, // Listen to the Basic Button
 				function(x){
 					var component = arguments[0];

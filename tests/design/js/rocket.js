@@ -5,7 +5,7 @@ var rocket;
         _component.listenerStrings = {
             "down": ["mousedown", "touchstart", "MSPointerDown"],
             "up": ["mouseup", "touchend", "MSPointerUp"],
-            "press": ["click", "touchend", "MSPointerUp"]
+            "press": ["click"]
         };
         _component.storedComponents = {};
         function Define(type, selector) {
@@ -50,7 +50,7 @@ var rocket;
             var modifiableElement;
             var returnedValue;
             var modifiedStyling = false;
-            if (component["type"] !== undefined) {
+            if (typeof component.hasAttribute == "undefined") {
                 modifiableElement = rocket.component.Fetch(component);
             }
             else {
@@ -298,11 +298,6 @@ var rocket;
                 else {
                     parentElement.appendChild(childElement);
                 }
-                if (childComponentId !== undefined) {
-                    if (rocket.component.storedComponents[childComponentId] !== undefined) {
-                        delete rocket.component.storedComponents[childComponentId];
-                    }
-                }
             }
             else {
                 allowAdding = false;
@@ -492,7 +487,6 @@ var rocket;
                         if (properties["items"][individualItem]["type"] == "dropdown") {
                             var dropdownComponent = properties["items"][individualItem]["component"];
                             componentElement.appendChild(rocket.component.Fetch(dropdownComponent));
-                            delete rocket.component.storedComponents[dropdownComponent["id"]];
                         }
                         else if (properties["items"][individualItem]["type"] == "link") {
                             var generatedElement = rocket.generator.ElementCreator("a", {
@@ -965,13 +959,13 @@ var rocket;
         function SecondsToTimeFormat(seconds) {
             var timeObject = {};
             if (seconds >= 3600) {
-                timeObject["hours"] = Number((seconds / 3600).toPrecision(1));
-                timeObject["minutes"] = Number(((seconds - (3600 * timeObject["hours"])) / 60).toPrecision(1));
-                timeObject["seconds"] = Number((seconds - (3600 * timeObject["hours"])) - (60 * timeObject["minutes"]));
+                timeObject["hours"] = Math.floor(seconds / 3600);
+                timeObject["minutes"] = Math.floor((seconds - (3600 * timeObject["hours"])) / 60);
+                timeObject["seconds"] = Math.floor((seconds - (3600 * timeObject["hours"])) - (60 * timeObject["minutes"]));
             }
             else if ((seconds >= 60) && (seconds < 3600)) {
-                timeObject["minutes"] = Number((seconds / 60).toPrecision(1));
-                timeObject["seconds"] = Number((seconds - (timeObject["minutes"] * 60)));
+                timeObject["minutes"] = Math.floor(seconds / 60);
+                timeObject["seconds"] = Math.floor(seconds - (timeObject["minutes"] * 60));
             }
             else {
                 timeObject["minutes"] = 0;
@@ -1084,7 +1078,7 @@ var rocket;
             });
             var shareButton = componentElement.querySelector('div[data-rocket-minor-component="player-button-menu"]');
             if (shareButton !== null) {
-                rocket.component.AddListeners(rocket.component.FetchComponentObject(shareButton), rocket.player.ToggleShareDialog.bind(this, component));
+                rocket.component.AddListeners(rocket.component.listenerStrings["press"], rocket.component.FetchComponentObject(shareButton), rocket.player.ToggleShareDialog.bind(this, component));
             }
         }
         player.Init = Init;
@@ -1156,7 +1150,13 @@ var rocket;
                     for (var playerRangeAttribute in playerMediaLengthInformation) {
                         playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]);
                         if (playerRangeAttribute == "max") {
-                            rocket.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation[playerRangeAttribute]);
+                            rocket.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
+                            var newTimeWidth = playButton.parentElement.querySelector("time").clientWidth + 25;
+                            var inputRangeWidth = (playButton.parentElement.clientWidth - ((36 * 2) + (14 * 2) + newTimeWidth));
+                            if (playButton.parentElement.querySelector('div[data-rocket-minor-component="player-button-menu"]') !== null) {
+                                inputRangeWidth = inputRangeWidth - (36 + 14);
+                            }
+                            rocket.component.CSS(playerRange, "width", inputRangeWidth.toString() + "px !important");
                         }
                     }
                 }
@@ -1274,23 +1274,22 @@ var rocket;
         function Generate(properties) {
             var componentId = rocket.generator.IdGen("player-control");
             var componentElement = rocket.generator.ElementCreator(componentId, "player-control");
-            var playButton = rocket.button.Generate({
-                "data-rocket-minor-component": "player-button-play"
-            });
+            var playButton = rocket.button.Generate({ "data-rocket-minor-component": "player-button-play" });
             var inputRange = rocket.generator.ElementCreator("input", { "type": "range", "value": "0" });
             var timeStamp = rocket.generator.ElementCreator("time", { "content": "00:00 / 00:00" });
-            var volumeButton = rocket.button.Generate({
-                "data-rocket-minor-component": "player-button-volume"
-            });
+            var volumeButton = rocket.button.Generate({ "data-rocket-minor-component": "player-button-volume" });
             componentElement.appendChild(rocket.component.Fetch(playButton));
             componentElement.appendChild(inputRange);
             componentElement.appendChild(timeStamp);
+            var inputRangeWidth = (properties["width"] - ((36 * 2) + (14 * 2) + 100));
             if (properties["share"] !== undefined) {
                 if (properties["share"]["type"] == "list") {
+                    inputRangeWidth = inputRangeWidth - (36 + 14);
                     var shareMenuButton = rocket.button.Generate({ "data-rocket-minor-component": "player-button-menu" });
                     componentElement.appendChild(rocket.component.Fetch(shareMenuButton));
                 }
             }
+            rocket.component.CSS(inputRange, "width", inputRangeWidth.toString() + "px !important");
             componentElement.appendChild(rocket.component.Fetch(volumeButton));
             rocket.component.storedComponents[componentId] = componentElement;
             return { "id": componentId, "type": "player-control" };
@@ -1328,10 +1327,7 @@ var rocket;
                     "id": componentId,
                     "name": componentId,
                 });
-                var audioPlayer = rocket.generator.ElementCreator("audio", {
-                    "preload": "metadata",
-                    "volume": "0.5"
-                });
+                var audioPlayer = rocket.generator.ElementCreator("audio", { "preload": "metadata", "volume": "0.5" });
                 audioPlayer.autoplay = false;
                 var arrayofSourceElements = rocket.player.FetchSources("audio", properties["sources"]);
                 for (var sourceElementKey in arrayofSourceElements) {
@@ -1357,6 +1353,13 @@ var rocket;
                     playerInformation.appendChild(playerTextualInformation);
                     componentElement.appendChild(playerInformation);
                 }
+                if (properties["width"] == undefined) {
+                    properties["width"] = 400;
+                }
+                if (window.screen.width < properties["width"]) {
+                    properties["width"] = window.screen.width - 10;
+                }
+                rocket.component.CSS(componentElement, "width", properties["width"].toString() + "px");
                 var playerControlComponent = rocket.playercontrol.Generate(properties);
                 var playerControlElement = rocket.component.Fetch(playerControlComponent);
                 if (properties["share"] !== undefined) {
@@ -1366,7 +1369,7 @@ var rocket;
                         playerShareDialog.appendChild(playerShareLabel);
                         playerShareDialog.appendChild(rocket.component.Fetch(properties["share"]));
                         rocket.CSS(playerShareDialog, "height", "100px");
-                        rocket.CSS(playerShareDialog, "width", "400px");
+                        rocket.CSS(playerShareDialog, "width", properties["width"].toString() + "px");
                         componentElement.insertBefore(playerShareDialog, componentElement.firstChild);
                     }
                 }
@@ -1401,12 +1404,13 @@ var rocket;
                     videoWidth = Number((videoHeight * 1.77).toFixed());
                 }
                 if (videoWidth > window.screen.width) {
-                    videoWidth = window.screen.width;
+                    videoWidth = window.screen.width - 10;
                 }
                 var properVideoHeight = Number((videoWidth / 1.77).toFixed());
                 if (videoHeight !== properVideoHeight) {
                     videoHeight = properVideoHeight;
                 }
+                properties["width"] = videoWidth;
                 if (properties["art"] !== undefined) {
                     var posterImageElement = rocket.generator.ElementCreator("img", { "data-rocket-minor-component": "video-poster", "src": properties["art"] });
                     rocket.component.CSS(posterImageElement, "height", (videoHeight + 50).toString() + "px");
@@ -1507,7 +1511,7 @@ var rocket;
             var viewportMetaTag = rocket.generator.ElementCreator("meta", { "name": "viewport", "content-attr": "width=device-width, initial-scale=1,user-scalable=no" });
             documentHeadSection.appendChild(viewportMetaTag);
         }
-        if (MutationObserver !== undefined) {
+        if (typeof MutationObserver !== "undefined") {
             var mutationWatcher = new MutationObserver(function (mutations) {
                 mutations.forEach(function (mutation) {
                     if (mutation.type == "childList") {

@@ -326,19 +326,33 @@ module rocket.component {
 
 	// #region Component Remove Event Listener
 
-	export function RemoveListeners(component : Object) : boolean {
+	export function RemoveListeners(component : any) : boolean {
+		var allowRemoval : boolean = true; // Set allowRemoval as a boolean, defaulting to true and allowing Listener removal unless specified otherwise.
 		var successfulRemoval : boolean = false; // Set successfulRemove as a boolean, defaulting to false unless it was successful
-		var componentElement : any = rocket.component.Fetch(component); // Get the component Element
+		var componentElement : any; // Define componentElement as an Element
 
-		if (componentElement !== null){ // If the component exists in storedComponents or DOM
-			if (component["type"] == "dropdown"){ // If we are adding an event listener to a dropdown
-				componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]'); // Get the Dropdown's inner Label
+		if ((component["id"] !== undefined) && (component["id"] !== "") && (component["type"] !== undefined)){ // If the Component provided is a Rocket Component Object
+			componentElement = rocket.component.Fetch(component); // Get the Component Element
+
+			if (componentElement !== null){ // If we successfully fetched the Component's Element
+				if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
+					if (componentElement.querySelector('div[data-rocket-component="button"]') !== null){ // If there is a div (secondary control) in the List Item
+						allowRemoval = false; // Set allowRemoval to false, since there is a Button within the List Item that would be affected.
+					}
+				}
 			}
+		}
+		else { // If the Component passed is an Element
+			componentElement = component; // Define componentElement as the Component
+		}
 
-			var newElement : any = componentElement.cloneNode(true); // Make a clone of the Node, which doesn't copy event listeners
-			componentElement.outerHTML = newElement.outerHTML; // Replace the component's Element outer HTML with the new Element outerHTML, so it does not copy listeners (therefore they are "removed")
+		if (allowRemoval == true){ // If we are going to allow the removal of event listeners from the Element
+			if ((componentElement !== undefined) && (componentElement !== null)){
+				var newElement : any = componentElement.cloneNode(true); // Make a clone of the Node, which doesn't copy event listeners
+				componentElement.outerHTML = newElement.outerHTML; // Replace the component's Element outer HTML with the new Element outerHTML, so it does not copy listeners (therefore they are "removed")
 
-			successfulRemoval = true; // Return true since we successfully removed event listeners
+				successfulRemoval = true; // Return true since we successfully removed event listeners
+			}
 		}
 
 		return successfulRemoval; // Return whether the removal was successful

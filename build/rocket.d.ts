@@ -38,7 +38,7 @@ declare module rocket.component {
     function FetchDimensionsAndPosition(component: any): Object;
     function Update(componentId: string, componentElement: Element): void;
     function AddListeners(...args: any[]): boolean;
-    function RemoveListeners(component: Object): boolean;
+    function RemoveListeners(component: any): boolean;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): boolean;
 }

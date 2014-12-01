@@ -240,15 +240,28 @@ var rocket;
         }
         _component.AddListeners = AddListeners;
         function RemoveListeners(component) {
+            var allowRemoval = true;
             var successfulRemoval = false;
-            var componentElement = rocket.component.Fetch(component);
-            if (componentElement !== null) {
-                if (component["type"] == "dropdown") {
-                    componentElement = componentElement.querySelector('div[data-rocket-minor-component="dropdown-label"]');
+            var componentElement;
+            if ((component["id"] !== undefined) && (component["id"] !== "") && (component["type"] !== undefined)) {
+                componentElement = rocket.component.Fetch(component);
+                if (componentElement !== null) {
+                    if (component["type"] == "list-item") {
+                        if (componentElement.querySelector('div[data-rocket-component="button"]') !== null) {
+                            allowRemoval = false;
+                        }
+                    }
                 }
-                var newElement = componentElement.cloneNode(true);
-                componentElement.outerHTML = newElement.outerHTML;
-                successfulRemoval = true;
+            }
+            else {
+                componentElement = component;
+            }
+            if (allowRemoval == true) {
+                if ((componentElement !== undefined) && (componentElement !== null)) {
+                    var newElement = componentElement.cloneNode(true);
+                    componentElement.outerHTML = newElement.outerHTML;
+                    successfulRemoval = true;
+                }
             }
             return successfulRemoval;
         }

@@ -1,19 +1,19 @@
 /*
- This is the module for Rocket Searchbox component.
+ This is the module for Syiro Searchbox component.
  */
 
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
 
-// #region Rocket Searchbox Component
+// #region Syiro Searchbox Component
 
-module rocket.searchbox {
+module syiro.searchbox {
 
 	// #region Searchbox Generator
 
 	export function Generate(properties : Object) : Object { // Generate a Searchbox Component and return a Component Object
-		var componentId : string = rocket.generator.IdGen("searchbox"); // Generate a component Id
-		var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "searchbox"); // Generate a Searchbox Element
+		var componentId : string = syiro.generator.IdGen("searchbox"); // Generate a component Id
+		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "searchbox"); // Generate a Searchbox Element
 
 		if (properties == undefined){ // If no properties were passed during the Generate call
 			properties = {}; // Set as an empty Object
@@ -25,14 +25,14 @@ module rocket.searchbox {
 
 		for (var propertyKey in properties){ // Recursive go through each propertyKey
 			if (propertyKey == "icon"){ // If we are adding an icon
-				rocket.component.CSS(componentElement, "background-image", "url(" + properties["icon"] + ")"); // Set the backgroundImage to the icon URL specified
+				syiro.component.CSS(componentElement, "background-image", "url(" + properties["icon"] + ")"); // Set the backgroundImage to the icon URL specified
 			}
 			else if (propertyKey == "content"){ // If we are adding a placeholder / content
 				componentElement.setAttribute("placeholder", properties["content"]); // Set the searchbox input placeholder to the one defined
 			}
 		}
 
-		rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
+		syiro.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
 
 		return { "id" : componentId, "type" : "searchbox" }; // Return a Component Object
 	}
@@ -42,9 +42,9 @@ module rocket.searchbox {
 	// #region Setting Searchbox Text / Placeholder
 
 	export function SetText(component : Object, placeholderText : any) : void {
-		var searchboxElement : Element = rocket.component.Fetch(component); // Get the Searchbox Rocket component element
+		var searchboxElement : Element = syiro.component.Fetch(component); // Get the Searchbox Syiro component element
 
-		if (searchboxElement !== null){ // If the searchboxElement exists in rocket.component.storedComponents or DOM
+		if (searchboxElement !== null){ // If the searchboxElement exists in syiro.component.storedComponents or DOM
 			var searchboxInputElement : HTMLInputElement = searchboxElement.getElementsByTagName("input")[0]; // Get the inner input tag of the searchboxElement
 
 			if (placeholderText !== false){ // If we are updating the placeholderText
@@ -54,7 +54,7 @@ module rocket.searchbox {
 				searchboxInputElement.removeAttribute("placeholder"); // Remove the placeholder attribute
 			}
 
-			rocket.component.Update(component["id"], searchboxElement); // Update the storedComponent HTMLElement if necessary
+			syiro.component.Update(component["id"], searchboxElement); // Update the storedComponent HTMLElement if necessary
 		}
 	}
 

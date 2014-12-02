@@ -1,12 +1,12 @@
 /*
- This is the module for information and functionality Rocket provides regarding the device using Rocket.
+ This is the module for information and functionality Syiro provides regarding the device using Syiro.
 */
 
 /// <reference path="interfaces.ts" />
 
-// #region Rocket Device Information and Functionality
+// #region Syiro Device Information and Functionality
 
-module rocket.device {
+module syiro.device {
 
     // #region Browser / Device Support (Default all to true since Detect() will change it if necessary)
 
@@ -30,47 +30,47 @@ module rocket.device {
     export function Detect(){
 
         if (navigator.doNotTrack !== undefined){ // If DoNotTrack is defined in the navigator Object
-            rocket.device.DoNotTrack = Boolean(navigator.doNotTrack); // Set the DoNotTrack variable to the value defined in navigator and converted to boolean
+            syiro.device.DoNotTrack = Boolean(navigator.doNotTrack); // Set the DoNotTrack variable to the value defined in navigator and converted to boolean
         }
         else{  // If DoNotTrack is not defined in the navigator Object
-            rocket.device.DoNotTrack = true; // Set DoNotTrack to true by default
+            syiro.device.DoNotTrack = true; // Set DoNotTrack to true by default
         }
 
         if (window.crypto == undefined){ // If Crypto is not defined in the window Object
-            rocket.device.HasCryptography = false; // Set HasCryptography to false
+            syiro.device.HasCryptography = false; // Set HasCryptography to false
         }
 
         if (navigator.geolocation == undefined){ // If Geolocation is not defined in the navigator Object
-            rocket.device.HasGeolocation = false; // Set HasGeolocation to false
+            syiro.device.HasGeolocation = false; // Set HasGeolocation to false
         }
 
         if (window.indexedDB == undefined){ // If IndexedDB is not defined in the window Object
-            rocket.device.HasIndexedDB = false; // Set HasIndexedDB to false
+            syiro.device.HasIndexedDB = false; // Set HasIndexedDB to false
         }
 
         if (window.localStorage == undefined){ // If LocalStorage is not defined in the window Object
-            rocket.device.HasLocalStorage = false; // Set HasLocalStorage to false
+            syiro.device.HasLocalStorage = false; // Set HasLocalStorage to false
         }
 
         if (navigator.onLine !== undefined){ // If the browser is online
-            rocket.device.IsOnline = navigator.onLine; // Set the IsOnline to the browser's online status
+            syiro.device.IsOnline = navigator.onLine; // Set the IsOnline to the browser's online status
 
-            rocket.component.AddListeners("online", document,  // Add an event listener that listens to the "online" event, which means the user went from offline to online, and update the IsOnline value
+            syiro.component.AddListeners("online", document,  // Add an event listener that listens to the "online" event, which means the user went from offline to online, and update the IsOnline value
                 function(){ // When the user goes online
-                    rocket.device.IsOnline = true; // Set rocket.device.IsOnline to true
+                    syiro.device.IsOnline = true; // Set syiro.device.IsOnline to true
                 }
             );
 
-            rocket.component.AddListeners("offline", document, // Add an event listener that listens to the "offline" event, which means the user went from online to offline, and update the IsOnline value
+            syiro.component.AddListeners("offline", document, // Add an event listener that listens to the "offline" event, which means the user went from online to offline, and update the IsOnline value
                 function(){ // When the user goes offline
-                    rocket.device.IsOnline = false; // Set rocket.device.IsOnline to false
+                    syiro.device.IsOnline = false; // Set syiro.device.IsOnline to false
                 }
             );
         }
 
-        rocket.device.FetchScreenDetails(); // Do an initial fetch of the screen details
+        syiro.device.FetchScreenDetails(); // Do an initial fetch of the screen details
 
-        rocket.component.AddListeners("resize", window, rocket.device.FetchScreenDetails); // Listen to the window resizing
+        syiro.component.AddListeners("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing
     }
 
     // #endregion
@@ -79,20 +79,20 @@ module rocket.device {
 
     export function FetchScreenDetails(){
         if (window.screen.height < 720){ // If the screen height is less than 720px
-            rocket.device.IsSubHD = true; // Set IsSubHD to true
-            rocket.device.IsHD = false; // Set IsHD to false
-            rocket.device.IsFullHDOrAbove = false; // Set IsFullHDOrAbove to false
+            syiro.device.IsSubHD = true; // Set IsSubHD to true
+            syiro.device.IsHD = false; // Set IsHD to false
+            syiro.device.IsFullHDOrAbove = false; // Set IsFullHDOrAbove to false
         }
         else{ // If the screen height is greater than 720px
             if (((window.screen.height >= 720) && (window.screen.height < 1080)) && (window.screen.width >= 1280)){ // If the screen is essentially "720p" HD (greater than 720px but less than 1080px) in width
-                rocket.device.IsSubHD = false; // Set IsSubHD to false
-                rocket.device.IsHD = true; // Set IsHD to true
-                rocket.device.IsFullHDOrAbove = false; // Set IsFullHDOrAbove to false
+                syiro.device.IsSubHD = false; // Set IsSubHD to false
+                syiro.device.IsHD = true; // Set IsHD to true
+                syiro.device.IsFullHDOrAbove = false; // Set IsFullHDOrAbove to false
             }
             else if ((window.screen.height >= 1080) && (window.screen.width >= 1920)){ // If the screen width is greater or equal to 1920px and the screen height is greater or equal to 1080px
-                rocket.device.IsSubHD = false; // Set IsSubHD to false
-                rocket.device.IsHD = true; // Set IsHD to true, since technically it supports 720p content
-                rocket.device.IsFullHDOrAbove = true; // Set IsFullHDOrAbove to true
+                syiro.device.IsSubHD = false; // Set IsSubHD to false
+                syiro.device.IsHD = true; // Set IsHD to true, since technically it supports 720p content
+                syiro.device.IsFullHDOrAbove = true; // Set IsFullHDOrAbove to true
             }
         }
     }

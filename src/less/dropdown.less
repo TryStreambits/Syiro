@@ -1,26 +1,26 @@
 @import (reference) "animations.less"; // Import Animations as a reference
 @import (reference) "core.less"; // Import Core as a reference
 
-div[data-rocket-component="dropdown"]{ // Rocket Dropdown Component
+div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
 	float: left;
 	height: auto;
 	min-height: 40px; // Minimum height of 40px
 	min-width: 40px; // Minimum width of 40px
 	max-width: 200px; // Maximum width of 200px
 	width: auto;
-	color: @rocketSecondaryColor;
+	color: @syiroSecondaryColor;
 	font-size: 16px;
 	text-indent: 10px;
 	line-height: 40px;
 
 	.icon("dropdown", 22); // Add the default dropdown icon
-	background-color: @rocketGrey;
+	background-color: @syiroGrey;
 
 	cursor: default; // Default to "arrow" cursor
 
 	&[active]{ // If the Dropdown is "active", change the Dropdown Label
-		color: @rocketWhite; // Ensure the text viewable
-		background-color: @rocketPrimaryColor; // Ensure the active Dropdown is differentiated from the other Dropdowns
+		color: @syiroWhite; // Ensure the text viewable
+		background-color: @syiroPrimaryColor; // Ensure the active Dropdown is differentiated from the other Dropdowns
 
 		.icon("dropdown-inverted"); // Change the Dropdown image
 }
@@ -28,7 +28,7 @@ div[data-rocket-component="dropdown"]{ // Rocket Dropdown Component
 	&:not(:empty) { // If the Dropdown has children
 		background-position: 95% center; // Have the Dropdown icon float to the right
 
-		& > img{ // Rocket Dropdown Label Image (Optional)
+		& > img{ // Syiro Dropdown Label Image (Optional)
 			float: left;
 			height: 40px;
 			width: 40px;
@@ -44,7 +44,7 @@ div[data-rocket-component="dropdown"]{ // Rocket Dropdown Component
 		background-color: transparent; // Mask that the text was selected by making the background-color transparent.
 	}
 
-	& > label{ // Rocket Dropdown Label
+	& > label{ // Syiro Dropdown Label
 		float: left;
 		height: 40px;
 		min-width: 200px;

@@ -1,12 +1,12 @@
 /*
- This is the module for generating Rocket components.
+ This is the module for generating Syiro components.
  */
 
-/// <reference path="rocket.ts" />
+/// <reference path="syiro.ts" />
 /// <reference path="component.ts" />
 /// <reference path="interfaces.ts" />
 
-module rocket.generator {
+module syiro.generator {
 
     export var lastUniqueIds : Object = {}; // Default the lastUniqueIds to an empty Object
 
@@ -14,16 +14,16 @@ module rocket.generator {
 
     export function IdGen(type : string) : string { // Takes a component type and returns the new component Id
         var lastUniqueIdOfType : number; // Define lastUniqueIdOfType as a Number
-        if (rocket.generator.lastUniqueIds[type] == undefined){ // If the lastUniqueId of this type hasn't been defined yet.
+        if (syiro.generator.lastUniqueIds[type] == undefined){ // If the lastUniqueId of this type hasn't been defined yet.
             lastUniqueIdOfType = 0; // Set to zero
         }
         else{ // If the lastUniqueId of this type IS defined
-            lastUniqueIdOfType = rocket.generator.lastUniqueIds[type]; // Set lastUniqueIdOfType to the one set in lastUniqueIds
+            lastUniqueIdOfType = syiro.generator.lastUniqueIds[type]; // Set lastUniqueIdOfType to the one set in lastUniqueIds
         }
 
         var newUniqueIdOfType = lastUniqueIdOfType + 1; // Increment by one
 
-        rocket.generator.lastUniqueIds[type] = newUniqueIdOfType; // Update the lastUniqueIds
+        syiro.generator.lastUniqueIds[type] = newUniqueIdOfType; // Update the lastUniqueIds
 
         return (type + newUniqueIdOfType.toString()); // Append newUniqueIdOfType to the type to create a "unique" ID
     }
@@ -52,10 +52,10 @@ module rocket.generator {
                 generatedElement = document.createElement("div"); // Create a div tag
             }
 
-            generatedElement.setAttribute("data-rocket-component-id", componentId); // Set the Rocket Component ID to the componentID passed
-            generatedElement.setAttribute("data-rocket-component", componentType); // Set the Rocket Component to the type specified (ex. header)
+            generatedElement.setAttribute("data-syiro-component-id", componentId); // Set the Syiro Component ID to the componentID passed
+            generatedElement.setAttribute("data-syiro-component", componentType); // Set the Syiro Component to the type specified (ex. header)
         }
-        else{ // If we're not creating a Rocket Component
+        else{ // If we're not creating a Syiro Component
             attributes = args[1]; // Set attributes equal to the second argument passed
             generatedElement = document.createElement(args[0]); // Create an element based on the componentType (in this case, it is really just a element tag name)
         }

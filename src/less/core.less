@@ -9,11 +9,11 @@
 
 // #endregion
 
-@rocketWhite: #fafafa;
-@rocketGrey: #f6f6f6;
-@rocketPrimaryColor: #0099ff;
-@rocketSecondaryColor: #333333;
-@rocketBorderColor: #cccccc;
+@syiroWhite: #fafafa;
+@syiroGrey: #f6f6f6;
+@syiroPrimaryColor: #0099ff;
+@syiroSecondaryColor: #333333;
+@syiroBorderColor: #cccccc;
 
 // #region Icon Parametric Mixin - Allows easy including of a particular icon
 
@@ -28,7 +28,7 @@
 
 // #region Multi-component font utilization
 
-*[data-rocket-component]{ // Have all components utilize a uniform font
+*[data-syiro-component]{ // Have all components utilize a uniform font
 	font-family: 'Source Sans Pro', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
 }
 
@@ -36,7 +36,7 @@
 
 // #region Disabled UI Design
 
-*[data-rocket-component-disabled] { // When the Element is "disabled"
+*[data-syiro-component-disabled] { // When the Element is "disabled"
 	opacity: 0.3; // Set the opacity / darken the Element
 }
 
@@ -44,13 +44,13 @@
 
 // #region Multi-component link styling
 
-header[data-rocket-component="header"], footer[data-rocket-component="footer"] {
+header[data-syiro-component="header"], footer[data-syiro-component="footer"] {
 	a {
 		float: left; // Float left
 		height: 80px; // Default height of 80px
 		width: auto; // Automatic width
 		min-width: 180px; // Minimum width of 180px
-		color: @rocketPrimaryColor; // Primary Rocket Color
+		color: @syiroPrimaryColor; // Primary Syiro Color
 		line-height: 80px; // Default height of 80px
 		text-align: center; // Center it
 		text-decoration: none; // No decoration
@@ -72,7 +72,7 @@ body {
 	overflow-x: hidden;
 }
 
-div[data-rocket-component="page"]{
+div[data-syiro-component="page"]{
 	position: static;
 }
 

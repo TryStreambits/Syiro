@@ -1,25 +1,25 @@
 @import (reference) "core.less"; // Import Core as a reference
 
-footer[data-rocket-component="footer"]{ // Rocket Footer Component
+footer[data-syiro-component="footer"]{ // Syiro Footer Component
 	float: left;
 	height: 80px;
 	width: 100%;
-	color: @rocketSecondaryColor;
+	color: @syiroSecondaryColor;
 	font-size: 16px;
 	line-height: 80px;
-	background-color: @rocketGrey;
+	background-color: @syiroGrey;
 	position: static;
 	bottom: 0;
 	left: 0;
 	right: 0;
 
-	& > label { // Rocket Footer Component - Footer Text
+	& > label { // Syiro Footer Component - Footer Text
 		float: left;
 		margin-left: 20px;
 	}
 
 	@media (min-width: 800px) and (max-width: 1280px){ /* For resolutions 800 to 1280 in width */
-		& { // Rocket Footer Component
+		& { // Syiro Footer Component
 			height: 60px; // Shorten Footer Height
 			line-height: 60px; // Change line-height for links and text
 		}

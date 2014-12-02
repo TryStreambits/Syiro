@@ -1,19 +1,19 @@
 /*
- This is the module for Rocket List component and it's sub-component, List Item
+ This is the module for Syiro List component and it's sub-component, List Item
  */
 
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
 
-// #region Rocket List Component
+// #region Syiro List Component
 
-module rocket.list {
+module syiro.list {
 
 	// #region List Generator
 
 	export function Generate(properties : Object) : Object { // Generate a List Component and return a Component Object
-		var componentId : string = rocket.generator.IdGen("list"); // Generate a component Id
-		var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "list"); // Generate a List Element
+		var componentId : string = syiro.generator.IdGen("list"); // Generate a component Id
+		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "list"); // Generate a List Element
 
 		for (var propertyKey in properties){ // Recursive go through each propertyKey
 			if (propertyKey == "items"){ // If we are adding navigation elements
@@ -21,25 +21,25 @@ module rocket.list {
 					var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as an Object
 
 					if (individualItem["type"] !== "list-item"){ // If the individualItem is NOT a List Item Object
-						individualItem = rocket.listitem.Generate(individualItem); // Generate a List Item based on the individualItem properties
+						individualItem = syiro.listitem.Generate(individualItem); // Generate a List Item based on the individualItem properties
 					}
 
-					componentElement.appendChild(rocket.component.Fetch(individualItem)); // Append the List Item component to the List
-					delete rocket.component.storedComponents[individualItem["id"]]; // Delete the HTMLElement from the component in the storedComponents
+					componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the List Item component to the List
+					delete syiro.component.storedComponents[individualItem["id"]]; // Delete the HTMLElement from the component in the storedComponents
 				}
 			}
 		}
 
-		rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
+		syiro.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
 
 		return { "id" : componentId, "type" : "list" }; // Return a Component Object
 	}
 
 	// #endregion
 
-	export var AddItem = rocket.component.Add; // Meta-function for adding a List Item component to a List component
+	export var AddItem = syiro.component.Add; // Meta-function for adding a List Item component to a List component
 
-	export var RemoveItem = rocket.component.Remove; // Meta-function for removing a List Item component from a List Item component
+	export var RemoveItem = syiro.component.Remove; // Meta-function for removing a List Item component from a List Item component
 
 }
 
@@ -47,35 +47,35 @@ module rocket.list {
 
 // #region List Item Component
 
-module rocket.listitem {
+module syiro.listitem {
 
 	// #region List Item Generator
 
 	export function Generate(properties : Object) : Object { // Generate a ListItem Component and return a Component Object
-		var componentId : string = rocket.generator.IdGen("list-item"); // Generate a component Id
-		var componentElement : HTMLElement = rocket.generator.ElementCreator(componentId, "list-item"); // Generate a List Item Element
+		var componentId : string = syiro.generator.IdGen("list-item"); // Generate a component Id
+		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "list-item"); // Generate a List Item Element
 
 		for (var propertyKey in properties){ // Recursive go through each propertyKey
 			if (propertyKey == "control"){ // If we are adding a control
 				if (properties["image"] == undefined){ // If we are not adding an image, then allow for adding a control
-					var controlComponentObject = properties[propertyKey]; // Get the Rocket component's Object
+					var controlComponentObject = properties[propertyKey]; // Get the Syiro component's Object
 
 					if (controlComponentObject["type"] == "button"){ // If the component is either a basic or toggle button
-						var controlComponentElement : Element= rocket.component.Fetch(controlComponentObject); // Get the component's (HTML)Element
+						var controlComponentElement : Element= syiro.component.Fetch(controlComponentObject); // Get the component's (HTML)Element
 						componentElement.appendChild(controlComponentElement); // Append the component to the List Item
 
-						delete rocket.component.storedComponents[controlComponentObject["id"]]; // Delete the Component from the storedComponents
+						delete syiro.component.storedComponents[controlComponentObject["id"]]; // Delete the Component from the storedComponents
 					}
 				}
 			}
 			else if (propertyKey == "image"){ // If we are adding an image
 				if (properties["control"] == undefined){ // If we are not adding a control, then allow for adding an image
-					var imageComponent : HTMLElement = rocket.generator.ElementCreator("img", { "src" : properties["image"]} ); // Create an image with the source set the properties["image"]
+					var imageComponent : HTMLElement = syiro.generator.ElementCreator("img", { "src" : properties["image"]} ); // Create an image with the source set the properties["image"]
 					componentElement.insertBefore(imageComponent, componentElement.firstChild); // Prepend the label to the List Item component
 				}
 			}
 			else if (propertyKey == "label"){ // If we are adding a label
-				var labelComponent : HTMLElement = rocket.generator.ElementCreator("label", { "content" : properties["label"] }); // Create a label within the "label" (labelception) to hold the defined text.
+				var labelComponent : HTMLElement = syiro.generator.ElementCreator("label", { "content" : properties["label"] }); // Create a label within the "label" (labelception) to hold the defined text.
 
 				if (componentElement.querySelector("img") == null){ // If we have not added an image to the List Item
 					componentElement.insertBefore(labelComponent, componentElement.firstChild); // Prepend the label to the List Item component
@@ -86,7 +86,7 @@ module rocket.listitem {
 			}
 		}
 
-		rocket.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
+		syiro.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
 
 		return { "id" : componentId, "type" : "list-item" }; // Return a Component Object
 	}
@@ -99,7 +99,7 @@ module rocket.listitem {
 		var setLabelSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
 
 		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			var listItemElement = rocket.component.Fetch(component); // Get the List Item Element
+			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
 
 			if (typeof content == "string"){ // If the content is of type string
 				var listItemLabelElement : Element; // Define listItemLabelElement to be an Element
@@ -108,7 +108,7 @@ module rocket.listitem {
 					listItemLabelElement = listItemElement.querySelector("label"); // Set listItemLabelElement as the queried label tag from listItemElement
 				}
 				else{
-					listItemLabelElement = rocket.generator.ElementCreator("label"); // Create a label and assign it to the listItemLabelElement
+					listItemLabelElement = syiro.generator.ElementCreator("label"); // Create a label and assign it to the listItemLabelElement
 					listItemElement.insertBefore(listItemLabelElement, listItemElement.firstChild); // Prepend the label
 				}
 
@@ -128,7 +128,7 @@ module rocket.listitem {
 		var setControlSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
 
 		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			var listItemElement = rocket.component.Fetch(component); // Get the List Item Element
+			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
 
 			if (typeof control == "object"){ // If the content is of type Object
 				if (listItemElement.querySelector("div") !== null){ // If there is already a control inside the List Item
@@ -136,13 +136,13 @@ module rocket.listitem {
 				}
 
 				if (control["type"] == "button"){ // If the type of the control Component is a button
-					var innerControlElement = rocket.component.Fetch(control); // Get the Element of the inner control Component
+					var innerControlElement = syiro.component.Fetch(control); // Get the Element of the inner control Component
 
-					if (innerControlElement !== null){ // If the Component Element is actually stored in rocket.component.storedComponents
-						delete rocket.component.storedComponents[control["id"]]; // Delete the Element from storedComponents
+					if (innerControlElement !== null){ // If the Component Element is actually stored in syiro.component.storedComponents
+						delete syiro.component.storedComponents[control["id"]]; // Delete the Element from storedComponents
 						listItemElement.appendChild(innerControlElement); // Append the control Component
-						rocket.component.RemoveListeners(component); // Ensure the List Item has no Listeners after adding the new Control
-						rocket.component.Update(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
+						syiro.component.RemoveListeners(component); // Ensure the List Item has no Listeners after adding the new Control
+						syiro.component.Update(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
 
 						setControlSucceeded = true; // Set setLabelSucceeded to true
 					}

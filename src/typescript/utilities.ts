@@ -1,8 +1,8 @@
 /*
-    This is a module for Rocket utilities that are commonly used throughout Rocket's core code and may be useful to others.
+    This is a module for Syiro utilities that are commonly used throughout Syiro's core code and may be useful to others.
 */
 
-module rocket.utilities {
+module syiro.utilities {
 
     // #region Seconds to "Time" Object Format - This function is responsible for calculating hours, minutes, and seconds based on seconds provided, returning them in an Object
 

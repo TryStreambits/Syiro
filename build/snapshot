@@ -7,27 +7,27 @@ cd "$currentDirectory"
 
 createSnapshot(){ # Create a snapshot of the branch and package it
 	snapshotType=$1 # Type of the snapshot, whether it be devel or stable
-	rocketVersion=$2 # Rocket version
+	syiroVersion=$2 # Syiro version
 
-	echo "Building Rocket snapshot as $snapshotType and v $rocketVersion"
+	echo "Building Syiro snapshot as $snapshotType and v $syiroVersion"
 
-	mkdir -p "build/active-snapshot/Rocket" # Create a temporary snapshot directory
-	echo "$rocketVersion" > VERSION.txt # Update the VERSION.txt file
+	mkdir -p "build/active-snapshot/Syiro" # Create a temporary snapshot directory
+	echo "$syiroVersion" > VERSION.txt # Update the VERSION.txt file
 
-	cp -r build/rocket.css build/rocket.min.js build/rocket.min.js.gz ./build/active-snapshot/Rocket # Copy over particular build content to the snapshot
-	cp -r src/less/fonts src/less/img README.md License.txt VERSION.txt ./build/active-snapshot/Rocket # Copy over particular non-build data to the snapshot
-	mkdir ./build/active-snapshot/Rocket/css # Make the css directory to put the fonts and img in.
-	mv ./build/active-snapshot/Rocket/fonts ./build/active-snapshot/Rocket/css/ # Move the fonts to the css folder
-	mv ./build/active-snapshot/Rocket/img ./build/active-snapshot/Rocket/css/ # Move the images to the css folder
+	cp -r build/syiro.css build/syiro.min.js build/syiro.min.js.gz ./build/active-snapshot/Syiro # Copy over particular build content to the snapshot
+	cp -r src/less/fonts src/less/img README.md License.txt VERSION.txt ./build/active-snapshot/Syiro # Copy over particular non-build data to the snapshot
+	mkdir ./build/active-snapshot/Syiro/css # Make the css directory to put the fonts and img in.
+	mv ./build/active-snapshot/Syiro/fonts ./build/active-snapshot/Syiro/css/ # Move the fonts to the css folder
+	mv ./build/active-snapshot/Syiro/img ./build/active-snapshot/Syiro/css/ # Move the images to the css folder
  
-	tar --create --gzip --recursion --directory=build/active-snapshot -f "$snapshotType".tar.gz Rocket
+	tar --create --gzip --recursion --directory=build/active-snapshot -f "$snapshotType".tar.gz Syiro
 	rm -rf build/active-snapshot
 
 	echo "Build finished."
 }
 
-read -p "Is this meant to be a Rocket stable build? [y/N] " isStable
-read -p "What is the Rocket version number? " rocketVersion
+read -p "Is this meant to be a Syiro stable build? [y/N] " isStable
+read -p "What is the Syiro version number? " syiroVersion
 
 snapshotType=""
 
@@ -37,4 +37,4 @@ else
 	snapshotType="devel"
 fi
 
-createSnapshot $snapshotType $rocketVersion
+createSnapshot $snapshotType $syiroVersion

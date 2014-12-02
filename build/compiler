@@ -71,27 +71,27 @@ recursiveCompiling(){ # Recursive function for code compiling
 		anyFilesChanged=true # Set Any Files Changed to true since the codebase has changed
 
 		if [ "$sourceLocation" == "less" ]; then # If we are compiling the LESS
-			# Run the Rocket LESS through the LESS compiler quietly, with no IE compatibility requirements and JS stuff
-			/home/$USER/node_modules/less/bin/lessc --no-js --no-color --no-ie-compat --clean-css src/less/rocket.less build/rocket.css
-			cp build/rocket.css tests/design/css/ # Copy newly built rocket.css to our tests
+			# Run the Syiro LESS through the LESS compiler quietly, with no IE compatibility requirements and JS stuff
+			/home/$USER/node_modules/less/bin/lessc --no-js --no-color --no-ie-compat --clean-css src/less/syiro.less build/syiro.css
+			cp build/syiro.css tests/design/css/ # Copy newly built syiro.css to our tests
 		else # If we are compiling Typescript
 			anyFilesChanged=true # Set global var to true
 
-			tsc --removeComments --target 'ES5' src/typescript/rocket.ts --declaration --out build/rocket.js
-			cp build/rocket.js tests/design/js/ # Copy rocket.js to tests/design/js
+			tsc --removeComments --target 'ES5' src/typescript/syiro.ts --declaration --out build/syiro.js
+			cp build/syiro.js tests/design/js/ # Copy syiro.js to tests/design/js
 
-			echo "Minifying Rocket compiled Javascript."
-			/home/$USER/node_modules/uglify-js/bin/uglifyjs build/rocket.js --output build/rocket.min.js --mangle --screw-ie8 --compress sequences,conditionals,comparisons,evaluate,booleans,loops,join_vars,hoist_funs,if_return,drop_console,properties,unsafe &> /dev/null
+			echo "Minifying Syiro compiled Javascript."
+			/home/$USER/node_modules/uglify-js/bin/uglifyjs build/syiro.js --output build/syiro.min.js --mangle --screw-ie8 --compress sequences,conditionals,comparisons,evaluate,booleans,loops,join_vars,hoist_funs,if_return,drop_console,properties,unsafe &> /dev/null
 
-			zopfli build/rocket.min.js # Use zopfli to gzip content
-			cp build/rocket.min.js tests/design/js/ # Copy the rocket.min.js to the tests/design/js
+			zopfli build/syiro.min.js # Use zopfli to gzip content
+			cp build/syiro.min.js tests/design/js/ # Copy the syiro.min.js to the tests/design/js
 
-			echo "Finished compiling and minification process of Rocket."
+			echo "Finished compiling and minification process of Syiro."
 		fi
 	fi
 }
 
-echo "Compiling Rocket."
+echo "Compiling Syiro."
 
 recursiveCompiling "less" # Compile LESS
 recursiveCompiling "typescript" # Compile Typescript

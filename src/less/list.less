@@ -1,6 +1,6 @@
 @import (reference) "core.less"; // Import Core as a reference
 
-div[data-rocket-component="list"]{ // Rocket List Component
+div[data-syiro-component="list"]{ // Syiro List Component
 	float: left;
 	height: auto;
 	min-height: 40px;
@@ -8,7 +8,7 @@ div[data-rocket-component="list"]{ // Rocket List Component
 	min-width: 200px; // 100% of the parent of the List component
 	overflow: hidden; // Hide overflow
 
-	& > div[data-rocket-component="list-item"]{ // Rocket List Item Component
+	& > div[data-syiro-component="list-item"]{ // Syiro List Item Component
 		float: left;
 		display: block;
 		height: 40px;
@@ -18,36 +18,36 @@ div[data-rocket-component="list"]{ // Rocket List Component
 		text-indent: 10px;
 		overflow: hidden;
 
-		& > img { // Rocket List Item - Image
+		& > img { // Syiro List Item - Image
 			float: left;
 			height: 40px;
 			width: 40px;
 			margin-right: 10px;
 		}
 
-		& > a{ // Rocket List Item - Links
+		& > a{ // Syiro List Item - Links
 			width: 100%; // Only allow the link to be in this particular List Item component (disallow secondary controls)
-			color: @rocketPrimaryColor !important; // Force link color (primary color)
+			color: @syiroPrimaryColor !important; // Force link color (primary color)
 			font-weight: normal;
 			text-decoration: none; // No text decoration
 		}
 
-		& > div[data-rocket-component="button"]{ // Secondary control within List Item component
+		& > div[data-syiro-component="button"]{ // Secondary control within List Item component
 			float: right !important; // Float the component to the right
 		}
 	}
 
-	&[data-rocket-component-owner^="dropdown"]{ // If the owner of the List is a Dropdown
+	&[data-syiro-component-owner^="dropdown"]{ // If the owner of the List is a Dropdown
 		max-width: 200px; // Set the max width to match the max width of the Dropdown
-		background-color: @rocketGrey;
-		border-top: 2px solid @rocketBorderColor;
+		background-color: @syiroGrey;
+		border-top: 2px solid @syiroBorderColor;
 		position: fixed; // Fixed position
 		z-index: 10; // Ensure it floats above other content
 		visibility: hidden; // Hide (not using display: block) so getBoundingClientRect properly calculates dimensions
 
 		// Modifier for toggle buttons that do not have a TRUE status within list items in a Dropdown's List
-		& > div[data-rocket-component="list-item"] > div[data-rocket-component="button"][data-rocket-component-type="toggle"]:not([data-rocket-component-status="toggle"]){
-			border: 1px solid @rocketBorderColor; // Allow easy differentiation between list-item background and toggle button
+		& > div[data-syiro-component="list-item"] > div[data-syiro-component="button"][data-syiro-component-type="toggle"]:not([data-syiro-component-status="toggle"]){
+			border: 1px solid @syiroBorderColor; // Allow easy differentiation between list-item background and toggle button
 		}
 	}
 }

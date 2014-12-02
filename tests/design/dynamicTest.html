@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html manifest="test.appcache">
 	<head>
-		<title>Dynamic Rocket Testing</title>
-		<link rel="stylesheet" type="text/css" href="css/rocket.css">
-		<script type="text/javascript" src="js/rocket.js"></script>
+		<title>Dynamic Syiro Testing</title>
+		<link rel="stylesheet" type="text/css" href="css/syiro.css">
+		<script type="text/javascript" src="js/syiro.min.js"></script>
 		<script type="text/javascript" src="js/alternativeInit.min.js"></script>
 		<meta charset="utf-8" />
 	</head>
 	<body>
-		<div data-rocket-component="page"></div>
+		<div data-syiro-component="page"></div>
 		<script>
-			rocket.Init(); // Use the modern rocket.Init
+			syiro.Init(); // Use the modern syiro.Init
 
 			var generatedHeader = {};
 			var generatedDropdownObject = {};
 
-			if (rocket.device.IsSubHD == false){ // If the device is NOT sub HD
-				generatedDropdownObject = rocket.dropdown.Generate(
+			if (syiro.device.IsSubHD == false){ // If the device is NOT sub HD
+				generatedDropdownObject = syiro.dropdown.Generate(
 						{
 							"label" : "Test Dropdown",
 							"items" : [	{ "label" : "Test Item" }, { "label" : "Second Test Item" }	],
@@ -24,7 +24,7 @@
 						}
 				);
 
-				generatedHeader = rocket.header.Generate(
+				generatedHeader = syiro.header.Generate(
 					{
 						"items" : [
 							{
@@ -40,10 +40,10 @@
 					}
 				);
 
-				var generatedSearchbox = rocket.searchbox.Generate(); // Generate a Searchbox
+				var generatedSearchbox = syiro.searchbox.Generate(); // Generate a Searchbox
 			}
 			else{
-				generatedDropdownObject = rocket.dropdown.Generate(
+				generatedDropdownObject = syiro.dropdown.Generate(
 					{
 						"icon" : "css/img/menu.png", // Icon only Dropdown
 						"position" : { "vertical" : "below", "horizontal" : "right"}, // Different positioning
@@ -51,7 +51,7 @@
 					}
 				);
 
-				var generatedHeader = rocket.header.Generate(
+				var generatedHeader = syiro.header.Generate(
 					{
 						"items" : [
 							{
@@ -80,13 +80,13 @@
 				}
 			];
 
-			var audioShareDialogList = rocket.list.Generate({ "items" : sharedDialogItems } );
+			var audioShareDialogList = syiro.list.Generate({ "items" : sharedDialogItems } );
 
-			var videoShareDialogList = rocket.list.Generate({ "items" : sharedDialogItems } );
+			var videoShareDialogList = syiro.list.Generate({ "items" : sharedDialogItems } );
 
 			/* End of Share Dialogs List Generation */
 
-			var generatedAudioPlayer = rocket.audioplayer.Generate(
+			var generatedAudioPlayer = syiro.audioplayer.Generate(
 					{
 						"sources": ["http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg", "http://www.noiseaddicts.com/samples/55.mp3" ],
 						"art" : "http://upload.wikimedia.org/wikipedia/en/thumb/a/ac/XiphophorusLogoSVG.svg/132px-XiphophorusLogoSVG.svg.png",
@@ -97,7 +97,7 @@
 					}
 			);
 
-			var generatedVideoPlayer = rocket.videoplayer.Generate(
+			var generatedVideoPlayer = syiro.videoplayer.Generate(
 					{
 						"art" : "img/video-art.png",
 						"sources" : ["http://download.blender.org/peach/trailer/trailer_400p.ogg", "http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v", "http://video.webmfiles.org/big-buck-bunny_trailer.webm"],
@@ -105,69 +105,69 @@
 					}
 			);
 
-			var generatedButton = rocket.button.Generate({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
-			var generatedButtonTwo = rocket.button.Generate({"type" : "basic", "content" : "Change Source"}); // Generate a Basic Button that changes the video source
-			var generatedToggle = rocket.button.Generate({"type" : "toggle"}); // Generate a Toggle Button
-			var generatedFooter = rocket.footer.Generate({"content" : "Strobl Industries"}); // Generate a Footer
+			var generatedButton = syiro.button.Generate({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
+			var generatedButtonTwo = syiro.button.Generate({"type" : "basic", "content" : "Change Source"}); // Generate a Basic Button that changes the video source
+			var generatedToggle = syiro.button.Generate({"type" : "toggle"}); // Generate a Toggle Button
+			var generatedFooter = syiro.footer.Generate({"content" : "Strobl Industries"}); // Generate a Footer
 
-			if (rocket.device.IsSubHD == true){ // If the device is sub HD
-				rocket.CSS(generatedDropdownObject, "float", "left"); // Float the Icon Header to the right
-				rocket.CSS(generatedDropdownObject, "margin-left", "20px"); // Have some margin
+			if (syiro.device.IsSubHD == true){ // If the device is sub HD
+				syiro.CSS(generatedDropdownObject, "float", "left"); // Float the Icon Header to the right
+				syiro.CSS(generatedDropdownObject, "margin-left", "20px"); // Have some margin
 			}
 
-			rocket.CSS(generatedAudioPlayer, "margin-right", "80%"); // Set CSS margin for Audio Player
-			rocket.CSS(generatedVideoPlayer, "margin-right", "80%"); // Set CSS margin for Video Player
+			syiro.CSS(generatedAudioPlayer, "margin-right", "80%"); // Set CSS margin for Audio Player
+			syiro.CSS(generatedVideoPlayer, "margin-right", "80%"); // Set CSS margin for Video Player
 
-			var generatedHeaderElement = rocket.Fetch(generatedHeader); // Fetch the Header
+			var generatedHeaderElement = syiro.Fetch(generatedHeader); // Fetch the Header
 			document.querySelector("body").insertBefore(generatedHeaderElement, document.querySelector("body").firstChild);
 
 			if (generatedSearchbox !== undefined){
-				rocket.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
+				syiro.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
 			}
 
-			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedButton));
-			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedAudioPlayer));
-			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedVideoPlayer));
-			document.querySelector('div[data-rocket-component="page"]').appendChild(rocket.Fetch(generatedButtonTwo));
-			document.querySelector("body").appendChild(rocket.Fetch(generatedFooter));
+			document.querySelector('div[data-syiro-component="page"]').appendChild(syiro.Fetch(generatedButton));
+			document.querySelector('div[data-syiro-component="page"]').appendChild(syiro.Fetch(generatedAudioPlayer));
+			document.querySelector('div[data-syiro-component="page"]').appendChild(syiro.Fetch(generatedVideoPlayer));
+			document.querySelector('div[data-syiro-component="page"]').appendChild(syiro.Fetch(generatedButtonTwo));
+			document.querySelector("body").appendChild(syiro.Fetch(generatedFooter));
 
-			rocket.AddListeners(generatedButton,
+			syiro.AddListeners(generatedButton,
 				function(x){
-					var screenInfoElement = rocket.generator.ElementCreator("section", { "content" : window.screen.width.toString()});
-					document.querySelector('div[data-rocket-component="page"]').insertBefore(screenInfoElement, document.querySelector('div[data-rocket-component="page"]').firstChild);
+					var screenInfoElement = syiro.generator.ElementCreator("section", { "content" : window.screen.width.toString()});
+					document.querySelector('div[data-syiro-component="page"]').insertBefore(screenInfoElement, document.querySelector('div[data-syiro-component="page"]').firstChild);
 				}
 			); // Listen to the Basic Button
-			rocket.AddListeners(generatedButtonTwo, // Listen to the Basic Button
+			syiro.AddListeners(generatedButtonTwo, // Listen to the Basic Button
 				function(x){
 					var component = arguments[0];
-					rocket.player.SetSources(generatedVideoPlayer, ["https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv", "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4"]); // Change the source
+					syiro.player.SetSources(generatedVideoPlayer, ["https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv", "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4"]); // Change the source
 				}
 			);
 
-			rocket.AddListeners(generatedSearchbox, function(x){console.log(arguments[1])}); // Listen to the Searchbox value change
+			syiro.AddListeners(generatedSearchbox, function(x){console.log(arguments[1])}); // Listen to the Searchbox value change
 
-			var testListItem = rocket.Define("list-item", 'div[data-rocket-component="list"][data-rocket-component-owner] > div:first-of-type');
-			var secondListItem = rocket.Define("list-item", 'div[data-rocket-component="list"][data-rocket-component-owner] > div:nth-of-type(2)');
+			var testListItem = syiro.Define("list-item", 'div[data-syiro-component="list"][data-syiro-component-owner] > div:first-of-type');
+			var secondListItem = syiro.Define("list-item", 'div[data-syiro-component="list"][data-syiro-component-owner] > div:nth-of-type(2)');
 
-			rocket.listitem.SetLabel(testListItem, "First!");
-			rocket.listitem.SetControl(testListItem, generatedToggle);
+			syiro.listitem.SetLabel(testListItem, "First!");
+			syiro.listitem.SetControl(testListItem, generatedToggle);
 
-			rocket.AddListeners(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
-			rocket.AddListeners(secondListItem,
+			syiro.AddListeners(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
+			syiro.AddListeners(secondListItem,
 				function(){
 							var listItemComponent = arguments[0];
-							document.querySelector("body").querySelector('div[data-rocket-component="page"]').appendChild(
-								rocket.generator.ElementCreator("section",
+							document.querySelector("body").querySelector('div[data-syiro-component="page"]').appendChild(
+								syiro.generator.ElementCreator("section",
 								{
-									"content" : "y: " + rocket.component.FetchDimensionsAndPosition(document.querySelector('div[data-rocket-component="dropdown"]'))["y"]
+									"content" : "y: " + syiro.component.FetchDimensionsAndPosition(document.querySelector('div[data-syiro-component="dropdown"]'))["y"]
 								}
 							)
 						);
 
-						document.querySelector("body").querySelector('div[data-rocket-component="page"]').appendChild(
-							rocket.generator.ElementCreator("section",
+						document.querySelector("body").querySelector('div[data-syiro-component="page"]').appendChild(
+							syiro.generator.ElementCreator("section",
 							{
-								"content" : "x: " + rocket.component.FetchDimensionsAndPosition(document.querySelector('div[data-rocket-component="dropdown"]'))["x"]
+								"content" : "x: " + syiro.component.FetchDimensionsAndPosition(document.querySelector('div[data-syiro-component="dropdown"]'))["x"]
 							}
 						)
 					);

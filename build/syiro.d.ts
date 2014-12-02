@@ -23,11 +23,11 @@ interface HTMLElement {
 interface Window {
     crypto: any;
 }
-declare module rocket.plugin.alternativeInit {
+declare module syiro.plugin.alternativeInit {
     function Init(): void;
     function Wait(): void;
 }
-declare module rocket.component {
+declare module syiro.component {
     var listenerStrings: Object;
     var storedComponents: Object;
     function Define(type: string, selector: string): Object;
@@ -42,7 +42,7 @@ declare module rocket.component {
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): boolean;
 }
-declare module rocket.device {
+declare module syiro.device {
     var DoNotTrack: boolean;
     var HasCryptography: boolean;
     var HasGeolocation: boolean;
@@ -55,37 +55,37 @@ declare module rocket.device {
     function Detect(): void;
     function FetchScreenDetails(): void;
 }
-declare module rocket.generator {
+declare module syiro.generator {
     var lastUniqueIds: Object;
     function IdGen(type: string): string;
     function ElementCreator(...args: any[]): HTMLElement;
 }
-declare module rocket.header {
+declare module syiro.header {
     function Generate(properties: Object): Object;
     function SetLogo(component: Object, image: string): void;
     function RemoveLogo(component: Object): void;
 }
-declare module rocket.footer {
+declare module syiro.footer {
     function Generate(properties: Object): Object;
     function SetLabel(component: Object, labelText: string): boolean;
     function AddLink(prepend: boolean, component: Object, linkProperties: Object): boolean;
     function RemoveLink(component: Object, linkProperties: Object): boolean;
 }
-declare module rocket.button {
+declare module syiro.button {
     function Generate(properties: Object): Object;
     function SetLabel(component: Object, content: string): boolean;
 }
-declare module rocket.list {
+declare module syiro.list {
     function Generate(properties: Object): Object;
     var AddItem: typeof component.Add;
     var RemoveItem: typeof component.Remove;
 }
-declare module rocket.listitem {
+declare module syiro.listitem {
     function Generate(properties: Object): Object;
     function SetLabel(component: Object, content: string): boolean;
     function SetControl(component: Object, control: Object): boolean;
 }
-declare module rocket.dropdown {
+declare module syiro.dropdown {
     function Generate(properties: Object): Object;
     function Toggle(component?: Object): void;
     function FetchLinkedListComponentObject(component: any): Object;
@@ -95,10 +95,10 @@ declare module rocket.dropdown {
     function AddItem(component: Object, listItemComponent: Object): void;
     function RemoveItem(component: Object, listItemComponent: Object): void;
 }
-declare module rocket.utilities {
+declare module syiro.utilities {
     function SecondsToTimeFormat(seconds: number): Object;
 }
-declare module rocket.player {
+declare module syiro.player {
     function Init(component: Object): void;
     function FetchInnerContentElement(component: Object): HTMLMediaElement;
     function GetPlayerLengthInfo(component: Object): Object;
@@ -112,21 +112,21 @@ declare module rocket.player {
     function SetVolume(component: Object, volume: number): void;
     function ToggleShareDialog(component?: Object): void;
 }
-declare module rocket.playercontrol {
+declare module syiro.playercontrol {
     function Generate(properties: Object): Object;
     function TimeLabelUpdater(component: Object, timePart: number, value: any): void;
 }
-declare module rocket.audioplayer {
+declare module syiro.audioplayer {
     function Generate(properties: Object): Object;
 }
-declare module rocket.videoplayer {
+declare module syiro.videoplayer {
     function Generate(properties: Object): Object;
 }
-declare module rocket.searchbox {
+declare module syiro.searchbox {
     function Generate(properties: Object): Object;
     function SetText(component: Object, placeholderText: any): void;
 }
-declare module rocket {
+declare module syiro {
     function Init(): void;
     var Define: typeof component.Define;
     var Fetch: typeof component.Fetch;

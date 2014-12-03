@@ -760,26 +760,6 @@ var syiro;
             return { "id": componentId, "type": "list-item" };
         }
         listitem.Generate = Generate;
-        function SetLabel(component, content) {
-            var setLabelSucceeded = false;
-            if (component["type"] == "list-item") {
-                var listItemElement = syiro.component.Fetch(component);
-                if (typeof content == "string") {
-                    var listItemLabelElement;
-                    if (listItemElement.querySelector("label") !== null) {
-                        listItemLabelElement = listItemElement.querySelector("label");
-                    }
-                    else {
-                        listItemLabelElement = syiro.generator.ElementCreator("label");
-                        listItemElement.insertBefore(listItemLabelElement, listItemElement.firstChild);
-                    }
-                    listItemLabelElement.textContent = content;
-                    setLabelSucceeded = true;
-                }
-            }
-            return setLabelSucceeded;
-        }
-        listitem.SetLabel = SetLabel;
         function SetControl(component, control) {
             var setControlSucceeded = false;
             if (component["type"] == "list-item") {
@@ -803,6 +783,43 @@ var syiro;
             return setControlSucceeded;
         }
         listitem.SetControl = SetControl;
+        function SetImage(component, content) {
+            var setImageSucceeded = false;
+            if (component["type"] == "list-item") {
+                var listItemElement = syiro.component.Fetch(component);
+                if (typeof content == "string") {
+                    var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]');
+                    if (listItemControl !== null) {
+                        var generatedImage = syiro.generator.ElementCreator("img", { "src": content });
+                        listItemElement.removeChild(listItemControl);
+                        listItemElement.insertBefore(generatedImage, listItemElement.firstChild);
+                        setImageSucceeded = true;
+                    }
+                }
+            }
+            return setImageSucceeded;
+        }
+        listitem.SetImage = SetImage;
+        function SetLabel(component, content) {
+            var setLabelSucceeded = false;
+            if (component["type"] == "list-item") {
+                var listItemElement = syiro.component.Fetch(component);
+                if (typeof content == "string") {
+                    var listItemLabelElement;
+                    if (listItemElement.querySelector("label") !== null) {
+                        listItemLabelElement = listItemElement.querySelector("label");
+                    }
+                    else {
+                        listItemLabelElement = syiro.generator.ElementCreator("label");
+                        listItemElement.insertBefore(listItemLabelElement, listItemElement.firstChild);
+                    }
+                    listItemLabelElement.textContent = content;
+                    setLabelSucceeded = true;
+                }
+            }
+            return setLabelSucceeded;
+        }
+        listitem.SetLabel = SetLabel;
     })(listitem = syiro.listitem || (syiro.listitem = {}));
 })(syiro || (syiro = {}));
 var syiro;

@@ -93,35 +93,6 @@ module syiro.listitem {
 
 	// #endregion
 
-	// #region Set Label in List Item
-
-	export function SetLabel(component : Object, content : string) : boolean {
-		var setLabelSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
-
-		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
-
-			if (typeof content == "string"){ // If the content is of type string
-				var listItemLabelElement : Element; // Define listItemLabelElement to be an Element
-
-				if (listItemElement.querySelector("label") !== null){ // If a label is already in the List Item
-					listItemLabelElement = listItemElement.querySelector("label"); // Set listItemLabelElement as the queried label tag from listItemElement
-				}
-				else{
-					listItemLabelElement = syiro.generator.ElementCreator("label"); // Create a label and assign it to the listItemLabelElement
-					listItemElement.insertBefore(listItemLabelElement, listItemElement.firstChild); // Prepend the label
-				}
-
-				listItemLabelElement.textContent = content; // Set the content of the List Item Label
-				setLabelSucceeded = true; // Set setLabelSucceeded to true
-			}
-		}
-
-		return setLabelSucceeded;
-	}
-
-	// #endregion
-
 	// #region Set Control in List Item
 
 	export function SetControl(component : Object, control : Object) : boolean {
@@ -151,6 +122,61 @@ module syiro.listitem {
 		}
 
 		return setControlSucceeded;
+	}
+
+	// #endregion
+
+	// #region Set Image in List Item
+
+	export function SetImage(component : Object, content : string) : boolean {
+		var setImageSucceeded : boolean = false; // Variable we return with a boolean value, defaulint to false.
+
+		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
+			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
+
+			if (typeof content == "string"){ // Make sure the  content is a string
+				var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]'); // Define listItemControl as the potential control within the List Item Element
+
+				if (listItemControl !== null){ // If there is already a control in the List Item
+					var generatedImage = syiro.generator.ElementCreator("img", { "src" : content } ); // Generate an img
+					listItemElement.removeChild(listItemControl); // Remove the listItemControl
+					listItemElement.insertBefore(generatedImage, listItemElement.firstChild); // Prepend the img tag
+
+					setImageSucceeded = true; // Set setImageSucceeded to true
+				}
+			}
+		}
+
+		return setImageSucceeded;
+	}
+
+	// #endregion
+
+	// #region Set Label in List Item
+
+	export function SetLabel(component : Object, content : string) : boolean {
+		var setLabelSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
+
+		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
+			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
+
+			if (typeof content == "string"){ // If the content is of type string
+				var listItemLabelElement : Element; // Define listItemLabelElement to be an Element
+
+				if (listItemElement.querySelector("label") !== null){ // If a label is already in the List Item
+					listItemLabelElement = listItemElement.querySelector("label"); // Set listItemLabelElement as the queried label tag from listItemElement
+				}
+				else{
+					listItemLabelElement = syiro.generator.ElementCreator("label"); // Create a label and assign it to the listItemLabelElement
+					listItemElement.insertBefore(listItemLabelElement, listItemElement.firstChild); // Prepend the label
+				}
+
+				listItemLabelElement.textContent = content; // Set the content of the List Item Label
+				setLabelSucceeded = true; // Set setLabelSucceeded to true
+			}
+		}
+
+		return setLabelSucceeded;
 	}
 
 	// #endregion

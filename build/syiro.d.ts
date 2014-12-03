@@ -86,8 +86,9 @@ declare module syiro.list {
 }
 declare module syiro.listitem {
     function Generate(properties: Object): Object;
-    function SetLabel(component: Object, content: string): boolean;
     function SetControl(component: Object, control: Object): boolean;
+    function SetImage(component: Object, content: string): boolean;
+    function SetLabel(component: Object, content: string): boolean;
 }
 declare module syiro.dropdown {
     function Generate(properties: Object): Object;

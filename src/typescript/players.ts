@@ -235,7 +235,7 @@ module syiro.player {
 
         var contentDuration : any = syiro.player.FetchInnerContentElement(component).duration; // Get the Player's internal audio or video Element and its duration property
 
-        if ((contentDuration !== NaN) && (String(contentDuration) !== "Infinity")){ // If we are able to properly fetch the duration and we are not streaming
+        if ((isNaN(contentDuration) == false) && (String(contentDuration) !== "Infinity")){ // If we are able to properly fetch the duration and we are not streaming
             contentDuration = Math.floor(Number(contentDuration)); // Round down the contentDuration
             playerLengthInfo["max"] = contentDuration; // Set the maximum to the contentDuration
 
@@ -252,7 +252,7 @@ module syiro.player {
                 playerLengthInfo["step"] = 15; // Set the step value to 15 seconds
             }
         }
-        else if (contentDuration == NaN){ // If the contentDuration is unknowned
+        else if (isNaN(contentDuration)){ // If the contentDuration is unknowned
             playerLengthInfo["max"] = "Unknown"; // Set max to unknown
             playerLengthInfo["step"] = 1; // Set step value to 1 second
         }
@@ -633,17 +633,23 @@ module syiro.playercontrol {
         // #region Seconds Parsing to String
 
         var parsedSecondsToString : string = ""; // Define parsedSecondsToString as our converted seconds to Object then concatenated string
-        var timeFormatObject = syiro.utilities.SecondsToTimeFormat(value); // Get the time format (rounded down value)
 
-        for (var timeObjectKey in timeFormatObject){ // For each key in the timeObject
-            var timeObjectValue = timeFormatObject[timeObjectKey]; // Set timeObjectValue as the value based on key
+        if (typeof value == "number"){ // If we passed a number
+            var timeFormatObject = syiro.utilities.SecondsToTimeFormat(value); // Get the time format (rounded down value)
 
-            if (parsedSecondsToString.length !== 0){ // If there is already content in parsedSecondsToString
-                parsedSecondsToString = parsedSecondsToString + ":" + timeObjectValue; // Append :timeObjectValue
+            for (var timeObjectKey in timeFormatObject){ // For each key in the timeObject
+                var timeObjectValue = timeFormatObject[timeObjectKey]; // Set timeObjectValue as the value based on key
+
+                if (parsedSecondsToString.length !== 0){ // If there is already content in parsedSecondsToString
+                    parsedSecondsToString = parsedSecondsToString + ":" + timeObjectValue; // Append :timeObjectValue
+                }
+                else{
+                    parsedSecondsToString = timeObjectValue; // Set parsedSecondsToString as value
+                }
             }
-            else{
-                parsedSecondsToString = timeObjectValue; // Set parsedSecondsToString as value
-            }
+        }
+        else{ // If we did not pass a number (so a string, like "Unknown" or "Streaming")
+            parsedSecondsToString = value; // Simply set the parsedSecondsToString as the value passed
         }
 
         // #endregion

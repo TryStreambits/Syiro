@@ -1117,7 +1117,7 @@ var syiro;
         function GetPlayerLengthInfo(component) {
             var playerLengthInfo = {};
             var contentDuration = syiro.player.FetchInnerContentElement(component).duration;
-            if ((contentDuration !== NaN) && (String(contentDuration) !== "Infinity")) {
+            if ((isNaN(contentDuration) == false) && (String(contentDuration) !== "Infinity")) {
                 contentDuration = Math.floor(Number(contentDuration));
                 playerLengthInfo["max"] = contentDuration;
                 if (contentDuration < 60) {
@@ -1133,7 +1133,7 @@ var syiro;
                     playerLengthInfo["step"] = 15;
                 }
             }
-            else if (contentDuration == NaN) {
+            else if (isNaN(contentDuration)) {
                 playerLengthInfo["max"] = "Unknown";
                 playerLengthInfo["step"] = 1;
             }
@@ -1382,15 +1382,20 @@ var syiro;
             var playerControlElement = syiro.component.Fetch(component);
             var playerTimeElement = playerControlElement.querySelector("time");
             var parsedSecondsToString = "";
-            var timeFormatObject = syiro.utilities.SecondsToTimeFormat(value);
-            for (var timeObjectKey in timeFormatObject) {
-                var timeObjectValue = timeFormatObject[timeObjectKey];
-                if (parsedSecondsToString.length !== 0) {
-                    parsedSecondsToString = parsedSecondsToString + ":" + timeObjectValue;
+            if (typeof value == "number") {
+                var timeFormatObject = syiro.utilities.SecondsToTimeFormat(value);
+                for (var timeObjectKey in timeFormatObject) {
+                    var timeObjectValue = timeFormatObject[timeObjectKey];
+                    if (parsedSecondsToString.length !== 0) {
+                        parsedSecondsToString = parsedSecondsToString + ":" + timeObjectValue;
+                    }
+                    else {
+                        parsedSecondsToString = timeObjectValue;
+                    }
                 }
-                else {
-                    parsedSecondsToString = timeObjectValue;
-                }
+            }
+            else {
+                parsedSecondsToString = value;
             }
             var playerTimeElementParts = playerTimeElement.textContent.split(" / ");
             playerTimeElementParts[timePart] = parsedSecondsToString;

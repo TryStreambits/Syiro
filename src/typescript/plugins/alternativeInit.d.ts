@@ -1,20 +1,20 @@
-declare module rocket.player {
+declare module syiro.player {
     function Init(component: Object): void;
 }
-declare module rocket.device {
+declare module syiro.device {
     var Detect: Function;
 }
-declare module rocket.component {
+declare module syiro.component {
     var listenerStrings: Object;
     var storedComponents: Object;
     function AddListeners(...args: any[]): boolean;
 }
-declare module rocket.dropdown {
+declare module syiro.dropdown {
     var Toggle: Function;
 }
-declare module rocket {
+declare module syiro {
     function Init(): void;
 }
-declare module rocket.plugin.alternativeInit {
+declare module syiro.plugin.alternativeInit {
     function Init(): void;
 }

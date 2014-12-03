@@ -27,11 +27,15 @@ declare module syiro.plugin.alternativeInit {
     function Init(): void;
     function Wait(): void;
 }
+declare module syiro.animation {
+    function Animate(component: Object, animation: string, postAnimationFunction?: Function): void;
+    function FadeIn(component: Object, postAnimationFunction?: Function): void;
+    function FadeOut(component: Object, postAnimationFunction?: Function): void;
+}
 declare module syiro.component {
     var listenerStrings: Object;
     var storedComponents: Object;
     function Define(type: string, selector: string): Object;
-    function Animate(component: Object, animation: string, postAnimationFunction?: Function): void;
     function CSS(component: any, property: string, newValue?: any): any;
     function Fetch(component: Object): any;
     function FetchComponentObject(componentElement: any): Object;
@@ -105,7 +109,8 @@ declare module syiro.player {
     function TimeOrVolumeChanger(): void;
     function IsPlaying(component: Object): boolean;
     function PlayOrPause(component: Object, playButtonComponentObject?: Object): void;
-    function FetchSources(type: string, sources: any): HTMLElement[];
+    function FetchSources(component: Object): Object[];
+    function GenerateSources(type: string, sources: any): HTMLElement[];
     function Reset(component: Object): void;
     function SetSources(component: Object, sources: any): void;
     function SetTime(component: Object, time: number): void;
@@ -134,7 +139,7 @@ declare module syiro {
     var FetchDimensionsAndPosition: typeof component.FetchDimensionsAndPosition;
     var Add: typeof component.Add;
     var Remove: typeof component.Remove;
-    var Animate: typeof component.Animate;
+    var Animate: typeof animation.Animate;
     var CSS: typeof component.CSS;
     var AddListeners: typeof component.AddListeners;
     var RemoveListeners: typeof component.RemoveListeners;

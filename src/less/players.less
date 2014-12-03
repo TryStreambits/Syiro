@@ -142,6 +142,25 @@ div[data-syiro-component="player-control"]{
 
 // #endregion
 
+// #region Player Error Dialog (Codec)
+
+div[data-syiro-minor-component="player-error"]{
+    float: left;
+    height: 40px; // Set to 40px, which is exactly two lines of text at 20px line-height
+    color: @syiroWhite;
+    text-align: center;
+    line-height: 20px;
+    background-color: @syiroSecondaryColor;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    z-index: 10; // Force above the video, video poster, and player control
+    visibility: hidden; // Default to not being visible
+    left: 0; // Force to left
+}
+
+// #endregion
+
 // #region Share Dialog
 
 div[data-syiro-minor-component="player-share"]{

@@ -1,6 +1,7 @@
 /*
 	This is the aggregate of all the Syiro modules into a unified module
 */
+/// <reference path="animation.ts" />
 /// <reference path="component.ts" />
 /// <reference path="device.ts" />
 /// <reference path="generator.ts" />
@@ -128,7 +129,7 @@ module syiro {
 
 	export var Remove = syiro.component.Remove; // Meta-function for removing Syiro components
 
-	export var Animate = syiro.component.Animate; // Meta-function for animating Syiro components (highly limited currently)
+	export var Animate = syiro.animation.Animate; // Meta-function for animating Syiro components (highly limited currently)
 
 	export var CSS = syiro.component.CSS; // Meta-function for modifying Syiro Component CSS styling
 

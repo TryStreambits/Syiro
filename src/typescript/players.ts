@@ -5,6 +5,7 @@
     The shared Player functionality is exposed via syiro.player.
 */
 
+/// <reference path="interfaces.ts" />
 /// <reference path="utilities.ts" />
 
 // #region Shared Player Functionality
@@ -232,20 +233,32 @@ module syiro.player {
     export function GetPlayerLengthInfo(component : Object) : Object{
         var playerLengthInfo : Object = {}; // Define playerLengthInfo as an empty Object to hold length information about the audio or video
 
-        var contentDuration : any = Math.floor(Number(syiro.player.FetchInnerContentElement(component).duration)); // Get the Player's internal audio or video Element and its duration property, rounding it down
-        playerLengthInfo["max"] = contentDuration; // Set the maximum to the contentDuration
+        var contentDuration : any = syiro.player.FetchInnerContentElement(component).duration; // Get the Player's internal audio or video Element and its duration property
 
-        if (contentDuration < 60){ // If the contentDuration is less than 60 seconds
-            playerLengthInfo["step"] = 1; // Se the step value to 1 second.
+        if ((contentDuration !== NaN) && (String(contentDuration) !== "Infinity")){ // If we are able to properly fetch the duration and we are not streaming
+            contentDuration = Math.floor(Number(contentDuration)); // Round down the contentDuration
+            playerLengthInfo["max"] = contentDuration; // Set the maximum to the contentDuration
+
+            if (contentDuration < 60){ // If the contentDuration is less than 60 seconds
+                playerLengthInfo["step"] = 1; // Se the step value to 1 second.
+            }
+            else if ((contentDuration > 60) && (contentDuration <= 300)){ // If the contentDuration is greater than 1 minute but less than or equal to 5 minutes
+                playerLengthInfo["step"] = 5; // Set the step value to 5 seconds
+            }
+            else if ((contentDuration > 300) && (contentDuration < 900)){ // If the contentDuration is greater than 5 minutes but less than 15 minutes
+                playerLengthInfo["step"] = 10; // Set the step value to 10 seconds
+            }
+            else{ // If the video is greater than 15 seconds
+                playerLengthInfo["step"] = 15; // Set the step value to 15 seconds
+            }
         }
-        else if ((contentDuration > 60) && (contentDuration <= 300)){ // If the contentDuration is greater than 1 minute but less than or equal to 5 minutes
-            playerLengthInfo["step"] = 5; // Set the step value to 5 seconds
+        else if (contentDuration == NaN){ // If the contentDuration is unknowned
+            playerLengthInfo["max"] = "Unknown"; // Set max to unknown
+            playerLengthInfo["step"] = 1; // Set step value to 1 second
         }
-        else if ((contentDuration > 300) && (contentDuration < 900)){ // If the contentDuration is greater than 5 minutes but less than 15 minutes
-            playerLengthInfo["step"] = 10; // Set the step value to 10 seconds
-        }
-        else{ // If the video is greater than 15 seconds
-            playerLengthInfo["step"] = 15; // Set the step value to 15 seconds
+        else if (String(contentDuration) == "Infinity"){ // If we are streaming content
+            playerLengthInfo["max"] = "Streaming"; // Set max to Streaming
+            playerLengthInfo["step"] = 1; // Set step value to 1 second
         }
 
         return playerLengthInfo; // Return the playerLengthInfo Object
@@ -293,70 +306,125 @@ module syiro.player {
     // #region Play or Pause Audio or Video based on current state
 
     export function PlayOrPause(component : Object, playButtonComponentObject ?: Object) {
+        var allowPlaying : boolean = false; // Define allowPlaying as a boolean as to whether we should allow playing or not. Defaults to false, set to true if we might be able to play the source(s)
+
         var playerComponentElement = syiro.component.Fetch(component); // Get the Component Element of the Player
         var innerContentElement = syiro.player.FetchInnerContentElement(component); // Get the inner audio or video Element
 
-        if (playButtonComponentObject == undefined){ // If the Play Button Component is not defined
-            playButtonComponentObject = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-minor-component="player-button-play"]')); // Get the Play Button Component Object
+        var playerSources : Array<Object> = syiro.player.FetchSources(component); // Fetch the sources from the innerContentElement
+
+        for (var playerSourceIndex in playerSources){ // For each source in playerSources
+            if (innerContentElement.canPlayType(playerSources[playerSourceIndex]["type"]) !== ""){ // If we do not get an empty string returned, meaning we may be able to play the content
+                allowPlaying = true; // Set allowPlaying to true
+            }
         }
 
-        var playButton : Element = syiro.component.Fetch(playButtonComponentObject); // Get the Play Button Element
+        if (allowPlaying == true){ // If the content is able to be played
+            if (playButtonComponentObject == undefined){ // If the Play Button Component is not defined
+                playButtonComponentObject = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-minor-component="player-button-play"]')); // Get the Play Button Component Object
+            }
 
-        if (playButton.hasAttribute("data-syiro-component-disabled") == false){ // If the play button is not disabled (done when tweaking volume)
-            if (innerContentElement.currentTime == 0){ // If the video current time is zero when played
-                var playerControlComponent : Object = syiro.component.FetchComponentObject(playButton.parentElement); // Get the Player Control Component based on the Play Button's Parent Element
-                var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
-                var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(component); // Get information about the appropriate settings for the input range
+            var playButton : Element = syiro.component.Fetch(playButtonComponentObject); // Get the Play Button Element
 
-                // #region Poster Image Hiding
+            if (playButton.hasAttribute("data-syiro-component-disabled") == false){ // If the play button is not disabled (done when tweaking volume)
+                if (innerContentElement.currentTime == 0){ // If the video current time is zero when played
+                    var playerControlComponent : Object = syiro.component.FetchComponentObject(playButton.parentElement); // Get the Player Control Component based on the Play Button's Parent Element
+                    var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
+                    var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(component); // Get information about the appropriate settings for the input range
 
-                var posterImageElement : HTMLElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
+                    // #region Poster Image Hiding
 
-                if (posterImageElement !== null){ // If the posterImageElement is defined
-                    syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
-                    syiro.component.CSS(playerControlComponent, "opacity", false); // Remove opacity setting
-                }
+                    var posterImageElement : HTMLElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
 
-                // #endregion
+                    if (posterImageElement !== null){ // If the posterImageElement is defined
+                        syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
+                        syiro.component.CSS(playerControlComponent, "opacity", false); // Remove opacity setting
+                    }
 
-                for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
-                    playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
+                    // #endregion
 
-                    if (playerRangeAttribute == "max"){ // If we are updated the max (contentDuration) attribute
-                        syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
+                    for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
+                        playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
 
-                        // #region Input Range Width Calculation
+                        if (playerRangeAttribute == "max"){ // If we are updated the max (contentDuration) attribute
+                            syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
 
-                        var newTimeWidth = playButton.parentElement.querySelector("time").clientWidth + 25; // Get the current width (add an additional amount to compensate for margins and character width)
-                        var inputRangeWidth = (playButton.parentElement.clientWidth - ((36 * 2) + (14 * 2) +  newTimeWidth)); // Do an initial calculation of the width of the input range, which is the width minus two buttons, their margins (14 each) and time width
+                            // #region Input Range Width Calculation
 
-                        if (playButton.parentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]') !== null){ // If the share attribute is defined
-                            inputRangeWidth = inputRangeWidth - (36 + 14); // Make sure the inputRange size is changed since we are introducing another button
+                            var newTimeWidth = playButton.parentElement.querySelector("time").clientWidth + 25; // Get the current width (add an additional amount to compensate for margins and character width)
+                            var inputRangeWidth = (playButton.parentElement.clientWidth - ((36 * 2) + (14 * 2) +  newTimeWidth)); // Do an initial calculation of the width of the input range, which is the width minus two buttons, their margins (14 each) and time width
+
+                            if (playButton.parentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]') !== null){ // If the share attribute is defined
+                                inputRangeWidth = inputRangeWidth - (36 + 14); // Make sure the inputRange size is changed since we are introducing another button
+                            }
+
+                            syiro.component.CSS(playerRange, "width", inputRangeWidth.toString() + "px !important"); // Update the inputRange CSS
+
+                            // #endregion
                         }
-
-                        syiro.component.CSS(playerRange, "width", inputRangeWidth.toString() + "px !important"); // Update the inputRange CSS
-
-                        // #endregion
                     }
                 }
-            }
 
-            if (innerContentElement.paused !== true){ // If the audio or video Element is playing
-                innerContentElement.pause(); // Pause the audio or video Element
-                syiro.component.CSS(playButtonComponentObject, "background-image", false); // Remove the background-image style / reset to play
-            }
-            else{ // If the audio or video Element is paused
-                innerContentElement.play(); // Play the audio or video Element
-                syiro.component.CSS(playButtonComponentObject, "background-image", "url(css/img/pause.png)"); // Set background-image to pause
+                if (innerContentElement.paused !== true){ // If the audio or video Element is playing
+                    innerContentElement.pause(); // Pause the audio or video Element
+                    syiro.component.CSS(playButtonComponentObject, "background-image", false); // Remove the background-image style / reset to play
+                }
+                else{ // If the audio or video Element is paused
+                    innerContentElement.play(); // Play the audio or video Element
+                    syiro.component.CSS(playButtonComponentObject, "background-image", "url(css/img/pause.png)"); // Set background-image to pause
+                }
             }
         }
+        else{ // If the content can not be played
+            var codecErrorElement = syiro.generator.ElementCreator("div", // Create a div to add to the player stating there is a codec error
+                {
+                    "data-syiro-minor-component" : "player-error",
+                    "content" : "This video is not capable of being played on this browser or device. Please try a different device or browser."
+                }
+            );
+
+            var playerHalfHeight = ((playerComponentElement.clientHeight - 40) / 2); // Define playerHalfHeight equal to half the height of the Player, minus 40 (height of the codecErrorElement)
+
+            syiro.component.CSS(codecErrorElement, "width", playerComponentElement.clientWidth.toString() + "px"); // Set the width to the width of the Player
+            syiro.component.CSS(codecErrorElement, "padding-top", playerHalfHeight.toString() + "px"); // Set the padding-top to the playerHalfHeight
+            syiro.component.CSS(codecErrorElement, "padding-bottom", playerHalfHeight.toString() + "px"); // Set the padding-bottom to the playerHalfHeight
+
+            playerComponentElement.insertBefore(codecErrorElement, playerComponentElement.firstChild); // Prepend the codecErrorElement to the Player
+
+            syiro.component.CSS(codecErrorElement, "visibility", "visible"); // Set the codecErrorElement to be visible
+        }
+    }
+
+    // #endregion
+
+    // #region Fetch Audio or Video Element Sources
+
+    export function FetchSources(component : Object) : Array<Object> { // Return an array of source types (string)
+        var innerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Fetch the inner audio or video Element from the Audio Player or Video Player Component
+        var sourceTags : NodeListOf<HTMLSourceElement> = innerContentElement.getElementsByTagName("SOURCE"); // Get all source tags within the innerContentElement
+        var sourcesArray : Array<Object> = []; // Define sourcesArray as an empty Array to hold source information
+
+        for (var sourceElementIndex = 0; sourceElementIndex < sourceTags.length; sourceElementIndex++){ // For each source Element in the sourceTags
+            var sourceElement : HTMLSourceElement = sourceTags.item(sourceElementIndex); // Get the individual source Element
+
+            if (sourceElement !== undefined){
+                sourcesArray.push(
+                    {
+                        "src" : sourceElement.getAttribute("src"), // Get the "src" attribute from the sourceElement
+                        "type" : sourceElement.getAttribute("type") // Get the "type" attribute from the sourceElement, which should have information like "video/webm"
+                    }
+                );
+            }
+        }
+
+        return sourcesArray;
     }
 
     // #endregion
 
     // #region Multi-Source Generation
 
-    export function FetchSources(type: string, sources : any) : Array<HTMLElement> { // Returns an array of HTMLElements
+    export function GenerateSources(type: string, sources : any) : Array<HTMLElement> { // Returns an array of HTMLElements
         var arrayOfSourceElements : Array<HTMLElement> = []; // Define arrayOfSourceElements as the array to hold all the source Elements we generate
         var sourcesList : Array<string>; // Define sourcesList as an array of string (sources)
 
@@ -376,6 +444,14 @@ module syiro.player {
             if (source.substr(-1) !== ";"){ // If the source does not end with a semi-colon, common to prevent Shoutcast browser detection
                 if ((sourceExtension !== "mov") && (sourceExtension !== "m3u8")){ // If the source extension is not mov or a m3u8
                     sourceTagAttributes["type"] = sourceExtension; // Append videoExtension to the videoType
+                }
+                else if (sourceExtension == "m3u8"){ // If we are dealing with a playlist m3u8 (live streaming)
+                    if (type == "audio"){ // If we are dealing with an audio player
+                        sourceTagAttributes["type"] = "mp3"; // Set the type to an mp3, which is the most common audio streaming codec
+                    }
+                    else{ // If the player is video
+                        sourceTagAttributes["type"] = "mp4"; // Set the type to an mp4, which is the most common video streaming codec
+                    }
                 }
                 else if (sourceExtension == "mov"){ // If the source extension IS mov
                     sourceTagAttributes["type"] = "quicktime"; // Append the quicktime string
@@ -432,7 +508,7 @@ module syiro.player {
             sources = [sources]; // Convert to an array
         }
 
-        var arrayofSourceElements : Array<HTMLElement> = syiro.player.FetchSources(component["type"].replace("-player", ""), sources); // Get an array of Source Elements
+        var arrayofSourceElements : Array<HTMLElement> = syiro.player.GenerateSources(component["type"].replace("-player", ""), sources); // Get an array of Source Elements
 
         syiro.player.Reset(component); // Reset the component
 
@@ -520,7 +596,7 @@ module syiro.playercontrol {
 
         // #region Input Range Width Calculation
 
-        var inputRangeWidth = (properties["width"] - ((36 * 2) + (14 * 2) +  100)); // Do an initial calculation of the width of the input range, which is the width minus two buttons, their margins (14 each) and a minimum 100 (80 for element, 20 for margin)
+        var inputRangeWidth = (properties["width"] - ((36 * 2) + (14 * 2) +  110)); // Do an initial calculation of the width of the input range, which is the width minus two buttons, their margins (14 each) and a minimum 100 (90 for time label, 20 for margin)
 
         // #endregion
 
@@ -603,7 +679,7 @@ module syiro.audioplayer {
             var audioPlayer : HTMLElement = syiro.generator.ElementCreator("audio", { "preload" : "metadata", "volume" : "0.5" }); // Generate an audio Element with only preloading metadata, setting volume to 50%
             audioPlayer.autoplay = false; // Set autoplay of audio to false
 
-            var arrayofSourceElements : Array<HTMLElement> = syiro.player.FetchSources("audio", properties["sources"]); // Get an array of Source Elements
+            var arrayofSourceElements : Array<HTMLElement> = syiro.player.GenerateSources("audio", properties["sources"]); // Get an array of Source Elements
 
             for (var sourceElementKey in arrayofSourceElements){ // For each sourceElement in arrayofSourceElements
                 audioPlayer.appendChild(arrayofSourceElements[sourceElementKey]); // Append the HTMLElement
@@ -756,7 +832,7 @@ module syiro.videoplayer {
 
             videoPlayer.autoplay = false; // Set autoplay of video to false
 
-            var arrayofSourceElements : Array<HTMLElement> = syiro.player.FetchSources("video", properties["sources"]); // Get an array of Source Elements
+            var arrayofSourceElements : Array<HTMLElement> = syiro.player.GenerateSources("video", properties["sources"]); // Get an array of Source Elements
 
             for (var sourceElementKey in arrayofSourceElements){ // For each sourceElement in arrayofSourceElements
                 videoPlayer.appendChild(arrayofSourceElements[sourceElementKey]); // Append the HTMLElement

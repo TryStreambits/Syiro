@@ -1,26 +1,7 @@
 var syiro;
 (function (syiro) {
-    var component;
-    (function (_component) {
-        _component.listenerStrings = {
-            "down": ["mousedown", "touchstart", "MSPointerDown"],
-            "up": ["mouseup", "touchend", "MSPointerUp"],
-            "press": ["click"]
-        };
-        _component.storedComponents = {};
-        function Define(type, selector) {
-            var component = {};
-            component["type"] = type;
-            var componentID = syiro.generator.IdGen(type);
-            var selectedElement = document.querySelector(selector);
-            selectedElement.setAttribute("data-syiro-component-id", componentID);
-            component["id"] = componentID;
-            if (type == "dropdown") {
-                syiro.component.AddListeners(syiro.component.listenerStrings["press"], component, syiro.dropdown.Toggle);
-            }
-            return component;
-        }
-        _component.Define = Define;
+    var animation;
+    (function (_animation) {
         function Animate(component, animation, postAnimationFunction) {
             var componentElement = syiro.component.Fetch(component);
             if (componentElement !== null) {
@@ -45,7 +26,40 @@ var syiro;
                 componentElement.setAttribute("class", animation);
             }
         }
-        _component.Animate = Animate;
+        _animation.Animate = Animate;
+        function FadeIn(component, postAnimationFunction) {
+            syiro.animation.Animate(component, "fade-in-animation", postAnimationFunction);
+        }
+        _animation.FadeIn = FadeIn;
+        function FadeOut(component, postAnimationFunction) {
+            syiro.animation.Animate(component, "fade-out-animation", postAnimationFunction);
+        }
+        _animation.FadeOut = FadeOut;
+    })(animation = syiro.animation || (syiro.animation = {}));
+})(syiro || (syiro = {}));
+var syiro;
+(function (syiro) {
+    var component;
+    (function (_component) {
+        _component.listenerStrings = {
+            "down": ["mousedown", "touchstart", "MSPointerDown"],
+            "up": ["mouseup", "touchend", "MSPointerUp"],
+            "press": ["click"]
+        };
+        _component.storedComponents = {};
+        function Define(type, selector) {
+            var component = {};
+            component["type"] = type;
+            var componentID = syiro.generator.IdGen(type);
+            var selectedElement = document.querySelector(selector);
+            selectedElement.setAttribute("data-syiro-component-id", componentID);
+            component["id"] = componentID;
+            if (type == "dropdown") {
+                syiro.component.AddListeners(syiro.component.listenerStrings["press"], component, syiro.dropdown.Toggle);
+            }
+            return component;
+        }
+        _component.Define = Define;
         function CSS(component, property, newValue) {
             var modifiableElement;
             var returnedValue;
@@ -211,7 +225,7 @@ var syiro;
                                         animationString = "toggle-backward-animation";
                                         passableValue = false;
                                     }
-                                    syiro.component.Animate(component, animationString, function (component) {
+                                    syiro.animation.Animate(component, animationString, function (component) {
                                         var buttonElement = syiro.component.Fetch(component);
                                         if (buttonElement.hasAttribute("data-syiro-component-status") == false) {
                                             buttonElement.setAttribute("data-syiro-component-status", "true");
@@ -1102,19 +1116,30 @@ var syiro;
         player.FetchInnerContentElement = FetchInnerContentElement;
         function GetPlayerLengthInfo(component) {
             var playerLengthInfo = {};
-            var contentDuration = Math.floor(Number(syiro.player.FetchInnerContentElement(component).duration));
-            playerLengthInfo["max"] = contentDuration;
-            if (contentDuration < 60) {
+            var contentDuration = syiro.player.FetchInnerContentElement(component).duration;
+            if ((contentDuration !== NaN) && (String(contentDuration) !== "Infinity")) {
+                contentDuration = Math.floor(Number(contentDuration));
+                playerLengthInfo["max"] = contentDuration;
+                if (contentDuration < 60) {
+                    playerLengthInfo["step"] = 1;
+                }
+                else if ((contentDuration > 60) && (contentDuration <= 300)) {
+                    playerLengthInfo["step"] = 5;
+                }
+                else if ((contentDuration > 300) && (contentDuration < 900)) {
+                    playerLengthInfo["step"] = 10;
+                }
+                else {
+                    playerLengthInfo["step"] = 15;
+                }
+            }
+            else if (contentDuration == NaN) {
+                playerLengthInfo["max"] = "Unknown";
                 playerLengthInfo["step"] = 1;
             }
-            else if ((contentDuration > 60) && (contentDuration <= 300)) {
-                playerLengthInfo["step"] = 5;
-            }
-            else if ((contentDuration > 300) && (contentDuration < 900)) {
-                playerLengthInfo["step"] = 10;
-            }
-            else {
-                playerLengthInfo["step"] = 15;
+            else if (String(contentDuration) == "Infinity") {
+                playerLengthInfo["max"] = "Streaming";
+                playerLengthInfo["step"] = 1;
             }
             return playerLengthInfo;
         }
@@ -1144,47 +1169,84 @@ var syiro;
         }
         player.IsPlaying = IsPlaying;
         function PlayOrPause(component, playButtonComponentObject) {
+            var allowPlaying = false;
             var playerComponentElement = syiro.component.Fetch(component);
             var innerContentElement = syiro.player.FetchInnerContentElement(component);
-            if (playButtonComponentObject == undefined) {
-                playButtonComponentObject = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-minor-component="player-button-play"]'));
+            var playerSources = syiro.player.FetchSources(component);
+            for (var playerSourceIndex in playerSources) {
+                if (innerContentElement.canPlayType(playerSources[playerSourceIndex]["type"]) !== "") {
+                    allowPlaying = true;
+                }
             }
-            var playButton = syiro.component.Fetch(playButtonComponentObject);
-            if (playButton.hasAttribute("data-syiro-component-disabled") == false) {
-                if (innerContentElement.currentTime == 0) {
-                    var playerControlComponent = syiro.component.FetchComponentObject(playButton.parentElement);
-                    var playerRange = playerComponentElement.querySelector('input[type="range"]');
-                    var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(component);
-                    var posterImageElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]');
-                    if (posterImageElement !== null) {
-                        syiro.component.CSS(posterImageElement, "visibility", "hidden");
-                        syiro.component.CSS(playerControlComponent, "opacity", false);
-                    }
-                    for (var playerRangeAttribute in playerMediaLengthInformation) {
-                        playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]);
-                        if (playerRangeAttribute == "max") {
-                            syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
-                            var newTimeWidth = playButton.parentElement.querySelector("time").clientWidth + 25;
-                            var inputRangeWidth = (playButton.parentElement.clientWidth - ((36 * 2) + (14 * 2) + newTimeWidth));
-                            if (playButton.parentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]') !== null) {
-                                inputRangeWidth = inputRangeWidth - (36 + 14);
+            if (allowPlaying == true) {
+                if (playButtonComponentObject == undefined) {
+                    playButtonComponentObject = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-minor-component="player-button-play"]'));
+                }
+                var playButton = syiro.component.Fetch(playButtonComponentObject);
+                if (playButton.hasAttribute("data-syiro-component-disabled") == false) {
+                    if (innerContentElement.currentTime == 0) {
+                        var playerControlComponent = syiro.component.FetchComponentObject(playButton.parentElement);
+                        var playerRange = playerComponentElement.querySelector('input[type="range"]');
+                        var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(component);
+                        var posterImageElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]');
+                        if (posterImageElement !== null) {
+                            syiro.component.CSS(posterImageElement, "visibility", "hidden");
+                            syiro.component.CSS(playerControlComponent, "opacity", false);
+                        }
+                        for (var playerRangeAttribute in playerMediaLengthInformation) {
+                            playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]);
+                            if (playerRangeAttribute == "max") {
+                                syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
+                                var newTimeWidth = playButton.parentElement.querySelector("time").clientWidth + 25;
+                                var inputRangeWidth = (playButton.parentElement.clientWidth - ((36 * 2) + (14 * 2) + newTimeWidth));
+                                if (playButton.parentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]') !== null) {
+                                    inputRangeWidth = inputRangeWidth - (36 + 14);
+                                }
+                                syiro.component.CSS(playerRange, "width", inputRangeWidth.toString() + "px !important");
                             }
-                            syiro.component.CSS(playerRange, "width", inputRangeWidth.toString() + "px !important");
                         }
                     }
+                    if (innerContentElement.paused !== true) {
+                        innerContentElement.pause();
+                        syiro.component.CSS(playButtonComponentObject, "background-image", false);
+                    }
+                    else {
+                        innerContentElement.play();
+                        syiro.component.CSS(playButtonComponentObject, "background-image", "url(css/img/pause.png)");
+                    }
                 }
-                if (innerContentElement.paused !== true) {
-                    innerContentElement.pause();
-                    syiro.component.CSS(playButtonComponentObject, "background-image", false);
-                }
-                else {
-                    innerContentElement.play();
-                    syiro.component.CSS(playButtonComponentObject, "background-image", "url(css/img/pause.png)");
-                }
+            }
+            else {
+                var codecErrorElement = syiro.generator.ElementCreator("div", {
+                    "data-syiro-minor-component": "player-error",
+                    "content": "This video is not capable of being played on this browser or device. Please try a different device or browser."
+                });
+                var playerHalfHeight = ((playerComponentElement.clientHeight - 40) / 2);
+                syiro.component.CSS(codecErrorElement, "width", playerComponentElement.clientWidth.toString() + "px");
+                syiro.component.CSS(codecErrorElement, "padding-top", playerHalfHeight.toString() + "px");
+                syiro.component.CSS(codecErrorElement, "padding-bottom", playerHalfHeight.toString() + "px");
+                playerComponentElement.insertBefore(codecErrorElement, playerComponentElement.firstChild);
+                syiro.component.CSS(codecErrorElement, "visibility", "visible");
             }
         }
         player.PlayOrPause = PlayOrPause;
-        function FetchSources(type, sources) {
+        function FetchSources(component) {
+            var innerContentElement = syiro.player.FetchInnerContentElement(component);
+            var sourceTags = innerContentElement.getElementsByTagName("SOURCE");
+            var sourcesArray = [];
+            for (var sourceElementIndex = 0; sourceElementIndex < sourceTags.length; sourceElementIndex++) {
+                var sourceElement = sourceTags.item(sourceElementIndex);
+                if (sourceElement !== undefined) {
+                    sourcesArray.push({
+                        "src": sourceElement.getAttribute("src"),
+                        "type": sourceElement.getAttribute("type")
+                    });
+                }
+            }
+            return sourcesArray;
+        }
+        player.FetchSources = FetchSources;
+        function GenerateSources(type, sources) {
             var arrayOfSourceElements = [];
             var sourcesList;
             if (typeof sources == "string") {
@@ -1201,6 +1263,14 @@ var syiro;
                     if ((sourceExtension !== "mov") && (sourceExtension !== "m3u8")) {
                         sourceTagAttributes["type"] = sourceExtension;
                     }
+                    else if (sourceExtension == "m3u8") {
+                        if (type == "audio") {
+                            sourceTagAttributes["type"] = "mp3";
+                        }
+                        else {
+                            sourceTagAttributes["type"] = "mp4";
+                        }
+                    }
                     else if (sourceExtension == "mov") {
                         sourceTagAttributes["type"] = "quicktime";
                     }
@@ -1213,7 +1283,7 @@ var syiro;
             }
             return arrayOfSourceElements;
         }
-        player.FetchSources = FetchSources;
+        player.GenerateSources = GenerateSources;
         function Reset(component) {
             var playerElement = syiro.component.Fetch(component);
             var playerInnerContentElement = syiro.player.FetchInnerContentElement(component);
@@ -1237,7 +1307,7 @@ var syiro;
             if (typeof sources == "string") {
                 sources = [sources];
             }
-            var arrayofSourceElements = syiro.player.FetchSources(component["type"].replace("-player", ""), sources);
+            var arrayofSourceElements = syiro.player.GenerateSources(component["type"].replace("-player", ""), sources);
             syiro.player.Reset(component);
             if (component["type"] == "video-player") {
                 syiro.component.CSS(playerElement.querySelector('img[data-syiro-minor-component="video-poster"]'), "visibility", "hidden");
@@ -1294,7 +1364,7 @@ var syiro;
             componentElement.appendChild(syiro.component.Fetch(playButton));
             componentElement.appendChild(inputRange);
             componentElement.appendChild(timeStamp);
-            var inputRangeWidth = (properties["width"] - ((36 * 2) + (14 * 2) + 100));
+            var inputRangeWidth = (properties["width"] - ((36 * 2) + (14 * 2) + 110));
             if (properties["share"] !== undefined) {
                 if (properties["share"]["type"] == "list") {
                     inputRangeWidth = inputRangeWidth - (36 + 14);
@@ -1342,7 +1412,7 @@ var syiro;
                 });
                 var audioPlayer = syiro.generator.ElementCreator("audio", { "preload": "metadata", "volume": "0.5" });
                 audioPlayer.autoplay = false;
-                var arrayofSourceElements = syiro.player.FetchSources("audio", properties["sources"]);
+                var arrayofSourceElements = syiro.player.GenerateSources("audio", properties["sources"]);
                 for (var sourceElementKey in arrayofSourceElements) {
                     audioPlayer.appendChild(arrayofSourceElements[sourceElementKey]);
                 }
@@ -1434,7 +1504,7 @@ var syiro;
                 syiro.component.CSS(videoPlayer, "height", videoHeight.toString() + "px");
                 syiro.component.CSS(videoPlayer, "width", videoWidth.toString() + "px");
                 videoPlayer.autoplay = false;
-                var arrayofSourceElements = syiro.player.FetchSources("video", properties["sources"]);
+                var arrayofSourceElements = syiro.player.GenerateSources("video", properties["sources"]);
                 for (var sourceElementKey in arrayofSourceElements) {
                     videoPlayer.appendChild(arrayofSourceElements[sourceElementKey]);
                 }
@@ -1577,7 +1647,7 @@ var syiro;
     syiro.FetchDimensionsAndPosition = syiro.component.FetchDimensionsAndPosition;
     syiro.Add = syiro.component.Add;
     syiro.Remove = syiro.component.Remove;
-    syiro.Animate = syiro.component.Animate;
+    syiro.Animate = syiro.animation.Animate;
     syiro.CSS = syiro.component.CSS;
     syiro.AddListeners = syiro.component.AddListeners;
     syiro.RemoveListeners = syiro.component.RemoveListeners;

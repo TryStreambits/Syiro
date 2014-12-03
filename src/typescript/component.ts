@@ -36,43 +36,6 @@ module syiro.component {
 
 	// #endregion
 
-	// #region Component Animation Function
-
-	export function Animate(component : Object, animation : string, postAnimationFunction ?: Function){ // This function animates a particular Component and calls a post-animation function if applicable
-		var componentElement : Element = syiro.component.Fetch(component); // Get the Syiro Component Element
-
-		if (componentElement !== null){ // If the componentElement exists in the DOM
-			var elementTimeoutId = window.setTimeout( // Create a timeout that calls our handler function after 250 (after the animation is "played")
-				function(){
-					var component : Object = arguments[0]; // Get the component that was passed to this function as a bound argument
-					var componentElement : Element = syiro.component.Fetch(component); // Get the Syiro Component Element based on the component Object we passed
-					var postAnimationFunction : Function = arguments[1]; // Get the postAnimationFunction (if applicable)
-
-					var timeoutId = componentElement.getAttribute("data-syiro-animationTimeout-id"); // Get the animationTimeout ID
-					componentElement.removeAttribute("data-syiro-animationTimeout-id"); // Remove the animationTimeout ID attribute
-					window.clearTimeout(Number(timeoutId)); // Convert the ID from string to Int and clear the timeout
-
-					postAnimationFunction(component); // Call the postAnimationFunction (which we pass the Syiro Component Object)
-				}.bind(syiro, component, postAnimationFunction) // Attach the Syiro Component Object and postAnimationFunction
-			,250);
-
-			componentElement.setAttribute("data-syiro-animationTimeout-id", elementTimeoutId.toString()); // Set the animationTimeout ID to the string form of the timeout ID
-
-			if (component["type"] == "dropdown"){ // If the component is a Dropdown
-				var tempElement = componentElement; // Define tempElement as the componentElement
-				componentElement = tempElement.querySelector('div[data-syiro-component="list"]'); // Change the Element from Dropdown to the Dropdown inner List for the animation
-			}
-			else if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
-				var tempElement = componentElement; // Define tempElement as the componentElement
-				componentElement = tempElement.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
-			}
-
-			componentElement.setAttribute("class", animation); // Add the animation
-		}
-	}
-
-	// #endregion
-
 	// #region Component CSS Fetcher / Modifier
 
 	export function CSS(component : any, property : string, newValue ?: any){
@@ -287,17 +250,17 @@ module syiro.component {
 										passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
 									}
 
-									syiro.component.Animate(component, animationString,
+									syiro.animation.Animate(component, animationString,
 										function(component : Object){ // Post-Animation Function
 											var buttonElement : Element = syiro.component.Fetch(component); // Get the buttonElement based on the component Object
 
 											if (buttonElement.hasAttribute("data-syiro-component-status") == false){ // If the status is not "true" / active
-											buttonElement.setAttribute("data-syiro-component-status", "true"); // Set to true
+												buttonElement.setAttribute("data-syiro-component-status", "true"); // Set to true
+											}
+											else{ // If the status IS true
+												buttonElement.removeAttribute("data-syiro-component-status"); // Remove the buttonElement component status
+											}
 										}
-										else{ // If the status IS true
-											buttonElement.removeAttribute("data-syiro-component-status"); // Remove the buttonElement component status
-										}
-									}
 									);
 								}
 								else if (component["type"] == "searchbox"){ // If the component is a Syiro Searchbox

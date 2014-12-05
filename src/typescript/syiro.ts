@@ -73,7 +73,7 @@ module syiro {
 													syiro.component.AddListeners(syiro.component.listenerStrings["press"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
 												}
 												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
-													syiro.player.Init(componentObject); // Initialize the Audio or Video Palyer
+													syiro.player.Init(componentObject); // Initialize the Audio or Video Player
 												}
 
 												if (passedNode.childNodes.length > 0){ // If the passedNode has childNodes

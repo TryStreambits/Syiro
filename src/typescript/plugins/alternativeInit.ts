@@ -17,7 +17,7 @@ module syiro.plugin.alternativeInit {
         (function mutationTimer(){
             window.setTimeout( // Set interval to 5000 (5 seconds) with a timeout, forcing the execution to happen within 3 seconds
                 function(){ // Call this function
-                    for (var componentId in syiro.component.storedComponents){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
+                    for (var componentId in syiro.component.componentData){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
                         var potentiallyExistingComponent = document.querySelector('*[data-syiro-component-id="' + componentId + '"]');
 
                         if (potentiallyExistingComponent !== null){ // If the component exists in the DOM
@@ -31,7 +31,7 @@ module syiro.plugin.alternativeInit {
                                 syiro.player.Init(componentObject); // Initialize the Audio or Video Palyer
                             }
 
-                            delete syiro.component.storedComponents[componentId]; // Ensure the Component in the storedComponents is deleted
+                            delete syiro.component.componentData[componentId]["HTMLElement"]; // Ensure the Component in the componentData is deleted
                         }
                     }
 

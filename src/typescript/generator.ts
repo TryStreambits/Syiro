@@ -10,9 +10,9 @@ module syiro.generator {
 
     export var lastUniqueIds : Object = {}; // Default the lastUniqueIds to an empty Object
 
-    // #region Component ID Generator
+    // #region Component or Element ID Generator
 
-    export function IdGen(type : string) : string { // Takes a component type and returns the new component Id
+    export function IdGen(type : string) : string { // Takes a Component type or Element tagName and returns the new component Id
         var lastUniqueIdOfType : number; // Define lastUniqueIdOfType as a Number
         if (syiro.generator.lastUniqueIds[type] == undefined){ // If the lastUniqueId of this type hasn't been defined yet.
             lastUniqueIdOfType = 0; // Set to zero

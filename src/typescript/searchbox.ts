@@ -32,7 +32,7 @@ module syiro.searchbox {
 			}
 		}
 
-		syiro.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
+		syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Add the component to the componentData
 
 		return { "id" : componentId, "type" : "searchbox" }; // Return a Component Object
 	}
@@ -44,7 +44,7 @@ module syiro.searchbox {
 	export function SetText(component : Object, placeholderText : any) : void {
 		var searchboxElement : Element = syiro.component.Fetch(component); // Get the Searchbox Syiro component element
 
-		if (searchboxElement !== null){ // If the searchboxElement exists in syiro.component.storedComponents or DOM
+		if (searchboxElement !== null){ // If the searchboxElement exists in syiro.component.componentData or DOM
 			var searchboxInputElement : HTMLInputElement = searchboxElement.getElementsByTagName("input")[0]; // Get the inner input tag of the searchboxElement
 
 			if (placeholderText !== false){ // If we are updating the placeholderText

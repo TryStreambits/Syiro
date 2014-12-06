@@ -4,6 +4,7 @@
 /// <reference path="animation.ts" />
 /// <reference path="component.ts" />
 /// <reference path="device.ts" />
+/// <reference path="events.ts" />
 /// <reference path="generator.ts" />
 /// <reference path="header.ts" />
 /// <reference path="footer.ts" />
@@ -24,7 +25,7 @@ module syiro {
 
 		// #region Document Scroll Event Listening
 
-		syiro.component.AddListeners("scroll", document, // Add an event listener to the document for when the document is scrolling
+		syiro.events.Add("scroll", document, // Add an event listener to the document for when the document is scrolling
 			function(){
 				var dropdowns : any = document.querySelectorAll('div[data-syiro-component="dropdown"][active]'); // Get all of the Dropdowns that are active
 
@@ -70,7 +71,7 @@ module syiro {
 
 											if (componentObject !== false){ // If the element is a Syiro component
 												if (componentObject["type"] == "dropdown"){ // If the component is a Dropdown
-													syiro.component.AddListeners(syiro.component.listenerStrings["press"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
+													syiro.events.Add(syiro.events.eventStrings["press"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
 												}
 												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
 													syiro.player.Init(componentObject); // Initialize the Audio or Video Player
@@ -83,7 +84,7 @@ module syiro {
 													}
 												}
 
-												delete syiro.component.storedComponents[componentObject["id"]]; // Ensure the Component in the storedComponents is deleted
+												delete syiro.component.componentData[componentObject["id"]]["HTMLElement"]; // Ensure the Component's Element in the componentData is deleted
 											}
 										}
 									}
@@ -133,8 +134,8 @@ module syiro {
 
 	export var CSS = syiro.component.CSS; // Meta-function for modifying Syiro Component CSS styling
 
-	export var AddListeners = syiro.component.AddListeners; // Meta-function for adding event listeners to Syiro Components
+	export var AddListeners = syiro.events.Add; // Meta-function for adding event listeners to Syiro Components
 
-	export var RemoveListeners = syiro.component.RemoveListeners; // Meta-function for removing event listeners to Syiro Components
+	export var RemoveListeners = syiro.events.Remove; // Meta-function for removing event listeners to Syiro Components
 
 }

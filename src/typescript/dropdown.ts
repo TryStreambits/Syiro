@@ -60,7 +60,7 @@ module syiro.dropdown {
 
 			// #endregion
 
-			syiro.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
+			syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Add the component to the componentData
 			return { "id" : componentId, "type" : "dropdown" }; // Return a Component Object
 		}
 		else{ // If the necessary properties are NOT defined

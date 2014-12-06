@@ -3,6 +3,8 @@ interface Object {
     type: string;
     link: string;
     title: string;
+    listeners?: string[];
+    handlers?: Function[];
     HTMLElement?: Element;
 }
 interface Element {
@@ -33,16 +35,13 @@ declare module syiro.animation {
     function FadeOut(component: Object, postAnimationFunction?: Function): void;
 }
 declare module syiro.component {
-    var listenerStrings: Object;
-    var storedComponents: Object;
+    var componentData: Object;
     function Define(type: string, selector: string): Object;
     function CSS(component: any, property: string, newValue?: any): any;
     function Fetch(component: Object): any;
     function FetchComponentObject(componentElement: any): Object;
     function FetchDimensionsAndPosition(component: any): Object;
     function Update(componentId: string, componentElement: Element): void;
-    function AddListeners(...args: any[]): boolean;
-    function RemoveListeners(component: any): boolean;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): boolean;
 }
@@ -58,6 +57,12 @@ declare module syiro.device {
     var IsFullHDOrAbove: boolean;
     function Detect(): void;
     function FetchScreenDetails(): void;
+}
+declare module syiro.events {
+    var eventStrings: Object;
+    function Handler(): void;
+    function Add(...args: any[]): boolean;
+    function Remove(component: any, specificFunc?: Function): boolean;
 }
 declare module syiro.generator {
     var lastUniqueIds: Object;
@@ -142,6 +147,6 @@ declare module syiro {
     var Remove: typeof component.Remove;
     var Animate: typeof animation.Animate;
     var CSS: typeof component.CSS;
-    var AddListeners: typeof component.AddListeners;
-    var RemoveListeners: typeof component.RemoveListeners;
+    var AddListeners: typeof events.Add;
+    var RemoveListeners: typeof events.Remove;
 }

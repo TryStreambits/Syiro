@@ -55,13 +55,13 @@ module syiro.device {
         if (navigator.onLine !== undefined){ // If the browser is online
             syiro.device.IsOnline = navigator.onLine; // Set the IsOnline to the browser's online status
 
-            syiro.component.AddListeners("online", document,  // Add an event listener that listens to the "online" event, which means the user went from offline to online, and update the IsOnline value
+            syiro.events.Add("online", document,  // Add an event listener that listens to the "online" event, which means the user went from offline to online, and update the IsOnline value
                 function(){ // When the user goes online
                     syiro.device.IsOnline = true; // Set syiro.device.IsOnline to true
                 }
             );
 
-            syiro.component.AddListeners("offline", document, // Add an event listener that listens to the "offline" event, which means the user went from online to offline, and update the IsOnline value
+            syiro.events.Add("offline", document, // Add an event listener that listens to the "offline" event, which means the user went from online to offline, and update the IsOnline value
                 function(){ // When the user goes offline
                     syiro.device.IsOnline = false; // Set syiro.device.IsOnline to false
                 }
@@ -70,7 +70,7 @@ module syiro.device {
 
         syiro.device.FetchScreenDetails(); // Do an initial fetch of the screen details
 
-        syiro.component.AddListeners("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing
+        syiro.events.Add("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing
     }
 
     // #endregion

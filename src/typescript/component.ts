@@ -6,29 +6,29 @@
 /// <reference path="interfaces.ts" />
 
 module syiro.component {
-	export var listenerStrings : Object = { // Set syiro.component.listenerStrings as an Object containing commonly used event lister combinations
-		"down" : ["mousedown", "touchstart", "MSPointerDown"],
-		"up" : ["mouseup", "touchend", "MSPointerUp"],
-		"press" : ["click"]
-	};
-
-	export var storedComponents : Object = {}; // An object that stores generated component(s) / component(s) information
+	export var componentData : Object = {}; // An object that stores generated component(s) / component(s) information
 
 	// #region Defining existing Syiro components
 
 	export function Define(type : string, selector : string) : Object {
 		var component : Object = {}; // Create an object called component that stores the component information
+		var componentId : string; // Define componentId as the string to hold the Id info
 		component["type"] = type; // Define the key "type" as the type we've defined
 
-		var componentID : string = syiro.generator.IdGen(type); // Generate a unique ID for this component
-
 		var selectedElement : Element = document.querySelector(selector); // Get the first recognized HTMLElement that has this selector.
-		selectedElement.setAttribute("data-syiro-component-id", componentID); // Set this component's ID
 
-		component["id"] = componentID; // Add the component ID to the object that we will be returning to the developer
+		if (selectedElement.hasAttribute("data-syiro-component-id") == false){ // If we aren't already trying to define a Component on an Element that is already a Component
+			componentId = syiro.generator.IdGen(type); // Generate a unique ID for this component
+			selectedElement.setAttribute("data-syiro-component-id", componentId); // Set this component's ID
+		}
+		else{ // If we are already defining a Component on an Element that is already a Component
+			componentId = selectedElement.getAttribute("data-syiro-component-id"); // Get the component Id
+		}
+
+		component["id"] = componentId; // Add the component Id to the object that we will be returning to the developer
 
 		if (type == "dropdown"){ // If we are defining a Dropdown Syiro component
-			syiro.component.AddListeners(syiro.component.listenerStrings["press"], component, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
+			syiro.events.Add(syiro.events.eventStrings["press"], component, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
 		}
 
 		return component; // Return the component Object
@@ -123,8 +123,8 @@ module syiro.component {
 	export function Fetch(component : Object) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
 		var componentElement : Element; // The (HTML)Element of the Syiro component we'll be returning
 
-		if (syiro.component.storedComponents[component["id"]] !== undefined){ // If an HTMLElement  is defined, meaning this is a new component that has not been put in the DOM yet
-			componentElement = syiro.component.storedComponents[component["id"]]; // Get the HTMLElement stored in the storedComponents
+		if (syiro.component.componentData[component["id"]]["HTMLElement"] !== undefined){ // If an HTMLElement  is defined, meaning this is a new component that has not been put in the DOM yet
+			componentElement = syiro.component.componentData[component["id"]]["HTMLElement"]; // Get the HTMLElement stored in the componentData
 		}
 		else{ // If the HTMLElement  is NOT defined (meaning the element is could be in the DOM)
 			componentElement = document.querySelector('*[data-syiro-component-id="' + component["id"] + '"]'); // Look for the component in the DOM, may return null
@@ -174,151 +174,9 @@ module syiro.component {
 	// #region Update Stored Component's HTMLElement, but only if it exists in the first place.
 
 	export function Update(componentId : string, componentElement : Element){
-		if (syiro.component.storedComponents[componentId] !== undefined){ // If the HTMLElement is defined in the storedComponents (by the id of the component being in the storedComponents)
-			syiro.component.storedComponents[componentId] = componentElement; // Update with the componentElement we defined
+		if (syiro.component.componentData[componentId]["HTMLElement"] !== undefined){ // If the HTMLElement is defined in the componentData (by the id of the component being in the componentData)
+			syiro.component.componentData[componentId]["HTMLElement"] = componentElement; // Update with the componentElement we defined
 		}
-	}
-
-	// #endregion
-
-	// #region Component Add Listener Function
-
-	export function AddListeners(... args : any[]) : boolean { // Takes (optional) space-separated listeners, Component Object or a generic Element, and the handler function.
-		var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
-		var listeners : any; // Define listeners as a string
-		var component : any; // Define Component as a Syiro Component Object or an Element
-		var listenerCallback : Function; // Default to having the listenerCallback be the handler we are passed.
-
-		if ((args.length == 2) || (args.length == 3)){ // If an appropriate amount of arguments are provided
-			if (args.length == 2){ // If two arguments are passed to the AddListeners function
-				component = args[0]; // Component is the first argument
-				listenerCallback = args[1]; // Handler is the second argument
-
-				if (component["type"] !== "searchbox"){ // If we are adding listeners to a Component that is NOT a Searchbox (which uses a unique listener)
-					listeners = syiro.component.listenerStrings["press"]; // Use click / touch related events
-				}
-				else{ // If the Component IS a Searchbox
-					listeners = ["keyup"]; // Use the keyup listener
-				}
-			}
-			else{ // If the arguments list is 3, meaning listeners, a Component Object, and a Handler are provided
-				listeners = args[0]; // Set listeners to the first argument
-				component = args[1]; // Set component to the second argument
-				listenerCallback = args[2]; // Set the handler to the third argument
-			}
-
-			var componentElement : Element; // Define componentElement as an Element
-
-			if ((component["id"] !== undefined) && (component["id"] !== "") && (component["type"] !== undefined)){ // If the Component provided is a Syiro Component Object
-				componentElement = syiro.component.Fetch(component); // Get the Component Element
-
-				if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-					if (componentElement.querySelector("div") !== null){ // If there is a div defined in the List Item, meaning there is a control within the list item
-						allowListening = false; // Set allowListening to false. We shouldn't allow the entire List Item to listen to the same events as the inner control.
-					}
-				}
-			}
-			else { // If the Component passed is an Element
-				componentElement = component; // Define componentElement as the Component
-			}
-
-			if (allowListening == true){ // If allowListening is TRUE
-				if ((typeof listeners).toLowerCase() == "string"){ // If the listeners is an array / object
-					listeners = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
-				}
-
-				for (var individualListenerIndex in listeners){ // For each listener in the listeners array
-					var individualListener : string = listeners[individualListenerIndex];
-
-					componentElement.addEventListener(individualListener, // Attach an event listener to the component
-						function(){
-							var component : any = arguments[0]; // Set component as first argument passed
-							var listenerCallback : Function = arguments[1]; // Set the Callback to the second argument passed
-							var passableValue : any = null; // Set passableValue to any type, defaults to null
-
-							if (component["type"] !== undefined){ // If the component based is a Syiro Component
-								var componentElement : any = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
-								if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a toggle button
-									var animationString : string;
-
-									if (componentElement.hasAttribute("data-syiro-component-status") == false){ // If the button is NOT active (has no status)
-										animationString = "toggle-forward-animation"; // Animate forward the toggle
-										passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
-									}
-									else{ // If the button is active and we are setting it as inactive
-										animationString = "toggle-backward-animation"; // Animate backward the toggle
-										passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
-									}
-
-									syiro.animation.Animate(component, animationString,
-										function(component : Object){ // Post-Animation Function
-											var buttonElement : Element = syiro.component.Fetch(component); // Get the buttonElement based on the component Object
-
-											if (buttonElement.hasAttribute("data-syiro-component-status") == false){ // If the status is not "true" / active
-												buttonElement.setAttribute("data-syiro-component-status", "true"); // Set to true
-											}
-											else{ // If the status IS true
-												buttonElement.removeAttribute("data-syiro-component-status"); // Remove the buttonElement component status
-											}
-										}
-									);
-								}
-								else if (component["type"] == "searchbox"){ // If the component is a Syiro Searchbox
-									passableValue = componentElement.value; // Get the current value of the input
-								}
-							}
-
-							if (passableValue == null){ // If the passableValue is null
-								passableValue = arguments[2]; // Simply set the passableValue to the event data passed
-							}
-
-							listenerCallback.call(syiro, component, passableValue); // Call the listenerCallback and pass along the passableValue and the component Object
-						}.bind(syiro, component, listenerCallback) // Bind to Syiro, pass the component and listenerCallback
-					);
-				}
-			}
-		}
-		else{ // If the arguments length is NOT 2 or 3, meaning either too few or too many arguments were provided
-			allowListening = false;
-		}
-
-		return allowListening; // Return whether we allowed listening to the component
-	}
-
-	// #endregion
-
-	// #region Component Remove Event Listener
-
-	export function RemoveListeners(component : any) : boolean {
-		var allowRemoval : boolean = true; // Set allowRemoval as a boolean, defaulting to true and allowing Listener removal unless specified otherwise.
-		var successfulRemoval : boolean = false; // Set successfulRemove as a boolean, defaulting to false unless it was successful
-		var componentElement : any; // Define componentElement as an Element
-
-		if ((component["id"] !== undefined) && (component["id"] !== "") && (component["type"] !== undefined)){ // If the Component provided is a Syiro Component Object
-			componentElement = syiro.component.Fetch(component); // Get the Component Element
-
-			if (componentElement !== null){ // If we successfully fetched the Component's Element
-				if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-					if (componentElement.querySelector('div[data-syiro-component="button"]') !== null){ // If there is a div (secondary control) in the List Item
-						allowRemoval = false; // Set allowRemoval to false, since there is a Button within the List Item that would be affected.
-					}
-				}
-			}
-		}
-		else { // If the Component passed is an Element
-			componentElement = component; // Define componentElement as the Component
-		}
-
-		if (allowRemoval == true){ // If we are going to allow the removal of event listeners from the Element
-			if ((componentElement !== undefined) && (componentElement !== null)){
-				var newElement : any = componentElement.cloneNode(true); // Make a clone of the Node, which doesn't copy event listeners
-				componentElement.outerHTML = newElement.outerHTML; // Replace the component's Element outer HTML with the new Element outerHTML, so it does not copy listeners (therefore they are "removed")
-
-				successfulRemoval = true; // Return true since we successfully removed event listeners
-			}
-		}
-
-		return successfulRemoval; // Return whether the removal was successful
 	}
 
 	// #endregion
@@ -376,7 +234,7 @@ module syiro.component {
 			allowAdding = true;
 		}
 
-		if ((allowAdding == true) && (parentElement !== null) && (childElement !== null)){ // If we are allowing the adding of the childComponent and both the parentElement and childElement exist in storedComponents or DOM
+		if ((allowAdding == true) && (parentElement !== null) && (childElement !== null)){ // If we are allowing the adding of the childComponent and both the parentElement and childElement exist in componentData or DOM
 			if (append == false){ // If we are prepending the childElement
 				parentElement.insertBefore(childElement, parentElement.firstChild); // Insert before the first component
 			}
@@ -415,13 +273,13 @@ module syiro.component {
 				var individualComponent : Object = componentList[individualComponentIndex]; // Get this specific Object
 				var individualComponentElement : Element = syiro.component.Fetch(individualComponent); // Fetch the Syiro Component Element
 
-				if (individualComponentElement !== null){ // If the Component Element returned via Fetch exists in the DOM or storedComponents
-					if (syiro.component.storedComponents[individualComponent["id"]] == undefined){ // If the Element does exist in DOM, rather in the storedComponents
+				if (individualComponentElement !== null){ // If the Component Element returned via Fetch exists in the DOM or componentData
+					if (syiro.component.componentData[individualComponent["id"]]["HTMLElement"] == undefined){ // If the Element does exist in DOM, rather in the componentData
 						var parentElement : Element = individualComponentElement.parentElement; // Get the individualComponentElement's parentElement
 						parentElement.removeChild(individualComponentElement); // Remove this Component from the DOM
 					}
-					else{ // If the Component is actually stored in syiro.component.storedComponents
-						delete syiro.component.storedComponents[individualComponent["id"]]; // Remove the component from the storedComponents
+					else{ // If the Component is actually stored in syiro.component.componentData
+						delete syiro.component.componentData[individualComponent["id"]]["HTMLElement"]; // Remove the component from the componentData
 					}
 				}
 			}

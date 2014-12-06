@@ -26,7 +26,7 @@ module syiro.player {
 
         // #region Audio / Video Time Updating
 
-        syiro.component.AddListeners("timeupdate", innerContentElement, // Add an event listener to track timeupdate
+        syiro.events.Add("timeupdate", innerContentElement, // Add an event listener to track timeupdate
             function(){
                 // #region Player Component & Element Defining
 
@@ -70,7 +70,7 @@ module syiro.player {
             if (posterImageElement !== null){ // If the posterImageElement exists
                 syiro.component.CSS(playerControlComponent, "opacity", "0.8"); // Set opacity to 80%
 
-                syiro.component.AddListeners(syiro.component.listenerStrings["press"], posterImageElement, // Add mousepress listeners to the posterImageElement
+                syiro.events.Add(syiro.events.eventStrings["press"], posterImageElement, // Add mousepress listeners to the posterImageElement
                     function(){
                         var posterImageElement : Element = arguments[0]; // Set the posterImageElement as the first argument passed
 
@@ -84,7 +84,7 @@ module syiro.player {
 
             // #region Video Element Click / Tap Handling
 
-            syiro.component.AddListeners(syiro.component.listenerStrings["up"], innerContentElement, // Add mouseup / touchup listeners to the innerContentElement
+            syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, // Add mouseup / touchup listeners to the innerContentElement
                 function(){
                     var innerContentElement : Element = arguments[0]; // Get the innerContentElement passed as argument 1
                     var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
@@ -99,7 +99,7 @@ module syiro.player {
 
             // #region Video ContextMenu Prevention
 
-            syiro.component.AddListeners("contextmenu", componentElement,
+            syiro.events.Add("contextmenu", componentElement,
                 function(){
                     var e : Event = arguments[1]; // Get the Mouse Event typically passed to the function
                     e.preventDefault(); // Prevent the default action, like showing a context menu for the poster image, or context menu for the video
@@ -118,7 +118,7 @@ module syiro.player {
 
             var playButtonComponent : Object = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-minor-component="player-button-play"]')); // Get the Component Object of the Play Button
 
-            syiro.component.AddListeners(playButtonComponent,
+            syiro.events.Add(playButtonComponent,
                 function(){
                     var playButtonComponent : Object = arguments[0]; // Get the Play Button that was clicked
                     var playButton : Element = syiro.component.Fetch(playButtonComponent); // Get the Play Button Element
@@ -140,14 +140,14 @@ module syiro.player {
 
             var playerRange = playerControlArea.querySelector('input[type="range"]'); // Get the input range
 
-            syiro.component.AddListeners(syiro.component.listenerStrings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
+            syiro.events.Add(syiro.events.eventStrings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
                 function(){
                     var playerRangeElement : Element = arguments[0]; // Get the Player Range element passed
                     playerRange.parentElement.parentElement.setAttribute("data-syiro-component-status", "true"); // Set the status to true to imply that the audio / video time changing should not change playerRange
                 }
             );
 
-            syiro.component.AddListeners(syiro.component.listenerStrings["up"], playerRange, syiro.player.TimeOrVolumeChanger); // Add mouseup / touchend events to the playerRange, which calls syiro.player.TimeOrVolumeChanger
+            syiro.events.Add(syiro.events.eventStrings["up"], playerRange, syiro.player.TimeOrVolumeChanger); // Add mouseup / touchend events to the playerRange, which calls syiro.player.TimeOrVolumeChanger
 
             // #endregion
 
@@ -155,7 +155,7 @@ module syiro.player {
 
             var volumeButtonComponent = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]')); // Get the Component Object of the Volume Button
 
-            syiro.component.AddListeners(volumeButtonComponent,
+            syiro.events.Add(volumeButtonComponent,
                 function(){
                     var volumeButtonComponent : Object = arguments[0]; // Get the Volume Button that was clicked
                     var volumeButton : Element = syiro.component.Fetch(volumeButtonComponent); // Get the Volume Button Element
@@ -209,7 +209,7 @@ module syiro.player {
             var shareButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the shareButton if it exists
 
             if (shareButton !== null){ // If the share button exists
-                syiro.component.AddListeners(syiro.component.listenerStrings["press"], syiro.component.FetchComponentObject(shareButton), syiro.player.ToggleShareDialog.bind(this, component)); // Add an event listener to the button that calls ToggleShareDialog, binding to the Player Component
+                syiro.events.Add(syiro.events.eventStrings["press"], syiro.component.FetchComponentObject(shareButton), syiro.player.ToggleShareDialog.bind(this, component)); // Add an event listener to the button that calls ToggleShareDialog, binding to the Player Component
             }
 
             // #endregion
@@ -617,7 +617,7 @@ module syiro.playercontrol {
 
         componentElement.appendChild(syiro.component.Fetch(volumeButton)); // Append the volume control
 
-        syiro.component.storedComponents[componentId] = componentElement; // Store the Player Control
+        syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Store the Player Control
 
         return { "id" : componentId, "type" : "player-control" }; // Return a Component Object
     }
@@ -761,7 +761,7 @@ module syiro.audioplayer {
 
             componentElement.appendChild(playerControlElement); // Append the player control
 
-            syiro.component.storedComponents[componentId] = componentElement;
+            syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Store the Audio Player Component Element we generated
 
             return { "id" : componentId, "type" : "audio-player" }; // Return a Component Object
         }
@@ -870,7 +870,7 @@ module syiro.videoplayer {
 
             componentElement.appendChild(playerControlElement); // Append the player control
 
-            syiro.component.storedComponents[componentId] = componentElement;
+            syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Store the Video Player Component Element we generated
             return { "id" : componentId, "type" : "video-player" }; // Return a Component Object
         }
         else{ // If video is not defined in the properties

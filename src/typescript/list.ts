@@ -25,12 +25,11 @@ module syiro.list {
 					}
 
 					componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the List Item component to the List
-					delete syiro.component.storedComponents[individualItem["id"]]; // Delete the HTMLElement from the component in the storedComponents
 				}
 			}
 		}
 
-		syiro.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
+		syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Add the component to the componentData
 
 		return { "id" : componentId, "type" : "list" }; // Return a Component Object
 	}
@@ -63,8 +62,6 @@ module syiro.listitem {
 					if (controlComponentObject["type"] == "button"){ // If the component is either a basic or toggle button
 						var controlComponentElement : Element= syiro.component.Fetch(controlComponentObject); // Get the component's (HTML)Element
 						componentElement.appendChild(controlComponentElement); // Append the component to the List Item
-
-						delete syiro.component.storedComponents[controlComponentObject["id"]]; // Delete the Component from the storedComponents
 					}
 				}
 			}
@@ -86,7 +83,7 @@ module syiro.listitem {
 			}
 		}
 
-		syiro.component.storedComponents[componentId] = componentElement; // Add the component to the storedComponents
+		syiro.component.componentData[componentId] = { "HTMLElement" :  componentElement }; // Add the component to the componentData
 
 		return { "id" : componentId, "type" : "list-item" }; // Return a Component Object
 	}
@@ -109,10 +106,9 @@ module syiro.listitem {
 				if (control["type"] == "button"){ // If the type of the control Component is a button
 					var innerControlElement = syiro.component.Fetch(control); // Get the Element of the inner control Component
 
-					if (innerControlElement !== null){ // If the Component Element is actually stored in syiro.component.storedComponents
-						delete syiro.component.storedComponents[control["id"]]; // Delete the Element from storedComponents
+					if (innerControlElement !== null){ // If the Component Element is actually stored in syiro.component.componentData
 						listItemElement.appendChild(innerControlElement); // Append the control Component
-						syiro.component.RemoveListeners(component); // Ensure the List Item has no Listeners after adding the new Control
+						syiro.events.Remove(component); // Ensure the List Item has no Listeners after adding the new Control
 						syiro.component.Update(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
 
 						setControlSucceeded = true; // Set setLabelSucceeded to true

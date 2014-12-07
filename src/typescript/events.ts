@@ -17,6 +17,7 @@ module syiro.events {
 
     export function Handler(){
         var component : any = arguments[0]; // Set component as first argument passed
+        var eventData : Event = arguments[1]; // Set eventData as the second argument passed
         var componentId : string; // Define componentId as the Id of the Component
         var passableValue : any = null; // Set passableValue to any type, defaults to null
 
@@ -53,38 +54,40 @@ module syiro.events {
                 passableValue = componentElement.value; // Get the current value of the input
             }
         }
-        else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
-            if (component.hasAttribute("data-syiro-component-id")){ // If the component already has a unique Id defined
-                componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
-            }
-            else { // If the component does not have an ID
-                if (component.hasAttribute("id")){ // If the component has a non-Syiro Id
-                    componentId = component.getAttribute("id"); // Get the Id and assign it to the componentId
+        else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1) || (component == document) || (component == window)){ // If the Component is either an Element, the document, or window
+            if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
+                if (component.hasAttribute("data-syiro-component-id")){ // If the component already has a unique Id defined
+                    componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
                 }
-                else {
-                    componentId = syiro.generator.IdGen(component.tagName.toLowerCase()); // Base the unique component Id on the tagName of the Element
-                }
+                else { // If the component does not have an ID
+                    if (component.hasAttribute("id")){ // If the component has a non-Syiro Id
+                        componentId = component.getAttribute("id"); // Get the Id and assign it to the componentId
+                    }
+                    else {
+                        componentId = syiro.generator.IdGen(component.tagName.toLowerCase()); // Base the unique component Id on the tagName of the Element
+                    }
 
-                component.setAttribute("data-syiro-component-id", componentId); // Set the data-syiro-component-id to either the non-Syiro Id or the Id we generated
+                    component.setAttribute("data-syiro-component-id", componentId); // Set the data-syiro-component-id to either the non-Syiro Id or the Id we generated
+                }
+            }
+            else if (component == document){ // If the Component passed is the document Object
+                componentId = "document"; // Define componentId as "document
+            }
+            else if (component == window){ // If the componentElement is the window
+                componentId = "window"; // Define componentId as "window"
             }
 
             componentElement = component; // Define componentElement as the Component
         }
-        else if (component == document){ // If the Component passed is the document Object
-            componentId = "document"; // Define componentId as "document
-            componentElement = component; // Define componentElement as the document
-        }
-        else if (component == window){ // If the componentElement is the window
-            componentId = "window"; // Define componentId as "window"
-            componentElement = component; // Define componentElement as the window
-        }
 
         if (passableValue == null){ // If the passableValue is null
-            passableValue = arguments[2]; // Simply set the passableValue to the event data passed
+            passableValue = eventData; // Simply set the passableValue to the event data passed
         }
 
-        for (var individualFunctionId in syiro.component.componentData[componentId]["handlers"]){ // For each function that is related to the Component
-            syiro.component.componentData[componentId]["handlers"][individualFunctionId].call(syiro, component, passableValue); // Call the function, passing along the passableValue and the Component
+        var listener : string = (eventData.type).toLowerCase().replace("on", ""); // Ensure the event type passed is simplified and lowercased
+
+        for (var individualFunctionId in syiro.component.componentData[componentId]["handlers"][listener]){ // For each function that is related to the Component for this particular listener
+            syiro.component.componentData[componentId]["handlers"][listener][individualFunctionId].call(syiro, component, passableValue); // Call the function, passing along the passableValue and the Component
         }
     }
 
@@ -95,12 +98,12 @@ module syiro.events {
     export function Add(... args : any[]) : boolean { // Takes (optional) space-separated listeners, Component Object or a generic Element, and the handler function.
         var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
         var componentId : string; // Define componentId as the ID which we query for in syiro.component.componentData
-        var listeners : any; // Define listeners as a string
+        var listeners : any; // Define listeners as any (array or string -> array)
         var component : any; // Define Component as a Syiro Component Object or an Element
         var listenerCallback : Function; // Default to having the listenerCallback be the handler we are passed.
 
         if ((args.length == 2) || (args.length == 3)){ // If an appropriate amount of arguments are provided
-            if (args.length == 2){ // If two arguments are passed to the syiro.events.Add function
+            if (args.length == 2){ // If two arguments are passed
                 component = args[0]; // Component is the first argument
                 listenerCallback = args[1]; // Handler is the second argument
 
@@ -129,30 +132,30 @@ module syiro.events {
                     }
                 }
             }
-            else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
-                if (component.hasAttribute("data-syiro-component-id")){ // If the component already has a unique Id defined
-                    componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
-                }
-                else { // If the component does not have an ID
-                    if (component.hasAttribute("id")){ // If the component has a non-Syiro Id
-                        componentId = component.getAttribute("id"); // Get the Id and assign it to the componentId
+            else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1) || (component == document) || (component == window)){ // If the Component is either an Element, the document, or window
+                if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
+                    if (component.hasAttribute("data-syiro-component-id")){ // If the component already has a unique Id defined
+                        componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
                     }
-                    else {
-                        componentId = syiro.generator.IdGen(component.tagName.toLowerCase()); // Base the unique component Id on the tagName of the Element
-                    }
+                    else { // If the component does not have an ID
+                        if (component.hasAttribute("id")){ // If the component has a non-Syiro Id
+                            componentId = component.getAttribute("id"); // Get the Id and assign it to the componentId
+                        }
+                        else {
+                            componentId = syiro.generator.IdGen(component.tagName.toLowerCase()); // Base the unique component Id on the tagName of the Element
+                        }
 
-                    component.setAttribute("data-syiro-component-id", componentId); // Set the data-syiro-component-id to either the non-Syiro Id or the Id we generated
+                        component.setAttribute("data-syiro-component-id", componentId); // Set the data-syiro-component-id to either the non-Syiro Id or the Id we generated
+                    }
+                }
+                else if (component == document){ // If the Component passed is the document Object
+                    componentId = "document"; // Define componentId as "document
+                }
+                else if (component == window){ // If the componentElement is the window
+                    componentId = "window"; // Define componentId as "window"
                 }
 
                 componentElement = component; // Define componentElement as the Component
-            }
-            else if (component == document){ // If the Component passed is the document Object
-                componentId = "document"; // Define componentId as "document
-                componentElement = component; // Define componentElement as the document
-            }
-            else if (component == window){ // If the componentElement is the window
-                componentId = "window"; // Define componentId as "window"
-                componentElement = component; // Define componentElement as the window
             }
             else{ // If the component is neither a Syiro Component Object, an Element, the document, or the window
                 allowListening = false; // Disallow listening to the Component
@@ -167,15 +170,19 @@ module syiro.events {
                     syiro.component.componentData[componentId] = {}; // Define componentId in componentData as an empty Object
                 }
 
-                if (typeof syiro.component.componentData[componentId]["handlers"] !== "undefined"){ // If the Component's listeners are already defined
-                    syiro.component.componentData[componentId]["handlers"] = syiro.component.componentData[componentId]["handlers"].push(listenerCallback); // Simply add the function to the listeners Array of Functions
+                if (typeof syiro.component.componentData[componentId]["handlers"] == "undefined"){ // If the Component's listeners are already defined
+                    syiro.component.componentData[componentId]["handlers"] = {}; // Define handlers as a blank Object
                 }
-                else { //  If the Component's listeners do not exist
-                    syiro.component.componentData[componentId]["handlers"] = [listenerCallback]; // Define the handlers key to be the listenerCallback as an array
 
-                    for (var individualListenerIndex in listeners){ // For each listener in the listeners array
-                        componentElement.addEventListener(listeners[individualListenerIndex], syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component
+                for (var individualListenerIndex in listeners){ // For each listener in the listeners array
+                    var listener = listeners[individualListenerIndex]; // Define listener as the individual listener in the listeners array
+
+                    if (typeof syiro.component.componentData[componentId]["handlers"][listener] == "undefined"){ // If the individual listener key is undefined in the handlers of the Component
+                        syiro.component.componentData[componentId]["handlers"][listener] = []; // Define the listener value as an empty array that will hold functions we'll be calling.
+                        componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component
                     }
+
+                    syiro.component.componentData[componentId]["handlers"][listener].push(listenerCallback); // Simply add the function to the listener Array of Functions
                 }
             }
         }
@@ -190,69 +197,89 @@ module syiro.events {
 
     // #region Component Remove Event Listener
 
-    export function Remove(component : any, specificFunc ?: Function) : boolean {
+    export function Remove(... args : any[]) : boolean {
         var allowRemoval : boolean = true; // Set allowRemoval as a boolean, defaulting to true and allowing Listener removal unless specified otherwise.
         var successfulRemoval : boolean = false; // Set successfulRemove as a boolean, defaulting to false unless it was successful
+        var listeners : any; // Define listeners as any (array or string -> array)
+        var component : any; // Define component as any (Object, Element, document, or window)
         var componentId : string; // Define componentId as the Id of the Component
-        var componentElement : any; // Define componentElement as an Element
+        var componentElement : any; // Define componentElement as any. It is either an Element, document, or window.
+        var specFunc : any; // Define specFunc as any with the possibility of it being a function
 
-        if ((typeof component.nodeType == "undefined") && (component !== window)){ // If the Component provided is a Syiro Component Object (doesn't have a nodeType nor is the window Object)
-            componentId = component["id"]; // Define componentId as the component Id we've already generated
-            componentElement = syiro.component.Fetch(component); // Get the Component Element
+        if (args.length < 4){ // If an appropriate amount of arguments are provided (less than 4)
+            if ((typeof args[0] == "string") || ((typeof args[0] == "object") && (typeof args[0]["id"] == "undefined"))){ // If the first argument is a string or an array (typeof Object with no Id)
+                listeners = args[0]; // Define listeners as the first argument
 
-            if (componentElement !== null){ // If we successfully fetched the Component's Element
-                if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-                    if (componentElement.querySelector('div[data-syiro-component="button"]') !== null){ // If there is a div (secondary control) in the List Item
-                        allowRemoval = false; // Set allowRemoval to false, since there is a Button within the List Item that would be affected.
-                    }
+                if (typeof listeners == "string"){ // If the listeners was defined a string
+                    listeners = listeners.trim().split(" "); // Trim the whitespace around the string then convert it to an array
                 }
+
+                component = args[1]; // Define component as the second argument provided
             }
-        }
-        else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
-            componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
-            componentElement = component; // Define componentElement as the Component
-        }
-        else if (component == document){ // If the Component passed is the document Object
-            componentId = "document"; // Define componentId as "document
-            componentElement = component; // Define componentElement as the document
-        }
-        else if (component == window){ // If the componentElement is the window
-            componentId = "window"; // Define componentId as "window"
-            componentElement = component; // Define componentElement as the window
-        }
-        else{ // If the component is neither a Syiro Component Object, an Element, the document, or the window
-            allowRemoval = false; // Disallow removal of the Component Listeners
-        }
+            else if (typeof args[0]["id"] !== "undefined"){ // If the first argument passed was not an string or an array, meaning it is a Component
+                component = args[0]; // Define component as the first argument passed
+            }
 
-        if (allowRemoval == true){ // If we are going to allow the removal of event listeners from the Element
-            if ((componentElement !== undefined) && (componentElement !== null)){
-                var componentListeners : any; // Define componentListeners as any (really it is Array<Function> or null)
+            if (((args.length == 2) && (typeof args[1] == "function")) || ((args.length == 3) && (typeof args[2] == "function"))){ // If either a second argument is defined and it is a function, or a third argument is defined and it is a function
+                specFunc = args[(args.length -1)]; // Define specFunc as the function provided in either the second or third argument (length minus one)
+            }
 
-                if (specificFunc == undefined){ // If we haven't defined a specific function to remove, remove them all
-                    componentListeners = null; // Define componentListeners as null, which is what the listeners array will be updated to
-                }
-                else { // If a specific function is defined
-                    componentListeners = syiro.component.componentData[componentId]["handlers"]; // Define componentListeners as the array of functions
+            if ((typeof component.nodeType == "undefined") && (component !== window)){ // If the Component provided is a Syiro Component Object (doesn't have a nodeType nor is the window Object)
+                componentId = component["id"]; // Define componentId as the component Id we've already generated
+                componentElement = syiro.component.Fetch(component); // Get the Component Element
 
-                    for (var individualFuncIndex in componentListeners){ // For each individual function in the componentListeners
-                        if (componentListeners[individualFuncIndex].toString() == specificFunc.toString()){ // If the stringified forms of both functions match
-                            componentListeners = componentListeners.splice(individualFuncIndex, 1); // Remove the specific function from the componentListeners by splicing the array (removing an item based on index and number defined)
+                if (componentElement !== null){ // If we successfully fetched the Component's Element
+                    if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
+                        if (componentElement.querySelector('div[data-syiro-component="button"]') !== null){ // If there is a div (secondary control) in the List Item
+                            allowRemoval = false; // Set allowRemoval to false, since there is a Button within the List Item that would be affected.
                         }
                     }
                 }
+            }
+            else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
+                componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
+                componentElement = component; // Define componentElement as the Component
+            }
+            else if (component == document){ // If the Component passed is the document Object
+                componentId = "document"; // Define componentId as "document
+                componentElement = component; // Define componentElement as the document
+            }
+            else if (component == window){ // If the componentElement is the window
+                componentId = "window"; // Define componentId as "window"
+                componentElement = component; // Define componentElement as the window
+            }
+            else{ // If the component is neither a Syiro Component Object, an Element, the document, or the window
+                allowRemoval = false; // Disallow removal of the Component Listeners
+            }
 
-                if ((componentListeners !== null) && (componentListeners.length !== 0)){ // If the componentListeners has a length (is not null and has a length greater than zero)
-                    syiro.component.componentData[componentId]["handlers"] = componentListeners; // Apply the new componentListeners array
+            if (allowRemoval == true){ // If we are going to allow the removal of event listeners from the Element
+                if (typeof listeners == "undefined"){ // If listeners weren't defined
+                    listeners = Object.keys(syiro.component.componentData[componentId]["handlers"]); // Get each key defined in handlers (ex: keyup,keydown) and set that to the listeners
                 }
-                else{ // If the componentListeners is null or does NOT have a length (essentially null)
-                    delete syiro.component.componentData[componentId]["handlers"]; // Remove the "listeners" key / val from the componentData for this specific component
 
-                    for (var individualEventListener in syiro.component.componentData[componentId]["listeners"]){ // For each listener the Component / Generic Element is listening to
-                        componentElement.removeEventListener(syiro.component.componentData[componentId]["listeners"][individualEventListener], syiro.events.Handler.bind(this, component)); // Remove the event listener
+                if ((componentElement !== undefined) && (componentElement !== null)){
+                    for (var individualListenerIndex in listeners){ // For each listener that was defined in listeners array
+                        var listener = listeners[individualListenerIndex]; // Define listener as the value from index of listeners
+                        var componentListeners : any = null; // Define componentListeners as an array of functions specific to that listener, only for specFunc, or null (default) if all functions should be removed
+
+                        if (typeof specFunc == "function") { // If a specific function is defined
+                            componentListeners = syiro.component.componentData[componentId]["handlers"][listener]; // Define componentListeners as the array of functions specific to that listener
+
+                            for (var individualFuncIndex in componentListeners){ // For each individual function in the componentListeners
+                                if (componentListeners[individualFuncIndex].toString() == specFunc.toString()){ // If the stringified forms of both functions match
+                                    componentListeners.splice(individualFuncIndex, 1); // Remove the specific function from the componentListeners by splicing the array (removing an item based on index and number defined)
+                                }
+                            }
+                        }
+
+                        if ((componentListeners == null) || (componentListeners.length == 0)){ // If the componentListeners is null or does NOT have a length (essentially null)
+                            delete syiro.component.componentData[componentId]["handlers"][listener]; // Remove the specific listener from this handler from the particular Component
+                            componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component)); // Remove the event listener (specific to the listener and func)
+                        }
                     }
-                }
 
-                successfulRemoval = true; // Return true since we successfully removed event listeners
+                    successfulRemoval = true; // Return true since we successfully removed event listeners
+                }
             }
         }
 

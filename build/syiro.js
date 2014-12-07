@@ -329,6 +329,7 @@ var syiro;
         };
         function Handler() {
             var component = arguments[0];
+            var eventData = arguments[1];
             var componentId;
             var passableValue = null;
             if ((typeof component.nodeType == "undefined") && (component !== window)) {
@@ -358,34 +359,35 @@ var syiro;
                     passableValue = componentElement.value;
                 }
             }
-            else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
-                if (component.hasAttribute("data-syiro-component-id")) {
-                    componentId = component.getAttribute("data-syiro-component-id");
-                }
-                else {
-                    if (component.hasAttribute("id")) {
-                        componentId = component.getAttribute("id");
+            else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1) || (component == document) || (component == window)) {
+                if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
+                    if (component.hasAttribute("data-syiro-component-id")) {
+                        componentId = component.getAttribute("data-syiro-component-id");
                     }
                     else {
-                        componentId = syiro.generator.IdGen(component.tagName.toLowerCase());
+                        if (component.hasAttribute("id")) {
+                            componentId = component.getAttribute("id");
+                        }
+                        else {
+                            componentId = syiro.generator.IdGen(component.tagName.toLowerCase());
+                        }
+                        component.setAttribute("data-syiro-component-id", componentId);
                     }
-                    component.setAttribute("data-syiro-component-id", componentId);
                 }
-                componentElement = component;
-            }
-            else if (component == document) {
-                componentId = "document";
-                componentElement = component;
-            }
-            else if (component == window) {
-                componentId = "window";
+                else if (component == document) {
+                    componentId = "document";
+                }
+                else if (component == window) {
+                    componentId = "window";
+                }
                 componentElement = component;
             }
             if (passableValue == null) {
-                passableValue = arguments[2];
+                passableValue = eventData;
             }
-            for (var individualFunctionId in syiro.component.componentData[componentId]["handlers"]) {
-                syiro.component.componentData[componentId]["handlers"][individualFunctionId].call(syiro, component, passableValue);
+            var listener = (eventData.type).toLowerCase().replace("on", "");
+            for (var individualFunctionId in syiro.component.componentData[componentId]["handlers"][listener]) {
+                syiro.component.componentData[componentId]["handlers"][listener][individualFunctionId].call(syiro, component, passableValue);
             }
         }
         events.Handler = Handler;
@@ -425,27 +427,27 @@ var syiro;
                         }
                     }
                 }
-                else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
-                    if (component.hasAttribute("data-syiro-component-id")) {
-                        componentId = component.getAttribute("data-syiro-component-id");
-                    }
-                    else {
-                        if (component.hasAttribute("id")) {
-                            componentId = component.getAttribute("id");
+                else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1) || (component == document) || (component == window)) {
+                    if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
+                        if (component.hasAttribute("data-syiro-component-id")) {
+                            componentId = component.getAttribute("data-syiro-component-id");
                         }
                         else {
-                            componentId = syiro.generator.IdGen(component.tagName.toLowerCase());
+                            if (component.hasAttribute("id")) {
+                                componentId = component.getAttribute("id");
+                            }
+                            else {
+                                componentId = syiro.generator.IdGen(component.tagName.toLowerCase());
+                            }
+                            component.setAttribute("data-syiro-component-id", componentId);
                         }
-                        component.setAttribute("data-syiro-component-id", componentId);
                     }
-                    componentElement = component;
-                }
-                else if (component == document) {
-                    componentId = "document";
-                    componentElement = component;
-                }
-                else if (component == window) {
-                    componentId = "window";
+                    else if (component == document) {
+                        componentId = "document";
+                    }
+                    else if (component == window) {
+                        componentId = "window";
+                    }
                     componentElement = component;
                 }
                 else {
@@ -458,14 +460,16 @@ var syiro;
                     if (typeof syiro.component.componentData[componentId] == "undefined") {
                         syiro.component.componentData[componentId] = {};
                     }
-                    if (typeof syiro.component.componentData[componentId]["handlers"] !== "undefined") {
-                        syiro.component.componentData[componentId]["handlers"] = syiro.component.componentData[componentId]["handlers"].push(listenerCallback);
+                    if (typeof syiro.component.componentData[componentId]["handlers"] == "undefined") {
+                        syiro.component.componentData[componentId]["handlers"] = {};
                     }
-                    else {
-                        syiro.component.componentData[componentId]["handlers"] = [listenerCallback];
-                        for (var individualListenerIndex in listeners) {
-                            componentElement.addEventListener(listeners[individualListenerIndex], syiro.events.Handler.bind(this, component));
+                    for (var individualListenerIndex in listeners) {
+                        var listener = listeners[individualListenerIndex];
+                        if (typeof syiro.component.componentData[componentId]["handlers"][listener] == "undefined") {
+                            syiro.component.componentData[componentId]["handlers"][listener] = [];
+                            componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component));
                         }
+                        syiro.component.componentData[componentId]["handlers"][listener].push(listenerCallback);
                     }
                 }
             }
@@ -475,61 +479,81 @@ var syiro;
             return allowListening;
         }
         events.Add = Add;
-        function Remove(component, specificFunc) {
+        function Remove() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
             var allowRemoval = true;
             var successfulRemoval = false;
+            var listeners;
+            var component;
             var componentId;
             var componentElement;
-            if ((typeof component.nodeType == "undefined") && (component !== window)) {
-                componentId = component["id"];
-                componentElement = syiro.component.Fetch(component);
-                if (componentElement !== null) {
-                    if (component["type"] == "list-item") {
-                        if (componentElement.querySelector('div[data-syiro-component="button"]') !== null) {
-                            allowRemoval = false;
-                        }
+            var specFunc;
+            if (args.length < 4) {
+                if ((typeof args[0] == "string") || ((typeof args[0] == "object") && (typeof args[0]["id"] == "undefined"))) {
+                    listeners = args[0];
+                    if (typeof listeners == "string") {
+                        listeners = listeners.trim().split(" ");
                     }
+                    component = args[1];
                 }
-            }
-            else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
-                componentId = component.getAttribute("data-syiro-component-id");
-                componentElement = component;
-            }
-            else if (component == document) {
-                componentId = "document";
-                componentElement = component;
-            }
-            else if (component == window) {
-                componentId = "window";
-                componentElement = component;
-            }
-            else {
-                allowRemoval = false;
-            }
-            if (allowRemoval == true) {
-                if ((componentElement !== undefined) && (componentElement !== null)) {
-                    var componentListeners;
-                    if (specificFunc == undefined) {
-                        componentListeners = null;
-                    }
-                    else {
-                        componentListeners = syiro.component.componentData[componentId]["handlers"];
-                        for (var individualFuncIndex in componentListeners) {
-                            if (componentListeners[individualFuncIndex].toString() == specificFunc.toString()) {
-                                componentListeners = componentListeners.splice(individualFuncIndex, 1);
+                else if (typeof args[0]["id"] !== "undefined") {
+                    component = args[0];
+                }
+                if (((args.length == 2) && (typeof args[1] == "function")) || ((args.length == 3) && (typeof args[2] == "function"))) {
+                    specFunc = args[(args.length - 1)];
+                }
+                if ((typeof component.nodeType == "undefined") && (component !== window)) {
+                    componentId = component["id"];
+                    componentElement = syiro.component.Fetch(component);
+                    if (componentElement !== null) {
+                        if (component["type"] == "list-item") {
+                            if (componentElement.querySelector('div[data-syiro-component="button"]') !== null) {
+                                allowRemoval = false;
                             }
                         }
                     }
-                    if ((componentListeners !== null) && (componentListeners.length !== 0)) {
-                        syiro.component.componentData[componentId]["handlers"] = componentListeners;
+                }
+                else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
+                    componentId = component.getAttribute("data-syiro-component-id");
+                    componentElement = component;
+                }
+                else if (component == document) {
+                    componentId = "document";
+                    componentElement = component;
+                }
+                else if (component == window) {
+                    componentId = "window";
+                    componentElement = component;
+                }
+                else {
+                    allowRemoval = false;
+                }
+                if (allowRemoval == true) {
+                    if (typeof listeners == "undefined") {
+                        listeners = Object.keys(syiro.component.componentData[componentId]["handlers"]);
                     }
-                    else {
-                        delete syiro.component.componentData[componentId]["handlers"];
-                        for (var individualEventListener in syiro.component.componentData[componentId]["listeners"]) {
-                            componentElement.removeEventListener(syiro.component.componentData[componentId]["listeners"][individualEventListener], syiro.events.Handler.bind(this, component));
+                    if ((componentElement !== undefined) && (componentElement !== null)) {
+                        for (var individualListenerIndex in listeners) {
+                            var listener = listeners[individualListenerIndex];
+                            var componentListeners = null;
+                            if (typeof specFunc == "function") {
+                                componentListeners = syiro.component.componentData[componentId]["handlers"][listener];
+                                for (var individualFuncIndex in componentListeners) {
+                                    if (componentListeners[individualFuncIndex].toString() == specFunc.toString()) {
+                                        componentListeners.splice(individualFuncIndex, 1);
+                                    }
+                                }
+                            }
+                            if ((componentListeners == null) || (componentListeners.length == 0)) {
+                                delete syiro.component.componentData[componentId]["handlers"][listener];
+                                componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component));
+                            }
                         }
+                        successfulRemoval = true;
                     }
-                    successfulRemoval = true;
                 }
             }
             return successfulRemoval;

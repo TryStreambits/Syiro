@@ -62,7 +62,7 @@ declare module syiro.events {
     var eventStrings: Object;
     function Handler(): void;
     function Add(...args: any[]): boolean;
-    function Remove(component: any, specificFunc?: Function): boolean;
+    function Remove(...args: any[]): boolean;
 }
 declare module syiro.generator {
     var lastUniqueIds: Object;

@@ -1363,7 +1363,7 @@ var syiro;
             else {
                 var codecErrorElement = syiro.generator.ElementCreator("div", {
                     "data-syiro-minor-component": "player-error",
-                    "content": "This video is not capable of being played on this browser or device. Please try a different device or browser."
+                    "content": "This " + component["type"].replace("-player", "") + " is not capable of being played on this browser or device. Please try a different device or browser."
                 });
                 var playerHalfHeight = ((playerComponentElement.clientHeight - 40) / 2);
                 syiro.component.CSS(codecErrorElement, "width", playerComponentElement.clientWidth.toString() + "px");

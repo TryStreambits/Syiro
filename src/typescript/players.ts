@@ -379,7 +379,7 @@ module syiro.player {
             var codecErrorElement = syiro.generator.ElementCreator("div", // Create a div to add to the player stating there is a codec error
                 {
                     "data-syiro-minor-component" : "player-error",
-                    "content" : "This video is not capable of being played on this browser or device. Please try a different device or browser."
+                    "content" : "This " + component["type"].replace("-player", "") + " is not capable of being played on this browser or device. Please try a different device or browser."
                 }
             );
 

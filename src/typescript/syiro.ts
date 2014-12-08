@@ -38,13 +38,18 @@ module syiro {
 
 		// #endregion
 
-		// #region Viewport Scaling Enabling - Automatically checks if there is a meta tag with viewport properties to help scale to mobile. If not, insert it.
+		// #region Head IE Compatibility && Viewport Scaling
 
 		var documentHeadSection : Element = document.querySelector("head"); // Get the head tag from the document
 
 		if (documentHeadSection == null){ // If the documentHeadSection doesn't actually exist
 			documentHeadSection = document.createElement("head"); // Create the head section / tag
 			document.querySelector("html").insertBefore(documentHeadSection, document.querySelector("head").querySelector("body")); // Insert the head tag before the body
+		}
+
+		if (documentHeadSection.querySelector('meta[http-equiv="X-UA-Compatible"]') == null){ // If the IE compat meta doesn't exist
+			var compatMetaTag : HTMLElement = syiro.generator.ElementCreator("meta", { "http-equiv" : "X-UA-Compatible", "content-attr" : "IE=edge"} ); // Create a meta tag, setting X-UA-Compatible to be IE edge
+			documentHeadSection.appendChild(compatMetaTag); // Append the meta tag
 		}
 
 		if (documentHeadSection.querySelector('meta[name="viewport"]') == null){ // If the viewportMetaTag does NOT exist

@@ -1433,16 +1433,23 @@ var syiro;
             var playerInnerContentElement = syiro.player.FetchInnerContentElement(component);
             var playerControl = playerElement.querySelector('div[data-syiro-component="player-control"]');
             var playButton = playerControl.querySelector('div[data-syiro-minor-component="player-button-play"]');
-            var timeLabel = playerControl.querySelector('time');
-            var volumeControl = playerControl.querySelector('div[data-syiro-minor-component="player-button-volume"]');
             playButton.removeAttribute("data-syiro-component-disabled");
             syiro.component.CSS(playButton, "background-image", false);
+            var timeLabel = playerControl.querySelector("time");
             timeLabel.removeAttribute("data-syiro-component-disabled");
+            var volumeControl = playerControl.querySelector('div[data-syiro-minor-component="player-button-volume"]');
             volumeControl.removeAttribute("data-syiro-component-status");
+            if (playerElement.querySelector('div[data-syiro-minor-component="player-error"]') !== null) {
+                playerElement.removeChild(playerElement.querySelector('div[data-syiro-minor-component="player-error"]'));
+            }
             playerElement.removeAttribute("data-syiro-component-status");
             playerElement.removeAttribute("data-syiro-component-changevolume");
-            playerInnerContentElement.pause();
-            syiro.player.SetTime(component, 0);
+            if (syiro.player.IsPlaying(component)) {
+                playerInnerContentElement.pause();
+            }
+            if (playerInnerContentElement.currentTime !== 0) {
+                syiro.player.SetTime(component, 0);
+            }
         }
         player.Reset = Reset;
         function SetSources(component, sources) {
@@ -1738,6 +1745,10 @@ var syiro;
         if (documentHeadSection == null) {
             documentHeadSection = document.createElement("head");
             document.querySelector("html").insertBefore(documentHeadSection, document.querySelector("head").querySelector("body"));
+        }
+        if (documentHeadSection.querySelector('meta[http-equiv="X-UA-Compatible"]') == null) {
+            var compatMetaTag = syiro.generator.ElementCreator("meta", { "http-equiv": "X-UA-Compatible", "content-attr": "IE=edge" });
+            documentHeadSection.appendChild(compatMetaTag);
         }
         if (documentHeadSection.querySelector('meta[name="viewport"]') == null) {
             var viewportMetaTag = syiro.generator.ElementCreator("meta", { "name": "viewport", "content-attr": "width=device-width, initial-scale=1,user-scalable=no" });

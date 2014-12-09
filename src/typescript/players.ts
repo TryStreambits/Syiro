@@ -504,9 +504,7 @@ module syiro.player {
             playerInnerContentElement.pause(); // Start by pausing the player to prevent timeupdate events
         }
 
-        if (playerInnerContentElement.currentTime !== 0){ // If the audio or video currentTime is not zero
-            syiro.player.SetTime(component, 0); // Reset the time
-        }
+        syiro.player.SetTime(component, 0); // Reset the time (if it needs to be reset to zero)
     }
 
     // #endregion
@@ -545,7 +543,11 @@ module syiro.player {
     export function SetTime(component : Object, time : number){
         var playerElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
         var playerInnerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Get the associated audio or video player
-        playerInnerContentElement.currentTime = time; // Set the playerInnerContentElement's currentTime to the time provided
+
+        if (playerInnerContentElement.currentTime !== time){ // If we are not setting the time to what it already is (for instance 0, which would cause an InvalidStateError)
+            playerInnerContentElement.currentTime = time; // Set the playerInnerContentElement's currentTime to the time provided
+        }
+
         playerElement.querySelector('div[data-syiro-component="player-control"]').querySelector("input").value = Math.floor(time); // Set the range input to the currentTime (rounded down)
         syiro.playercontrol.TimeLabelUpdater(syiro.component.FetchComponentObject(playerElement.querySelector('div[data-syiro-component="player-control"]')), 0, time); // Update the label
     }

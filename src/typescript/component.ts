@@ -171,6 +171,52 @@ module syiro.component {
 
 	// #endregion
 
+	// #region Scale Components
+	// This function is responsible for scaling particular Components based on screen information
+
+	export function Scale(){
+		var userHorizontalSpace : number = window.screen.width; // Define userHorizontalSpace as the space the user has, in pixels, horizontally.
+		var userVerticalSpace : number = window.screen.height; // Define userVerticalSpace as the space the user has, in pixels, vertically.
+
+		// #region Scaling Video Players
+
+		var videoPlayers = document.querySelectorAll('div[data-syiro-component="video-player"]'); // Get all Video Player Components on the page
+
+		if (videoPlayers.length !== 0){ // If there are Video Player Components on the page
+			for (var videoPlayerIndex in videoPlayers){ // For each Video Player Component in videoPlayers
+				var videoPlayerComponentElement : any = videoPlayers.item(videoPlayerIndex); // Fetch the Video Player Component Element
+				var videoPlayerComponentObject = syiro.component.FetchComponentObject(videoPlayerComponentElement); // Fetch the Component Object of this Video Player Component Element
+
+				var videoComponentId = videoPlayerComponentObject["id"]; // Get the Component Id of the Video Player
+				var componentInitialHeight : string = syiro.component.componentData[videoComponentId]["initialDimensions"][0]; // Get the initial height (of the first / original state) of the Video Player Component
+				var componentInitialWidth : string = syiro.component.componentData[videoComponentId]["initialDimensions"][1]; // Get the initial width (of the first / original state) of the Video Player Component
+				var componentScalingState : any = syiro.component.componentData[videoComponentId]["initialDimensions"][2]; // Get the current scaling state (original or not), if any, of the Video Player Component
+
+				if (componentScalingState !== "original"){ // If the current state is not defined or has been scaled before (and we are resetting the scaling)
+					syiro.component.componentData[videoComponentId]["initialDimensions"][2] = "original"; // Set to "original" state
+					videoPlayerComponentElement.setAttribute("height", componentInitialHeight.toString() + "px"); // Set the height to the initial height defined
+					videoPlayerComponentElement.setAttribute("width", componentInitialWidth.toString() + "px"); // Set the width to the initial width defined
+				}
+				else{ // If the componentScalingState is "original" and we need to now scale the component
+					syiro.component.componentData[videoComponentId]["initialDimensions"][2] = "scaled"; // Set to "original" state
+					var videoWidth : number = videoPlayerComponentElement.parentElement.clientWidth; // Set to width of parent Element
+
+					if (videoWidth > window.screen.width){ // If the video's width is greater than the screen width
+						videoWidth = window.screen.width; // Set the videoWidth to screen width
+					}
+
+					var videoHeight : number = Number((videoWidth / 1.77).toFixed()); // Proper Component Height to ensure 16:9 aspect ratio
+					videoPlayerComponentElement.setAttribute("height", videoHeight.toString() + "px"); // Set the height to the initial height defined
+					videoPlayerComponentElement.setAttribute("width", videoWidth.toString() + "px"); // Set the width to the initial width defined
+				}
+			}
+		}
+
+		// #endregion
+	}
+
+	// #endregion
+
 	// #region Update Stored Component's HTMLElement, but only if it exists in the first place.
 
 	export function Update(componentId : string, componentElement : Element){

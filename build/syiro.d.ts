@@ -41,6 +41,7 @@ declare module syiro.component {
     function Fetch(component: Object): any;
     function FetchComponentObject(componentElement: any): Object;
     function FetchDimensionsAndPosition(component: any): Object;
+    function Scale(): void;
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): boolean;

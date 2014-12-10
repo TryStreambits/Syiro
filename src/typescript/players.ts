@@ -574,12 +574,26 @@ module syiro.player {
         var shareButton : Element = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the share button element
 
         if (syiro.component.CSS(shareDialog, "visibility") !== "visible"){ // If the Share Dialog is currently not showing
+            var playerShareHeight : number; // Define playerShareHeight as a number (height that the dialog should be)
+
+            if (component["type"] == "audio-player"){ // If we are showing a share dialog for an Audio Player
+                    playerShareHeight = 100; // Set to 100 since the Audio Player has a fixed height of 100px
+            }
+            else{ // If we are showing a share dialog for the Video Player
+                playerShareHeight = syiro.player.FetchInnerContentElement(component).clientHeight; // Set to the height of the inner video (content) Element
+            }
+
+            syiro.component.CSS(shareDialog, "height", playerShareHeight.toString() + "px"); // Set the height of the share dialog
+            syiro.component.CSS(shareDialog, "width", componentElement.clientWidth.toString() + "px"); // Set the width of the share dialog to be the same as the componentElement
+
             shareButton.setAttribute("data-syiro-component-status", "true"); // Set the share button status to true
             syiro.component.CSS(shareDialog, "visibility", "visible"); // Show the share dialog
         }
         else{ // If the Share dialog currently IS showing
             shareButton.removeAttribute("data-syiro-component-status"); // Remove the share button status
             syiro.component.CSS(shareDialog, "visibility", false); // Hide the share dialog (removing the visibility attribute, putting the Share Dialog back to default state)
+            syiro.component.CSS(shareDialog, "height", false); // Remove the height attribute from the Player Share Dialog
+            syiro.component.CSS(shareDialog, "width", false); // Remove the width attribute from the Player Share Dialog
         }
     }
 
@@ -765,9 +779,6 @@ module syiro.audioplayer {
                     var playerShareLabel : Element = syiro.generator.ElementCreator("label", { "content" : "Share" }); // Create a label with the content "Share"
                     playerShareDialog.appendChild(playerShareLabel);
                     playerShareDialog.appendChild(syiro.component.Fetch(properties["share"])); // Append the List Element to the playerShareDialog
-                    syiro.CSS(playerShareDialog, "height", "100px"); // Set the height of the share dialog to be 100px
-                    syiro.CSS(playerShareDialog, "width", properties["width"].toString() + "px"); // Set the width of the share dialog to be the same as the Audio Player
-
                     componentElement.insertBefore(playerShareDialog, componentElement.firstChild); // Prepend the Share Dialog
                 }
             }
@@ -809,6 +820,7 @@ module syiro.videoplayer {
             );
 
             // #region Video Dimensions Calculation
+
             var videoHeight : number = properties["height"]; // Define videoHeight as the height the video in the Video Player should be
             var videoWidth : number = properties["width"]; // Define videoWidth as the width the video in the Video Player should be
 
@@ -824,7 +836,7 @@ module syiro.videoplayer {
                 videoWidth = window.screen.width - 10; // Set the videoWidth to screen width and some padding on the side
             }
 
-            var properVideoHeight : number = Number((videoWidth / 1.77).toFixed()); // Proper Component Height to ensure 16:9 aspect ration
+            var properVideoHeight : number = Number((videoWidth / 1.77).toFixed()); // Proper Component Height to ensure 16:9 aspect ratio
 
             if (videoHeight !== properVideoHeight){ // In the event the player has an incorrect aspect ratio
                 videoHeight = properVideoHeight; // Set the height to enable the video to have the correct ratio
@@ -874,9 +886,6 @@ module syiro.videoplayer {
                     var playerShareLabel : Element = syiro.generator.ElementCreator("label", { "content" : "Share" }); // Create a label with the content "Share"
                     playerShareDialog.appendChild(playerShareLabel);
                     playerShareDialog.appendChild(syiro.component.Fetch(properties["share"])); // Append the List Element to the playerShareDialog
-                    syiro.CSS(playerShareDialog, "height", videoHeight.toString() + "px"); // Set the height of the share dialog to be the same as the video
-                    syiro.CSS(playerShareDialog, "width", videoWidth.toString() + "px"); // Set the width of the share dialog to be the same as the video
-
                     componentElement.insertBefore(playerShareDialog, componentElement.firstChild); // Prepend the Share Dialog
                 }
             }
@@ -885,7 +894,10 @@ module syiro.videoplayer {
 
             componentElement.appendChild(playerControlElement); // Append the player control
 
-            syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Store the Video Player Component Element we generated
+            syiro.component.componentData[componentId] = { // Store the Video Player Component Element data we generated
+                "HTMLElement" : componentElement, // HTMLElement we generated
+                "initialDimensions" : [videoHeight, videoWidth] // Initial Dimensions
+            };
             return { "id" : componentId, "type" : "video-player" }; // Return a Component Object
         }
         else{ // If video is not defined in the properties

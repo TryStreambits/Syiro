@@ -161,6 +161,37 @@ var syiro;
             return dimensionsAndPosition;
         }
         _component.FetchDimensionsAndPosition = FetchDimensionsAndPosition;
+        function Scale() {
+            var userHorizontalSpace = window.screen.width;
+            var userVerticalSpace = window.screen.height;
+            var videoPlayers = document.querySelectorAll('div[data-syiro-component="video-player"]');
+            if (videoPlayers.length !== 0) {
+                for (var videoPlayerIndex in videoPlayers) {
+                    var videoPlayerComponentElement = videoPlayers.item(videoPlayerIndex);
+                    var videoPlayerComponentObject = syiro.component.FetchComponentObject(videoPlayerComponentElement);
+                    var videoComponentId = videoPlayerComponentObject["id"];
+                    var componentInitialHeight = syiro.component.componentData[videoComponentId]["initialDimensions"][0];
+                    var componentInitialWidth = syiro.component.componentData[videoComponentId]["initialDimensions"][1];
+                    var componentScalingState = syiro.component.componentData[videoComponentId]["initialDimensions"][2];
+                    if (componentScalingState !== "original") {
+                        syiro.component.componentData[videoComponentId]["initialDimensions"][2] = "original";
+                        videoPlayerComponentElement.setAttribute("height", componentInitialHeight.toString() + "px");
+                        videoPlayerComponentElement.setAttribute("width", componentInitialWidth.toString() + "px");
+                    }
+                    else {
+                        syiro.component.componentData[videoComponentId]["initialDimensions"][2] = "scaled";
+                        var videoWidth = videoPlayerComponentElement.parentElement.clientWidth;
+                        if (videoWidth > window.screen.width) {
+                            videoWidth = window.screen.width;
+                        }
+                        var videoHeight = Number((videoWidth / 1.77).toFixed());
+                        videoPlayerComponentElement.setAttribute("height", videoHeight.toString() + "px");
+                        videoPlayerComponentElement.setAttribute("width", videoWidth.toString() + "px");
+                    }
+                }
+            }
+        }
+        _component.Scale = Scale;
         function Update(componentId, componentElement) {
             if (syiro.component.componentData[componentId]["HTMLElement"] !== undefined) {
                 syiro.component.componentData[componentId]["HTMLElement"] = componentElement;
@@ -1447,9 +1478,7 @@ var syiro;
             if (syiro.player.IsPlaying(component)) {
                 playerInnerContentElement.pause();
             }
-            if (playerInnerContentElement.currentTime !== 0) {
-                syiro.player.SetTime(component, 0);
-            }
+            syiro.player.SetTime(component, 0);
         }
         player.Reset = Reset;
         function SetSources(component, sources) {
@@ -1473,7 +1502,9 @@ var syiro;
         function SetTime(component, time) {
             var playerElement = syiro.component.Fetch(component);
             var playerInnerContentElement = syiro.player.FetchInnerContentElement(component);
-            playerInnerContentElement.currentTime = time;
+            if (playerInnerContentElement.currentTime !== time) {
+                playerInnerContentElement.currentTime = time;
+            }
             playerElement.querySelector('div[data-syiro-component="player-control"]').querySelector("input").value = Math.floor(time);
             syiro.playercontrol.TimeLabelUpdater(syiro.component.FetchComponentObject(playerElement.querySelector('div[data-syiro-component="player-control"]')), 0, time);
         }
@@ -1490,12 +1521,23 @@ var syiro;
             var shareDialog = componentElement.querySelector('div[data-syiro-minor-component="player-share"]');
             var shareButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]');
             if (syiro.component.CSS(shareDialog, "visibility") !== "visible") {
+                var playerShareHeight;
+                if (component["type"] == "audio-player") {
+                    playerShareHeight = 100;
+                }
+                else {
+                    playerShareHeight = syiro.player.FetchInnerContentElement(component).clientHeight;
+                }
+                syiro.component.CSS(shareDialog, "height", playerShareHeight.toString() + "px");
+                syiro.component.CSS(shareDialog, "width", componentElement.clientWidth.toString() + "px");
                 shareButton.setAttribute("data-syiro-component-status", "true");
                 syiro.component.CSS(shareDialog, "visibility", "visible");
             }
             else {
                 shareButton.removeAttribute("data-syiro-component-status");
                 syiro.component.CSS(shareDialog, "visibility", false);
+                syiro.component.CSS(shareDialog, "height", false);
+                syiro.component.CSS(shareDialog, "width", false);
             }
         }
         player.ToggleShareDialog = ToggleShareDialog;
@@ -1607,8 +1649,6 @@ var syiro;
                         var playerShareLabel = syiro.generator.ElementCreator("label", { "content": "Share" });
                         playerShareDialog.appendChild(playerShareLabel);
                         playerShareDialog.appendChild(syiro.component.Fetch(properties["share"]));
-                        syiro.CSS(playerShareDialog, "height", "100px");
-                        syiro.CSS(playerShareDialog, "width", properties["width"].toString() + "px");
                         componentElement.insertBefore(playerShareDialog, componentElement.firstChild);
                     }
                 }
@@ -1673,13 +1713,14 @@ var syiro;
                         var playerShareLabel = syiro.generator.ElementCreator("label", { "content": "Share" });
                         playerShareDialog.appendChild(playerShareLabel);
                         playerShareDialog.appendChild(syiro.component.Fetch(properties["share"]));
-                        syiro.CSS(playerShareDialog, "height", videoHeight.toString() + "px");
-                        syiro.CSS(playerShareDialog, "width", videoWidth.toString() + "px");
                         componentElement.insertBefore(playerShareDialog, componentElement.firstChild);
                     }
                 }
                 componentElement.appendChild(playerControlElement);
-                syiro.component.componentData[componentId] = { "HTMLElement": componentElement };
+                syiro.component.componentData[componentId] = {
+                    "HTMLElement": componentElement,
+                    "initialDimensions": [videoHeight, videoWidth]
+                };
                 return { "id": componentId, "type": "video-player" };
             }
             else {

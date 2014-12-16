@@ -28,7 +28,7 @@ module syiro.component {
 		component["id"] = componentId; // Add the component Id to the object that we will be returning to the developer
 
 		if (type == "dropdown"){ // If we are defining a Dropdown Syiro component
-			syiro.events.Add(syiro.events.eventStrings["press"], component, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
+			syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
 		}
 
 		return component; // Return the component Object
@@ -123,7 +123,7 @@ module syiro.component {
 	export function Fetch(component : Object) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
 		var componentElement : Element; // The (HTML)Element of the Syiro component we'll be returning
 
-		if (syiro.component.componentData[component["id"]]["HTMLElement"] !== undefined){ // If an HTMLElement  is defined, meaning this is a new component that has not been put in the DOM yet
+		if (typeof syiro.component.componentData[component["id"]]["HTMLElement"] !== "undefined"){ // If an HTMLElement  is defined, meaning this is a new component that has not been put in the DOM yet
 			componentElement = syiro.component.componentData[component["id"]]["HTMLElement"]; // Get the HTMLElement stored in the componentData
 		}
 		else{ // If the HTMLElement  is NOT defined (meaning the element is could be in the DOM)

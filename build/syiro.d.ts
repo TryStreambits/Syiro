@@ -24,13 +24,14 @@ interface HTMLElement {
 }
 interface Window {
     crypto: any;
+    ontouchend: any;
 }
 declare module syiro.plugin.alternativeInit {
     function Init(): void;
     function Wait(): void;
 }
 declare module syiro.animation {
-    function Animate(component: Object, animation: string, postAnimationFunction?: Function): void;
+    function Animate(component: Object, properties: Object): void;
     function FadeIn(component: Object, postAnimationFunction?: Function): void;
     function FadeOut(component: Object, postAnimationFunction?: Function): void;
 }
@@ -53,6 +54,7 @@ declare module syiro.device {
     var HasIndexedDB: boolean;
     var HasLocalStorage: boolean;
     var IsOnline: boolean;
+    var SupportsTouch: boolean;
     var IsSubHD: boolean;
     var IsHD: boolean;
     var IsFullHDOrAbove: boolean;
@@ -122,7 +124,8 @@ declare module syiro.player {
     function SetSources(component: Object, sources: any): void;
     function SetTime(component: Object, time: number): void;
     function SetVolume(component: Object, volume: number): void;
-    function ToggleShareDialog(component?: Object): void;
+    function TogglePlayerControl(component: Object, forceShow?: boolean): void;
+    function ToggleShareDialog(component: Object): void;
 }
 declare module syiro.playercontrol {
     function Generate(properties: Object): Object;
@@ -146,7 +149,7 @@ declare module syiro {
     var FetchDimensionsAndPosition: typeof component.FetchDimensionsAndPosition;
     var Add: typeof component.Add;
     var Remove: typeof component.Remove;
-    var Animate: typeof animation.Animate;
+    function Animate(...args: any[]): void;
     var CSS: typeof component.CSS;
     var AddListeners: typeof events.Add;
     var RemoveListeners: typeof events.Remove;

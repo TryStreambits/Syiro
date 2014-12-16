@@ -8,9 +8,8 @@
 module syiro.events {
 
     export var eventStrings : Object = { // Set syiro.component.listenerStrings as an Object containing commonly used event lister combinations
-        "down" : ["mousedown", "touchstart", "MSPointerDown"],
-        "up" : ["mouseup", "touchend", "MSPointerUp"],
-        "press" : ["click"]
+        "down" : ["mousedown", "touchstart"],
+        "up" : ["mouseup", "touchend"]
     };
 
     // #region Syiro Component and Generic Element Event Handler
@@ -37,15 +36,18 @@ module syiro.events {
                     passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
                 }
 
-                syiro.animation.Animate(component, animationString,
-                    function(component : Object){ // Post-Animation Function
-                        var buttonElement : Element = syiro.component.Fetch(component); // Get the buttonElement based on the component Object
+                syiro.animation.Animate(component, // Animate the Toggle Button
+                    {
+                        "animation" : animationString, // Define animation as either toggle-forward-animation or toggle-backward-animation
+                        "function" : function(component : Object){ // Post-Animation Function
+                            var buttonElement : Element = syiro.component.Fetch(component); // Get the buttonElement based on the component Object
 
-                        if (buttonElement.hasAttribute("data-syiro-component-status") == false){ // If the status is not "true" / active
-                            buttonElement.setAttribute("data-syiro-component-status", "true"); // Set to true
-                        }
-                        else{ // If the status IS true
-                            buttonElement.removeAttribute("data-syiro-component-status"); // Remove the buttonElement component status
+                            if (buttonElement.hasAttribute("data-syiro-component-status") == false){ // If the status is not "true" / active
+                                buttonElement.setAttribute("data-syiro-component-status", "true"); // Set to true
+                            }
+                            else{ // If the status IS true
+                                buttonElement.removeAttribute("data-syiro-component-status"); // Remove the buttonElement component status
+                            }
                         }
                     }
                 );
@@ -84,7 +86,7 @@ module syiro.events {
             passableValue = eventData; // Simply set the passableValue to the event data passed
         }
 
-        var listener : string = (eventData.type).toLowerCase().replace("on", ""); // Ensure the event type passed is simplified and lowercased
+        var listener : string = (eventData.type).toLowerCase().slice(0,2).replace("on", "") + (eventData.type).toLowerCase().slice(2); // Ensure the event type passed is simplified and lowercased (strip out any beginning mention of "on")
 
         for (var individualFunctionId in syiro.component.componentData[componentId]["handlers"][listener]){ // For each function that is related to the Component for this particular listener
             syiro.component.componentData[componentId]["handlers"][listener][individualFunctionId].call(syiro, component, passableValue); // Call the function, passing along the passableValue and the Component
@@ -108,7 +110,7 @@ module syiro.events {
                 listenerCallback = args[1]; // Handler is the second argument
 
                 if (component["type"] !== "searchbox"){ // If we are adding listeners to a Component that is NOT a Searchbox (which uses a unique listener)
-                    listeners = syiro.events.eventStrings["press"]; // Use click / touch related events
+                    listeners = syiro.events.eventStrings["up"]; // Use click / touch related events
                 }
                 else{ // If the Component IS a Searchbox
                     listeners = ["keyup"]; // Use the keyup listener
@@ -118,6 +120,28 @@ module syiro.events {
                 listeners = args[0]; // Set listeners to the first argument
                 component = args[1]; // Set component to the second argument
                 listenerCallback = args[2]; // Set the handler to the third argument
+            }
+
+            if ((typeof listeners).toLowerCase() == "string"){ // If the listeners is an array / object
+                listeners = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
+            }
+
+            if (syiro.device.SupportsTouch == true){ // If we are adding events to a device that supports touch, do a courtesy check of removing mouse oriented events
+                if (listeners.indexOf("mouseup") !== -1){ // If the listeners has mouseup
+                    listeners.splice(listeners.indexOf("mouseup"), 1); // Remove "mouseup" item from listeners
+
+                    if (listeners.indexOf("touchend") == -1){ // Consequently, if the developer only added mouseup and not touchend as well
+                        listeners.push("touchend"); // Push touchend to the listeners Array
+                    }
+                }
+
+                if (listeners.indexOf("mousedown") > -1){ // If the listeners has mousedown
+                    listeners.splice(listeners.indexOf("mousedown"), 1); // Remove "mousedown" item from listeners
+
+                    if (listeners.indexOf("touchstart") == -1){ // Consequently, if the developer only added mousedown and not touchstart as well
+                        listeners.push("touchstart"); // Push touchstart to the listeners Array
+                    }
+                }
             }
 
             var componentElement : any; // Define componentElement as an Element
@@ -162,10 +186,6 @@ module syiro.events {
             }
 
             if (allowListening == true){ // If allowListening is TRUE
-                if ((typeof listeners).toLowerCase() == "string"){ // If the listeners is an array / object
-                    listeners = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
-                }
-
                 if (typeof syiro.component.componentData[componentId] == "undefined"){ // If the Component is not defined in componentData yet (for instance, normal Elements, document, or window)
                     syiro.component.componentData[componentId] = {}; // Define componentId in componentData as an empty Object
                 }

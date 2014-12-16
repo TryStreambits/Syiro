@@ -16,6 +16,7 @@ module syiro.device {
     export var HasIndexedDB : boolean = true; // Define HasIndexedDB as a boolean if the device has IndexedDB support.
     export var HasLocalStorage : boolean = true; // Define HasLocalStorage as a boolean if the device has LocalStorage support.
     export var IsOnline : boolean = true; // Define IsOnline as a boolean if the device is online.
+    export var SupportsTouch : boolean = false; // Define SupportsTouch as a boolean, defaulting to false, as to whether or not the device supports touch.
 
     // #region Screen Size Variables
 
@@ -68,6 +69,10 @@ module syiro.device {
             );
         }
 
+        if ((typeof window.ontouchend !== "undefined") || ((typeof navigator.maxTouchPoints !== "undefined") && (navigator.maxTouchPoints > 0))){ // If the device supports ontouchend event or supports touch points
+            syiro.device.SupportsTouch = true; // Set syiro.device.SupportsTouch to true
+        }
+
         syiro.device.FetchScreenDetails(); // Do an initial fetch of the screen details
 
         syiro.events.Add("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing
@@ -98,7 +103,7 @@ module syiro.device {
     }
 
     // #endregion
-    
+
 }
 
 // #endregion

@@ -21,7 +21,6 @@
 	background-image : url("img/@{iconImage}.png"); // Set the background-image to img/iconImage.png
 	background-size: unit(@iconSize, px); // Set the background-size to the iconSize
 	background-repeat: no-repeat; // Don't repeat the icon
-	image-rendering : optimizequality; // Optimize quality
 }
 
 //#endregion
@@ -68,6 +67,7 @@ header[data-syiro-component="header"], footer[data-syiro-component="footer"] {
 // #region Page Component
 
 body {
+	image-rendering: optimizequality !important; // Optimize for quality in all images in the page
 	margin: 0px;
 	overflow-x: hidden;
 }

@@ -4,9 +4,9 @@
 
 div[data-syiro-component="player-control"]{
     float: left;
-    height: 50px;
+    height: 60px;
     width: 100%; // Scales to width of video player if necessary
-    min-width: 350px; // Minimum width of the audio player
+    min-width: 400px; // Minimum width of the audio player
     background-color: @syiroSecondaryColor; // Secondary "Dark" control background
 
     & > div[data-syiro-component="button"][data-syiro-component-type="basic"]{ // Custom LESS for Basic Button Components inside Player Control
@@ -58,15 +58,11 @@ div[data-syiro-component="player-control"]{
             -moz-appearance: none !important; // No Firefox styling
             -webkit-appearance: none !important; // No WebKit styling
             float: left;
-            height: 7.5px !important;
-            width: auto !important;
+            height: 10px !important;
+            width: 100% !important; // Have it fill the entire player-control top
             background-color: @syiroWhite;
-            border-radius: 3.75px !important;
-            border-top: 0 !important;
-            border-bottom: 0 !important;
-            margin-top: 21.75px !important; // Center on Player Control
-            margin-left: 0 !important;
-            margin-right: 0 !important;
+            border: 0; // No border
+            margin: 0 !important;
             padding: 0 !important;
         }
 
@@ -78,8 +74,13 @@ div[data-syiro-component="player-control"]{
             .trackProperties; // Import the trackProperties
         }
 
-        &::-ms-fill-lower, &::-ms-fill-upper{ // Internet Explorer - Fill
-            height: 7.5px;
+        &::-ms-fill-lower{ // Internet Explorer - Fill Start
+            height: 10px;
+            background-color: @syiroPrimaryColor; // Primary color
+        }
+
+        &::-ms-fill-upper{ // Internet Explorer - Fill After
+            height: 10px;
             background-color: transparent !important; // No background
         }
 
@@ -102,12 +103,12 @@ div[data-syiro-component="player-control"]{
             -moz-appearance: none !important; // No Firefox appearance
             -webkit-appearance: none !important; // No WebKit appearance
 
-            height: 16px !important;
-            width: 16px !important;
+            height: 10px !important;
+            width: 10px !important;
             border: 0 !important;
-            background-color: @syiroPrimaryColor !important;
+            background-color: darken(@syiroPrimaryColor, 10%) !important; // Have the thumb be slightly darker to allow differentation compared to the primary color
             background-image: none; // Mozilla applies an SVG image as the thumbnail. Lets remove that.
-            border-radius: 8px; // Make it round
+            border-radius: 0; // No border radius
         }
 
         &::-moz-range-thumb { // Firefox "Thumb" Styling
@@ -154,7 +155,7 @@ div[data-syiro-minor-component="player-error"]{
     margin: 0;
     padding: 0;
     position: absolute;
-    z-index: 10; // Force above the video, video poster, and player control
+    z-index: 10; // Force above all content in the Audio Player or Video Player
     visibility: hidden; // Default to not being visible
     left: 0; // Force to left
 }
@@ -202,7 +203,7 @@ div[data-syiro-component="audio-player"]{
     float: left;
     height: auto;
     min-height: 50px; // Minimum height of player is the Player Control
-    max-height: 150px; // Maximum height of player is the Player Control and Player Information
+    max-height: 160px; // Maximum height of player is the Player Control and Player Information
     background-color: @syiroGrey; // Grey background
 
     & > audio {
@@ -274,17 +275,19 @@ div[data-syiro-component="video-player"]{
         }
     }
 
-    & > div[data-syiro-minor-component="video-ad"]{ // Video "Ad" Label
-        float: left;
-        height: 40px;
-        width: 50px;
-        color: #fafafa;
-        text-align: center; // Center text
-        line-height: 40px;
-        background-color: rgba(51,51,51,0.6); // #333333 at 60% opacity
-        position: fixed;
-        z-index: 4; // Sit below video poster, will only show when video-poster disappears
-    }
+    /*
+        & > div[data-syiro-minor-component="video-ad"]{ // Video "Ad" Label
+            float: left;
+            height: 40px;
+            width: 50px;
+            color: #fafafa;
+            text-align: center; // Center text
+            line-height: 40px;
+            background-color: rgba(51,51,51,0.6); // #333333 at 60% opacity
+            position: fixed;
+            z-index: 4; // Sit below video poster, will only show when video-poster disappears
+        }
+    */
 
     & > img[data-syiro-minor-component="video-poster"]{ // Video Poster
         float: left;
@@ -297,6 +300,7 @@ div[data-syiro-component="video-player"]{
 
     & > video { // Inner video
         float: left;
+        height: 100%; // 100% height of the Player Component
         width: 100%; // 100% width of Player Component
         background-color: black; // Set background color of video to black in the event it doesn't have the proper aspect ratio, to make any letterboxing less jarring
 
@@ -309,6 +313,7 @@ div[data-syiro-component="video-player"]{
     & > div[data-syiro-component="player-control"] { // Overrides for Video Player's Player Control
         position: relative;
         z-index: 6; // Force above video poster
+        bottom: 60px; // Ensure the Player Control is on the bottom edge of the Video Player
     }
 }
 

@@ -68,14 +68,20 @@ module syiro.player {
             var posterImageElement : Element = componentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
 
             if (posterImageElement !== null){ // If the posterImageElement exists
-                syiro.component.CSS(playerControlComponent, "opacity", "0.8"); // Set opacity to 80%
+                syiro.component.CSS(playerControlArea, "opacity", "0.8"); // Set opacity to 0.8
 
-                syiro.events.Add(syiro.events.eventStrings["press"], posterImageElement, // Add mousepress listeners to the posterImageElement
+                syiro.events.Add(syiro.events.eventStrings["up"], posterImageElement, // Add mouseup, touchend, etc listeners to the posterImageElement
                     function(){
                         var posterImageElement : Element = arguments[0]; // Set the posterImageElement as the first argument passed
+                        var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
+                        var playerComponentObject = syiro.component.FetchComponentObject(posterImageElement.parentElement); // Fetch the Video Player Component (which is the parent of posterImageElement)
 
                         syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
-                        syiro.player.PlayOrPause(syiro.component.FetchComponentObject(posterImageElement.parentElement)); // Play the video
+                        syiro.player.PlayOrPause(playerComponentObject); // Play the video
+
+                        if (e.type.indexOf("touchend") !== -1){ // If the event was touch
+                            syiro.player.TogglePlayerControl(playerComponentObject, false); // Hide the Player Control as well
+                        }
                     }
                 );
             }
@@ -86,11 +92,16 @@ module syiro.player {
 
             syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, // Add mouseup / touchup listeners to the innerContentElement
                 function(){
-                    var innerContentElement : Element = arguments[0]; // Get the innerContentElement passed as argument 1
+                    var innerContentElement : Element = arguments[0]; // Get the innerContentElement passed as argument 0
                     var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
 
-                    if (e.button == 0){
-                        syiro.player.PlayOrPause(syiro.component.FetchComponentObject(innerContentElement.parentElement)); // Play the video
+                    var playerComponent = syiro.component.FetchComponentObject(innerContentElement.parentElement); // Fetch the Component Object of the innerContentElement's parentElement
+
+                    if (e.type.indexOf("touchend") == -1){ // If it was not touch that triggered the event
+                        syiro.player.PlayOrPause(playerComponent); // Play / pause the video
+                    }
+                    else{ // If it was touch that triggered the event
+                        syiro.player.TogglePlayerControl(playerComponent); // Toggle the control
                     }
                 }
             );
@@ -102,7 +113,25 @@ module syiro.player {
             syiro.events.Add("contextmenu", componentElement,
                 function(){
                     var e : Event = arguments[1]; // Get the Mouse Event typically passed to the function
-                    e.preventDefault(); // Prevent the default action, like showing a context menu for the poster image, or context menu for the video
+                    e.preventDefault();
+                }
+            );
+
+            // #endregion
+
+            // #region Video Player Mousenter / Mouseleave Handling
+
+            syiro.events.Add("mouseenter", componentElement, // Add a mouseenter event for the Video Player that shows the Video Player inner Player Control
+                function(){
+                    var componentElement : Element = arguments[0]; // Get the componentElement passed as argument 0
+                    syiro.player.TogglePlayerControl(syiro.component.FetchComponentObject(componentElement), true); // Show the control (send true, signifying to show as oppose to hide)
+                }
+            );
+
+            syiro.events.Add("mouseleave", componentElement, // Add a mouseleave event for the Video Player that hides the Video Player inner Player Control
+                function(){
+                    var componentElement : Element = arguments[0]; // Get the componentElement passed as argument 0
+                    syiro.player.TogglePlayerControl(syiro.component.FetchComponentObject(componentElement), false); // Hide the control (send false, signifying to hide as oppose to show)
                 }
             );
 
@@ -121,6 +150,7 @@ module syiro.player {
             syiro.events.Add(playButtonComponent,
                 function(){
                     var playButtonComponent : Object = arguments[0]; // Get the Play Button that was clicked
+                    var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
                     var playButton : Element = syiro.component.Fetch(playButtonComponent); // Get the Play Button Element
 
                     // #region Player Component & Element Defining
@@ -131,6 +161,10 @@ module syiro.player {
                     // #endregion
 
                     syiro.player.PlayOrPause(playerElementComponent, playButtonComponent); // Switch the status of the Player to either play or pause
+
+                    if ((playerElementComponent["type"] == "video-player") && (syiro.player.IsPlaying(playerElementComponent) == true) && (e.type.indexOf("touchend") !== -1)){ // If the play button was triggered by touch and we are now playing video content
+                        syiro.player.TogglePlayerControl(playerElementComponent); // Toggle the control
+                    }
                 }
             );
 
@@ -209,7 +243,7 @@ module syiro.player {
             var shareButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the shareButton if it exists
 
             if (shareButton !== null){ // If the share button exists
-                syiro.events.Add(syiro.events.eventStrings["press"], syiro.component.FetchComponentObject(shareButton), syiro.player.ToggleShareDialog.bind(this, component)); // Add an event listener to the button that calls ToggleShareDialog, binding to the Player Component
+                syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(shareButton), syiro.player.ToggleShareDialog.bind(this, component)); // Add an event listener to the button that calls ToggleShareDialog, binding to the Player Component
             }
 
             // #endregion
@@ -345,24 +379,9 @@ module syiro.player {
 
                     for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
                         playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
-
-                        if (playerRangeAttribute == "max"){ // If we are updated the max (contentDuration) attribute
-                            syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
-
-                            // #region Input Range Width Calculation
-
-                            var newTimeWidth = playButton.parentElement.querySelector("time").clientWidth + 25; // Get the current width (add an additional amount to compensate for margins and character width)
-                            var inputRangeWidth = (playButton.parentElement.clientWidth - ((36 * 2) + (14 * 2) +  newTimeWidth)); // Do an initial calculation of the width of the input range, which is the width minus two buttons, their margins (14 each) and time width
-
-                            if (playButton.parentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]') !== null){ // If the share attribute is defined
-                                inputRangeWidth = inputRangeWidth - (36 + 14); // Make sure the inputRange size is changed since we are introducing another button
-                            }
-
-                            syiro.component.CSS(playerRange, "width", inputRangeWidth.toString() + "px !important"); // Update the inputRange CSS
-
-                            // #endregion
-                        }
                     }
+
+                    syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
                 }
 
                 if (innerContentElement.paused !== true){ // If the audio or video Element is playing
@@ -546,10 +565,9 @@ module syiro.player {
 
         if (playerInnerContentElement.currentTime !== time){ // If we are not setting the time to what it already is (for instance 0, which would cause an InvalidStateError)
             playerInnerContentElement.currentTime = time; // Set the playerInnerContentElement's currentTime to the time provided
+            playerElement.querySelector('div[data-syiro-component="player-control"]').querySelector("input").value = Math.floor(time); // Set the range input to the currentTime (rounded down)
+            syiro.playercontrol.TimeLabelUpdater(syiro.component.FetchComponentObject(playerElement.querySelector('div[data-syiro-component="player-control"]')), 0, time); // Update the label
         }
-
-        playerElement.querySelector('div[data-syiro-component="player-control"]').querySelector("input").value = Math.floor(time); // Set the range input to the currentTime (rounded down)
-        syiro.playercontrol.TimeLabelUpdater(syiro.component.FetchComponentObject(playerElement.querySelector('div[data-syiro-component="player-control"]')), 0, time); // Update the label
     }
 
     // #endregion
@@ -564,9 +582,50 @@ module syiro.player {
 
     // #endregion
 
+    // #region Toggle Player Control
+
+    export function TogglePlayerControl(component : Object, forceShow ?: boolean){
+        var playerElement : Element = syiro.component.Fetch(component); // Fetch the Player Component
+        var playerControlElement : Element = playerElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control of this particular Player
+        var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get this particular Player Control Component Object for animation
+        var currentAnimationStored : any = null; // Define currentAnimationStored initially as null. We will define it as the current animation if it has one
+
+        syiro.component.CSS(playerControlElement, "opacity", false); // Remove the opacity styling set by the Video Player Component init for the Player Control to ensure fade animations run properly
+
+        if (playerControlElement.hasAttribute("class")){ // If the Player Control Element has an animation "class" (like fade-in-animation)
+            currentAnimationStored = playerControlElement.getAttribute("class"); // Get the current animation stored in "class"
+        }
+        else { // If it doesn't have a class (the event has been triggered for the first time)
+            if (typeof forceShow == "undefined"){ // If forceShow is not defined
+                forceShow  = true; // Force to set the fade-in-animation value
+            }
+        }
+
+        if (forceShow == true){ // If we are forcing to show the Player Control
+            syiro.animation.FadeIn(playerControlComponent); // Fade in the Player Control
+        }
+        else if (forceShow == false){ // If we are forcing to hide the Player Control
+            if (currentAnimationStored == null){ // If the intent is to force hide the Player Control while the playerControlElement has no class
+                playerControlElement.setAttribute("class", "fade-in-animation"); // Set the Player Control Element to fade-in-animation to ensure that the animation runs
+            }
+
+            syiro.animation.FadeOut(playerControlComponent); // Fade out the Player Control
+        }
+        else { // If the forceShow is not defined
+            if (currentAnimationStored == "fade-out-animation"){ // If the current status is the Player Control is faded out
+                syiro.animation.FadeIn(playerControlComponent); // Fade in the Player Control
+            }
+            else{ // If the current status is the Player Control is faded in (showing)
+                syiro.animation.FadeOut(playerControlComponent); // Fade out the Player Control
+            }
+        }
+    }
+
+    // #endregion
+
     // #region Toggle Share Dialog
 
-    export function ToggleShareDialog(component ?: Object){
+    export function ToggleShareDialog(component : Object){
         var component : Object = arguments[0]; // Define the Player Component Object as the first argument
         var componentElement : Element = syiro.component.Fetch(component); // Fetch the Player Element
 
@@ -619,30 +678,20 @@ module syiro.playercontrol {
 
         var volumeButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-volume" } ); // Generate a Volume Button
 
-        componentElement.appendChild(syiro.component.Fetch(playButton)); // Append the play button
         componentElement.appendChild(inputRange); // Append the input range
+        componentElement.appendChild(syiro.component.Fetch(playButton)); // Append the play button
         componentElement.appendChild(timeStamp); // Append the timestamp time element
-
-        // #region Input Range Width Calculation
-
-        var inputRangeWidth = (properties["width"] - ((36 * 2) + (14 * 2) +  110)); // Do an initial calculation of the width of the input range, which is the width minus two buttons, their margins (14 each) and a minimum 100 (90 for time label, 20 for margin)
-
-        // #endregion
 
         // #region Player Share Element Creation (If Applicable)
 
         if (properties["share"] !== undefined){ // If the share attribute is defined
             if (properties["share"]["type"] == "list"){ // If the component provided is a List
-                inputRangeWidth = inputRangeWidth - (36 + 14); // Make sure the inputRange size is changed since we are introducing another button
-
                 var shareMenuButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-menu"} ); // Generate a Share Menu Button
                 componentElement.appendChild(syiro.component.Fetch(shareMenuButton)); // Append the shareMenuButton to the playerControlElement
             }
         }
 
         // #endregion
-
-        syiro.component.CSS(inputRange, "width", inputRangeWidth.toString() + "px !important"); // Update the inputRange CSS
 
         componentElement.appendChild(syiro.component.Fetch(volumeButton)); // Append the volume control
 
@@ -727,32 +776,21 @@ module syiro.audioplayer {
             // #region Audio Player Information Creation
 
             if ((properties["art"] !== undefined) && (properties["title"] !== undefined)){ // If the properties has cover art and the audio title defined
-                var playerInformation : HTMLElement = syiro.generator.ElementCreator("div", // Create the player information
-                    {
-                        "data-syiro-minor-component" : "player-information"
-                    }
-                );
-
-                var playerTextualInformation : HTMLElement = syiro.generator.ElementCreator("section"); // Create a section to hold the textual information like audio title
-
+                var playerInformation : HTMLElement = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-information" }); // Create the player information
                 playerInformation.appendChild(syiro.generator.ElementCreator("img", { "src" : properties["art"]})); // Create the covert art and append the cover art to the playerInformation
 
-                var audioTitle : HTMLElement = syiro.generator.ElementCreator("b", { "content" : properties["title"]}); // Create a "bold" tag with the audio title
-
-                playerTextualInformation.appendChild(audioTitle); // Append the audio title to the playerInformationDetails section
+                var playerTextualInformation : HTMLElement = syiro.generator.ElementCreator("section"); // Create a section to hold the textual information like audio title
+                playerTextualInformation.appendChild(syiro.generator.ElementCreator("b", { "content" : properties["title"]})); // Create the Audio Title and append it to the playerTextualInformation section
 
                 if (properties["artist"] !== undefined){ // If the artist is NOT undefined
-                    var artistInfo = syiro.generator.ElementCreator("label", { "content" : properties["artist"] }); // Create a label with the artist info
-                    playerTextualInformation.appendChild(artistInfo);
+                    playerTextualInformation.appendChild(syiro.generator.ElementCreator("label", { "content" : properties["artist"] })); // Create a label with the artist info and append it to the playerTextualInformation section
                 }
 
                 if (properties["album"] !== undefined){ // If the album is NOT undefined
-                    var albumInfo = syiro.generator.ElementCreator("label", { "content" : properties["album"] }); // Create a label with the album info
-                    playerTextualInformation.appendChild(albumInfo);
+                    playerTextualInformation.appendChild(syiro.generator.ElementCreator("label", { "content" : properties["album"] })); // Create a label with the album info and append it to the playerTextualInformation section
                 }
 
                 playerInformation.appendChild(playerTextualInformation); // Append the textual information section to the parent Player Information area
-
                 componentElement.appendChild(playerInformation); // Append the player information details to the component Element
             }
 
@@ -776,8 +814,7 @@ module syiro.audioplayer {
             if (properties["share"] !== undefined){ // If the share attribute is defined
                 if (properties["share"]["type"] == "list"){ // If the component provided is a List
                     var playerShareDialog : Element = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-share" } ); // Create a div element with the minor-component of player-share-dialog
-                    var playerShareLabel : Element = syiro.generator.ElementCreator("label", { "content" : "Share" }); // Create a label with the content "Share"
-                    playerShareDialog.appendChild(playerShareLabel);
+                    playerShareDialog.appendChild(syiro.generator.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
                     playerShareDialog.appendChild(syiro.component.Fetch(properties["share"])); // Append the List Element to the playerShareDialog
                     componentElement.insertBefore(playerShareDialog, componentElement.firstChild); // Prepend the Share Dialog
                 }
@@ -819,7 +856,7 @@ module syiro.videoplayer {
                 }
             );
 
-            // #region Video Dimensions Calculation
+            // #region Video Dimensions / Proper Ratio Calculation
 
             var videoHeight : number = properties["height"]; // Define videoHeight as the height the video in the Video Player should be
             var videoWidth : number = properties["width"]; // Define videoWidth as the width the video in the Video Player should be
@@ -850,7 +887,7 @@ module syiro.videoplayer {
 
             if (properties["art"] !== undefined){ // If art has been defined
                 var posterImageElement : HTMLElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component" : "video-poster", "src" : properties["art"] }); // Create an img Element with the src set to the artwork
-                syiro.component.CSS(posterImageElement, "height", (videoHeight + 50).toString() + "px"); // Set the posterImageElement height to be 50px taller than the videoHeight (so it flows under the Player Control)
+                syiro.component.CSS(posterImageElement, "height", videoHeight.toString() + "px"); // Set the posterImageElement height equal to the width of the video
                 syiro.component.CSS(posterImageElement, "width", videoWidth.toString() + "px"); // Set the posterImageElement width equal to the width of the video
                 componentElement.appendChild(posterImageElement); // Append to the Video Player container
             }
@@ -860,8 +897,6 @@ module syiro.videoplayer {
             // #region Video Element and Sources Creation
 
             var videoPlayer : HTMLElement = syiro.generator.ElementCreator("video", { "preload" : "metadata", "volume" : "0.5"} ); // Create the video player, with the preloading to only metadata and volume to 50%
-            syiro.component.CSS(videoPlayer, "height", videoHeight.toString() + "px"); // Set the video player height to be our calculated videoHeight
-            syiro.component.CSS(videoPlayer, "width", videoWidth.toString() + "px"); // Set the video player width to be our calculated videoWidth
 
             videoPlayer.autoplay = false; // Set autoplay of video to false
 
@@ -871,20 +906,23 @@ module syiro.videoplayer {
                 videoPlayer.appendChild(arrayofSourceElements[sourceElementKey]); // Append the HTMLElement
             }
 
-            // #endregion
-
             componentElement.appendChild(videoPlayer); // Append the video player
 
+            // #endregion
+
+            // #region Player Control Creation
+
             var playerControlComponent : Object = syiro.playercontrol.Generate(properties);
-            var playerControlElement : Element = syiro.component.Fetch(playerControlComponent); // Fetch the HTMLElement
+            componentElement.appendChild(syiro.component.Fetch(playerControlComponent)); // Fetch the HTMLElement and append the player control
+
+            // #endregion
 
             // #region Player Share Element Creation (If Applicable)
 
             if (properties["share"] !== undefined){ // If the share attribute is defined
                 if (properties["share"]["type"] == "list"){ // If the component provided is a List
                     var playerShareDialog : Element = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-share" } ); // Create a div element with the minor-component of player-share-dialog
-                    var playerShareLabel : Element = syiro.generator.ElementCreator("label", { "content" : "Share" }); // Create a label with the content "Share"
-                    playerShareDialog.appendChild(playerShareLabel);
+                    playerShareDialog.appendChild(syiro.generator.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
                     playerShareDialog.appendChild(syiro.component.Fetch(properties["share"])); // Append the List Element to the playerShareDialog
                     componentElement.insertBefore(playerShareDialog, componentElement.firstChild); // Prepend the Share Dialog
                 }
@@ -892,12 +930,14 @@ module syiro.videoplayer {
 
             // #endregion
 
-            componentElement.appendChild(playerControlElement); // Append the player control
+            syiro.component.CSS(componentElement, "height", videoHeight.toString() + "px"); // Set the height of the Video Player Component to the same as the video Element
+            syiro.component.CSS(componentElement, "width", videoWidth.toString() + "px"); // Set the width of the Video Player Component to the same as the video Element
 
             syiro.component.componentData[componentId] = { // Store the Video Player Component Element data we generated
                 "HTMLElement" : componentElement, // HTMLElement we generated
                 "initialDimensions" : [videoHeight, videoWidth] // Initial Dimensions
             };
+
             return { "id" : componentId, "type" : "video-player" }; // Return a Component Object
         }
         else{ // If video is not defined in the properties

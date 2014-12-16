@@ -41,6 +41,7 @@
 				);
 
 				var generatedSearchbox = syiro.searchbox.Generate(); // Generate a Searchbox
+				syiro.AddListeners(generatedSearchbox, function(x){console.log(arguments[1])}); // Listen to the Searchbox value change
 			}
 			else{
 				generatedDropdownObject = syiro.dropdown.Generate(
@@ -111,8 +112,7 @@
 			var generatedFooter = syiro.footer.Generate({"content" : "Strobl Industries"}); // Generate a Footer
 
 			if (syiro.device.IsSubHD == true){ // If the device is sub HD
-				syiro.CSS(generatedDropdownObject, "float", "left"); // Float the Icon Header to the right
-				syiro.CSS(generatedDropdownObject, "margin-left", "20px"); // Have some margin
+				syiro.CSS(generatedDropdownObject, "float", "right"); // Float the Icon Header to the right
 			}
 
 			syiro.CSS(generatedAudioPlayer, "margin-right", "80%"); // Set CSS margin for Audio Player
@@ -133,7 +133,9 @@
 
 			syiro.AddListeners(generatedButton,
 				function(x){
-					var screenInfoElement = syiro.generator.ElementCreator("section", { "content" : window.screen.width.toString()});
+					var componentObject = arguments[0];
+					var event = arguments[1];
+					var screenInfoElement = syiro.generator.ElementCreator("section", { "content" : String(Object.keys(syiro.component.componentData[componentObject["id"]]["handlers"])) });
 					document.querySelector('div[data-syiro-component="page"]').insertBefore(screenInfoElement, document.querySelector('div[data-syiro-component="page"]').firstChild);
 				}
 			); // Listen to the Basic Button
@@ -143,8 +145,6 @@
 					syiro.player.SetSources(generatedVideoPlayer, ["https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv", "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4"]); // Change the source
 				}
 			);
-
-			syiro.AddListeners(generatedSearchbox, function(x){console.log(arguments[1])}); // Listen to the Searchbox value change
 
 			var testListItem = syiro.FetchComponentObject(document.querySelector('div[data-syiro-component="list"][data-syiro-component-owner] > div:first-of-type'));
 			var secondListItem = syiro.FetchComponentObject(document.querySelector('div[data-syiro-component="list"][data-syiro-component-owner] > div:nth-of-type(2)'));

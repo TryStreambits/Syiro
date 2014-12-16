@@ -1,75 +1,32 @@
 @import (reference) "core.less"; // Import Core as a reference
 
-// #region Fade Animation (Unified In / Out since it is reversable)
-
-@keyframes fade{
-	from{
-		opacity: 0; // Not Visible
-	}
-
-	to{
-		opacity: 1.0; // Visible
-	}
-}
-
-@-webkit-keyframes fade{
-	from{
-		opacity: 0; // Not Visible
-	}
-
-	to{
-		opacity: 1.0; // Visible
-	}
-}
-
-// #endregion
-
 // #region Animation Parametric Mixin - Allows easy adding of animations
 
-.animate(@animation : "fade"; @reverse : "no"){
-	animation-name: @animation;
-	-webkit-animation-name: @animation;
-
-	animation-duration: unit(250, ms);
-	-webkit-animation-duration: unit(250, ms);
-
-	animation-iteration-count: 1;
-	-webkit-animation-iteration-count: 1;
-
-	animation-direction: normal;
-	-webkit-animation-direction: normal;
-
-	& when (@reverse = "no"){ // If we are NOT reversing the animation
-		animation-fill-mode: forwards !important;
-		-webkit-animation-fill-mode: forwards !important;
-	}
-
-	& when (@reverse = "yes"){ // If we are reversing the animation
-		animation-fill-mode: backwards !important;
-		-webkit-animation-fill-mode: backwards !important;
-	}
+.animate(@properties; @duration : 250; @timingFunc : "ease-in"){
+	transform: e(@properties); // String escape the provided properties that'll change in transform
+	-webkit-transform: e(@properties); // Same as above, just specific to Webkit
+	transition-duration: unit(@duration, ms); // Duration of nMS, where n defaults to 250
+	transition-timing-function: e(@timingFunc); // String escape the provided timing function, which defaults to "easy-in"
 }
 
 // #endregion
 
 .fade-in-animation{
-	.animate("fade"; "no"); // Fade In animation
+	.animate("opacity, visibility";); // Transform opacity and visibility values
+	opacity: 0.8;
+	visibility: visible;
 }
 
 .fade-out-animation{
-	.animate("fade"; "yes"); // Fade Out animation
+	.animate("opacity, visibility";); // Transform opacity and visibility values
+	opacity: 0;
+	visibility: hidden;
 }
 
 .toggle-backward-animation{
-	transition-duration: 125ms;
-	transition-timing-function: ease-in;
-	transform: translateX(0px);
-	-webkit-transform: translateX(0px);
+	.animate("translateX(0px)"; 125); // Translate to x position of 0 in 125ms
 }
 
 .toggle-forward-animation{
-	transition-duration: 125ms;
-	transition-timing-function: ease-in;
-	transform: translateX(45px);
-	-webkit-transform: translateX(45px);
+	.animate("translateX(45px)"; 125); // Translate to x position of 45 in 125ms
 }

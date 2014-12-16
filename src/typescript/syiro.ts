@@ -76,7 +76,7 @@ module syiro {
 
 											if (componentObject !== false){ // If the element is a Syiro component
 												if (componentObject["type"] == "dropdown"){ // If the component is a Dropdown
-													syiro.events.Add(syiro.events.eventStrings["press"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
+													syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
 												}
 												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
 													syiro.player.Init(componentObject); // Initialize the Audio or Video Player
@@ -135,7 +135,26 @@ module syiro {
 
 	export var Remove = syiro.component.Remove; // Meta-function for removing Syiro components
 
-	export var Animate = syiro.animation.Animate; // Meta-function for animating Syiro components (highly limited currently)
+	// #region Meta-function / API Compatibility for syiro.Animate()
+
+		export function Animate( ...args : any[]) {
+			var animationProperties : Object; // Define animationProperties as the properties that are provided or are created from backwards compatibility
+
+			if ((arguments.length == 2) && (typeof arguments[1] == "object")){ // If two arguments were defined and the second one is an Object (so current allowed Animate variables)
+				animationProperties = arguments[1]; // Define animationProperties as the second argument provided
+			}
+			else{ // If there are two arguments defined and the second is NOT the animation properties OR there are three arguments defined
+				animationProperties["animation"] = arguments[1]; // Define animationProperties "animation" as the second argument passed
+
+				if (arguments.length == 3){ // If three arguments were defined
+					animationProperties["function"] = arguments[2]; // Define animationProperties "function" as the third argument passed
+				}
+			}
+
+			syiro.animation.Animate(component, animationProperties); // Call Animate() with the animationProperties defined or "created"
+		}
+
+	// #endregion
 
 	export var CSS = syiro.component.CSS; // Meta-function for modifying Syiro Component CSS styling
 

@@ -238,12 +238,12 @@ module syiro.player {
 
             // #endregion
 
-            // #region Player Share Dialog
+            // #region Player Menu Dialog
 
-            var shareButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the shareButton if it exists
+            var menuButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the menuButton if it exists
 
-            if (shareButton !== null){ // If the share button exists
-                syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(shareButton), syiro.player.ToggleShareDialog.bind(this, component)); // Add an event listener to the button that calls ToggleShareDialog, binding to the Player Component
+            if (menuButton !== null){ // If the menu button exists
+                syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(menuButton), syiro.player.ToggleMenuDialog.bind(this, component)); // Add an event listener to the button that calls ToggleMenuDialog, binding to the Player Component
             }
 
             // #endregion
@@ -623,38 +623,40 @@ module syiro.player {
 
     // #endregion
 
-    // #region Toggle Share Dialog
+    // #region Toggle Menu Dialog
 
-    export function ToggleShareDialog(component : Object){
+    export function ToggleMenuDialog(component : Object){
         var component : Object = arguments[0]; // Define the Player Component Object as the first argument
         var componentElement : Element = syiro.component.Fetch(component); // Fetch the Player Element
 
-        var shareDialog : Element = componentElement.querySelector('div[data-syiro-minor-component="player-share"]'); // Get the Share Dialog
-        var shareButton : Element = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the share button element
+        var menuDialog : Element = componentElement.querySelector('div[data-syiro-minor-component="player-menu"]'); // Get the Menu Dialog
+        var menuButton : Element = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the menu button element
 
-        if (syiro.component.CSS(shareDialog, "visibility") !== "visible"){ // If the Share Dialog is currently not showing
-            var playerShareHeight : number; // Define playerShareHeight as a number (height that the dialog should be)
+        if (syiro.component.CSS(menuDialog, "visibility") !== "visible"){ // If the Menu Dialog is currently not showing
+            var playerMenuHeight : number; // Define playerMenuHeight as a number (height that the dialog should be)
 
-            if (component["type"] == "audio-player"){ // If we are showing a share dialog for an Audio Player
-                    playerShareHeight = 100; // Set to 100 since the Audio Player has a fixed height of 100px
+            if (component["type"] == "audio-player"){ // If we are showing a menu dialog for an Audio Player
+                playerMenuHeight = 100; // Set to 100 since the Audio Player has a fixed height of 100px
             }
-            else{ // If we are showing a share dialog for the Video Player
-                playerShareHeight = syiro.player.FetchInnerContentElement(component).clientHeight; // Set to the height of the inner video (content) Element
+            else{ // If we are showing a menu dialog for the Video Player
+                playerMenuHeight = syiro.player.FetchInnerContentElement(component).clientHeight; // Set to the height of the inner video (content) Element
             }
 
-            syiro.component.CSS(shareDialog, "height", playerShareHeight.toString() + "px"); // Set the height of the share dialog
-            syiro.component.CSS(shareDialog, "width", componentElement.clientWidth.toString() + "px"); // Set the width of the share dialog to be the same as the componentElement
+            syiro.component.CSS(menuDialog, "height", playerMenuHeight.toString() + "px"); // Set the height of the menu dialog
+            syiro.component.CSS(menuDialog, "width", componentElement.clientWidth.toString() + "px"); // Set the width of the menu dialog to be the same as the componentElement
 
-            shareButton.setAttribute("data-syiro-component-status", "true"); // Set the share button status to true
-            syiro.component.CSS(shareDialog, "visibility", "visible"); // Show the share dialog
+            menuButton.setAttribute("data-syiro-component-status", "true"); // Set the menu button status to true
+            syiro.component.CSS(menuDialog, "visibility", "visible"); // Show the menu dialog
         }
-        else{ // If the Share dialog currently IS showing
-            shareButton.removeAttribute("data-syiro-component-status"); // Remove the share button status
-            syiro.component.CSS(shareDialog, "visibility", false); // Hide the share dialog (removing the visibility attribute, putting the Share Dialog back to default state)
-            syiro.component.CSS(shareDialog, "height", false); // Remove the height attribute from the Player Share Dialog
-            syiro.component.CSS(shareDialog, "width", false); // Remove the width attribute from the Player Share Dialog
+        else{ // If the Menu dialog currently IS showing
+            menuButton.removeAttribute("data-syiro-component-status"); // Remove the menu button status
+            syiro.component.CSS(menuDialog, "visibility", false); // Hide the menu dialog (removing the visibility attribute, putting the Menu Dialog back to default state)
+            syiro.component.CSS(menuDialog, "height", false); // Remove the height attribute from the Player Menu Dialog
+            syiro.component.CSS(menuDialog, "width", false); // Remove the width attribute from the Player Menu Dialog
         }
     }
+
+    export var ToggleShareDialog : Function = ToggleMenuDialog; // Define ToggleShareDialog as a meta-function of ToggleMenuDialog for backwards compatibility
 
     // #endregion
 }
@@ -682,12 +684,12 @@ module syiro.playercontrol {
         componentElement.appendChild(syiro.component.Fetch(playButton)); // Append the play button
         componentElement.appendChild(timeStamp); // Append the timestamp time element
 
-        // #region Player Share Element Creation (If Applicable)
+        // #region Player Menu Element Creation (If Applicable)
 
-        if (properties["share"] !== undefined){ // If the share attribute is defined
-            if (properties["share"]["type"] == "list"){ // If the component provided is a List
-                var shareMenuButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-menu"} ); // Generate a Share Menu Button
-                componentElement.appendChild(syiro.component.Fetch(shareMenuButton)); // Append the shareMenuButton to the playerControlElement
+        if (properties["menu"] !== undefined){ // If the menu attribute is defined
+            if (properties["menu"]["type"] == "list"){ // If the component provided is a List
+                var menuButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-menu"} ); // Generate a Menu Button
+                componentElement.appendChild(syiro.component.Fetch(menuButton)); // Append the menuButton to the playerControlElement
             }
         }
 
@@ -758,6 +760,10 @@ module syiro.audioplayer {
                 }
             );
 
+            if (typeof properties["share"] !== "undefined"){ // If the "share" menu attribute is still being used
+                properties["menu"] = properties["share"]; // Set "menu" attribute equal to "share" attribute
+            }
+
             // #region Audio Element and Source Creation
 
             var audioPlayer : HTMLElement = syiro.generator.ElementCreator("audio", { "preload" : "metadata", "volume" : "0.5" }); // Generate an audio Element with only preloading metadata, setting volume to 50%
@@ -809,14 +815,14 @@ module syiro.audioplayer {
             var playerControlComponent : Object = syiro.playercontrol.Generate(properties);
             var playerControlElement : Element = syiro.component.Fetch(playerControlComponent); // Fetch the HTMLElement
 
-            // #region Player Share Element Creation (If Applicable)
+            // #region Player Menu Element Creation (If Applicable)
 
-            if (properties["share"] !== undefined){ // If the share attribute is defined
-                if (properties["share"]["type"] == "list"){ // If the component provided is a List
-                    var playerShareDialog : Element = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-share" } ); // Create a div element with the minor-component of player-share-dialog
-                    playerShareDialog.appendChild(syiro.generator.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
-                    playerShareDialog.appendChild(syiro.component.Fetch(properties["share"])); // Append the List Element to the playerShareDialog
-                    componentElement.insertBefore(playerShareDialog, componentElement.firstChild); // Prepend the Share Dialog
+            if (properties["menu"] !== undefined){ // If the menu attribute is defined
+                if (properties["menu"]["type"] == "list"){ // If the component provided is a List
+                    var playerMenuDialog : Element = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
+                    playerMenuDialog.appendChild(syiro.generator.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
+                    playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
+                    componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
                 }
             }
 
@@ -855,6 +861,10 @@ module syiro.videoplayer {
                     "name" : componentId
                 }
             );
+
+            if (typeof properties["share"] !== "undefined"){ // If the "share" menu attribute is still being used
+                properties["menu"] = properties["share"]; // Set "menu" attribute equal to "share" attribute
+            }
 
             // #region Video Dimensions / Proper Ratio Calculation
 
@@ -917,21 +927,21 @@ module syiro.videoplayer {
 
             // #endregion
 
-            // #region Player Share Element Creation (If Applicable)
+            // #region Player Menu Element Creation (If Applicable)
 
-            if (properties["share"] !== undefined){ // If the share attribute is defined
-                if (properties["share"]["type"] == "list"){ // If the component provided is a List
-                    var playerShareDialog : Element = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-share" } ); // Create a div element with the minor-component of player-share-dialog
-                    playerShareDialog.appendChild(syiro.generator.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
-                    playerShareDialog.appendChild(syiro.component.Fetch(properties["share"])); // Append the List Element to the playerShareDialog
-                    componentElement.insertBefore(playerShareDialog, componentElement.firstChild); // Prepend the Share Dialog
+            if (properties["menu"] !== undefined){ // If the menu attribute is defined
+                if (properties["menu"]["type"] == "list"){ // If the component provided is a List
+                    var playerMenuDialog : Element = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
+                    playerMenuDialog.appendChild(syiro.generator.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
+                    playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
+                    componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
                 }
             }
 
             // #endregion
 
-            syiro.component.CSS(componentElement, "height", videoHeight.toString() + "px"); // Set the height of the Video Player Component to the same as the video Element
-            syiro.component.CSS(componentElement, "width", videoWidth.toString() + "px"); // Set the width of the Video Player Component to the same as the video Element
+            syiro.component.CSS(componentElement, "height", videoHeight.toString() + "px"); // Set the height of the Video Player Component
+            syiro.component.CSS(componentElement, "width", videoWidth.toString() + "px"); // Set the width of the Video Player Component
 
             syiro.component.componentData[componentId] = { // Store the Video Player Component Element data we generated
                 "HTMLElement" : componentElement, // HTMLElement we generated

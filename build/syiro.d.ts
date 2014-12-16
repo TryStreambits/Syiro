@@ -125,7 +125,8 @@ declare module syiro.player {
     function SetTime(component: Object, time: number): void;
     function SetVolume(component: Object, volume: number): void;
     function TogglePlayerControl(component: Object, forceShow?: boolean): void;
-    function ToggleShareDialog(component: Object): void;
+    function ToggleMenuDialog(component: Object): void;
+    var ToggleShareDialog: Function;
 }
 declare module syiro.playercontrol {
     function Generate(properties: Object): Object;

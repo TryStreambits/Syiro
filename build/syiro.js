@@ -1329,9 +1329,9 @@ var syiro;
                     playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]);
                 }
             });
-            var shareButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]');
-            if (shareButton !== null) {
-                syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(shareButton), syiro.player.ToggleShareDialog.bind(this, component));
+            var menuButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]');
+            if (menuButton !== null) {
+                syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(menuButton), syiro.player.ToggleMenuDialog.bind(this, component));
             }
         }
         player.Init = Init;
@@ -1591,32 +1591,33 @@ var syiro;
             }
         }
         player.TogglePlayerControl = TogglePlayerControl;
-        function ToggleShareDialog(component) {
+        function ToggleMenuDialog(component) {
             var component = arguments[0];
             var componentElement = syiro.component.Fetch(component);
-            var shareDialog = componentElement.querySelector('div[data-syiro-minor-component="player-share"]');
-            var shareButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]');
-            if (syiro.component.CSS(shareDialog, "visibility") !== "visible") {
-                var playerShareHeight;
+            var menuDialog = componentElement.querySelector('div[data-syiro-minor-component="player-menu"]');
+            var menuButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]');
+            if (syiro.component.CSS(menuDialog, "visibility") !== "visible") {
+                var playerMenuHeight;
                 if (component["type"] == "audio-player") {
-                    playerShareHeight = 100;
+                    playerMenuHeight = 100;
                 }
                 else {
-                    playerShareHeight = syiro.player.FetchInnerContentElement(component).clientHeight;
+                    playerMenuHeight = syiro.player.FetchInnerContentElement(component).clientHeight;
                 }
-                syiro.component.CSS(shareDialog, "height", playerShareHeight.toString() + "px");
-                syiro.component.CSS(shareDialog, "width", componentElement.clientWidth.toString() + "px");
-                shareButton.setAttribute("data-syiro-component-status", "true");
-                syiro.component.CSS(shareDialog, "visibility", "visible");
+                syiro.component.CSS(menuDialog, "height", playerMenuHeight.toString() + "px");
+                syiro.component.CSS(menuDialog, "width", componentElement.clientWidth.toString() + "px");
+                menuButton.setAttribute("data-syiro-component-status", "true");
+                syiro.component.CSS(menuDialog, "visibility", "visible");
             }
             else {
-                shareButton.removeAttribute("data-syiro-component-status");
-                syiro.component.CSS(shareDialog, "visibility", false);
-                syiro.component.CSS(shareDialog, "height", false);
-                syiro.component.CSS(shareDialog, "width", false);
+                menuButton.removeAttribute("data-syiro-component-status");
+                syiro.component.CSS(menuDialog, "visibility", false);
+                syiro.component.CSS(menuDialog, "height", false);
+                syiro.component.CSS(menuDialog, "width", false);
             }
         }
-        player.ToggleShareDialog = ToggleShareDialog;
+        player.ToggleMenuDialog = ToggleMenuDialog;
+        player.ToggleShareDialog = ToggleMenuDialog;
     })(player = syiro.player || (syiro.player = {}));
 })(syiro || (syiro = {}));
 var syiro;
@@ -1633,10 +1634,10 @@ var syiro;
             componentElement.appendChild(inputRange);
             componentElement.appendChild(syiro.component.Fetch(playButton));
             componentElement.appendChild(timeStamp);
-            if (properties["share"] !== undefined) {
-                if (properties["share"]["type"] == "list") {
-                    var shareMenuButton = syiro.button.Generate({ "data-syiro-minor-component": "player-button-menu" });
-                    componentElement.appendChild(syiro.component.Fetch(shareMenuButton));
+            if (properties["menu"] !== undefined) {
+                if (properties["menu"]["type"] == "list") {
+                    var menuButton = syiro.button.Generate({ "data-syiro-minor-component": "player-button-menu" });
+                    componentElement.appendChild(syiro.component.Fetch(menuButton));
                 }
             }
             componentElement.appendChild(syiro.component.Fetch(volumeButton));
@@ -1681,6 +1682,9 @@ var syiro;
                     "id": componentId,
                     "name": componentId,
                 });
+                if (typeof properties["share"] !== "undefined") {
+                    properties["menu"] = properties["share"];
+                }
                 var audioPlayer = syiro.generator.ElementCreator("audio", { "preload": "metadata", "volume": "0.5" });
                 audioPlayer.autoplay = false;
                 var arrayofSourceElements = syiro.player.GenerateSources("audio", properties["sources"]);
@@ -1711,12 +1715,12 @@ var syiro;
                 syiro.component.CSS(componentElement, "width", properties["width"].toString() + "px");
                 var playerControlComponent = syiro.playercontrol.Generate(properties);
                 var playerControlElement = syiro.component.Fetch(playerControlComponent);
-                if (properties["share"] !== undefined) {
-                    if (properties["share"]["type"] == "list") {
-                        var playerShareDialog = syiro.generator.ElementCreator("div", { "data-syiro-minor-component": "player-share" });
-                        playerShareDialog.appendChild(syiro.generator.ElementCreator("label", { "content": "Menu" }));
-                        playerShareDialog.appendChild(syiro.component.Fetch(properties["share"]));
-                        componentElement.insertBefore(playerShareDialog, componentElement.firstChild);
+                if (properties["menu"] !== undefined) {
+                    if (properties["menu"]["type"] == "list") {
+                        var playerMenuDialog = syiro.generator.ElementCreator("div", { "data-syiro-minor-component": "player-menu" });
+                        playerMenuDialog.appendChild(syiro.generator.ElementCreator("label", { "content": "Menu" }));
+                        playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"]));
+                        componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
                     }
                 }
                 componentElement.appendChild(playerControlElement);
@@ -1741,6 +1745,9 @@ var syiro;
                     "id": componentId,
                     "name": componentId
                 });
+                if (typeof properties["share"] !== "undefined") {
+                    properties["menu"] = properties["share"];
+                }
                 var videoHeight = properties["height"];
                 var videoWidth = properties["width"];
                 if (videoHeight == undefined) {
@@ -1772,12 +1779,12 @@ var syiro;
                 componentElement.appendChild(videoPlayer);
                 var playerControlComponent = syiro.playercontrol.Generate(properties);
                 componentElement.appendChild(syiro.component.Fetch(playerControlComponent));
-                if (properties["share"] !== undefined) {
-                    if (properties["share"]["type"] == "list") {
-                        var playerShareDialog = syiro.generator.ElementCreator("div", { "data-syiro-minor-component": "player-share" });
-                        playerShareDialog.appendChild(syiro.generator.ElementCreator("label", { "content": "Menu" }));
-                        playerShareDialog.appendChild(syiro.component.Fetch(properties["share"]));
-                        componentElement.insertBefore(playerShareDialog, componentElement.firstChild);
+                if (properties["menu"] !== undefined) {
+                    if (properties["menu"]["type"] == "list") {
+                        var playerMenuDialog = syiro.generator.ElementCreator("div", { "data-syiro-minor-component": "player-menu" });
+                        playerMenuDialog.appendChild(syiro.generator.ElementCreator("label", { "content": "Menu" }));
+                        playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"]));
+                        componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
                     }
                 }
                 syiro.component.CSS(componentElement, "height", videoHeight.toString() + "px");

@@ -162,9 +162,9 @@ div[data-syiro-minor-component="player-error"]{
 
 // #endregion
 
-// #region Share Dialog
+// #region Player Menu Dialog
 
-div[data-syiro-minor-component="player-share"]{
+div[data-syiro-minor-component="player-menu"]{
     float: left;
     color: @syiroWhite;
     background-color: rgba(51,51,51,0.8); // Set the background color to #333333 at 80% opacity
@@ -175,7 +175,7 @@ div[data-syiro-minor-component="player-share"]{
     visibility: hidden; // Default to not being visible
     left: 0; // Force to left
 
-    & > label { // Share Dialog Label
+    & > label { // Menu Dialog Label
         float: left;
         height: 50px;
         width: 100%;
@@ -184,7 +184,7 @@ div[data-syiro-minor-component="player-share"]{
         line-height: 50px;
     }
 
-    & > div[data-syiro-component="list"]{ // Share Dialog List
+    & > div[data-syiro-component="list"]{ // Menu Dialog List
         float: left;
         height: auto;
         width: 90%;
@@ -210,15 +210,15 @@ div[data-syiro-component="audio-player"]{
         display: hidden; // Hide the audio player
     }
 
-    & > div[data-syiro-minor-component="player-share"]{ // Share Dialog within Audio Player
+    & > div[data-syiro-minor-component="player-menu"]{ // Menu Dialog within Audio Player
         & > div[data-syiro-component="list"] > div[data-syiro-component="list-item"] { // Inner List Items
             width: 40px; // Set width to 40px
-            margin-left: 10px; // Ensure the List Item has enough space between the icons and is aligned with the Share label
+            margin-left: 10px; // Ensure the List Item has enough space between the icons and is aligned with the Menu label
 
             & > img { // If there is an image within the List Item
                 height: 32px !important; // Reduce the height of the image
                 width: 32px !important; // Reduce the width of the image
-                margin: 4px 0 0 0; // Ensure the img looks good in the Audio Player's Share Dialog "Grid View"
+                margin: 4px 0 0 0; // Ensure the img looks good in the Audio Player's Menu Dialog "Grid View"
             }
 
             & > label { // Labels within List Items
@@ -267,11 +267,11 @@ div[data-syiro-component="video-player"]{
     float: left;
     background-color: black; // Set the Video Player Component to have a black background to match video letterboxing color
 
-    & > div[data-syiro-minor-component="player-share"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"]{
+    & > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"]{
         & > img { // If there is an image within the List Item
             height: 32px !important; // Reduce the height of the image
             width: 32px !important; // Reduce the width of the image
-            margin: 4px 5px 0 10px; // Make sure the image is properly aligned with the Share label and label text
+            margin: 4px 5px 0 10px; // Make sure the image is properly aligned with the Menu label and label text
         }
     }
 

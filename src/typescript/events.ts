@@ -18,43 +18,16 @@ module syiro.events {
         var component : any = arguments[0]; // Set component as first argument passed
         var eventData : Event = arguments[1]; // Set eventData as the second argument passed
         var componentId : string; // Define componentId as the Id of the Component
+        var componentElement : any; // Define componentElement as any (potentially Element)
         var passableValue : any = null; // Set passableValue to any type, defaults to null
+
+        var listener : string = (eventData.type).toLowerCase().slice(0,2).replace("on", "") + (eventData.type).toLowerCase().slice(2); // Ensure the event type passed is simplified and lowercased (strip out any beginning mention of "on")
+
+        // #region Component Data Determination - Determines the Component Id and Component Element
 
         if ((typeof component.nodeType == "undefined") && (component !== window)){ // If the Component provided is a Syiro Component Object (doesn't have a nodeType nor is the window Object)
             componentId = component["id"]; // Define componentId as the component Id we've already generated
-            var componentElement : any = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
-
-            if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a toggle button
-                var animationString : string;
-
-                if (componentElement.hasAttribute("data-syiro-component-status") == false){ // If the button is NOT active (has no status)
-                    animationString = "toggle-forward-animation"; // Animate forward the toggle
-                    passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
-                }
-                else{ // If the button is active and we are setting it as inactive
-                    animationString = "toggle-backward-animation"; // Animate backward the toggle
-                    passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
-                }
-
-                syiro.animation.Animate(component, // Animate the Toggle Button
-                    {
-                        "animation" : animationString, // Define animation as either toggle-forward-animation or toggle-backward-animation
-                        "function" : function(component : Object){ // Post-Animation Function
-                            var buttonElement : Element = syiro.component.Fetch(component); // Get the buttonElement based on the component Object
-
-                            if (buttonElement.hasAttribute("data-syiro-component-status") == false){ // If the status is not "true" / active
-                                buttonElement.setAttribute("data-syiro-component-status", "true"); // Set to true
-                            }
-                            else{ // If the status IS true
-                                buttonElement.removeAttribute("data-syiro-component-status"); // Remove the buttonElement component status
-                            }
-                        }
-                    }
-                );
-            }
-            else if (component["type"] == "searchbox"){ // If the component is a Syiro Searchbox
-                passableValue = componentElement.value; // Get the current value of the input
-            }
+            componentElement = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
         }
         else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1) || (component == document) || (component == window)){ // If the Component is either an Element, the document, or window
             if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
@@ -82,14 +55,72 @@ module syiro.events {
             componentElement = component; // Define componentElement as the Component
         }
 
-        if (passableValue == null){ // If the passableValue is null
+        // #endregion
+
+        // #region Passable Data Determination
+
+        var animationString : any = null; // Define animationString as the potential animation we should play in the event the Component is a Syiro Toggle Button (default: null)
+
+        if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a toggle button
+            if (componentElement.hasAttribute("data-syiro-component-status") == false){ // If the button is NOT active (has no status)
+                animationString = "toggle-forward-animation"; // Animate forward the toggle
+                passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
+            }
+            else{ // If the button is active and we are setting it as inactive
+                animationString = "toggle-backward-animation"; // Animate backward the toggle
+                passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
+            }
+        }
+        else if (component["type"] == "searchbox"){ // If the component is a Syiro Searchbox
+            passableValue = componentElement.value; // Get the current value of the input
+        }
+        else{
             passableValue = eventData; // Simply set the passableValue to the event data passed
         }
 
-        var listener : string = (eventData.type).toLowerCase().slice(0,2).replace("on", "") + (eventData.type).toLowerCase().slice(2); // Ensure the event type passed is simplified and lowercased (strip out any beginning mention of "on")
+        // #endregion
 
-        for (var individualFunctionId in syiro.component.componentData[componentId]["handlers"][listener]){ // For each function that is related to the Component for this particular listener
-            syiro.component.componentData[componentId]["handlers"][listener][individualFunctionId].call(syiro, component, passableValue); // Call the function, passing along the passableValue and the Component
+        if (typeof syiro.component.componentData[componentId]["ignoreClick"] == "undefined"){ // If this Handler isn't being triggered by touchstart or touchend bubbling to mouse events
+            if (animationString !== null){ // If we are in fact working with a Syiro Toggle Button
+                syiro.animation.Animate(component, // Animate the Toggle Button
+                    {
+                        "animation" : animationString, // Define animation as either toggle-forward-animation or toggle-backward-animation
+                        "function" : function(component : Object){ // Post-Animation Function
+                            var buttonElement : Element = syiro.component.Fetch(component); // Get the buttonElement based on the component Object
+
+                            if (buttonElement.hasAttribute("data-syiro-component-status") == false){ // If the status is not "true" / active
+                                buttonElement.setAttribute("data-syiro-component-status", "true"); // Set to true
+                            }
+                            else{ // If the status IS true
+                                buttonElement.removeAttribute("data-syiro-component-status"); // Remove the buttonElement component status
+                            }
+                        }
+                    }
+                );
+            }
+
+            for (var individualFunctionId in syiro.component.componentData[componentId]["handlers"][listener]){ // For each function that is related to the Component for this particular listener
+                syiro.component.componentData[componentId]["handlers"][listener][individualFunctionId].call(syiro, component, passableValue); // Call the function, passing along the passableValue and the Component
+            }
+
+            // #region Phantom Click Prevention
+
+            if (listener.indexOf("touch") == 0){ // If this is a touch event
+                syiro.component.componentData[componentId]["ignoreClick"] = true; // Set "ignoreClick" key to true in the componentData for this Component
+
+                var timeoutId = window.setTimeout( // Create a setTimeout timer
+                    function(){
+                        var componentId = arguments[0]; // Define componentId as the first argument passed
+                        delete syiro.component.componentData[componentId]["ignoreClick"]; // Remove the ignoreClick event
+                        window.clearTimeout(syiro.component.componentData[componentId]["ignoreClick-TimeoutId"]); // Clear the window timeout by getting ignoreClick-TimeoutId int and clearing based on that
+                    }.bind(this, componentId) // Attach the Component Id to the function
+                    ,350 // Prevent click action for 350ms as most
+                );
+
+                syiro.component.componentData[componentId]["ignoreClick-TimeoutId"] = timeoutId; // Define ignoreClick-TimeoutId of this Component as the timeoutId we get from setTimeout
+            }
+
+            // #endregion
         }
     }
 
@@ -122,26 +153,8 @@ module syiro.events {
                 listenerCallback = args[2]; // Set the handler to the third argument
             }
 
-            if ((typeof listeners).toLowerCase() == "string"){ // If the listeners is an array / object
+            if (typeof listeners == "string"){ // If the listeners is a string
                 listeners = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
-            }
-
-            if (syiro.device.SupportsTouch == true){ // If we are adding events to a device that supports touch, do a courtesy check of removing mouse oriented events
-                if (listeners.indexOf("mouseup") !== -1){ // If the listeners has mouseup
-                    listeners.splice(listeners.indexOf("mouseup"), 1); // Remove "mouseup" item from listeners
-
-                    if (listeners.indexOf("touchend") == -1){ // Consequently, if the developer only added mouseup and not touchend as well
-                        listeners.push("touchend"); // Push touchend to the listeners Array
-                    }
-                }
-
-                if (listeners.indexOf("mousedown") > -1){ // If the listeners has mousedown
-                    listeners.splice(listeners.indexOf("mousedown"), 1); // Remove "mousedown" item from listeners
-
-                    if (listeners.indexOf("touchstart") == -1){ // Consequently, if the developer only added mousedown and not touchstart as well
-                        listeners.push("touchstart"); // Push touchstart to the listeners Array
-                    }
-                }
             }
 
             var componentElement : any; // Define componentElement as an Element

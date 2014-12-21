@@ -37,12 +37,12 @@ declare module syiro.animation {
 }
 declare module syiro.component {
     var componentData: Object;
-    function Define(type: string, selector: string): Object;
+    var Define: Function;
     function CSS(component: any, property: string, newValue?: any): any;
     function Fetch(component: Object): any;
-    function FetchComponentObject(componentElement: any): Object;
+    function FetchComponentObject(...args: any[]): Object;
     function FetchDimensionsAndPosition(component: any): Object;
-    function Scale(): void;
+    function Scale(component: Object, scalingData?: Object): void;
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): boolean;
@@ -124,13 +124,13 @@ declare module syiro.player {
     function SetSources(component: Object, sources: any): void;
     function SetTime(component: Object, time: number): void;
     function SetVolume(component: Object, volume: number): void;
-    function TogglePlayerControl(component: Object, forceShow?: boolean): void;
     function ToggleMenuDialog(component: Object): void;
     var ToggleShareDialog: Function;
 }
 declare module syiro.playercontrol {
     function Generate(properties: Object): Object;
     function TimeLabelUpdater(component: Object, timePart: number, value: any): void;
+    function Toggle(component: Object, forceShow?: boolean): void;
 }
 declare module syiro.audioplayer {
     function Generate(properties: Object): Object;
@@ -144,7 +144,7 @@ declare module syiro.searchbox {
 }
 declare module syiro {
     function Init(): void;
-    var Define: typeof component.Define;
+    var Define: Function;
     var Fetch: typeof component.Fetch;
     var FetchComponentObject: typeof component.FetchComponentObject;
     var FetchDimensionsAndPosition: typeof component.FetchDimensionsAndPosition;

@@ -76,6 +76,17 @@ module syiro.device {
         syiro.device.FetchScreenDetails(); // Do an initial fetch of the screen details
 
         syiro.events.Add("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing
+
+        syiro.events.Add("orientationchange", window, // On orientationchange
+            function(){
+                var allPlayers : NodeList = document.querySelectorAll('div[data-syiro-component^="player"]'); // Get all Audio Players and Video Players
+
+                for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++){ // For each Player
+                    var thisPlayer : any = allPlayers[allPlayersIndex]; // Define thisPlayer as the index of allPlayers
+                    syiro.component.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
+                }
+            }
+        )
     }
 
     // #endregion

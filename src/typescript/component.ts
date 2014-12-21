@@ -8,31 +8,9 @@
 module syiro.component {
 	export var componentData : Object = {}; // An object that stores generated component(s) / component(s) information
 
-	// #region Defining existing Syiro components
+	// #region Meta function for defining existing Syiro components or Elements as Components
 
-	export function Define(type : string, selector : string) : Object {
-		var component : Object = {}; // Create an object called component that stores the component information
-		var componentId : string; // Define componentId as the string to hold the Id info
-		component["type"] = type; // Define the key "type" as the type we've defined
-
-		var selectedElement : Element = document.querySelector(selector); // Get the first recognized HTMLElement that has this selector.
-
-		if (selectedElement.hasAttribute("data-syiro-component-id") == false){ // If we aren't already trying to define a Component on an Element that is already a Component
-			componentId = syiro.generator.IdGen(type); // Generate a unique ID for this component
-			selectedElement.setAttribute("data-syiro-component-id", componentId); // Set this component's ID
-		}
-		else{ // If we are already defining a Component on an Element that is already a Component
-			componentId = selectedElement.getAttribute("data-syiro-component-id"); // Get the component Id
-		}
-
-		component["id"] = componentId; // Add the component Id to the object that we will be returning to the developer
-
-		if (type == "dropdown"){ // If we are defining a Dropdown Syiro component
-			syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
-		}
-
-		return component; // Return the component Object
-	}
+	export var Define : Function = syiro.component.FetchComponentObject;
 
 	// #endregion
 
@@ -135,14 +113,53 @@ module syiro.component {
 
 	// #endregion
 
-	// #region Fetch Component Object based on Element
+	// #region Fetch or Generate Component Object based on arguments provided
 
-	export function FetchComponentObject(componentElement : any) : Object {
-		if (componentElement.hasAttribute("data-syiro-component")){ // If the componentElement is actually a Component
-			return { "id" : componentElement.getAttribute("data-syiro-component-id"), "type" : componentElement.getAttribute("data-syiro-component")};
+	export function FetchComponentObject( ...args : any[]) : Object {
+		var componentElement : Element; // Define componentElement as either the Element provided (one arg) or based on the selector provided (two args)
+		var previouslyDefined : boolean = false; // Define previouslyDefined as a boolean that defaults to true. We use this to determine whether to immediately add event listeners to a Dropdown
+
+		if (arguments.length == 1){ // If only one argument is defined
+			if (typeof arguments[0] == "string"){ // If the first argument defined is a string (selector)
+				componentElement = document.querySelector(arguments[1]); // Define componentElement as the returned Element from querySelector
+			}
+			else{ // If the first argument is not a string
+				componentElement = arguments[0]; // Define componentElement as the first argument
+			}
 		}
-		else{ // If the componentElement is not actually a Component
-			return false; // Return false
+		else if (arguments.length == 2){ // If two arguments are defined
+			if (typeof arguments[1] == "string"){ // If the second argument defined in a string (selector)
+				componentElement = document.querySelector(arguments[1]); // Define componentElement as the returned Element from querySelector
+			}
+		}
+
+		if (componentElement !== null){ // If the componentElement is not null (returned from querySelector)
+			if (componentElement.hasAttribute("data-syiro-component-id") == false){ // If the componentElement is not actually a Component, generate a Component Object and assign Component data to the Element
+				var componentId : string; // Define componentId as the Id of the Component
+
+				if ((arguments.length == 2) && (typeof arguments[0] == "string")){ // If the first argument is a string and the args length is two
+					componentId = syiro.generator.IdGen(arguments[0]); // Define componentId as Id generated based on the type provided
+					componentElement.setAttribute("data-syiro-component", arguments[0]); // Define the type of the component as the type passed as the first arg
+				}
+				else if (arguments.length == 1){
+					componentId = syiro.generator.IdGen(componentElement.tagName.toLowerCase()); // Generate a unique id for this component based on the component Element's tagName
+					componentElement.setAttribute("data-syiro-component", componentElement.tagName.toLowerCase()); // Set the component "type" simple as the lowercased tagName
+				}
+
+				componentElement.setAttribute("data-syiro-component-id", componentId); // Set this component's Id
+			}
+			else{ // If the componentElement has attributes, meaning it has already been defined before
+				previouslyDefined = true; // Set previouslyDefined to true
+			}
+
+			if ((componentElement.getAttribute("data-syiro-component") == "dropdown") && (previouslyDefined == false)){ // If we are defining a Syiro Dropdown component for the first time
+				syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
+			}
+
+			return { "id" : componentElement.getAttribute("data-syiro-component-id"), "type" : componentElement.getAttribute("data-syiro-component")}; // Define component as the Object with id and type based on information from componentElement
+		}
+		else{ // If the componentElement is null
+			return false;
 		}
 	}
 
@@ -172,47 +189,133 @@ module syiro.component {
 	// #endregion
 
 	// #region Scale Components
-	// This function is responsible for scaling particular Components based on screen information
+	// This function is responsible for scaling Components based on screen information, their initialDimensions data (if any) and scaling of any inner Components or Elements
 
-	export function Scale(){
-		var userHorizontalSpace : number = window.screen.width; // Define userHorizontalSpace as the space the user has, in pixels, horizontally.
+	export function Scale(component : Object, scalingData ?: Object){
 		var userVerticalSpace : number = window.screen.height; // Define userVerticalSpace as the space the user has, in pixels, vertically.
+		var userHorizontalSpace : number = window.screen.width; // Define userHorizontalSpace as the space the user has, in pixels, horizontally.
 
-		// #region Scaling Video Players
+		var componentId = component["id"]; // Get the Component Id of the Component
+		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement
 
-		var videoPlayers = document.querySelectorAll('div[data-syiro-component="video-player"]'); // Get all Video Player Components on the page
+		var parentHeight : number = componentElement.parentElement.clientHeight; // Set the parentHeight to the parent Element's clientHeight of the Component Element
+		var parentWidth : number = componentElement.parentElement.clientWidth; // Set the parentWidth to the parent Element's clientWidth of the Component Element
 
-		if (videoPlayers.length !== 0){ // If there are Video Player Components on the page
-			for (var videoPlayerIndex in videoPlayers){ // For each Video Player Component in videoPlayers
-				var videoPlayerComponentElement : any = videoPlayers.item(videoPlayerIndex); // Fetch the Video Player Component Element
-				var videoPlayerComponentObject = syiro.component.FetchComponentObject(videoPlayerComponentElement); // Fetch the Component Object of this Video Player Component Element
+		// #region Scaling Data Definition
 
-				var videoComponentId = videoPlayerComponentObject["id"]; // Get the Component Id of the Video Player
-				var componentInitialHeight : string = syiro.component.componentData[videoComponentId]["initialDimensions"][0]; // Get the initial height (of the first / original state) of the Video Player Component
-				var componentInitialWidth : string = syiro.component.componentData[videoComponentId]["initialDimensions"][1]; // Get the initial width (of the first / original state) of the Video Player Component
-				var componentScalingState : any = syiro.component.componentData[videoComponentId]["initialDimensions"][2]; // Get the current scaling state (original or not), if any, of the Video Player Component
+		if (typeof scalingData !== "undefined"){ // If scalingData has been defined (passed as second arg)
+			syiro.component.componentData[componentId]["scaling"] = scalingData; // Define the scaling data in the componentData for this particular Component as the scalingData passed along
+		}
 
-				if (componentScalingState !== "original"){ // If the current state is not defined or has been scaled before (and we are resetting the scaling)
-					syiro.component.componentData[videoComponentId]["initialDimensions"][2] = "original"; // Set to "original" state
-					videoPlayerComponentElement.setAttribute("height", componentInitialHeight.toString() + "px"); // Set the height to the initial height defined
-					videoPlayerComponentElement.setAttribute("width", componentInitialWidth.toString() + "px"); // Set the width to the initial width defined
+		if (typeof syiro.component.componentData[componentId]["scaling"]["state"] == "undefined"){ // If the scaling state of this Component is not defined (like an Element that has never been scaled before)
+			syiro.component.componentData[componentId]["scaling"]["state"] = "scaled"; // Default to scale so we'll set the initial dimensions
+		}
+
+		var scalingState : string = syiro.component.componentData[componentId]["scaling"]["state"]; // Define scalingState as the current scaling state
+
+		// #endregion
+
+		// #region Initial Dimension Checking
+
+		var initialDimensions : Array<number> = []; // Define initialDimensions as an array of numbers
+
+		if (typeof syiro.component.componentData[componentId]["scaling"]["initialDimensions"] !== "undefined"){ // If the initialDimensions in the scaling section of componentData for this Component is NOT undefined
+			initialDimensions = syiro.component.componentData[componentId]["scaling"]["initialDimensions"]; // Define initialDimensions as the dimensions in the scaling section of the componentData for this Component
+		}
+
+		if (initialDimensions.length !== 2){ // If initialDimensions is not a length of two <height, width>
+			initialDimensions.push(componentElement.clientHeight); // Append the clientHeight as the second item (or first, depending on if there was any length to begin with)
+
+			if (initialDimensions.length == 1){ // If, after pushing the clientHeight, the initialDimensions is 1 (only height)
+				initialDimensions.push(componentElement.clientWidth); // Append the clientWidth as the second item
+			}
+			else{ // If the initialDimensions.length is now two
+				initialDimensions.reverse(); // Reverse the initialDimensions to <height, width>
+			}
+
+			syiro.component.componentData[componentId]["scaling"]["initialDimensions"] = initialDimensions; // Update the componentData initialDimensions for this Component
+		}
+
+		// #endregion
+
+		var updatedComponentHeight : number = initialDimensions[0]; // Define the updatedComponentHeight as the initial height defined
+		var updatedComponentWidth : number =  initialDimensions[1]; // Define the updatedComponentWidth as the initial width defined
+
+		// #region Component Scaling and Overflow Prevention
+
+		if ((scalingState == "original") || ((scalingState == "scaled") && (updatedComponentWidth > userHorizontalSpace))){ // If we need to scale the Component or the original state has a width greater than the device
+			var ratios : Array<number>; // Define ratios an array of numbers <height, width>
+
+			if (typeof syiro.component.componentData[componentId]["scaling"]["ratios"] !== "undefined"){ // If the ratios are defined for this Component / Element
+				ratios = syiro.component.componentData[componentId]["scaling"]["ratios"]; // Define ratios as ones already defined
+
+				if (ratios.length == 1){ // If only one dimension is defined
+					ratios.push(1.0); // Push 1.0 as the height ratio. Currently it is the second argument instead of first.
+					ratios.reverse(); // Reverse the items so it is once again <height, width>
 				}
-				else{ // If the componentScalingState is "original" and we need to now scale the component
-					syiro.component.componentData[videoComponentId]["initialDimensions"][2] = "scaled"; // Set to "original" state
-					var videoWidth : number = videoPlayerComponentElement.parentElement.clientWidth; // Set to width of parent Element
+			}
+			else if (typeof syiro.component.componentData[componentId]["scaling"]["matchParent"] == "undefined") { // If the ratios are not defined and nor is "matchParent"
+				ratios = [1.0,1.0]; // Define ratios as 1.0
+			}
 
-					if (videoWidth > window.screen.width){ // If the video's width is greater than the screen width
-						videoWidth = window.screen.width; // Set the videoWidth to screen width
+			if (typeof syiro.component.componentData[componentId]["scaling"]["matchParent"] == "undefined"){ // If we are not matching to the parent
+				if (ratios[0] !== 0){ // If the height is supposed to scale
+					updatedComponentHeight = (initialDimensions[0] * ratios[0]); // Updated componentHeight is the initialDimensions height * height ratio
+				}
+				else{ // If the height is not supposed to scale
+					updatedComponentHeight = initialDimensions[0]; // Set the updatedComponentHeight to the initialDimensions height
+				}
+
+				if (ratios[1] !== 0){ // If the width is supposed to scale
+					updatedComponentWidth = (initialDimensions[1] * ratios[1]); // Updated componentWidth is the initialDimensions width * width ratio
+				}
+				else{ // If the width is not supposed to scale
+					updatedComponentWidth = initialDimensions[1]; // Set the width to the initialDimensions width
+				}
+
+				if (updatedComponentWidth > parentWidth){ // If the updatedComponentWidth is greater than the parentWidth
+					updatedComponentWidth = parentWidth; // Immediately set updatedComponentWidth as the width of the parent
+
+					if (updatedComponentWidth > userHorizontalSpace){ // If the width of the updatedComponentWidth is greater than the horizontal space available to the user
+						updatedComponentWidth = userHorizontalSpace; // Initially the updatedComponentWidth to horizontal space available to the user
 					}
-
-					var videoHeight : number = Number((videoWidth / 1.77).toFixed()); // Proper Component Height to ensure 16:9 aspect ratio
-					videoPlayerComponentElement.setAttribute("height", videoHeight.toString() + "px"); // Set the height to the initial height defined
-					videoPlayerComponentElement.setAttribute("width", videoWidth.toString() + "px"); // Set the width to the initial width defined
 				}
+
+				if (ratios[0] !== 0){ // If the height is allowed to be scaled
+					updatedComponentHeight = (updatedComponentWidth / ratios[1]); // Set the updatedComponentHeight to be the width / the width's ratio
+				}
+			}
+			else{ // If we are matching to parent
+				updatedComponentHeight = parentHeight; // Immediately set updatedComponentHeight as height of the parent
+				updatedComponentWidth = parentWidth; // Immediately set updatedComponentWidth as the width of the parent
 			}
 		}
 
 		// #endregion
+
+		syiro.component.CSS(componentElement, "height", updatedComponentHeight.toString() + "px"); // Set the height to the initial height defined
+		syiro.component.CSS(componentElement, "width", updatedComponentWidth.toString() + "px"); // Set the width to the initial width defined
+
+		if (scalingState == "original"){ // If the current state is original and we are scaling
+			syiro.component.componentData[componentId]["scaling"]["state"] = "scaled"; // Set to "scaled" state
+		}
+		else if (scalingState == "scaled"){ // If the current state is scaled and we are setting to original state
+			syiro.component.componentData[componentId]["scaling"]["state"] = "original"; // Set to "original" state
+		}
+
+		// #region Component Child Scaling
+
+		if (typeof syiro.component.componentData[component["id"]]["scaling"]["children"] !== "undefined"){ // If we are scaling child Components or Elements
+			for (var childSelector in syiro.component.componentData[component["id"]]["scaling"]["children"]){ // For each childSelector in the Children scaling Object
+				var childElement : Element = componentElement.querySelector(childSelector); // Get the childElement from componentElement based on the querySelector of the componentElement
+				var childComponent : Object = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
+
+				syiro.component.Scale(childComponent, syiro.component.componentData[component["id"]]["scaling"]["children"][childSelector]["scaling"]); // Scale the child Component
+			}
+		}
+
+		// #endregion
+
 	}
 
 	// #endregion

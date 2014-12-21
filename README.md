@@ -35,16 +35,17 @@ The package also comes with a gzipped version of the JavaScript code, so you can
 
 Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
-Bootstrap  (Not including jQuery) | 114kb + 19.2kb (theme.min.css)| 34.7kb | 8.9kb
+Bootstrap | 114kb + 19.2kb (theme.min.css)| 118.9kb | 37.4kb
 Polymer | Varies depending on use of components | 123.5kb | 35.7kb
-**Syiro** | **13.7kb** | **29.8kb** | **6.8kb**
+**Syiro** | **12.7kb** | **38.0kb** | **8.6kb**
 
 Details:
 
 1. Bootstrap did not provide a gzipped JavaScript file.
-2. Syiro's build script auto-minifies and gzipped JS.
-3. All gzipped  JavaScript was done using [zopfli](https://code.google.com/p/zopfli/) with 15 iterations: `zopfli x.min.js`
-4. This is as of 1.0.0 and will update for releases (*aside from release candidates*).
+2. Bootstrap's size is also calculating in jQuery, which is a requirement for Bootstrap.
+3. Syiro's build script auto-minifies and gzipped JS.
+4. All gzipped  JavaScript was done using [zopfli](https://code.google.com/p/zopfli/) with default iterations: `zopfli x.min.js`
+5. This is as of 1.0.5 and will update for releases (*aside from release candidates*).
 
 ### Using Syiro ###
 

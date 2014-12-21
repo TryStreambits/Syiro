@@ -23,6 +23,22 @@ module syiro {
 
 		syiro.device.Detect(); // Detect Device information and functionality support by using our Detect() function.
 
+		// #region Event Listener Tweaking For Touch Devices
+
+		var eventsToRemove : Array<string>; // Define eventsToRemove as an array of strings to remove from eventStrings
+
+		if (syiro.device.SupportsTouch == true){ // If the device supports touch, define removal of mouse-oriented events from eventStrings
+			eventsToRemove = ["mousedown", "mouseup"]; // Set eventsToRemove as an array of mouse-oriented event strings to remove
+		}
+		else{ // If the device does not support touch, define removal of touch-oriented events from eventStrings
+			eventsToRemove = ["touchstart", "touchend"]; // Set eventsToRemove as an array of touch-oriented event strings to remove
+		}
+
+		syiro.events.eventStrings["down"].splice(syiro.events.eventStrings["down"].indexOf(eventsToRemove[0]), 1); // Remove either mousedown or touchstart
+		syiro.events.eventStrings["up"].splice(syiro.events.eventStrings["up"].indexOf(eventsToRemove[1]), 1); // Remove either mouseup or touchend
+
+		// #endregion
+
 		// #region Document Scroll Event Listening
 
 		syiro.events.Add("scroll", document, // Add an event listener to the document for when the document is scrolling
@@ -72,14 +88,15 @@ module syiro {
 
 									function NodeParser(passedNode : any){ // Function that parses a Node (type any rather than Node since lib.ts doesn't seem to make not that attribute func are usable on Nodes)
 										if (passedNode.localName !== null){ // If the addedNode has a localName, such as "header" instead of null
-											var componentObject = syiro.component.FetchComponentObject(passedNode); // Fetch the (potential) Component Object of the passedNode
+											if (passedNode.hasAttribute("data-syiro-component")){ // If the element is a Syiro component
+												var componentObject = syiro.component.FetchComponentObject(passedNode); // Fetch the (potential) Component Object of the passedNode
 
-											if (componentObject !== false){ // If the element is a Syiro component
 												if (componentObject["type"] == "dropdown"){ // If the component is a Dropdown
 													syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
 												}
 												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
 													syiro.player.Init(componentObject); // Initialize the Audio or Video Player
+													syiro.component.Scale(componentObject); // Scale the Audio Player or Video Player
 												}
 
 												if (passedNode.childNodes.length > 0){ // If the passedNode has childNodes
@@ -123,7 +140,7 @@ module syiro {
 
 	// #endregion
 
-	export var Define = syiro.component.Define; // Meta-function for defining Syiro components
+	export var Define = syiro.component.Define; // Meta-function for defining Syiro components (which is actually a meta-function of FetchComponentObject)
 
 	export var Fetch = syiro.component.Fetch; // Meta-function for fetching Syiro component HTMLElements
 

@@ -79,8 +79,9 @@ module syiro.player {
                         syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
                         syiro.player.PlayOrPause(playerComponentObject); // Play the video
 
-                        if (e.type.indexOf("touchend") !== -1){ // If the event was touch
-                            syiro.player.TogglePlayerControl(playerComponentObject, false); // Hide the Player Control as well
+                        if (syiro.device.SupportsTouch == true){ // If the device supports touch
+                            var playerControlComponent = syiro.component.FetchComponentObject(posterImageElement.parentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Player Control
+                            syiro.playercontrol.Toggle(playerControlComponent, false); // Hide the Player Control as well
                         }
                     }
                 );
@@ -95,13 +96,13 @@ module syiro.player {
                     var innerContentElement : Element = arguments[0]; // Get the innerContentElement passed as argument 0
                     var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
 
-                    var playerComponent = syiro.component.FetchComponentObject(innerContentElement.parentElement); // Fetch the Component Object of the innerContentElement's parentElement
-
-                    if (e.type.indexOf("touchend") == -1){ // If it was not touch that triggered the event
+                    if (syiro.device.SupportsTouch !== true){ // If it was not touch that triggered the event
+                        var playerComponent = syiro.component.FetchComponentObject(innerContentElement.parentElement); // Fetch the Component Object of the innerContentElement's parentElement
                         syiro.player.PlayOrPause(playerComponent); // Play / pause the video
                     }
                     else{ // If it was touch that triggered the event
-                        syiro.player.TogglePlayerControl(playerComponent); // Toggle the control
+                        var playerControlComponent = syiro.component.FetchComponentObject(innerContentElement.parentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Component Object of the innerContentElement's Player Control
+                        syiro.playercontrol.Toggle(playerControlComponent); // Toggle the control
                     }
                 }
             );
@@ -121,19 +122,23 @@ module syiro.player {
 
             // #region Video Player Mousenter / Mouseleave Handling
 
-            syiro.events.Add("mouseenter", componentElement, // Add a mouseenter event for the Video Player that shows the Video Player inner Player Control
-                function(){
-                    var componentElement : Element = arguments[0]; // Get the componentElement passed as argument 0
-                    syiro.player.TogglePlayerControl(syiro.component.FetchComponentObject(componentElement), true); // Show the control (send true, signifying to show as oppose to hide)
-                }
-            );
+            if (syiro.device.SupportsTouch == false){ // If the device does not support touch events
+                syiro.events.Add("mouseenter", componentElement, // Add a mouseenter event for the Video Player that shows the Video Player inner Player Control
+                    function(){
+                        var componentElement : Element = arguments[0]; // Get the componentElement passed as argument 0
+                        var playerControlComponent : Object = syiro.component.FetchComponentObject(componentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Component Object of the Player Control
+                        syiro.playercontrol.Toggle(playerControlComponent, true); // Show the control (send true, signifying to show as oppose to hide)
+                    }
+                );
 
-            syiro.events.Add("mouseleave", componentElement, // Add a mouseleave event for the Video Player that hides the Video Player inner Player Control
-                function(){
-                    var componentElement : Element = arguments[0]; // Get the componentElement passed as argument 0
-                    syiro.player.TogglePlayerControl(syiro.component.FetchComponentObject(componentElement), false); // Hide the control (send false, signifying to hide as oppose to show)
-                }
-            );
+                syiro.events.Add("mouseleave", componentElement, // Add a mouseleave event for the Video Player that hides the Video Player inner Player Control
+                    function(){
+                        var componentElement : Element = arguments[0]; // Get the componentElement passed as argument 0
+                        var playerControlComponent : Object = syiro.component.FetchComponentObject(componentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Component Object of the Player Control
+                        syiro.playercontrol.Toggle(playerControlComponent, false); // Hide the control (send false, signifying to hide as oppose to show)
+                    }
+                );
+            }
 
             // #endregion
 
@@ -156,15 +161,11 @@ module syiro.player {
                     // #region Player Component & Element Defining
 
                     var playerElement = playButton.parentElement.parentElement; // Get the Play Button's parent Player
-                    var playerElementComponent : Object = syiro.component.FetchComponentObject(playerElement); // Get the Player Component based on the playerElement
+                    var playerComponent : Object = syiro.component.FetchComponentObject(playerElement); // Get the Player Component based on the playerElement
 
                     // #endregion
 
-                    syiro.player.PlayOrPause(playerElementComponent, playButtonComponent); // Switch the status of the Player to either play or pause
-
-                    if ((playerElementComponent["type"] == "video-player") && (syiro.player.IsPlaying(playerElementComponent) == true) && (e.type.indexOf("touchend") !== -1)){ // If the play button was triggered by touch and we are now playing video content
-                        syiro.player.TogglePlayerControl(playerElementComponent); // Toggle the control
-                    }
+                    syiro.player.PlayOrPause(playerComponent, playButtonComponent); // Switch the status of the Player to either play or pause
                 }
             );
 
@@ -582,47 +583,6 @@ module syiro.player {
 
     // #endregion
 
-    // #region Toggle Player Control
-
-    export function TogglePlayerControl(component : Object, forceShow ?: boolean){
-        var playerElement : Element = syiro.component.Fetch(component); // Fetch the Player Component
-        var playerControlElement : Element = playerElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control of this particular Player
-        var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get this particular Player Control Component Object for animation
-        var currentAnimationStored : any = null; // Define currentAnimationStored initially as null. We will define it as the current animation if it has one
-
-        syiro.component.CSS(playerControlElement, "opacity", false); // Remove the opacity styling set by the Video Player Component init for the Player Control to ensure fade animations run properly
-
-        if (playerControlElement.hasAttribute("class")){ // If the Player Control Element has an animation "class" (like fade-in-animation)
-            currentAnimationStored = playerControlElement.getAttribute("class"); // Get the current animation stored in "class"
-        }
-        else { // If it doesn't have a class (the event has been triggered for the first time)
-            if (typeof forceShow == "undefined"){ // If forceShow is not defined
-                forceShow  = true; // Force to set the fade-in-animation value
-            }
-        }
-
-        if (forceShow == true){ // If we are forcing to show the Player Control
-            syiro.animation.FadeIn(playerControlComponent); // Fade in the Player Control
-        }
-        else if (forceShow == false){ // If we are forcing to hide the Player Control
-            if (currentAnimationStored == null){ // If the intent is to force hide the Player Control while the playerControlElement has no class
-                playerControlElement.setAttribute("class", "fade-in-animation"); // Set the Player Control Element to fade-in-animation to ensure that the animation runs
-            }
-
-            syiro.animation.FadeOut(playerControlComponent); // Fade out the Player Control
-        }
-        else { // If the forceShow is not defined
-            if (currentAnimationStored == "fade-out-animation"){ // If the current status is the Player Control is faded out
-                syiro.animation.FadeIn(playerControlComponent); // Fade in the Player Control
-            }
-            else{ // If the current status is the Player Control is faded in (showing)
-                syiro.animation.FadeOut(playerControlComponent); // Fade out the Player Control
-            }
-        }
-    }
-
-    // #endregion
-
     // #region Toggle Menu Dialog
 
     export function ToggleMenuDialog(component : Object){
@@ -697,7 +657,10 @@ module syiro.playercontrol {
 
         componentElement.appendChild(syiro.component.Fetch(volumeButton)); // Append the volume control
 
-        syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Store the Player Control
+        syiro.component.componentData[componentId] = { // Store the Component Data of the Player Control
+            "HTMLElement" : componentElement,
+            "scaling" : {} // Define scaling as an empty Object
+        };
 
         return { "id" : componentId, "type" : "player-control" }; // Return a Component Object
     }
@@ -737,6 +700,36 @@ module syiro.playercontrol {
         var playerTimeElementParts = playerTimeElement.textContent.split(" / "); // Split time textContent based on " / "
         playerTimeElementParts[timePart] = parsedSecondsToString; // Set the value of the part specified
         playerTimeElement.textContent = playerTimeElementParts[0] + " / " + playerTimeElementParts[1];
+    }
+
+    // #endregion
+
+    // #region Toggle Player Control
+
+    export function Toggle(component : Object, forceShow ?: boolean){
+        var playerControlElement : Element = syiro.component.Fetch(component); // Fetch the Syiro Player Control Component Element
+        var currentAnimationStored : any = null; // Define currentAnimationStored initially as null. We will define it as the current animation if it has one
+
+        syiro.component.CSS(playerControlElement, "opacity", false); // Remove the opacity styling set by the Video Player Component init for the Player Control to ensure fade animations run properly
+
+        if (playerControlElement.hasAttribute("class")){ // If the Player Control Element has an animation "class" (like fade-in-animation)
+            currentAnimationStored = playerControlElement.getAttribute("class"); // Get the current animation stored in "class"
+        }
+
+        if (forceShow == true){ // If we are forcing to show the Player Control
+            syiro.animation.FadeIn(component); // Fade in the Player Control
+        }
+        else if (forceShow == false){ // If we are forcing to hide the Player Control
+            syiro.animation.FadeOut(component); // Fade out the Player Control
+        }
+        else if (typeof forceShow == "undefined"){ // If the forceShow is not defined
+            if ((currentAnimationStored == "fade-out-animation") || (playerControlElement.hasAttribute("class") == false)){ // If the current status is the Player Control is faded out OR the Player Control does not have a class
+                syiro.animation.FadeIn(component); // Fade in the Player Control
+            }
+            else{ // If the current status is the Player Control is faded in (showing)
+                syiro.animation.FadeOut(component); // Fade out the Player Control
+            }
+        }
     }
 
     // #endregion
@@ -806,10 +799,6 @@ module syiro.audioplayer {
                 properties["width"] = 400; // Set width property to 400, which we'll pass to the Player Control Generation
             }
 
-            if (window.screen.width < properties["width"]){ // If the screen width is smaller than the audio player width
-                properties["width"] = window.screen.width - 10; // Set the videoWidth to screen width and some padding on the side
-            }
-
             syiro.component.CSS(componentElement, "width", properties["width"].toString() + "px"); // Set the width of the Audio Player Component Element
 
             var playerControlComponent : Object = syiro.playercontrol.Generate(properties);
@@ -830,7 +819,20 @@ module syiro.audioplayer {
 
             componentElement.appendChild(playerControlElement); // Append the player control
 
-            syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Store the Audio Player Component Element we generated
+            syiro.component.componentData[componentId] = { // Store the Audio Player Component Element Details we generated
+                "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
+                "scaling" : { // Create a scaling details Object
+                    "initialDimensions" : [160, properties["width"]], // Set the initialDimensions to 160px height and width as properties[width]
+                    "ratios" : [0,0], // Do not scale (unless absolutely necessary)
+                    "children" : { // Children that should scale with the Audio Player
+                        'div[data-syiro-component="player-control"]' : { // Player Control should scale
+                            "scaling" : { // Player Control scaling details Object
+                                "ratios" : [0, 1] // Ratios of 0 (maintain height) with 1.0 ratio as width (100% of parent Audio Player)
+                            }
+                        }
+                    }
+                }
+            };
 
             return { "id" : componentId, "type" : "audio-player" }; // Return a Component Object
         }
@@ -877,10 +879,6 @@ module syiro.videoplayer {
 
             if (videoWidth == undefined){ // If no width is defined
                 videoWidth = Number((videoHeight * 1.77).toFixed()); // Ensure a 16:9 aspect ratio
-            }
-
-            if (videoWidth > window.screen.width){ // If the video's width is greater than the screen width
-                videoWidth = window.screen.width - 10; // Set the videoWidth to screen width and some padding on the side
             }
 
             var properVideoHeight : number = Number((videoWidth / 1.77).toFixed()); // Proper Component Height to ensure 16:9 aspect ratio
@@ -939,13 +937,24 @@ module syiro.videoplayer {
             }
 
             // #endregion
-
-            syiro.component.CSS(componentElement, "height", videoHeight.toString() + "px"); // Set the height of the Video Player Component
-            syiro.component.CSS(componentElement, "width", videoWidth.toString() + "px"); // Set the width of the Video Player Component
-
-            syiro.component.componentData[componentId] = { // Store the Video Player Component Element data we generated
-                "HTMLElement" : componentElement, // HTMLElement we generated
-                "initialDimensions" : [videoHeight, videoWidth] // Initial Dimensions
+            syiro.component.componentData[componentId] = { // Store the Video Player Component Element Details we generated
+                "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
+                "scaling" : { // Create a scaling details Object
+                    "initialDimensions" : [videoHeight, videoWidth], // Set the initialDimensions to videoHeight and width as videoWidth
+                    "ratios" : [1, 1.77], // The Video Player should scale so the ratio is 16:9 (for every 1px in height, 1.77 pixels in width)
+                    "children" : { // Children that should scale with the Video Player
+                        'img[data-syiro-minor-component="video-poster"]' : { // Video Poster should scale
+                            "scaling" : {  // Video Poster scaling details Object
+                                "matchParent" : true // Match the dimensions of the parent
+                            }
+                        },
+                        'div[data-syiro-component="player-control"]' : { // Player Control should scale
+                            "scaling" : { // Player Control scaling details Object
+                                "ratios" : [0, 1] // Ratios of 0 (maintain height) with 1.0 ratio as width (100% of parent Video Player)
+                            }
+                        }
+                    }
+                }
             };
 
             return { "id" : componentId, "type" : "video-player" }; // Return a Component Object

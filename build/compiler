@@ -77,7 +77,7 @@ recursiveCompiling(){ # Recursive function for code compiling
 		else # If we are compiling Typescript
 			anyFilesChanged=true # Set global var to true
 
-			tsc --removeComments --target 'ES5' src/typescript/syiro.ts --declaration --out build/syiro.js
+			/home/$USER/node_modules/typescript/bin/tsc --removeComments --target 'ES5' src/typescript/syiro.ts --declaration --out build/syiro.js
 			cp build/syiro.js tests/design/js/ # Copy syiro.js to tests/design/js
 
 			echo "Minifying Syiro compiled Javascript."

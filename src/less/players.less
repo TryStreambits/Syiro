@@ -6,7 +6,6 @@ div[data-syiro-component="player-control"]{
     float: left;
     height: 60px;
     width: 100%; // Scales to width of video player if necessary
-    min-width: 400px; // Minimum width of the audio player
     background-color: @syiroSecondaryColor; // Secondary "Dark" control background
 
     & > div[data-syiro-component="button"][data-syiro-component-type="basic"]{ // Custom LESS for Basic Button Components inside Player Control
@@ -237,7 +236,6 @@ div[data-syiro-component="audio-player"]{
         & > section { // Song Information
             float: left;
             height: 100px;
-            width: 250px;
 
             & > b,label {
                 float: left;

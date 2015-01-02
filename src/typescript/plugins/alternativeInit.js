@@ -8,7 +8,7 @@ var syiro;
                 syiro.device.Detect();
                 (function mutationTimer() {
                     window.setTimeout(function () {
-                        for (var componentId in syiro.component.storedComponents) {
+                        for (var componentId in syiro.component.componentData) {
                             var potentiallyExistingComponent = document.querySelector('*[data-syiro-component-id="' + componentId + '"]');
                             if (potentiallyExistingComponent !== null) {
                                 var type = potentiallyExistingComponent.getAttribute("data-syiro-component");
@@ -18,8 +18,9 @@ var syiro;
                                 }
                                 else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")) {
                                     syiro.player.Init(componentObject);
+                                    syiro.component.Scale(componentObject);
                                 }
-                                delete syiro.component.storedComponents[componentId];
+                                delete syiro.component.componentData[componentId]["HTMLElement"];
                             }
                         }
                         mutationTimer();

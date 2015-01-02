@@ -22,6 +22,10 @@ interface Navigator {
 interface HTMLElement {
     autoplay: boolean;
 }
+interface Screen {
+    orientation: string;
+    mozOrientation: string;
+}
 interface Window {
     crypto: any;
     ontouchend: any;
@@ -58,8 +62,10 @@ declare module syiro.device {
     var IsSubHD: boolean;
     var IsHD: boolean;
     var IsFullHDOrAbove: boolean;
+    var orientation: string;
     function Detect(): void;
     function FetchScreenDetails(): void;
+    function FetchScreenOrientation(): string;
 }
 declare module syiro.events {
     var eventStrings: Object;

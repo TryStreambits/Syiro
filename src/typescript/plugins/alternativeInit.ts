@@ -28,7 +28,8 @@ module syiro.plugin.alternativeInit {
                                 syiro.component.AddListeners(syiro.component.listenerStrings["up"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
                             }
                             else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
-                                syiro.player.Init(componentObject); // Initialize the Audio or Video Palyer
+                                syiro.player.Init(componentObject); // Initialize the Audio or Video Player
+                                syiro.component.Scale(componentObject); // Scale the Audio Player or Video Player
                             }
 
                             delete syiro.component.componentData[componentId]["HTMLElement"]; // Ensure the Component in the componentData is deleted

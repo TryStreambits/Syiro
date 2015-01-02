@@ -30,6 +30,11 @@ interface HTMLElement { // Implementation of HTMLElement
 	autoplay : boolean; // Technically not in spec except for HTMLAudioElement and HTMLVideoElement
 }
 
+interface Screen { // Implementation of Screen
+	orientation : string;
+	mozOrientation : string;
+}
+
 interface Window { // Implementation of valid spec not found in lib.d.ts
 	crypto : any; // Define crypto as any
 	ontouchend : any; // Define ontouchend as any

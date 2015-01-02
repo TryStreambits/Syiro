@@ -192,26 +192,30 @@ module syiro.component {
 	// This function is responsible for scaling Components based on screen information, their initialDimensions data (if any) and scaling of any inner Components or Elements
 
 	export function Scale(component : Object, scalingData ?: Object){
-		var userVerticalSpace : number = window.screen.height; // Define userVerticalSpace as the space the user has, in pixels, vertically.
-		var userHorizontalSpace : number = window.screen.width; // Define userHorizontalSpace as the space the user has, in pixels, horizontally.
-
+		// #region Variable Setup
 		var componentId = component["id"]; // Get the Component Id of the Component
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement
 
+		var userHorizontalSpace : number = window.screen.width; // Define userHorizontalSpace as the space the user has, in pixels, horizontally.
 		var parentHeight : number = componentElement.parentElement.clientHeight; // Set the parentHeight to the parent Element's clientHeight of the Component Element
 		var parentWidth : number = componentElement.parentElement.clientWidth; // Set the parentWidth to the parent Element's clientWidth of the Component Element
 
+		// #endregion
+
 		// #region Scaling Data Definition
+
+		var storedScalingState : string; // Define scalingState as the stored scaling state
 
 		if (typeof scalingData !== "undefined"){ // If scalingData has been defined (passed as second arg)
 			syiro.component.componentData[componentId]["scaling"] = scalingData; // Define the scaling data in the componentData for this particular Component as the scalingData passed along
 		}
 
 		if (typeof syiro.component.componentData[componentId]["scaling"]["state"] == "undefined"){ // If the scaling state of this Component is not defined (like an Element that has never been scaled before)
-			syiro.component.componentData[componentId]["scaling"]["state"] = "scaled"; // Default to scale so we'll set the initial dimensions
+			storedScalingState = "initial"; // Default to initial so we'll properly scale
 		}
-
-		var scalingState : string = syiro.component.componentData[componentId]["scaling"]["state"]; // Define scalingState as the current scaling state
+		else{ // If scaling state of this Component is defined
+			storedScalingState = syiro.component.componentData[componentId]["scaling"]["state"]; // Define scalingState as the current scaling state stored in the componentData
+		}
 
 		// #endregion
 
@@ -236,29 +240,40 @@ module syiro.component {
 			syiro.component.componentData[componentId]["scaling"]["initialDimensions"] = initialDimensions; // Update the componentData initialDimensions for this Component
 		}
 
-		// #endregion
-
 		var updatedComponentHeight : number = initialDimensions[0]; // Define the updatedComponentHeight as the initial height defined
 		var updatedComponentWidth : number =  initialDimensions[1]; // Define the updatedComponentWidth as the initial width defined
 
-		// #region Component Scaling and Overflow Prevention
+		// #endregion
 
-		if ((scalingState == "original") || ((scalingState == "scaled") && (updatedComponentWidth > userHorizontalSpace))){ // If we need to scale the Component or the original state has a width greater than the device
-			var ratios : Array<number>; // Define ratios an array of numbers <height, width>
+		// #region Ratio and Fill Data Parsing
 
-			if (typeof syiro.component.componentData[componentId]["scaling"]["ratios"] !== "undefined"){ // If the ratios are defined for this Component / Element
-				ratios = syiro.component.componentData[componentId]["scaling"]["ratios"]; // Define ratios as ones already defined
+		var ratios : any = null; // Define ratios an array of numbers <height, width> or NULL
+		var fill : any = null; // Define ratios as an array of numbers <height, width> or NULL
 
-				if (ratios.length == 1){ // If only one dimension is defined
-					ratios.push(1.0); // Push 1.0 as the height ratio. Currently it is the second argument instead of first.
-					ratios.reverse(); // Reverse the items so it is once again <height, width>
-				}
+		if (typeof syiro.component.componentData[componentId]["scaling"]["ratios"] !== "undefined"){ // If ratios are defined in the scaling data
+			ratios = syiro.component.componentData[componentId]["scaling"]["ratios"]; // Define ratios as data already defined
+
+			if (ratios.length == 1){ // If only one dimension is defined
+				ratios.push(1.0); // Push 1.0 as the height ratio. Currently it is the second argument instead of first.
+				ratios.reverse(); // Reverse the items so it is once again <height, width>
 			}
-			else if (typeof syiro.component.componentData[componentId]["scaling"]["matchParent"] == "undefined") { // If the ratios are not defined and nor is "matchParent"
-				ratios = [1.0,1.0]; // Define ratios as 1.0
-			}
+		}
 
-			if (typeof syiro.component.componentData[componentId]["scaling"]["matchParent"] == "undefined"){ // If we are not matching to the parent
+		if (typeof syiro.component.componentData[componentId]["scaling"]["fill"] !== "undefined"){ // If fill data is defined in scaling data
+			fill = syiro.component.componentData[componentId]["scaling"]["fill"]; // Define fill as data already defined
+
+			if (fill.length == 1){ // If only one dimension is defined
+				fill.push(1.0) // Push 1.0 as the height fill. Currently it is the second argument instead of first.
+				fill.reverse(); // Reverse the items so it is once again <height, width>
+			}
+		}
+
+		// #endregion
+
+		// #region Component Scaling
+
+		if ((storedScalingState !== "scaled") && ((ratios !== null) || (fill !== null))){ // If we have not "disabled" scaling by not providing ratio or fill data and we need to scale the Component
+			if (ratios !== null){ // If ratios is defined (not of type null)
 				if (ratios[0] !== 0){ // If the height is supposed to scale
 					updatedComponentHeight = (initialDimensions[0] * ratios[0]); // Updated componentHeight is the initialDimensions height * height ratio
 				}
@@ -267,55 +282,95 @@ module syiro.component {
 				}
 
 				if (ratios[1] !== 0){ // If the width is supposed to scale
-					updatedComponentWidth = (initialDimensions[1] * ratios[1]); // Updated componentWidth is the initialDimensions width * width ratio
+					updatedComponentWidth = (initialDimensions[0] * (ratios[1] / ratios[0])); // Updated componentWidth is the initialDimensions height * heightToWidthRatio (ratios[1] / ratios[0])
 				}
 				else{ // If the width is not supposed to scale
 					updatedComponentWidth = initialDimensions[1]; // Set the width to the initialDimensions width
 				}
-
-				if (updatedComponentWidth > parentWidth){ // If the updatedComponentWidth is greater than the parentWidth
-					updatedComponentWidth = parentWidth; // Immediately set updatedComponentWidth as the width of the parent
-
-					if (updatedComponentWidth > userHorizontalSpace){ // If the width of the updatedComponentWidth is greater than the horizontal space available to the user
-						updatedComponentWidth = userHorizontalSpace; // Initially the updatedComponentWidth to horizontal space available to the user
-					}
+			}
+			else if (fill !== null){ // If fill is defined (not of type null)
+				if (fill[0] !== 0){ // If the height is supposed to scale with the parent
+					updatedComponentHeight = (parentHeight * fill[0]); // Define updatedComponentHeight as the height of the parent our fill percentage
+				}
+				else{ // If the height of the Component is supposed to remain the same
+					updatedComponentHeight = initialDimensions[0]; // Define updatedComponentHeight as the initialDimensions height
 				}
 
-				if (ratios[0] !== 0){ // If the height is allowed to be scaled
-					updatedComponentHeight = (updatedComponentWidth / ratios[1]); // Set the updatedComponentHeight to be the width / the width's ratio
+				if (fill[1] !== 0){ // If the width is supposed to scale with the parent
+					updatedComponentWidth = (parentWidth * fill[1]); // Define updatedComponentWidth as the width of the parent times our fill percentage
+				}
+				else{ // If the height of the Component is supposed to remain the same
+					updatedComponentWidth = initialDimensions[1]; // Define updatedComponentWidth as the initialDimensions width
 				}
 			}
-			else{ // If we are matching to parent
-				updatedComponentHeight = parentHeight; // Immediately set updatedComponentHeight as height of the parent
-				updatedComponentWidth = parentWidth; // Immediately set updatedComponentWidth as the width of the parent
+
+			// #endregion
+		}
+
+		// #region Component Overflow Prevention
+
+		if (updatedComponentWidth > userHorizontalSpace){ // If the width of the updatedComponentWidth is greater than the horizontal space available to the user
+			updatedComponentWidth = userHorizontalSpace; // Initially the updatedComponentWidth to horizontal space available to the user
+
+			if ((ratios !== null) && (ratios[0] !== 0)){ // If we can scale the height of the Component as necessary
+				updatedComponentHeight = (updatedComponentWidth * (initialDimensions[0] / initialDimensions[1])); // Define the updatedComponentHeight as the width times the height-to-width pixel ratio
 			}
 		}
 
 		// #endregion
 
-		syiro.component.CSS(componentElement, "height", updatedComponentHeight.toString() + "px"); // Set the height to the initial height defined
-		syiro.component.CSS(componentElement, "width", updatedComponentWidth.toString() + "px"); // Set the width to the initial width defined
-
-		if (scalingState == "original"){ // If the current state is original and we are scaling
-			syiro.component.componentData[componentId]["scaling"]["state"] = "scaled"; // Set to "scaled" state
-		}
-		else if (scalingState == "scaled"){ // If the current state is scaled and we are setting to original state
-			syiro.component.componentData[componentId]["scaling"]["state"] = "original"; // Set to "original" state
-		}
+		syiro.component.CSS(componentElement, "height", updatedComponentHeight.toString() + "px"); // Set the height to the updated height data
+		syiro.component.CSS(componentElement, "width", updatedComponentWidth.toString() + "px"); // Set the width to the updated width data
 
 		// #region Component Child Scaling
 
 		if (typeof syiro.component.componentData[component["id"]]["scaling"]["children"] !== "undefined"){ // If we are scaling child Components or Elements
-			for (var childSelector in syiro.component.componentData[component["id"]]["scaling"]["children"]){ // For each childSelector in the Children scaling Object
-				var childElement : Element = componentElement.querySelector(childSelector); // Get the childElement from componentElement based on the querySelector of the componentElement
-				var childComponent : Object = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
 
-				syiro.component.Scale(childComponent, syiro.component.componentData[component["id"]]["scaling"]["children"][childSelector]["scaling"]); // Scale the child Component
+			// #region Children Component Data Parsing
+			// Parses any component data like scaling information passed regarding Children of the Component, sets to own componentData and changes "children" key / val to point to an array instead
+
+			if (typeof syiro.component.componentData[component["id"]]["scaling"]["children"].pop == "undefined"){ // If children key / val is an Object rather than an Array (Array would have .pop)
+				var childComponentsArray : Array<Object> = []; // Define childComponents as an array of Objects
+
+				for (var childSelector in syiro.component.componentData[component["id"]]["scaling"]["children"]){ // For each childSelector in the children section of scaling
+					var childElement : Element = componentElement.querySelector(childSelector); // Get the childElement from componentElement based on the querySelector of the componentElement
+					var childComponent : Object = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
+
+					if (typeof syiro.component.componentData[childComponent["id"]] == "undefined"){ // If the childComponent has no componentData
+						syiro.component.componentData[childComponent["id"]] = {}; // Create an empty Object for the childComponent in componentData
+					}
+
+					syiro.component.componentData[childComponent["id"]]["scaling"] = syiro.component.componentData[component["id"]]["scaling"]["children"][childSelector]["scaling"]; // Define the scaling data of the childComponent to be equal to the scaling data passed for the parent Component
+					childComponentsArray.push(childComponent); // Push the childComponent to the childComponentsArray Array of Objects
+					delete syiro.component.componentData[component["id"]]["scaling"]["children"][childSelector]; // Delete the childSelector from the "children"
+				}
+				syiro.component.componentData[component["id"]]["scaling"]["children"] = childComponentsArray; // Set the children to now be an Array<Object>
+			}
+
+			// #endregion
+
+			for (var childComponentIndex = 0; childComponentIndex < syiro.component.componentData[component["id"]]["scaling"]["children"].length; childComponentIndex++){ // For each childComponent in the Children scaling Object
+				var childComponentObject : Object = syiro.component.componentData[component["id"]]["scaling"]["children"][childComponentIndex]; // Define childComponentObject as the index of the Object from key / val children
+				syiro.component.Scale(childComponentObject); // Scale the child Component
 			}
 		}
 
 		// #endregion
 
+		// #region Update Scaling State
+
+		var updatedScalingState : string;
+
+		if (storedScalingState !== "original"){ // If the current scaling state implies we needed to scale
+			updatedScalingState = "original"; // Set to "original" state
+		}
+		else{ // If the currently stored state implies that the Component was in an "original" state and we needed to scale it
+			storedScalingState = "scaled"; // Set to "scaled" state
+		}
+
+		syiro.component.componentData[componentId]["scaling"]["state"] = updatedScalingState; // Set to the updated scaling state
+
+		// #endregion
 	}
 
 	// #endregion

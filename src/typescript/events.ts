@@ -22,14 +22,15 @@ module syiro.events {
         var passableValue : any = null; // Set passableValue to any type, defaults to null
 
         var listener : string = (eventData.type).toLowerCase().slice(0,2).replace("on", "") + (eventData.type).toLowerCase().slice(2); // Ensure the event type passed is simplified and lowercased (strip out any beginning mention of "on")
+        var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.
 
         // #region Component Data Determination - Determines the Component Id and Component Element
 
-        if ((typeof component.nodeType == "undefined") && (component !== window)){ // If the Component provided is a Syiro Component Object (doesn't have a nodeType nor is the window Object)
+        if (componentType == "object") { // If the Component provided is a Syiro Component Object
             componentId = component["id"]; // Define componentId as the component Id we've already generated
             componentElement = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
         }
-        else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1) || (component == document) || (component == window)){ // If the Component is either an Element, the document, or window
+        else{ // If the Component is either an Element or another interface like screen
             if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
                 if (component.hasAttribute("data-syiro-component-id")){ // If the component already has a unique Id defined
                     componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
@@ -48,8 +49,8 @@ module syiro.events {
             else if (component == document){ // If the Component passed is the document Object
                 componentId = "document"; // Define componentId as "document
             }
-            else if (component == window){ // If the componentElement is the window
-                componentId = "window"; // Define componentId as "window"
+            else { // If the Component passed is an Object like window, document, screen
+                componentId = componentType; // Define componentId as the componentType since it is most likely unique
             }
 
             componentElement = component; // Define componentElement as the Component
@@ -158,8 +159,9 @@ module syiro.events {
             }
 
             var componentElement : any; // Define componentElement as an Element
+            var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.
 
-            if ((typeof component.nodeType == "undefined") && (component !== window)){ // If the Component provided is a Syiro Component Object (doesn't have a nodeType nor is the window Object)
+            if (componentType == "object"){ // If the Component provided is a Syiro Component Object (the componentType is "object" rather than something like "window"
                 componentId = component["id"]; // Define the component ID as the unique Id already have for the Syiro Component Object
                 componentElement = syiro.component.Fetch(component); // Get the Component Element
 
@@ -169,7 +171,7 @@ module syiro.events {
                     }
                 }
             }
-            else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1) || (component == document) || (component == window)){ // If the Component is either an Element, the document, or window
+            else{ // If the Component provided is not a Syiro Component Object
                 if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
                     if (component.hasAttribute("data-syiro-component-id")){ // If the component already has a unique Id defined
                         componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
@@ -185,17 +187,11 @@ module syiro.events {
                         component.setAttribute("data-syiro-component-id", componentId); // Set the data-syiro-component-id to either the non-Syiro Id or the Id we generated
                     }
                 }
-                else if (component == document){ // If the Component passed is the document Object
-                    componentId = "document"; // Define componentId as "document
-                }
-                else if (component == window){ // If the componentElement is the window
-                    componentId = "window"; // Define componentId as "window"
+                else { // If the Component passed is an Object like window, document, screen
+                    componentId = componentType; // Define componentId as the componentType since it is most likely unique
                 }
 
                 componentElement = component; // Define componentElement as the Component
-            }
-            else{ // If the component is neither a Syiro Component Object, an Element, the document, or the window
-                allowListening = false; // Disallow listening to the Component
             }
 
             if (allowListening == true){ // If allowListening is TRUE

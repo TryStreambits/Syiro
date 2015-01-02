@@ -18,11 +18,12 @@ module syiro.device {
     export var IsOnline : boolean = true; // Define IsOnline as a boolean if the device is online.
     export var SupportsTouch : boolean = false; // Define SupportsTouch as a boolean, defaulting to false, as to whether or not the device supports touch.
 
-    // #region Screen Size Variables
+    // #region Screen Variables
 
     export var IsSubHD : boolean; // Define IsSubHD as a boolean if the device is less than an HD (720p) display.
     export var IsHD : boolean; // Define IsHD as a boolean if the device is HD (720p) or greater than 720p.
     export var IsFullHDOrAbove : boolean; // Define IsFullHDOrAbove as a boolean if the device is Full HD (1080p) or above.
+    export var orientation : string; // Define orientation as the correct device orientation
 
     // #endregion
 
@@ -74,19 +75,27 @@ module syiro.device {
         }
 
         syiro.device.FetchScreenDetails(); // Do an initial fetch of the screen details
+        syiro.device.orientation = syiro.device.FetchScreenOrientation(); // Do an initial fetch of the screen orientation
 
         syiro.events.Add("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing
 
-        syiro.events.Add("orientationchange", window, // On orientationchange
+        window.setInterval( // Set a timer for every two seconds to check for change in device orientation. We are using this due to the lack of full orientationchange event support in major browsers.
             function(){
-                var allPlayers : NodeList = document.querySelectorAll('div[data-syiro-component^="player"]'); // Get all Audio Players and Video Players
+                var currentOrientation : string = syiro.device.FetchScreenOrientation(); // Fetch the current screen orientation (portrait or landscape)
 
-                for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++){ // For each Player
-                    var thisPlayer : any = allPlayers[allPlayersIndex]; // Define thisPlayer as the index of allPlayers
-                    syiro.component.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
+                if (currentOrientation !== syiro.device.orientation){ // If currentOrientation does not match the syiro.device.orientation stored already
+                    syiro.device.orientation = currentOrientation; // Update orientation value for syiro.device.orientation
+
+                    var allPlayers : NodeList = document.querySelectorAll('div[data-syiro-component$="player"]'); // Get all Audio Players and Video Players
+
+                    for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++){ // For each Player
+                        var thisPlayer : any = allPlayers[allPlayersIndex]; // Define thisPlayer as the index of allPlayers
+                        syiro.component.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
+                    }
                 }
             }
-        )
+            , 2000
+        );
     }
 
     // #endregion
@@ -111,6 +120,20 @@ module syiro.device {
                 syiro.device.IsFullHDOrAbove = true; // Set IsFullHDOrAbove to true
             }
         }
+    }
+
+    // #endregion
+
+    // #region Screen Orientation Data
+
+    export function FetchScreenOrientation() : string {
+        var deviceOrientation : string = "portrait"; // Define deviceOrientation as the orientation of the device, defaulting to portrait
+
+        if (screen.height < screen.width){ // If the screen width is larger than the height
+            deviceOrientation = "landscape"; // We are in landscape mode
+        }
+
+        return deviceOrientation;
     }
 
     // #endregion

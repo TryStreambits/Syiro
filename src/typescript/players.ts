@@ -823,11 +823,11 @@ module syiro.audioplayer {
                 "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
                 "scaling" : { // Create a scaling details Object
                     "initialDimensions" : [160, properties["width"]], // Set the initialDimensions to 160px height and width as properties[width]
-                    "ratios" : [0,0], // Do not scale (unless absolutely necessary)
+                    "ratio" : [0,0], // Do not scale (unless forced)
                     "children" : { // Children that should scale with the Audio Player
                         'div[data-syiro-component="player-control"]' : { // Player Control should scale
                             "scaling" : { // Player Control scaling details Object
-                                "ratios" : [0, 1] // Ratios of 0 (maintain height) with 1.0 ratio as width (100% of parent Audio Player)
+                                "fill" : [0, 1] // Fill of 0 (maintain height) with 1.0 fill as width (100% of parent Audio Player)
                             }
                         }
                     }
@@ -868,26 +868,15 @@ module syiro.videoplayer {
                 properties["menu"] = properties["share"]; // Set "menu" attribute equal to "share" attribute
             }
 
-            // #region Video Dimensions / Proper Ratio Calculation
+            // #region Video Dimensions Defining
 
-            var videoHeight : number = properties["height"]; // Define videoHeight as the height the video in the Video Player should be
-            var videoWidth : number = properties["width"]; // Define videoWidth as the width the video in the Video Player should be
-
-            if (videoHeight == undefined){ // If no height is defined for the video
-                videoHeight = 300; // Set the height to 300px
+            if (properties["height"] == undefined){ // If the properties has a declared height in it
+                properties["height"] = 300; // Set the height to 300px
             }
 
-            if (videoWidth == undefined){ // If no width is defined
-                videoWidth = Number((videoHeight * 1.77).toFixed()); // Ensure a 16:9 aspect ratio
+            if (properties["width"] == undefined){ // If the properties has a declared width in it
+                properties["width"] = 531; // Set the height to 531px (ensure 16:9 ratio)
             }
-
-            var properVideoHeight : number = Number((videoWidth / 1.77).toFixed()); // Proper Component Height to ensure 16:9 aspect ratio
-
-            if (videoHeight !== properVideoHeight){ // In the event the player has an incorrect aspect ratio
-                videoHeight = properVideoHeight; // Set the height to enable the video to have the correct ratio
-            }
-
-            properties["width"] = videoWidth; // Set the properties width to the calculated videoWidth since we will be passing that to the Player Control Generation
 
             // #endregion
 
@@ -895,8 +884,6 @@ module syiro.videoplayer {
 
             if (properties["art"] !== undefined){ // If art has been defined
                 var posterImageElement : HTMLElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component" : "video-poster", "src" : properties["art"] }); // Create an img Element with the src set to the artwork
-                syiro.component.CSS(posterImageElement, "height", videoHeight.toString() + "px"); // Set the posterImageElement height equal to the width of the video
-                syiro.component.CSS(posterImageElement, "width", videoWidth.toString() + "px"); // Set the posterImageElement width equal to the width of the video
                 componentElement.appendChild(posterImageElement); // Append to the Video Player container
             }
 
@@ -940,17 +927,17 @@ module syiro.videoplayer {
             syiro.component.componentData[componentId] = { // Store the Video Player Component Element Details we generated
                 "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
                 "scaling" : { // Create a scaling details Object
-                    "initialDimensions" : [videoHeight, videoWidth], // Set the initialDimensions to videoHeight and width as videoWidth
+                    "initialDimensions" : [properties["height"], properties["width"]], // Set the initialDimensions to video Height and width as video Width
                     "ratios" : [1, 1.77], // The Video Player should scale so the ratio is 16:9 (for every 1px in height, 1.77 pixels in width)
                     "children" : { // Children that should scale with the Video Player
                         'img[data-syiro-minor-component="video-poster"]' : { // Video Poster should scale
                             "scaling" : {  // Video Poster scaling details Object
-                                "matchParent" : true // Match the dimensions of the parent
+                                "fill" : [1,1]// Match the dimensions of the parent
                             }
                         },
                         'div[data-syiro-component="player-control"]' : { // Player Control should scale
                             "scaling" : { // Player Control scaling details Object
-                                "ratios" : [0, 1] // Ratios of 0 (maintain height) with 1.0 ratio as width (100% of parent Video Player)
+                                "fill" : [0,1] // Fills of 0 (maintain height) with 1.0 fill as width (100% of parent Video Player)
                             }
                         }
                     }

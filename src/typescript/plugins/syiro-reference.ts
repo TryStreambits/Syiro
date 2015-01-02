@@ -12,8 +12,9 @@ declare module syiro.device {
 
 declare module syiro.component {
     var listenerStrings : Object;
-    var storedComponents: Object;
+    var componentData: Object;
     function AddListeners(...args: any[]): boolean;
+    function Scale(component : Object) : void;
 }
 
 declare module syiro.dropdown {

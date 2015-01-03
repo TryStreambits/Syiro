@@ -191,16 +191,23 @@ module syiro.component {
 	// #region Scale Components
 	// This function is responsible for scaling Components based on screen information, their initialDimensions data (if any) and scaling of any inner Components or Elements
 
-	export function Scale(component : Object, scalingData ?: Object){
+	export function Scale(component : Object, data ?: any){
 		// #region Variable Setup
 		var componentId = component["id"]; // Get the Component Id of the Component
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement
+		var data : any = arguments[1]; // Define data as any second argument passed to us
 
 		var userHorizontalSpace : number = window.screen.width; // Define userHorizontalSpace as the space the user has, in pixels, horizontally.
 		var parentHeight : number = componentElement.parentElement.clientHeight; // Set the parentHeight to the parent Element's clientHeight of the Component Element
 		var parentWidth : number = componentElement.parentElement.clientWidth; // Set the parentWidth to the parent Element's clientWidth of the Component Element
 
 		// #endregion
+
+		var scalingData : Object; // Define scalingData as an Object passed with Scaling Data
+
+		if (typeof data !== "undefined"){ // If the optional data passed is data for scaling
+			scalingData = data; // Set the scalingData equal to the data passed
+		}
 
 		// #region Scaling Data Definition
 
@@ -210,7 +217,7 @@ module syiro.component {
 			syiro.component.componentData[componentId]["scaling"] = scalingData; // Define the scaling data in the componentData for this particular Component as the scalingData passed along
 		}
 
-		if (typeof syiro.component.componentData[componentId]["scaling"]["state"] == "undefined"){ // If the scaling state of this Component is not defined (like an Element that has never been scaled before)
+		if (typeof syiro.component.componentData[componentId]["scaling"]["state"] == "undefined"){ // If the scaling state of this Component is not defined (like an Element that has never been scaled before) or we are forcing scaling
 			storedScalingState = "initial"; // Default to initial so we'll properly scale
 		}
 		else{ // If scaling state of this Component is defined
@@ -322,6 +329,13 @@ module syiro.component {
 		syiro.component.CSS(componentElement, "height", updatedComponentHeight.toString() + "px"); // Set the height to the updated height data
 		syiro.component.CSS(componentElement, "width", updatedComponentWidth.toString() + "px"); // Set the width to the updated width data
 
+		// #region Initial Ratio / Fill Dimension Setting
+		// This section is responsible for ensuring that Components that are being initialized, that have fill or ratio properties, remember the changed updatedComponent dimensions
+
+		if (storedScalingState == "initial"){ // If this Component is in an initial state and fill
+			syiro.component.componentData[componentId]["scaling"]["initialDimensions"] = [updatedComponentHeight, updatedComponentWidth];
+		}
+
 		// #region Component Child Scaling
 
 		if (typeof syiro.component.componentData[component["id"]]["scaling"]["children"] !== "undefined"){ // If we are scaling child Components or Elements
@@ -365,7 +379,7 @@ module syiro.component {
 			updatedScalingState = "original"; // Set to "original" state
 		}
 		else{ // If the currently stored state implies that the Component was in an "original" state and we needed to scale it
-			storedScalingState = "scaled"; // Set to "scaled" state
+			updatedScalingState = "scaled"; // Set to "scaled" state
 		}
 
 		syiro.component.componentData[componentId]["scaling"]["state"] = updatedScalingState; // Set to the updated scaling state

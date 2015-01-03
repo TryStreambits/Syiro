@@ -9,7 +9,8 @@ module syiro.events {
 
     export var eventStrings : Object = { // Set syiro.component.listenerStrings as an Object containing commonly used event lister combinations
         "down" : ["mousedown", "touchstart"],
-        "up" : ["mouseup", "touchend"]
+        "up" : ["mouseup", "touchend"],
+        "fullscreenchange" : ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"]
     };
 
     // #region Syiro Component and Generic Element Event Handler

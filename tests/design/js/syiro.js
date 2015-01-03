@@ -190,12 +190,17 @@ var syiro;
             return dimensionsAndPosition;
         }
         _component.FetchDimensionsAndPosition = FetchDimensionsAndPosition;
-        function Scale(component, scalingData) {
+        function Scale(component, data) {
             var componentId = component["id"];
             var componentElement = syiro.component.Fetch(component);
+            var data = arguments[1];
             var userHorizontalSpace = window.screen.width;
             var parentHeight = componentElement.parentElement.clientHeight;
             var parentWidth = componentElement.parentElement.clientWidth;
+            var scalingData;
+            if (typeof data !== "undefined") {
+                scalingData = data;
+            }
             var storedScalingState;
             if (typeof scalingData !== "undefined") {
                 syiro.component.componentData[componentId]["scaling"] = scalingData;
@@ -276,6 +281,9 @@ var syiro;
             }
             syiro.component.CSS(componentElement, "height", updatedComponentHeight.toString() + "px");
             syiro.component.CSS(componentElement, "width", updatedComponentWidth.toString() + "px");
+            if (storedScalingState == "initial") {
+                syiro.component.componentData[componentId]["scaling"]["initialDimensions"] = [updatedComponentHeight, updatedComponentWidth];
+            }
             if (typeof syiro.component.componentData[component["id"]]["scaling"]["children"] !== "undefined") {
                 if (typeof syiro.component.componentData[component["id"]]["scaling"]["children"].pop == "undefined") {
                     var childComponentsArray = [];
@@ -301,7 +309,7 @@ var syiro;
                 updatedScalingState = "original";
             }
             else {
-                storedScalingState = "scaled";
+                updatedScalingState = "scaled";
             }
             syiro.component.componentData[componentId]["scaling"]["state"] = updatedScalingState;
         }
@@ -494,7 +502,8 @@ var syiro;
     (function (events) {
         events.eventStrings = {
             "down": ["mousedown", "touchstart"],
-            "up": ["mouseup", "touchend"]
+            "up": ["mouseup", "touchend"],
+            "fullscreenchange": ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"]
         };
         function Handler() {
             var component = arguments[0];
@@ -1394,6 +1403,8 @@ var syiro;
                     var e = arguments[1];
                     e.preventDefault();
                 });
+                var fullscreenButtonElement = componentElement.querySelector('div[data-syiro-minor-component="player-button-fullscreen"]');
+                syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(fullscreenButtonElement), syiro.player.ToggleFullscreen);
                 if (syiro.device.SupportsTouch == false) {
                     syiro.events.Add("mouseenter", componentElement, function () {
                         var componentElement = arguments[0];
@@ -1682,6 +1693,53 @@ var syiro;
             playerInnerContentElement.volume = volume;
         }
         player.SetVolume = SetVolume;
+        function ToggleFullscreen() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var videoPlayerComponent;
+            var videoPlayerElement;
+            if (arguments[0]["type"] == "video-player") {
+                videoPlayerComponent = arguments[0];
+                videoPlayerElement = syiro.component.Fetch(videoPlayerComponent);
+            }
+            else {
+                var fullscreenButtonComponent = arguments[0];
+                var fullscreenButtonElement = syiro.component.Fetch(fullscreenButtonComponent);
+                videoPlayerElement = fullscreenButtonElement.parentElement.parentElement;
+                videoPlayerComponent = syiro.component.FetchComponentObject(videoPlayerElement);
+            }
+            if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                if (typeof videoPlayerElement.requestFullscreen !== "undefined") {
+                    videoPlayerElement.requestFullscreen();
+                }
+                else if (typeof videoPlayerElement.msRequestFullscreen !== "undefined") {
+                    videoPlayerElement.msRequestFullscreen();
+                }
+                else if (typeof videoPlayerElement.mozRequestFullScreen !== "undefined") {
+                    videoPlayerElement.mozRequestFullScreen();
+                }
+                else if (typeof videoPlayerElement.webkitRequestFullscreen !== "undefined") {
+                    videoPlayerElement.webkitRequestFullscreen();
+                }
+            }
+            else {
+                if (typeof document.exitFullscreen !== "undefined") {
+                    document.exitFullscreen();
+                }
+                else if (typeof document.msExitFullscreen !== "undefined") {
+                    document.msExitFullscreen();
+                }
+                else if (typeof document.mozCancelFullScreen !== "undefined") {
+                    document.mozCancelFullScreen();
+                }
+                else if (typeof document.webkitExitFullscreen !== "undefined") {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+        player.ToggleFullscreen = ToggleFullscreen;
         function ToggleMenuDialog(component) {
             var component = arguments[0];
             var componentElement = syiro.component.Fetch(component);
@@ -1730,6 +1788,10 @@ var syiro;
                     var menuButton = syiro.button.Generate({ "data-syiro-minor-component": "player-button-menu" });
                     componentElement.appendChild(syiro.component.Fetch(menuButton));
                 }
+            }
+            if (typeof properties["is-video-player"] !== "undefined") {
+                var fullscreenButton = syiro.button.Generate({ "data-syiro-minor-component": "player-button-fullscreen" });
+                componentElement.appendChild(syiro.component.Fetch(fullscreenButton));
             }
             componentElement.appendChild(syiro.component.Fetch(volumeButton));
             syiro.component.componentData[componentId] = {
@@ -1892,6 +1954,7 @@ var syiro;
                     videoPlayer.appendChild(arrayofSourceElements[sourceElementKey]);
                 }
                 componentElement.appendChild(videoPlayer);
+                properties["is-video-player"] = true;
                 var playerControlComponent = syiro.playercontrol.Generate(properties);
                 componentElement.appendChild(syiro.component.Fetch(playerControlComponent));
                 if (properties["menu"] !== undefined) {
@@ -1990,6 +2053,28 @@ var syiro;
                 var thisDropdownObject = syiro.component.FetchComponentObject(dropdowns[dropdownIndex]);
                 syiro.dropdown.Toggle(thisDropdownObject);
             }
+        });
+        syiro.events.Add(syiro.events.eventStrings["fullscreenchange"], document, function () {
+            var fullscreenVideoPlayerElement;
+            if ((typeof document.fullscreenElement !== "undefined") && (typeof document.fullscreenElement !== "null")) {
+                fullscreenVideoPlayerElement = document.fullscreenElement;
+            }
+            else if ((typeof document.mozFullScreenElement !== "undefined") && (typeof document.mozFullScreenElement !== "null")) {
+                fullscreenVideoPlayerElement = document.mozFullScreenElement;
+            }
+            else if ((typeof document.msFullscreenElement !== "undefined") && (typeof document.msFullscreenElement !== "null")) {
+                fullscreenVideoPlayerElement = document.msFullscreenElement;
+            }
+            else if ((typeof document.webkitFullscreenElement !== "undefined") && (typeof document.webkitFullscreenElement !== "null")) {
+                fullscreenVideoPlayerElement = document.webkitFullscreenElement;
+            }
+            if ((typeof fullscreenVideoPlayerElement !== "undefined") && (fullscreenVideoPlayerElement !== null)) {
+                document.SyiroFullscreenElement = fullscreenVideoPlayerElement;
+            }
+            else {
+                fullscreenVideoPlayerElement = document.SyiroFullscreenElement;
+            }
+            syiro.component.Scale(syiro.component.FetchComponentObject(fullscreenVideoPlayerElement));
         });
         var documentHeadSection = document.querySelector("head");
         if (documentHeadSection == null) {

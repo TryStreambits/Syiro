@@ -12,7 +12,25 @@ interface Object { // As ComponentObject is inherently an Object, extend the Obj
 	HTMLElement ?: Element; // HTMLElement that is really an Element. Only applies in syiro.core.componentData when the component is newly generated.
 }
 
+interface Document {
+	fullscreenElement : Element;
+	mozFullScreenElement : Element;
+	webkitFullscreenElement : Element;
+
+	exitFullscreen : Function;
+	mozCancelFullScreen : Function;
+	webkitExitFullscreen : Function;
+
+	SyiroFullscreenElement : Element;
+}
+
 interface Element { // Implementation of valid spec not found in lib.d.ts
+	requestFullscreen : Function;
+	mozRequestFullScreen : Function;
+	webkitRequestFullscreen : Function;
+
+	ALLOW_KEYBOARD_INPUT : any;
+
 	parentElement : Element; // Element's parentElement
 	offsetTop: number;
 	offsetBottom: number;

@@ -120,6 +120,13 @@ module syiro.player {
 
             // #endregion
 
+            // #region Video Player Fullscreen Button Enabling
+
+            var fullscreenButtonElement : Element = componentElement.querySelector('div[data-syiro-minor-component="player-button-fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
+            syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(fullscreenButtonElement), syiro.player.ToggleFullscreen); // Listen to up events on the fullscreen button
+
+            // #endregion
+
             // #region Video Player Mousenter / Mouseleave Handling
 
             if (syiro.device.SupportsTouch == false){ // If the device does not support touch events
@@ -583,6 +590,56 @@ module syiro.player {
 
     // #endregion
 
+    // #region Toggle Fullscreen
+
+    export function ToggleFullscreen(...args : any[]){
+        var videoPlayerComponent : Object; // Define videoPlayerComponent as the Video Player Component Object
+        var videoPlayerElement : Element; // Define videoPlayerElement as the Video Player Element
+
+        if (arguments[0]["type"] == "video-player"){ // If the Component passed is the Video Player
+            videoPlayerComponent = arguments[0]; // Define videoPlayerComponent as the first argument
+            videoPlayerElement = syiro.component.Fetch(videoPlayerComponent); // Define videoPlayerElement as the fetched Element of the Video Player
+        }
+        else{ // If the type is a Button
+            var fullscreenButtonComponent = arguments[0]; // Define fullscreenButtonComponent as the first argument
+            var fullscreenButtonElement : Element = syiro.component.Fetch(fullscreenButtonComponent); // Define fullscreenButtonElement as the fetched fullscreen button Element
+
+            videoPlayerElement = fullscreenButtonElement.parentElement.parentElement; // Define videoPlayerElement as the parentElement's parentElement of the Button (parentElement of the Player Control)
+            videoPlayerComponent = syiro.component.FetchComponentObject(videoPlayerElement); // Define videoPlayerComponent as the fetched Video Player Component Object
+        }
+
+        if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement){ // If we are currently NOT fullscreen
+            if (typeof videoPlayerElement.requestFullscreen !== "undefined"){ // If requestFullscreen is a valid function of componentElement
+                videoPlayerElement.requestFullscreen(); // Define fullscreenAction as requestFullscreen
+            }
+            else if (typeof videoPlayerElement.msRequestFullscreen !== "undefined"){ // If msRequestFullscreen (IE API call for Fullscreen) is a valid function of componentElement
+                videoPlayerElement.msRequestFullscreen(); // Define fullscreenAction as msRequestFullscreen
+            }
+            else if (typeof videoPlayerElement.mozRequestFullScreen !== "undefined"){ // If mozRequestFullScreen (Gecko API call for Fullscreen) is a valid function of componentElement
+                videoPlayerElement.mozRequestFullScreen(); // Define fullscreenAction as mozRequestFullScreen
+            }
+            else if (typeof videoPlayerElement.webkitRequestFullscreen !== "undefined"){ // If webkitRequestFullscreen (Blink / Webkit call for Fullscreen) is a valid function of componentElement
+                videoPlayerElement.webkitRequestFullscreen(); // Define fullscreenAction as webkitRequestFullscreen
+            }
+        }
+        else{ // If we are currently fullscreen
+            if (typeof document.exitFullscreen !== "undefined"){ // If exitFullscreen is a valid function of document
+                document.exitFullscreen(); // Define fullscreenAction as exitFullscreen
+            }
+            else if (typeof document.msExitFullscreen !== "undefined"){ // If msExitFullscreen (IE API call for exiting Fullscreen) is a valid function of document
+                document.msExitFullscreen(); // Define fullscreenAction as msExitFullscreen
+            }
+            else if (typeof document.mozCancelFullScreen !== "undefined"){ // If mozCancelFullScreen (Gecko API call for exiting Fullscreen) is a valid function of document
+                document.mozCancelFullScreen(); // Define fullscreenAction as mozCancelFullScreen
+            }
+            else if (typeof document.webkitExitFullscreen !== "undefined"){ // If webkitExitFullscreen (Blink / Webkit call for exiting Fullscreen) is a valid function of document
+                document.webkitExitFullscreen(); // Define fullscreenAction as webkitExitFullscreen
+            }
+        }
+    }
+
+    // #endregion
+
     // #region Toggle Menu Dialog
 
     export function ToggleMenuDialog(component : Object){
@@ -654,6 +711,15 @@ module syiro.playercontrol {
         }
 
         // #endregion
+
+        // #region Video Player - Fullscreen Button Adding
+
+        if (typeof properties["is-video-player"] !== "undefined"){ // If the properties passed has "is-video-player"
+            var fullscreenButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-fullscreen"} ); // Create a fullscreen button
+            componentElement.appendChild(syiro.component.Fetch(fullscreenButton)); // Append the fullscreen control
+        }
+
+    // #endregion
 
         componentElement.appendChild(syiro.component.Fetch(volumeButton)); // Append the volume control
 
@@ -907,6 +973,7 @@ module syiro.videoplayer {
 
             // #region Player Control Creation
 
+            properties["is-video-player"] = true; // Add "is-video-player" key before calling playercontrol Generate so it'll generate the fullscreen button
             var playerControlComponent : Object = syiro.playercontrol.Generate(properties);
             componentElement.appendChild(syiro.component.Fetch(playerControlComponent)); // Fetch the HTMLElement and append the player control
 

@@ -54,6 +54,38 @@ module syiro {
 
 		// #endregion
 
+		// #region Video Player Fullscreen Scaling
+
+		syiro.events.Add(syiro.events.eventStrings["fullscreenchange"], document,  // Call the eventAction, either syiro.events.Add or syiro.events.Remove
+			function(){
+				var fullscreenVideoPlayerElement : Element; // Define fullscreenVideoPlayerElement as an Element
+
+				if ((typeof document.fullscreenElement !== "undefined") && (typeof document.fullscreenElement !== "null")){
+					fullscreenVideoPlayerElement = document.fullscreenElement;
+				}
+				else if ((typeof document.mozFullScreenElement !== "undefined") && (typeof document.mozFullScreenElement !== "null")){
+					fullscreenVideoPlayerElement = document.mozFullScreenElement;
+				}
+				else if ((typeof document.msFullscreenElement !== "undefined") && (typeof document.msFullscreenElement !== "null")){
+					fullscreenVideoPlayerElement = document.msFullscreenElement;
+				}
+				else if ((typeof document.webkitFullscreenElement !== "undefined") && (typeof document.webkitFullscreenElement !== "null")){
+					fullscreenVideoPlayerElement = document.webkitFullscreenElement;
+				}
+
+				if ((typeof fullscreenVideoPlayerElement !== "undefined") && (fullscreenVideoPlayerElement !== null)){ // If there is currently a fullscreen Element
+					document.SyiroFullscreenElement = fullscreenVideoPlayerElement; // Define SyiroFullscreenElement on the document as the current fullscreenVideoPlayerElement
+				}
+				else { // If there is no current fullscreen Element, like when exiting fullscreen
+					fullscreenVideoPlayerElement = document.SyiroFullscreenElement; // Fetch the SyiroFullscreenElement that we assigned during the initial fullscreenchange and set that as fullscreenVideoPlayerElement
+				}
+				
+				syiro.component.Scale(syiro.component.FetchComponentObject(fullscreenVideoPlayerElement));
+			}
+		);
+
+		// #endregion
+
 		// #region Head IE Compatibility && Viewport Scaling
 
 		var documentHeadSection : Element = document.querySelector("head"); // Get the head tag from the document

@@ -7,7 +7,20 @@ interface Object {
     handlers?: Function[];
     HTMLElement?: Element;
 }
+interface Document {
+    fullscreenElement: Element;
+    mozFullScreenElement: Element;
+    webkitFullscreenElement: Element;
+    exitFullscreen: Function;
+    mozCancelFullScreen: Function;
+    webkitExitFullscreen: Function;
+    SyiroFullscreenElement: Element;
+}
 interface Element {
+    requestFullscreen: Function;
+    mozRequestFullScreen: Function;
+    webkitRequestFullscreen: Function;
+    ALLOW_KEYBOARD_INPUT: any;
     parentElement: Element;
     offsetTop: number;
     offsetBottom: number;
@@ -46,7 +59,7 @@ declare module syiro.component {
     function Fetch(component: Object): any;
     function FetchComponentObject(...args: any[]): Object;
     function FetchDimensionsAndPosition(component: any): Object;
-    function Scale(component: Object, scalingData?: Object): void;
+    function Scale(component: Object, data?: any): void;
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): boolean;
@@ -130,6 +143,7 @@ declare module syiro.player {
     function SetSources(component: Object, sources: any): void;
     function SetTime(component: Object, time: number): void;
     function SetVolume(component: Object, volume: number): void;
+    function ToggleFullscreen(...args: any[]): void;
     function ToggleMenuDialog(component: Object): void;
     var ToggleShareDialog: Function;
 }

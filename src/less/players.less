@@ -39,6 +39,12 @@ div[data-syiro-component="player-control"]{
             background-position: center center;
         }
 
+        &[data-syiro-minor-component="player-button-fullscreen"]{ // Fullscreen Button
+            background-image : url("img/fullscreen.png"); // Set the background-image to img/fullscreen.png
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
         &[data-syiro-minor-component="player-button-menu"]{ // Menu Button
             float: right; // Ensure it floats to the right
             background-image : url("img/menu-inverted.png"); // Set the background-image to use the inverted menu image
@@ -264,6 +270,12 @@ div[data-syiro-component="audio-player"]{
 div[data-syiro-component="video-player"]{
     float: left;
     background-color: black; // Set the Video Player Component to have a black background to match video letterboxing color
+
+    &:-webkit-full-screen{ // Webkit Fullscreen
+        height: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
 
     & > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"]{
         & > img { // If there is an image within the List Item

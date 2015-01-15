@@ -37,7 +37,7 @@ div[data-syiro-component="list"]{ // Syiro List Component
 		}
 	}
 
-	&[data-syiro-component-owner^="dropdown"]{ // If the owner of the List is a Dropdown
+	&[data-syiro-component-owner^="dropdown"],&[data-syiro-component-owner^="searchbox"]{ // If the owner of the List is a Dropdown or a Searchbox
 		max-width: 200px; // Set the max width to match the max width of the Dropdown
 		background-color: @syiroGrey;
 		border-top: 2px solid @syiroBorderColor;

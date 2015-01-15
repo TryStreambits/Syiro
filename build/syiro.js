@@ -190,6 +190,11 @@ var syiro;
             return dimensionsAndPosition;
         }
         _component.FetchDimensionsAndPosition = FetchDimensionsAndPosition;
+        function FetchLinkedListComponentObject(component) {
+            var listSelector = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]';
+            return syiro.component.FetchComponentObject(document.querySelector(listSelector));
+        }
+        _component.FetchLinkedListComponentObject = FetchLinkedListComponentObject;
         function Scale(component, data) {
             var componentId = component["id"];
             var componentElement = syiro.component.Fetch(component);
@@ -386,17 +391,21 @@ var syiro;
             }
             if (allowRemoval == true) {
                 for (var individualComponentIndex in componentList) {
-                    var individualComponent = componentList[individualComponentIndex];
-                    var individualComponentElement = syiro.component.Fetch(individualComponent);
-                    if (individualComponentElement !== null) {
-                        if (syiro.component.componentData[individualComponent["id"]]["HTMLElement"] == undefined) {
-                            var parentElement = individualComponentElement.parentElement;
-                            parentElement.removeChild(individualComponentElement);
-                        }
-                        else {
-                            delete syiro.component.componentData[individualComponent["id"]]["HTMLElement"];
-                        }
+                    var individualComponentObject;
+                    var individualComponentElement;
+                    if (typeof componentList[individualComponentIndex] == "object") {
+                        individualComponentObject = componentList[individualComponentIndex];
+                        individualComponentElement = syiro.component.Fetch(individualComponentObject);
                     }
+                    else {
+                        individualComponentObject = syiro.component.Fetch(componentList[individualComponentIndex]);
+                        individualComponentElement = componentList[individualComponentIndex];
+                    }
+                    if (syiro.component.componentData[individualComponentObject["id"]]["HTMLElement"] == undefined) {
+                        var parentElement = individualComponentElement.parentElement;
+                        parentElement.removeChild(individualComponentElement);
+                    }
+                    delete syiro.component.componentData[individualComponentObject["id"]];
                 }
             }
             return allowRemoval;
@@ -1023,15 +1032,13 @@ var syiro;
         function Generate(properties) {
             var componentId = syiro.generator.IdGen("list");
             var componentElement = syiro.generator.ElementCreator(componentId, "list");
-            for (var propertyKey in properties) {
-                if (propertyKey == "items") {
-                    for (var individualItemIndex in properties["items"]) {
-                        var individualItem = properties["items"][individualItemIndex];
-                        if (individualItem["type"] !== "list-item") {
-                            individualItem = syiro.listitem.Generate(individualItem);
-                        }
-                        componentElement.appendChild(syiro.component.Fetch(individualItem));
+            if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)) {
+                for (var individualItemIndex in properties["items"]) {
+                    var individualItem = properties["items"][individualItemIndex];
+                    if (individualItem["type"] !== "list-item") {
+                        individualItem = syiro.listitem.Generate(individualItem);
                     }
+                    componentElement.appendChild(syiro.component.Fetch(individualItem));
                 }
             }
             syiro.component.componentData[componentId] = { "HTMLElement": componentElement };
@@ -1144,8 +1151,9 @@ var syiro;
 (function (syiro) {
     var dropdown;
     (function (dropdown) {
+        dropdown.FetchLinkedListComponentObject = syiro.component.FetchLinkedListComponentObject;
         function Generate(properties) {
-            if ((properties["items"] !== undefined) || (properties["list"] !== undefined)) {
+            if ((typeof properties["items"] !== "undefined") || (typeof properties["list"] !== "undefined")) {
                 var componentId = syiro.generator.IdGen("dropdown");
                 var componentElement = syiro.generator.ElementCreator(componentId, "dropdown");
                 if (properties["image"] !== undefined) {
@@ -1172,7 +1180,7 @@ var syiro;
                 if (properties["position"] == undefined) {
                     properties["position"] = { "vertical": "below", "horizontal": "center" };
                 }
-                listComponentElement.setAttribute("data-syiro-component-render", properties["position"]["vertical"] + "-" + properties["position"]["horizontal"]);
+                syiro.component.componentData[listComponent["id"]] = { "render": properties["position"]["vertical"] + "-" + properties["position"]["horizontal"] };
                 syiro.component.componentData[componentId] = { "HTMLElement": componentElement };
                 return { "id": componentId, "type": "dropdown" };
             }
@@ -1184,7 +1192,7 @@ var syiro;
         function Toggle(component) {
             var component = arguments[0];
             var componentElement = syiro.component.Fetch(component);
-            var linkedListComponentObject = syiro.dropdown.FetchLinkedListComponentObject(component);
+            var linkedListComponentObject = syiro.component.FetchLinkedListComponentObject(component);
             var linkedListComponentElement = syiro.component.Fetch(linkedListComponentObject);
             var currentIcon = syiro.component.CSS(component, "background-image");
             if (syiro.component.CSS(linkedListComponentElement, "visibility") !== false) {
@@ -1195,7 +1203,7 @@ var syiro;
                 syiro.component.CSS(linkedListComponentElement, "visibility", false);
             }
             else {
-                var positionInformation = linkedListComponentElement.getAttribute("data-syiro-component-render").split("-");
+                var positionInformation = syiro.component.componentData[linkedListComponentObject["id"]]["render"].split("-");
                 var listToDropdownVerticalRelation = positionInformation[0];
                 var listToDropdownHorizontalRelation = positionInformation[1];
                 var dropdownDimensionsAndPosition = syiro.component.FetchDimensionsAndPosition(componentElement);
@@ -1265,11 +1273,6 @@ var syiro;
         }
         dropdown.Toggle = Toggle;
         ;
-        function FetchLinkedListComponentObject(component) {
-            var listSelector = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]';
-            return syiro.component.FetchComponentObject(document.querySelector(listSelector));
-        }
-        dropdown.FetchLinkedListComponentObject = FetchLinkedListComponentObject;
         function SetText(component, content) {
             var dropdownElement = syiro.component.Fetch(component);
             var dropdownLabel = dropdownElement.querySelector("label");
@@ -1304,7 +1307,7 @@ var syiro;
         }
         dropdown.SetIcon = SetIcon;
         function AddItem(component, listItemComponent) {
-            var listComponentObject = syiro.dropdown.FetchLinkedListComponentObject(component);
+            var listComponentObject = syiro.component.FetchLinkedListComponentObject(component);
             syiro.component.Add(true, listComponentObject, listItemComponent);
         }
         dropdown.AddItem = AddItem;
@@ -2000,6 +2003,7 @@ var syiro;
         function Generate(properties) {
             var componentId = syiro.generator.IdGen("searchbox");
             var componentElement = syiro.generator.ElementCreator(componentId, "searchbox");
+            var searchboxComponentData = {};
             if (properties == undefined) {
                 properties = {};
             }
@@ -2014,10 +2018,74 @@ var syiro;
                     componentElement.setAttribute("placeholder", properties["content"]);
                 }
             }
-            syiro.component.componentData[componentId] = { "HTMLElement": componentElement };
+            if ((typeof properties["suggestions"] !== undefined) && (properties["suggestions"] == true)) {
+                searchboxComponentData["handlers"] = { "suggestions": properties["handler"] };
+                var listItems = [];
+                if (typeof properties["preseed"] == "object") {
+                    searchboxComponentData["preseed"] = true;
+                    for (var preseedItemIndex in properties["preseed"]) {
+                        listItems.push(syiro.listitem.Generate({ "label": properties["preseed"][preseedItemIndex] }));
+                    }
+                }
+                else {
+                    searchboxComponentData["preseed"] = false;
+                }
+                var searchSuggestionsList = syiro.list.Generate({ "items": listItems });
+                var searchSuggestionsListElement = syiro.component.Fetch(searchSuggestionsList);
+                syiro.component.componentData[searchSuggestionsList["id"]] = { "render": "bottom-center" };
+                searchSuggestionsListElement.setAttribute("data-syiro-component-owner", componentId);
+                document.querySelector("body").appendChild(searchSuggestionsListElement);
+                if (typeof properties["preseed"] == "object") {
+                    for (var listItemIndex in listItems) {
+                        syiro.events.Add(syiro.events.eventStrings["up"], listItems[listItemIndex], properties["list-item-handler"]);
+                    }
+                }
+            }
+            searchboxComponentData["HTMLElement"] = componentElement;
+            syiro.component.componentData[componentId] = searchboxComponentData;
             return { "id": componentId, "type": "searchbox" };
         }
         searchbox.Generate = Generate;
+        function Suggestions() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var searchboxComponent = arguments[0];
+            var searchboxValue = arguments[1];
+            var linkedListComponent = syiro.component.FetchLinkedListComponentObject(searchboxComponent);
+            var linkedListComponentElement = syiro.component.Fetch(linkedListComponent);
+            var innerListItemsOfLinkedList = linkedListComponentElement.querySelectorAll('div[data-syiro-component="list-item"]');
+            var suggestions = syiro.component.componentData[searchboxComponent["id"]]["handlers"]["suggestions"]();
+            if (syiro.component.componentData[searchboxComponent["id"]]["preseed"] == true) {
+                if (innerListItemsOfLinkedList.length > 0) {
+                    for (var listItemIndex in innerListItemsOfLinkedList) {
+                        var listItem = innerListItemsOfLinkedList[listItemIndex];
+                        if (suggestions.indexOf(listItem.textContent) !== -1) {
+                            syiro.component.CSS(listItem, "visibility", "visible !important");
+                        }
+                        else {
+                            syiro.component.CSS(listItem, "visibility", "hidden !important");
+                        }
+                    }
+                }
+            }
+            else {
+                if (innerListItemsOfLinkedList.length > 0) {
+                    var listItemsToRemove = [];
+                    for (var listItemIndex in innerListItemsOfLinkedList) {
+                        var listItem = innerListItemsOfLinkedList[listItemIndex];
+                        listItemsToRemove.push(listItem);
+                    }
+                    syiro.component.Remove(listItemsToRemove);
+                }
+                for (var suggestionIndex in suggestions) {
+                    var suggestionListItem = syiro.listitem.Generate({ "label": suggestions[suggestionIndex] });
+                    syiro.list.AddItem(true, linkedListComponent, suggestionListItem);
+                }
+            }
+        }
+        searchbox.Suggestions = Suggestions;
         function SetText(component, placeholderText) {
             var searchboxElement = syiro.component.Fetch(component);
             if (searchboxElement !== null) {

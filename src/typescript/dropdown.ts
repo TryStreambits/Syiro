@@ -8,10 +8,16 @@
 
 module syiro.dropdown {
 
+	// #region Meta-function for fetching the linked List Component Object of the Dropdown
+
+	export var FetchLinkedListComponentObject : Function = syiro.component.FetchLinkedListComponentObject;
+
+	// #endregion
+
 	// #region Dropdown Generator
 
 	export function Generate(properties : Object) : Object { // Generate a Dropdown Component and return a Component Object
-		if ((properties["items"] !== undefined) || (properties["list"] !== undefined)){ // If the necessary List or List Item(s) Object(s) are provided
+		if ((typeof properties["items"] !== "undefined") || (typeof properties["list"] !== "undefined")){ // If the necessary List or List Item(s) Object(s) are provided
 			var componentId : string = syiro.generator.IdGen("dropdown"); // Generate a component Id
 			var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "dropdown"); // Generate a Dropdown Element
 
@@ -56,7 +62,7 @@ module syiro.dropdown {
 				properties["position"] = { "vertical" : "below", "horizontal" : "center"}; // Default to showing the List centered, below the Dropdown
 			}
 
-			listComponentElement.setAttribute("data-syiro-component-render", properties["position"]["vertical"] + "-" + properties["position"]["horizontal"]); // Set the data-syiro-component-render to vertical-horizontal (ex. bottom-center)
+			syiro.component.componentData[listComponent["id"]] = { "render" : properties["position"]["vertical"] + "-" + properties["position"]["horizontal"]}; // Set the componentData for the List with a render key/val with vertical-horizontal value (ex. bottom-center)
 
 			// #endregion
 
@@ -76,7 +82,7 @@ module syiro.dropdown {
 		var component : Object = arguments[0]; // Get the component that was passed to this function as a bound argument
 		var componentElement : Element = syiro.component.Fetch(component); // Get the componentElement based on the component Object
 
-		var linkedListComponentObject : Object = syiro.dropdown.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown
+		var linkedListComponentObject : Object = syiro.component.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown
 		var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponentObject); // Get the List Component's Element
 
 		var currentIcon = syiro.component.CSS(component, "background-image"); // Get the background-image, assuming it isn't the default
@@ -90,7 +96,7 @@ module syiro.dropdown {
 			syiro.component.CSS(linkedListComponentElement, "visibility", false); // Remove the visibility attribute and hide the List
 		}
 		else{ // If the linked List is not active / showing
-			var positionInformation : Array<string> = linkedListComponentElement.getAttribute("data-syiro-component-render").split("-"); // Get the position information on where we should render the List, split it into an array
+			var positionInformation : Array<string> = syiro.component.componentData[linkedListComponentObject["id"]]["render"].split("-"); // Get the position information on where we should render the List, split it into an array
 
 			var listToDropdownVerticalRelation : string = positionInformation[0]; // Get the first key, which is the vertical position in relation to the Dropdown
 			var listToDropdownHorizontalRelation : string = positionInformation[1]; // Get the second key, which is the horizontal position in relation to the Dropdown
@@ -190,15 +196,6 @@ module syiro.dropdown {
 
 	// #endregion
 
-	// #region Function for fetching the Linked List component of the Dropdown.
-
-	export function FetchLinkedListComponentObject(component) : Object {
-		var listSelector : string = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]'; // Generate a List CSS selector with the owner set to the Dropdown Component's Id
-		return syiro.component.FetchComponentObject(document.querySelector(listSelector)); // Get the Dropdown's Linked Component Object
-	}
-
-	// #endregion
-
 	// #region Set Dropdown Label Text
 
 	export function SetText(component : Object, content : any) : void {
@@ -253,7 +250,7 @@ module syiro.dropdown {
 	// #region Function for adding an List Item component to the Dropdown's linked List, where component equals the Dropdown component
 
 	export function AddItem(component : Object, listItemComponent : Object) : void {
-		var listComponentObject = syiro.dropdown.FetchLinkedListComponentObject(component); // Fetch the internal List component from the Dropdown
+		var listComponentObject = syiro.component.FetchLinkedListComponentObject(component); // Fetch the internal List component from the Dropdown
 		syiro.component.Add(true, listComponentObject, listItemComponent); // Add the List Item component to the inner List
 	}
 

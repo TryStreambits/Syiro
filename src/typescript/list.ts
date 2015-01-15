@@ -15,17 +15,15 @@ module syiro.list {
 		var componentId : string = syiro.generator.IdGen("list"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "list"); // Generate a List Element
 
-		for (var propertyKey in properties){ // Recursive go through each propertyKey
-			if (propertyKey == "items"){ // If we are adding navigation elements
-				for (var individualItemIndex in properties["items"]){ // For each list item in navigationItems Object array
-					var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as an Object
+		if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)){ // If we are adding List Items
+			for (var individualItemIndex in properties["items"]){ // For each list item in navigationItems Object array
+				var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as an Object
 
-					if (individualItem["type"] !== "list-item"){ // If the individualItem is NOT a List Item Object
-						individualItem = syiro.listitem.Generate(individualItem); // Generate a List Item based on the individualItem properties
-					}
-
-					componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the List Item component to the List
+				if (individualItem["type"] !== "list-item"){ // If the individualItem is NOT a List Item Object
+					individualItem = syiro.listitem.Generate(individualItem); // Generate a List Item based on the individualItem properties
 				}
+
+				componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the List Item component to the List
 			}
 		}
 

@@ -59,6 +59,7 @@ declare module syiro.component {
     function Fetch(component: Object): any;
     function FetchComponentObject(...args: any[]): Object;
     function FetchDimensionsAndPosition(component: any): Object;
+    function FetchLinkedListComponentObject(component: any): Object;
     function Scale(component: Object, data?: any): void;
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
@@ -118,9 +119,9 @@ declare module syiro.listitem {
     function SetLabel(component: Object, content: string): boolean;
 }
 declare module syiro.dropdown {
+    var FetchLinkedListComponentObject: Function;
     function Generate(properties: Object): Object;
     function Toggle(component?: Object): void;
-    function FetchLinkedListComponentObject(component: any): Object;
     function SetText(component: Object, content: any): void;
     function SetImage(component: Object, content: any): void;
     function SetIcon(component: Object, content: string): void;
@@ -160,6 +161,7 @@ declare module syiro.videoplayer {
 }
 declare module syiro.searchbox {
     function Generate(properties: Object): Object;
+    function Suggestions(...args: any[]): void;
     function SetText(component: Object, placeholderText: any): void;
 }
 declare module syiro {

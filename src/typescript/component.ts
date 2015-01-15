@@ -188,6 +188,15 @@ module syiro.component {
 
 	// #endregion
 
+	// #region Function for fetching the Linked List component of the Dropdown.
+
+	export function FetchLinkedListComponentObject(component) : Object {
+		var listSelector : string = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]'; // Generate a List CSS selector with the owner set to the Dropdown Component's Id
+		return syiro.component.FetchComponentObject(document.querySelector(listSelector)); // Get the Dropdown's Linked Component Object
+	}
+
+	// #endregion
+
 	// #region Scale Components
 	// This function is responsible for scaling Components based on screen information, their initialDimensions data (if any) and scaling of any inner Components or Elements
 
@@ -475,7 +484,7 @@ module syiro.component {
 
 	export function Remove(componentsToRemove : any) : boolean {
 		var allowRemoval : boolean = false; // Define allowRemoval as a boolean value of whether or not we will allow Component remove. Defaults to false.
-		var componentList : Array<Object>; // Define componentList as an array of Component Objects to remove
+		var componentList : Array<any>; // Define componentList as an array of Component Objects to remove
 
 		if (componentsToRemove["id"] !== undefined){ // If the componentsToRemove actually has an "id" key / value, meaning it is a single Component Object
 			allowRemoval = true; // Set allowRemoval to true
@@ -488,18 +497,24 @@ module syiro.component {
 
 		if (allowRemoval == true){ // If we are allowing the removal of Components
 			for (var individualComponentIndex in componentList){ // For each Component and Sub-Component in componentList
-				var individualComponent : Object = componentList[individualComponentIndex]; // Get this specific Object
-				var individualComponentElement : Element = syiro.component.Fetch(individualComponent); // Fetch the Syiro Component Element
+				var individualComponentObject : Object; // Define individualComponentObject as an Object, which will be the Component Object if it is needed
+				var individualComponentElement : Element; // Define individualComponentElement as an Element
 
-				if (individualComponentElement !== null){ // If the Component Element returned via Fetch exists in the DOM or componentData
-					if (syiro.component.componentData[individualComponent["id"]]["HTMLElement"] == undefined){ // If the Element does exist in DOM, rather in the componentData
-						var parentElement : Element = individualComponentElement.parentElement; // Get the individualComponentElement's parentElement
-						parentElement.removeChild(individualComponentElement); // Remove this Component from the DOM
-					}
-					else{ // If the Component is actually stored in syiro.component.componentData
-						delete syiro.component.componentData[individualComponent["id"]]["HTMLElement"]; // Remove the component from the componentData
-					}
+				if (typeof componentList[individualComponentIndex] == "object"){ // If the individual Component is an Object
+					individualComponentObject = componentList[individualComponentIndex]; //  Define individualComponentObject as the Object provided
+					individualComponentElement = syiro.component.Fetch(individualComponentObject); // Define individualComponentElement as the fetched Element of the Component
 				}
+				else{ // If the individual Component is NOT an Object (theoretically an Element)
+					individualComponentObject = syiro.component.Fetch(componentList[individualComponentIndex]); // Define individualComponentObject as the Component Object we'll fetch for the Element
+					individualComponentElement = componentList[individualComponentIndex]; // Define individualComponentElement as the Element provided
+				}
+
+				if (syiro.component.componentData[individualComponentObject["id"]]["HTMLElement"] == undefined){ // If the Element does exist in DOM, rather in the componentData
+					var parentElement : Element = individualComponentElement.parentElement; // Get the individualComponentElement's parentElement
+					parentElement.removeChild(individualComponentElement); // Remove this Component from the DOM
+				}
+
+				delete syiro.component.componentData[individualComponentObject["id"]]; // Delete the Component's data
 			}
 		}
 

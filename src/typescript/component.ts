@@ -21,7 +21,7 @@ module syiro.component {
 		var returnedValue : any; // Define returnedValue as value we are returning
 		var modifiedStyling : any = false; // Define modifiedStyling as a boolean value to indicate whether we modified the Element's styling or not. Defaults to false.
 
-		if (typeof component.hasAttribute == "undefined"){ // If we were provided a Component Object (since an Object doesn't have the hasAttribute function, but an Element does)
+		if (syiro.component.IsComponentObject(component)){ // If we were provided a Component Object
 			modifiableElement = syiro.component.Fetch(component); // Fetch the Element and assign it to modifiableElement
 		}
 		else{ // If the component is NOT a Syiro Component Object
@@ -171,7 +171,7 @@ module syiro.component {
 		var dimensionsAndPosition : Object = {}; // Define dimensionsAndPosition as an empty Object
 		var componentElement : Element; // Define componentElement as an Element
 
-		if (component["type"] !== undefined){ // If the Component provided is a Syiro Component Object
+		if (syiro.component.IsComponentObject(component)){ // If the Component provided is a Syiro Component Object
 			componentElement = syiro.component.Fetch(component); // Fetch the Component Element
 		}
 		else{ // If the Component provided is NOT a Syiro Component Object
@@ -193,6 +193,21 @@ module syiro.component {
 	export function FetchLinkedListComponentObject(component) : Object {
 		var listSelector : string = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]'; // Generate a List CSS selector with the owner set to the Dropdown Component's Id
 		return syiro.component.FetchComponentObject(document.querySelector(listSelector)); // Get the Dropdown's Linked Component Object
+	}
+
+	// #endregion
+
+	// #region s Component Object
+	// This function verifies using multiple tests if the variable passed is actualy a Component Object
+
+	export function IsComponentObject(variable : any) : boolean {
+		var isComponentObject : boolean = false; // Define isComponentObject as a boolean defaulting to false
+
+		if ((typeof variable["id"] !== "undefined") && (typeof variable["type"] !== "undefined") && (typeof variable.nodeType == "undefined")){ // If the variable provided has both an id value and a type value both does not have a nodeType (is not an Element)
+			isComponentObject = true; // This variable is a Component Object
+		}
+
+		return isComponentObject;
 	}
 
 	// #endregion
@@ -423,7 +438,7 @@ module syiro.component {
 
 		var allowAdding : boolean = false; // Define variable to determine if we should allow adding the childComponent to the parentComponent or not. Defaults as false
 
-		if (childComponentType == "object"){ // If the childComponent is an Object
+		if (syiro.component.IsComponentObject(childComponent)){ // If the childComponent is an Syiro Component Object
 			childComponentId = childComponent["id"]; // Get the component's ID
 
 			if (parentComponent["type"] == "header" && ((childComponent["type"] == "dropdown") || (childComponent["type"] == "searchbox"))){ // If the parentComponent is a header and childComponent is either a dropdown or a searchbar
@@ -500,7 +515,7 @@ module syiro.component {
 				var individualComponentObject : Object; // Define individualComponentObject as an Object, which will be the Component Object if it is needed
 				var individualComponentElement : Element; // Define individualComponentElement as an Element
 
-				if (typeof componentList[individualComponentIndex] == "object"){ // If the individual Component is an Object
+				if (syiro.component.IsComponentObject(componentList[individualComponentIndex])){ // If the individual Component is a Syiro Component Object
 					individualComponentObject = componentList[individualComponentIndex]; //  Define individualComponentObject as the Object provided
 					individualComponentElement = syiro.component.Fetch(individualComponentObject); // Define individualComponentElement as the fetched Element of the Component
 				}

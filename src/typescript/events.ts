@@ -23,15 +23,16 @@ module syiro.events {
         var passableValue : any = null; // Set passableValue to any type, defaults to null
 
         var listener : string = (eventData.type).toLowerCase().slice(0,2).replace("on", "") + (eventData.type).toLowerCase().slice(2); // Ensure the event type passed is simplified and lowercased (strip out any beginning mention of "on")
-        var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.
 
         // #region Component Data Determination - Determines the Component Id and Component Element
 
-        if (componentType == "object") { // If the Component provided is a Syiro Component Object
+        if (syiro.component.IsComponentObject(component)) { // If the Component provided is a Syiro Component Object
             componentId = component["id"]; // Define componentId as the component Id we've already generated
             componentElement = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
         }
         else{ // If the Component is either an Element or another interface like screen
+            var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.
+
             if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
                 if (component.hasAttribute("data-syiro-component-id")){ // If the component already has a unique Id defined
                     componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
@@ -160,9 +161,8 @@ module syiro.events {
             }
 
             var componentElement : any; // Define componentElement as an Element
-            var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.
 
-            if (componentType == "object"){ // If the Component provided is a Syiro Component Object (the componentType is "object" rather than something like "window"
+            if (syiro.component.IsComponentObject(component)){ // If the Component provided is a Syiro Component Object
                 componentId = component["id"]; // Define the component ID as the unique Id already have for the Syiro Component Object
                 componentElement = syiro.component.Fetch(component); // Get the Component Element
 
@@ -173,6 +173,8 @@ module syiro.events {
                 }
             }
             else{ // If the Component provided is not a Syiro Component Object
+                var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.
+
                 if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
                     if (component.hasAttribute("data-syiro-component-id")){ // If the component already has a unique Id defined
                         componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
@@ -254,7 +256,7 @@ module syiro.events {
                 specFunc = args[(args.length -1)]; // Define specFunc as the function provided in either the second or third argument (length minus one)
             }
 
-            if ((typeof component.nodeType == "undefined") && (component !== window)){ // If the Component provided is a Syiro Component Object (doesn't have a nodeType nor is the window Object)
+            if (syiro.component.IsComponentObject(component)){ // If the Component provided is a Syiro Component Object
                 componentId = component["id"]; // Define componentId as the component Id we've already generated
                 componentElement = syiro.component.Fetch(component); // Get the Component Element
 

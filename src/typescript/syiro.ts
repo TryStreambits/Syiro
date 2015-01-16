@@ -12,6 +12,7 @@
 /// <reference path="dropdown.ts" />
 /// <reference path="list.ts" />
 /// <reference path="players.ts" />
+/// <reference path="render.ts" />
 /// <reference path="searchbox.ts" />
 /// <reference path="utilities.ts" />
 
@@ -79,7 +80,7 @@ module syiro {
 				else { // If there is no current fullscreen Element, like when exiting fullscreen
 					fullscreenVideoPlayerElement = document.SyiroFullscreenElement; // Fetch the SyiroFullscreenElement that we assigned during the initial fullscreenchange and set that as fullscreenVideoPlayerElement
 				}
-				
+
 				syiro.component.Scale(syiro.component.FetchComponentObject(fullscreenVideoPlayerElement));
 			}
 		);

@@ -60,6 +60,7 @@ declare module syiro.component {
     function FetchComponentObject(...args: any[]): Object;
     function FetchDimensionsAndPosition(component: any): Object;
     function FetchLinkedListComponentObject(component: any): Object;
+    function IsComponentObject(variable: any): boolean;
     function Scale(component: Object, data?: any): void;
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
@@ -158,6 +159,9 @@ declare module syiro.audioplayer {
 }
 declare module syiro.videoplayer {
     function Generate(properties: Object): Object;
+}
+declare module syiro.render {
+    function Position(...args: any[]): boolean;
 }
 declare module syiro.searchbox {
     function Generate(properties: Object): Object;

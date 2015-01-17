@@ -31,8 +31,24 @@ module syiro.plugin.alternativeInit {
                                 syiro.player.Init(componentObject); // Initialize the Audio or Video Player
                                 syiro.component.Scale(componentObject); // Scale the Audio Player or Video Player
                             }
+                            else if (componentObject["type"] == "searchbox"){ // If the Component is a Searchbox
+                                if (typeof syiro.component.componentData[componentObject["id"]]["suggestions"] !== "undefined"){ // If suggestions is enabled on this Searchbox
+                                    syiro.events.Add("keyup", componentObject, syiro.searchbox.Suggestions); // Add  an event with the Suggestions function to the Searchbox to listen on keyup value
+                                    syiro.events.Add("blur", componentObject, // Add an event to the Searchbox to listen to when it loses focus
+                                        function(){
+                                            var searchboxObject : Object = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox
+                                            var searchboxLinkedList : Object = syiro.component.FetchLinkedListComponentObject(searchboxObject); // Define searchboxLinkedList as the fetched Linked List Component
+                                            syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important"); // Hide the Linked List
+                                        }
+                                    );
+                                }
+                            }
 
-                            delete syiro.component.componentData[componentId]["HTMLElement"]; // Ensure the Component in the componentData is deleted
+                            if (typeof syiro.component.componentData[componentObject["id"]] !== "undefined"){
+                                if (typeof syiro.component.componentData[componentObject["id"]]["HTMLElement"] !== "undefined"){
+                                    delete syiro.component.componentData[componentObject["id"]]["HTMLElement"]; // Ensure the Component's Element in the componentData is deleted
+                                }
+                            }
                         }
                     }
 

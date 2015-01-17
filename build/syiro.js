@@ -151,15 +151,18 @@ var syiro;
             if (componentElement !== null) {
                 if (componentElement.hasAttribute("data-syiro-component-id") == false) {
                     var componentId;
+                    var componentType;
                     if ((arguments.length == 2) && (typeof arguments[0] == "string")) {
                         componentId = syiro.generator.IdGen(arguments[0]);
-                        componentElement.setAttribute("data-syiro-component", arguments[0]);
+                        componentType = arguments[0];
                     }
                     else if (arguments.length == 1) {
                         componentId = syiro.generator.IdGen(componentElement.tagName.toLowerCase());
-                        componentElement.setAttribute("data-syiro-component", componentElement.tagName.toLowerCase());
+                        componentType = componentElement.tagName.toLowerCase();
                     }
                     componentElement.setAttribute("data-syiro-component-id", componentId);
+                    componentElement.setAttribute("data-syiro-component", componentType);
+                    syiro.component.componentData[componentId] = {};
                 }
                 else {
                     previouslyDefined = true;
@@ -398,7 +401,7 @@ var syiro;
                 componentList = componentsToRemove;
             }
             if (allowRemoval == true) {
-                for (var individualComponentIndex in componentList) {
+                for (var individualComponentIndex = 0; individualComponentIndex < componentList.length; individualComponentIndex++) {
                     var individualComponentObject;
                     var individualComponentElement;
                     if (syiro.component.IsComponentObject(componentList[individualComponentIndex])) {
@@ -406,14 +409,14 @@ var syiro;
                         individualComponentElement = syiro.component.Fetch(individualComponentObject);
                     }
                     else {
-                        individualComponentObject = syiro.component.Fetch(componentList[individualComponentIndex]);
+                        individualComponentObject = syiro.component.FetchComponentObject(componentList[individualComponentIndex]);
                         individualComponentElement = componentList[individualComponentIndex];
                     }
-                    if (syiro.component.componentData[individualComponentObject["id"]]["HTMLElement"] == undefined) {
-                        var parentElement = individualComponentElement.parentElement;
-                        parentElement.removeChild(individualComponentElement);
+                    var parentElement = individualComponentElement.parentElement;
+                    parentElement.removeChild(individualComponentElement);
+                    if (typeof syiro.component.componentData[individualComponentObject["id"]] !== "undefined") {
+                        delete syiro.component.componentData[individualComponentObject["id"]];
                     }
-                    delete syiro.component.componentData[individualComponentObject["id"]];
                 }
             }
             return allowRemoval;
@@ -1186,9 +1189,9 @@ var syiro;
                 document.querySelector("body").appendChild(listComponentElement);
                 listComponentElement.setAttribute("data-syiro-component-owner", componentId);
                 if (properties["position"] == undefined) {
-                    properties["position"] = { "vertical": "below", "horizontal": "center" };
+                    properties["position"] = ["below", "center"];
                 }
-                syiro.component.componentData[listComponent["id"]] = { "render": properties["position"]["vertical"] + "-" + properties["position"]["horizontal"] };
+                syiro.component.componentData[listComponent["id"]] = { "render": properties["position"] };
                 syiro.component.componentData[componentId] = { "HTMLElement": componentElement };
                 return { "id": componentId, "type": "dropdown" };
             }
@@ -1211,7 +1214,7 @@ var syiro;
                 syiro.component.CSS(linkedListComponentElement, "visibility", false);
             }
             else {
-                var positionInformation = syiro.component.componentData[linkedListComponentObject["id"]]["render"].split("-");
+                var positionInformation = syiro.component.componentData[linkedListComponentObject["id"]]["render"];
                 syiro.render.Position(positionInformation, linkedListComponentObject, component);
                 if (currentIcon !== false) {
                     var currentIconWithoutExtension = currentIcon.substr(0, currentIcon.indexOf("."));
@@ -1965,7 +1968,7 @@ var syiro;
                 if (typeof arguments[0] == "string") {
                     positioningList = [arguments[0]];
                 }
-                else if ((typeof arguments[0] == "object") && (arguments[0].length > 0)) {
+                else if ((typeof arguments[0] == "object") && (arguments[0].length !== 0)) {
                     positioningList = arguments[0];
                 }
                 if (syiro.component.IsComponentObject(arguments[1])) {
@@ -2078,8 +2081,11 @@ var syiro;
                     componentElement.setAttribute("placeholder", properties["content"]);
                 }
             }
-            if ((typeof properties["suggestions"] !== undefined) && (properties["suggestions"] == true)) {
-                searchboxComponentData["handlers"] = { "suggestions": properties["handler"] };
+            if ((typeof properties["suggestions"] !== "undefined") && (properties["suggestions"] == true)) {
+                searchboxComponentData["suggestions"] = "enabled";
+                searchboxComponentData["handlers"] = {
+                    "list-item-handler": properties["list-item-handler"]
+                };
                 var listItems = [];
                 if (typeof properties["preseed"] == "object") {
                     searchboxComponentData["preseed"] = true;
@@ -2088,14 +2094,14 @@ var syiro;
                     }
                 }
                 else {
+                    searchboxComponentData["handlers"]["suggestions"] = properties["handler"];
                     searchboxComponentData["preseed"] = false;
                 }
                 var searchSuggestionsList = syiro.list.Generate({ "items": listItems });
                 var searchSuggestionsListElement = syiro.component.Fetch(searchSuggestionsList);
-                syiro.component.componentData[searchSuggestionsList["id"]] = { "render": "bottom-center" };
                 searchSuggestionsListElement.setAttribute("data-syiro-component-owner", componentId);
                 document.querySelector("body").appendChild(searchSuggestionsListElement);
-                if (typeof properties["preseed"] == "object") {
+                if (typeof properties["preseed"] !== "undefined") {
                     for (var listItemIndex in listItems) {
                         syiro.events.Add(syiro.events.eventStrings["up"], listItems[listItemIndex], properties["list-item-handler"]);
                     }
@@ -2116,33 +2122,45 @@ var syiro;
             var linkedListComponent = syiro.component.FetchLinkedListComponentObject(searchboxComponent);
             var linkedListComponentElement = syiro.component.Fetch(linkedListComponent);
             var innerListItemsOfLinkedList = linkedListComponentElement.querySelectorAll('div[data-syiro-component="list-item"]');
-            var suggestions = syiro.component.componentData[searchboxComponent["id"]]["handlers"]["suggestions"]();
-            if (syiro.component.componentData[searchboxComponent["id"]]["preseed"] == true) {
-                if (innerListItemsOfLinkedList.length > 0) {
-                    for (var listItemIndex in innerListItemsOfLinkedList) {
-                        var listItem = innerListItemsOfLinkedList[listItemIndex];
-                        if (suggestions.indexOf(listItem.textContent) !== -1) {
-                            syiro.component.CSS(listItem, "visibility", "visible !important");
+            syiro.render.Position(["below", "center"], linkedListComponent, searchboxComponent);
+            if (searchboxValue !== "") {
+                if (syiro.component.componentData[searchboxComponent["id"]]["preseed"] == true) {
+                    syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important");
+                    if (innerListItemsOfLinkedList.length > 0) {
+                        var numOfListItemsThatWillShow = 0;
+                        for (var listItemIndex = 0; listItemIndex < innerListItemsOfLinkedList.length; listItemIndex++) {
+                            var listItem = innerListItemsOfLinkedList[listItemIndex];
+                            if (listItem.textContent.indexOf(searchboxValue) !== -1) {
+                                numOfListItemsThatWillShow++;
+                                syiro.component.CSS(listItem, "display", "block !important");
+                            }
+                            else {
+                                syiro.component.CSS(listItem, "display", "none !important");
+                            }
                         }
-                        else {
-                            syiro.component.CSS(listItem, "visibility", "hidden !important");
+                        if (numOfListItemsThatWillShow == 0) {
+                            syiro.component.CSS(linkedListComponentElement, "visibility", "hidden !important");
                         }
+                    }
+                }
+                else {
+                    syiro.component.CSS(linkedListComponentElement, "visibility", "hidden !important");
+                    var suggestions = syiro.component.componentData[searchboxComponent["id"]]["handlers"]["suggestions"].call(this, searchboxValue);
+                    if (suggestions.length !== 0) {
+                        if (innerListItemsOfLinkedList.length > 0) {
+                            syiro.component.Remove(innerListItemsOfLinkedList);
+                        }
+                        for (var suggestionIndex in suggestions) {
+                            var suggestionListItem = syiro.listitem.Generate({ "label": suggestions[suggestionIndex] });
+                            syiro.list.AddItem(true, linkedListComponent, suggestionListItem);
+                            syiro.events.Add(syiro.events.eventStrings["up"], suggestionListItem, syiro.component.componentData[searchboxComponent["id"]]["handlers"]["list-item-handler"]);
+                        }
+                        syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important");
                     }
                 }
             }
             else {
-                if (innerListItemsOfLinkedList.length > 0) {
-                    var listItemsToRemove = [];
-                    for (var listItemIndex in innerListItemsOfLinkedList) {
-                        var listItem = innerListItemsOfLinkedList[listItemIndex];
-                        listItemsToRemove.push(listItem);
-                    }
-                    syiro.component.Remove(listItemsToRemove);
-                }
-                for (var suggestionIndex in suggestions) {
-                    var suggestionListItem = syiro.listitem.Generate({ "label": suggestions[suggestionIndex] });
-                    syiro.list.AddItem(true, linkedListComponent, suggestionListItem);
-                }
+                syiro.component.CSS(linkedListComponentElement, "visibility", "hidden !important");
             }
         }
         searchbox.Suggestions = Suggestions;
@@ -2234,13 +2252,27 @@ var syiro;
                                             syiro.player.Init(componentObject);
                                             syiro.component.Scale(componentObject);
                                         }
+                                        else if (componentObject["type"] == "searchbox") {
+                                            if (typeof syiro.component.componentData[componentObject["id"]]["suggestions"] !== "undefined") {
+                                                syiro.events.Add("keyup", componentObject, syiro.searchbox.Suggestions);
+                                                syiro.events.Add("blur", componentObject, function () {
+                                                    var searchboxObject = arguments[0];
+                                                    var searchboxLinkedList = syiro.component.FetchLinkedListComponentObject(searchboxObject);
+                                                    syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important");
+                                                });
+                                            }
+                                        }
                                         if (passedNode.childNodes.length > 0) {
                                             for (var i = 0; i < passedNode.childNodes.length; i++) {
                                                 var childNode = passedNode.childNodes[i];
                                                 NodeParser(childNode);
                                             }
                                         }
-                                        delete syiro.component.componentData[componentObject["id"]]["HTMLElement"];
+                                        if (typeof syiro.component.componentData[componentObject["id"]] !== "undefined") {
+                                            if (typeof syiro.component.componentData[componentObject["id"]]["HTMLElement"] !== "undefined") {
+                                                delete syiro.component.componentData[componentObject["id"]]["HTMLElement"];
+                                            }
+                                        }
                                     }
                                 }
                             }

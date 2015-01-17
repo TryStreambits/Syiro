@@ -40,8 +40,18 @@
 					}
 				);
 
-				var generatedSearchbox = syiro.searchbox.Generate(); // Generate a Searchbox
-				syiro.AddListeners(generatedSearchbox, function(x){console.log(arguments[1])}); // Listen to the Searchbox value change
+				var generatedSearchbox = syiro.searchbox.Generate( // Generate a Searchbox
+					{
+						"content" : "Type hello or world!", // Change the default placeholder content 
+						"suggestions" : true, // Enable suggestions on this generated Searchbox
+						"preseed" : ["hello", "world"], // Preseed the results
+						"list-item-handler" : function(){
+							var listItemObject = arguments[0]; // Define listItemObject as the first argument passed
+							var listItemElement = syiro.Fetch(listItemObject); // Fetch the List Item Component Element
+							console.log(listItemElement.textContent);
+						}
+					}
+				);
 			}
 			else{
 				generatedDropdownObject = syiro.dropdown.Generate(

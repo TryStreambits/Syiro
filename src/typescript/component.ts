@@ -136,17 +136,21 @@ module syiro.component {
 		if (componentElement !== null){ // If the componentElement is not null (returned from querySelector)
 			if (componentElement.hasAttribute("data-syiro-component-id") == false){ // If the componentElement is not actually a Component, generate a Component Object and assign Component data to the Element
 				var componentId : string; // Define componentId as the Id of the Component
+				var componentType : string; // Define componentType as the type of the Component
 
 				if ((arguments.length == 2) && (typeof arguments[0] == "string")){ // If the first argument is a string and the args length is two
 					componentId = syiro.generator.IdGen(arguments[0]); // Define componentId as Id generated based on the type provided
-					componentElement.setAttribute("data-syiro-component", arguments[0]); // Define the type of the component as the type passed as the first arg
+					componentType = arguments[0]; // Define the type of the component as the type passed as the first arg
 				}
 				else if (arguments.length == 1){
 					componentId = syiro.generator.IdGen(componentElement.tagName.toLowerCase()); // Generate a unique id for this component based on the component Element's tagName
-					componentElement.setAttribute("data-syiro-component", componentElement.tagName.toLowerCase()); // Set the component "type" simple as the lowercased tagName
+					componentType = componentElement.tagName.toLowerCase(); // Set the component "type" simple as the lowercased tagName
 				}
 
 				componentElement.setAttribute("data-syiro-component-id", componentId); // Set this component's Id
+				componentElement.setAttribute("data-syiro-component", componentType); // Set the component's type
+
+				syiro.component.componentData[componentId] = {}; // Add an empty object for the Component in the componentData
 			}
 			else{ // If the componentElement has attributes, meaning it has already been defined before
 				previouslyDefined = true; // Set previouslyDefined to true
@@ -511,7 +515,7 @@ module syiro.component {
 		}
 
 		if (allowRemoval == true){ // If we are allowing the removal of Components
-			for (var individualComponentIndex in componentList){ // For each Component and Sub-Component in componentList
+			for (var individualComponentIndex = 0; individualComponentIndex < componentList.length; individualComponentIndex++){ // For each Component and Sub-Component in componentList
 				var individualComponentObject : Object; // Define individualComponentObject as an Object, which will be the Component Object if it is needed
 				var individualComponentElement : Element; // Define individualComponentElement as an Element
 
@@ -520,16 +524,16 @@ module syiro.component {
 					individualComponentElement = syiro.component.Fetch(individualComponentObject); // Define individualComponentElement as the fetched Element of the Component
 				}
 				else{ // If the individual Component is NOT an Object (theoretically an Element)
-					individualComponentObject = syiro.component.Fetch(componentList[individualComponentIndex]); // Define individualComponentObject as the Component Object we'll fetch for the Element
+					individualComponentObject = syiro.component.FetchComponentObject(componentList[individualComponentIndex]); // Define individualComponentObject as the Component Object we'll fetch for the Element
 					individualComponentElement = componentList[individualComponentIndex]; // Define individualComponentElement as the Element provided
 				}
 
-				if (syiro.component.componentData[individualComponentObject["id"]]["HTMLElement"] == undefined){ // If the Element does exist in DOM, rather in the componentData
-					var parentElement : Element = individualComponentElement.parentElement; // Get the individualComponentElement's parentElement
-					parentElement.removeChild(individualComponentElement); // Remove this Component from the DOM
-				}
+				var parentElement : Element = individualComponentElement.parentElement; // Get the individualComponentElement's parentElement
+				parentElement.removeChild(individualComponentElement); // Remove this Component from the DOM, if it exists
 
-				delete syiro.component.componentData[individualComponentObject["id"]]; // Delete the Component's data
+				if (typeof syiro.component.componentData[individualComponentObject["id"]] !== "undefined"){ // It there is componentData regarding individualComponentObject
+					delete syiro.component.componentData[individualComponentObject["id"]]; // Delete the Component's data
+				}
 			}
 		}
 

@@ -19,7 +19,7 @@ module syiro.render {
             if (typeof arguments[0] == "string"){ // If the first argument passed (positioning) is a string
                 positioningList = [arguments[0]]; // Define positioningList as an array of the string passed
             }
-            else if ((typeof arguments[0] == "object") && (arguments[0].length > 0)){ // If the positioning argument passed is an array with a length greater than zero
+            else if ((typeof arguments[0] == "object") && (arguments[0].length !== 0)){ // If the positioning argument passed is an array with a length greater than zero
                 positioningList = arguments[0]; // Define positioningList as the first argument
             }
 

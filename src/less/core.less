@@ -48,12 +48,10 @@ header[data-syiro-component="header"], footer[data-syiro-component="footer"] {
 		float: left; // Float left
 		height: 80px; // Default height of 80px
 		width: auto; // Automatic width
-		min-width: 180px; // Minimum width of 180px
 		color: @syiroPrimaryColor; // Primary Syiro Color
 		line-height: 80px; // Default height of 80px
-		text-align: center; // Center it
 		text-decoration: none; // No decoration
-		padding: 0 10px 0 10px; // Padding of 10px on left and right side
+		padding: 0 0 0 30px; // Padding of 30px on the left
 
 		@media (max-width: 1280px){ /* For resolutions with a max of 1280 in width */
 			&{
@@ -62,6 +60,14 @@ header[data-syiro-component="header"], footer[data-syiro-component="footer"] {
 			}
 		}
 	}
+
+	&[data-syiro-component="header"] a {
+		min-width: 200px;
+		text-align: center; // Center the text
+		padding: 0 !important; // No padding
+	}
+
+
 }
 
 // #region Page Component

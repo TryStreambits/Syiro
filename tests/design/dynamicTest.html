@@ -42,7 +42,7 @@
 
 				var generatedSearchbox = syiro.searchbox.Generate( // Generate a Searchbox
 					{
-						"content" : "Type hello or world!", // Change the default placeholder content 
+						"content" : "Type hello or world!", // Change the default placeholder content
 						"suggestions" : true, // Enable suggestions on this generated Searchbox
 						"preseed" : ["hello", "world"], // Preseed the results
 						"list-item-handler" : function(){
@@ -62,16 +62,7 @@
 					}
 				);
 
-				var generatedHeader = syiro.header.Generate(
-					{
-						"items" : [
-							{
-								"type" : "dropdown",
-								"component" : generatedDropdownObject
-							}
-						]
-					}
-				);
+				var generatedHeader = syiro.header.Generate( { "items" : [ generatedDropdownObject ] } );
 			}
 
 			/* Share Dialogs List Generation */

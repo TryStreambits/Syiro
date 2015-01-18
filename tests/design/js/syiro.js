@@ -851,17 +851,22 @@ var syiro;
             var componentElement = syiro.generator.ElementCreator(componentId, "header");
             for (var propertyKey in properties) {
                 if (propertyKey == "items") {
-                    for (var individualItem in properties["items"]) {
-                        if (properties["items"][individualItem]["type"] == "dropdown") {
-                            var dropdownComponent = properties["items"][individualItem]["component"];
-                            componentElement.appendChild(syiro.component.Fetch(dropdownComponent));
-                        }
-                        else if (properties["items"][individualItem]["type"] == "link") {
+                    for (var individualItemIndex in properties["items"]) {
+                        var individualItem = properties["items"][individualItemIndex];
+                        if (individualItem["type"] == "link") {
                             var generatedElement = syiro.generator.ElementCreator("a", {
-                                "href": properties["items"][individualItem]["link"],
-                                "content": properties["items"][individualItem]["content"]
+                                "href": individualItem["link"],
+                                "content": individualItem["content"]
                             });
                             componentElement.appendChild(generatedElement);
+                        }
+                        else {
+                            if (typeof individualItem["component"] !== "undefined") {
+                                individualItem = individualItem["component"];
+                            }
+                            if (syiro.component.IsComponentObject(individualItem)) {
+                                componentElement.appendChild(syiro.component.Fetch(individualItem));
+                            }
                         }
                     }
                 }

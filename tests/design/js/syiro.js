@@ -14,12 +14,12 @@ var syiro;
                         var component = arguments[0];
                         var componentElement = syiro.component.Fetch(component);
                         var postAnimationFunction = arguments[1];
-                        var timeoutId = componentElement.getAttribute("data-syiro-animationTimeout-id");
-                        componentElement.removeAttribute("data-syiro-animationTimeout-id");
-                        window.clearTimeout(Number(timeoutId));
+                        var timeoutId = syiro.data.Read(component["id"] + "->AnimationTimeoutId");
+                        syiro.data.Delete(component["id"] + "->AnimationTimeoutId");
+                        window.clearTimeout(timeoutId);
                         postAnimationFunction(component);
                     }.bind(syiro, component, postAnimationFunction), properties["duration"]);
-                    componentElement.setAttribute("data-syiro-animationTimeout-id", elementTimeoutId.toString());
+                    syiro.data.Write(component["id"] + "->AnimationTimeoutId", elementTimeoutId);
                 }
                 if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
                     var tempElement = componentElement;

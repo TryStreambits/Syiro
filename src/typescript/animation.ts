@@ -26,16 +26,15 @@ module syiro.animation {
                         var componentElement : Element = syiro.component.Fetch(component); // Get the Syiro Component Element based on the component Object we passed
                         var postAnimationFunction : Function = arguments[1]; // Get the postAnimationFunction (if applicable)
 
-                        var timeoutId = componentElement.getAttribute("data-syiro-animationTimeout-id"); // Get the animationTimeout ID
-
-                        componentElement.removeAttribute("data-syiro-animationTimeout-id"); // Remove the animationTimeout ID attribute
-                        window.clearTimeout(Number(timeoutId)); // Convert the ID from string to Int and clear the timeout
+                        var timeoutId = syiro.data.Read(component["id"] + "->AnimationTimeoutId"); // Get the animationTimeout ID
+                        syiro.data.Delete(component["id"] + "->AnimationTimeoutId"); // Delete the Animation TImeout ID
+                        window.clearTimeout(timeoutId); // Convert the ID from string to Int and clear the timeout
 
                         postAnimationFunction(component); // Call the postAnimationFunction (which we pass the Syiro Component Object)
                     }.bind(syiro, component, postAnimationFunction) // Attach the Syiro Component Object and postAnimationFunction
                 , properties["duration"]);
 
-                componentElement.setAttribute("data-syiro-animationTimeout-id", elementTimeoutId.toString()); // Set the animationTimeout ID to the string form of the timeout ID
+                syiro.data.Write(component["id"] + "->AnimationTimeoutId", elementTimeoutId); // WRite the Animation Timeout Id to syiro.data for the Component
             }
 
             if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button

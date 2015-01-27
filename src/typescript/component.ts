@@ -367,7 +367,7 @@ module syiro.component {
 					var childElement : Element = componentElement.querySelector(childSelector); // Get the childElement from componentElement based on the querySelector of the componentElement
 					var childComponent : Object = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
 
-					if (syiro.data.Read(childComponent["id"]) !== false){ // If the childComponent has no data
+					if (syiro.data.Read(childComponent["id"]) == false){ // If the childComponent has no data
 						syiro.data.Write(childComponent["id"], {}); // Create an empty Object for the childComponent in the syiro.data.storage
 					}
 

@@ -202,7 +202,6 @@ module syiro.events {
             if (allowListening == true){ // If allowListening is TRUE
                 for (var individualListenerIndex in listeners){ // For each listener in the listeners array
                     var listener = listeners[individualListenerIndex]; // Define listener as the individual listener in the listeners array
-
                     var currentListenersArray : any = syiro.data.Read(componentId + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
 
                     if (currentListenersArray == false){ // If the individual listener key is undefined in the handlers of the Component

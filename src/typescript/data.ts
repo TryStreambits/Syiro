@@ -20,9 +20,9 @@ module syiro.data {
         for (var keyHeirarchyIndex = 0; keyHeirarchyIndex < keyHeirarchy.length; keyHeirarchyIndex++){ // For each key defined in the keyHeirarchy
             var key : string = keyHeirarchy[keyHeirarchyIndex]; // Define the key as the index in keyHeirarchy
 
-            if (keyHeirarchyIndex !== (keyHeirarchy.length - 1)){ // If we are not finished with building the keyHeirarchy (we determine that by checking if the length and current index match, reducing keyHeirarchy.length by one to match the index which starts at 0)
+            if (keyHeirarchyIndex !== (keyHeirarchy.length - 1)){ // If we are not finished with building or traversing the keyHeirarchy (we determine that by checking if the length and current index match, reducing keyHeirarchy.length by one to match the index which starts at 0)
                 if (typeof dataLocation[key] == "undefined"){ // If this key in the keyHeirarchy is not defined in syiro.data.storage.any_applicable_keys
-                    if ((modificationType !== "read") || (modificationType !== "delete")){ // If we are not reading or deleting the key/val from syiro.data.storage
+                    if (modificationType == "write"){ // If we are writing a key/val from syiro.data.storage
                         dataLocation[key] = {}; // Create an empty Object in this dataLocation key/val
                     }
                     else{ // If we are reading or deleting a key/val from syiro.data.storage, but a key along the way is not defined

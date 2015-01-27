@@ -61,7 +61,7 @@ var syiro;
                 var key = keyHeirarchy[keyHeirarchyIndex];
                 if (keyHeirarchyIndex !== (keyHeirarchy.length - 1)) {
                     if (typeof dataLocation[key] == "undefined") {
-                        if ((modificationType !== "read") || (modificationType !== "delete")) {
+                        if (modificationType == "write") {
                             dataLocation[key] = {};
                         }
                         else {
@@ -363,7 +363,7 @@ var syiro;
                     for (var childSelector in potentialComponentScalableChildren) {
                         var childElement = componentElement.querySelector(childSelector);
                         var childComponent = syiro.component.FetchComponentObject(childElement);
-                        if (syiro.data.Read(childComponent["id"]) !== false) {
+                        if (syiro.data.Read(childComponent["id"]) == false) {
                             syiro.data.Write(childComponent["id"], {});
                         }
                         syiro.data.Write(childComponent["id"] + "->scaling", syiro.data.Read(component["id"] + "->scaling->children->" + childSelector + "->scaling"));
@@ -557,7 +557,7 @@ var syiro;
                     }
                 }
             };
-            if (typeof screen.orientation.onchange !== "undefined") {
+            if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")) {
                 syiro.device.OrientationObject = screen.orientation;
                 syiro.events.eventStrings["orientationchange"] = ["change"];
             }
@@ -1438,10 +1438,6 @@ var syiro;
                             var playerComponentObject = syiro.component.FetchComponentObject(posterImageElement.parentElement);
                             syiro.component.CSS(posterImageElement, "visibility", "hidden");
                             syiro.player.PlayOrPause(playerComponentObject);
-                            if (syiro.device.SupportsTouch == true) {
-                                var playerControlComponent = syiro.component.FetchComponentObject(posterImageElement.parentElement.querySelector('div[data-syiro-component="player-control"]'));
-                                syiro.playercontrol.Toggle(playerControlComponent, false);
-                            }
                         });
                     }
                 }

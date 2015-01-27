@@ -141,7 +141,7 @@ module syiro.device {
             }
         }
 
-        if (typeof screen.orientation.onchange !== "undefined"){ // If Screen Orientation API is properly supported
+        if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")){ // If Screen Orientation API is properly supported
             syiro.device.OrientationObject = screen.orientation; // Point syiro.device.OrientationObject to screen.orientation rather than screen
             syiro.events.eventStrings["orientationchange"] = ["change"]; // Set our eventStrings orientationchange to only change
         }

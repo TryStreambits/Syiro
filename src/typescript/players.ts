@@ -79,11 +79,6 @@ module syiro.player {
 
                             syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
                             syiro.player.PlayOrPause(playerComponentObject); // Play the video
-
-                            if (syiro.device.SupportsTouch == true){ // If the device supports touch
-                                var playerControlComponent = syiro.component.FetchComponentObject(posterImageElement.parentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Player Control
-                                syiro.playercontrol.Toggle(playerControlComponent, false); // Hide the Player Control as well
-                            }
                         }
                     );
                 }

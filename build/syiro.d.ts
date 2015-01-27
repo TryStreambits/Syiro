@@ -36,8 +36,8 @@ interface HTMLElement {
     autoplay: boolean;
 }
 interface Screen {
-    orientation: string;
-    mozOrientation: string;
+    orientation: any;
+    mozOrientation: any;
     onorientationchange: any;
     onmozorientationchange: any;
 }

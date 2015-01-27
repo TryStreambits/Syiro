@@ -139,8 +139,11 @@ module syiro.device {
             }
         }
 
-        if (typeof screen.onorientationchange !== "undefined"){ // If the non-vendor-prefixed form of orientationchange is supported for the screen Object
-            syiro.events.eventStrings["orientationchange"] = ["orientationchange"]; // Set our eventStrings orientationchange to only orientationchange
+        var screenObject : any = screen; // Default screenObject to point to screen, possibly can change to screen.orientation if the browser accurately supports Screen Orientation API.
+
+        if (typeof screen.orientation.onchange !== "undefined"){ // If Screen Orientation API is properly supported
+            screenObject = screen.orientation; // Point screenObject to screen.orientation rather than screen
+            syiro.events.eventStrings["orientationchange"] = ["change"]; // Set our eventStrings orientationchange to only change
         }
         else if (typeof screen.onmsorientationchange !== "undefined"){ // If this is the Internet Explorer vendor-prefixed orientation change
             syiro.events.eventStrings["orientationchange"] = ["msorientationchange"]; // Set our eventStrings orientationchange to only the IE event string
@@ -153,7 +156,7 @@ module syiro.device {
         }
 
         if (typeof syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval"){ // If orientation change is supported on the device
-            syiro.events.Add(syiro.events.eventStrings["orientationchange"], screen, orientationChangeHandler); // Add an orientation change event for the screen with our orientationChangeHandler
+            syiro.events.Add(syiro.events.eventStrings["orientationchange"], screenObject, orientationChangeHandler); // Add an orientation change event for the screen with our orientationChangeHandler
         }
         else{ // If the device does not support orientation change
             window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000); // Set a timer for every two seconds to check for change in device orientation. We are using this due to the lack of full orientationchange event support in major browsers.

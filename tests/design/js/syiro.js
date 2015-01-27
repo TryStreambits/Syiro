@@ -555,8 +555,10 @@ var syiro;
                     }
                 }
             };
-            if (typeof screen.onorientationchange !== "undefined") {
-                syiro.events.eventStrings["orientationchange"] = ["orientationchange"];
+            var screenObject = screen;
+            if (typeof screen.orientation.onchange !== "undefined") {
+                screenObject = screen.orientation;
+                syiro.events.eventStrings["orientationchange"] = ["change"];
             }
             else if (typeof screen.onmsorientationchange !== "undefined") {
                 syiro.events.eventStrings["orientationchange"] = ["msorientationchange"];
@@ -568,7 +570,7 @@ var syiro;
                 syiro.events.eventStrings["orientationchange"] = ["orientationchange-viainterval"];
             }
             if (typeof syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval") {
-                syiro.events.Add(syiro.events.eventStrings["orientationchange"], screen, orientationChangeHandler);
+                syiro.events.Add(syiro.events.eventStrings["orientationchange"], screenObject, orientationChangeHandler);
             }
             else {
                 window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000);

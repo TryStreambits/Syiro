@@ -49,8 +49,8 @@ interface HTMLElement { // Implementation of HTMLElement
 }
 
 interface Screen { // Implementation of Screen
-	orientation : string;
-	mozOrientation : string;
+	orientation : any;
+	mozOrientation : any;
 	onorientationchange : any;
 	onmozorientationchange : any;
 }

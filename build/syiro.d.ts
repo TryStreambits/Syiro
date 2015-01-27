@@ -86,6 +86,8 @@ declare module syiro.device {
     var IsSubHD: boolean;
     var IsHD: boolean;
     var IsFullHDOrAbove: boolean;
+    var Orientation: string;
+    var OrientationObject: any;
     var orientation: string;
     function Detect(): void;
     function FetchScreenDetails(): void;

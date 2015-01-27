@@ -23,8 +23,10 @@ module syiro.device {
     export var IsSubHD : boolean; // Define IsSubHD as a boolean if the device is less than an HD (720p) display.
     export var IsHD : boolean; // Define IsHD as a boolean if the device is HD (720p) or greater than 720p.
     export var IsFullHDOrAbove : boolean; // Define IsFullHDOrAbove as a boolean if the device is Full HD (1080p) or above.
-    export var orientation : string; // Define orientation as the correct device orientation
+    export var Orientation : string; // Define orientation as the correct device orientation
+    export var OrientationObject : any = screen; // Define orientationObject as the proper Object to listen to orientation change events on. During detection, this CAN change to screen.orientation.
 
+    export var orientation = syiro.device.Orientation; // Backwards compatibility variable.
     // #endregion
 
     // #region Detection Function - Use to detect functionality, define variables, etc.
@@ -112,7 +114,7 @@ module syiro.device {
         // #endregion
 
         syiro.device.FetchScreenDetails(); // Do an initial fetch of the screen details
-        syiro.device.orientation = syiro.device.FetchScreenOrientation(); // Do an initial fetch of the screen orientation
+        syiro.device.Orientation = syiro.device.FetchScreenOrientation(); // Do an initial fetch of the screen orientation
         syiro.events.Add("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing for updating the screen details
 
         // #region Orientation Listening and Determinination Support
@@ -120,8 +122,8 @@ module syiro.device {
         var orientationChangeHandler : Function = function(){ // This function is the handler for when the orientation is changed (or if we fire the function during a window interval / timer)
             var currentOrientation : string = syiro.device.FetchScreenOrientation(); // Fetch the current screen orientation (portrait or landscape)
 
-            if (currentOrientation !== syiro.device.orientation){ // If currentOrientation does not match the syiro.device.orientation stored already
-                syiro.device.orientation = currentOrientation; // Update orientation value for syiro.device.orientation
+            if (currentOrientation !== syiro.device.Orientation){ // If currentOrientation does not match the syiro.device.Orientation stored already
+                syiro.device.Orientation = currentOrientation; // Update orientation value for syiro.device.Orientation
 
                 var allPlayers : NodeList = document.querySelectorAll('div[data-syiro-component$="player"]'); // Get all Audio Players and Video Players
 
@@ -139,10 +141,8 @@ module syiro.device {
             }
         }
 
-        var screenObject : any = screen; // Default screenObject to point to screen, possibly can change to screen.orientation if the browser accurately supports Screen Orientation API.
-
         if (typeof screen.orientation.onchange !== "undefined"){ // If Screen Orientation API is properly supported
-            screenObject = screen.orientation; // Point screenObject to screen.orientation rather than screen
+            syiro.device.OrientationObject = screen.orientation; // Point syiro.device.OrientationObject to screen.orientation rather than screen
             syiro.events.eventStrings["orientationchange"] = ["change"]; // Set our eventStrings orientationchange to only change
         }
         else if (typeof screen.onmsorientationchange !== "undefined"){ // If this is the Internet Explorer vendor-prefixed orientation change
@@ -156,7 +156,7 @@ module syiro.device {
         }
 
         if (typeof syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval"){ // If orientation change is supported on the device
-            syiro.events.Add(syiro.events.eventStrings["orientationchange"], screenObject, orientationChangeHandler); // Add an orientation change event for the screen with our orientationChangeHandler
+            syiro.events.Add(syiro.events.eventStrings["orientationchange"], syiro.device.OrientationObject, orientationChangeHandler); // Add an orientation change event for the screen with our orientationChangeHandler
         }
         else{ // If the device does not support orientation change
             window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000); // Set a timer for every two seconds to check for change in device orientation. We are using this due to the lack of full orientationchange event support in major browsers.

@@ -496,7 +496,9 @@ var syiro;
         device.IsSubHD;
         device.IsHD;
         device.IsFullHDOrAbove;
-        device.orientation;
+        device.Orientation;
+        device.OrientationObject = screen;
+        device.orientation = syiro.device.Orientation;
         function Detect() {
             if (typeof navigator.doNotTrack !== "undefined") {
                 syiro.device.DoNotTrack = Boolean(navigator.doNotTrack);
@@ -536,12 +538,12 @@ var syiro;
             syiro.events.eventStrings["down"].splice(syiro.events.eventStrings["down"].indexOf(eventsToRemove[0]), 1);
             syiro.events.eventStrings["up"].splice(syiro.events.eventStrings["up"].indexOf(eventsToRemove[1]), 1);
             syiro.device.FetchScreenDetails();
-            syiro.device.orientation = syiro.device.FetchScreenOrientation();
+            syiro.device.Orientation = syiro.device.FetchScreenOrientation();
             syiro.events.Add("resize", window, syiro.device.FetchScreenDetails);
             var orientationChangeHandler = function () {
                 var currentOrientation = syiro.device.FetchScreenOrientation();
-                if (currentOrientation !== syiro.device.orientation) {
-                    syiro.device.orientation = currentOrientation;
+                if (currentOrientation !== syiro.device.Orientation) {
+                    syiro.device.Orientation = currentOrientation;
                     var allPlayers = document.querySelectorAll('div[data-syiro-component$="player"]');
                     for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++) {
                         var thisPlayer = allPlayers[allPlayersIndex];
@@ -555,9 +557,8 @@ var syiro;
                     }
                 }
             };
-            var screenObject = screen;
             if (typeof screen.orientation.onchange !== "undefined") {
-                screenObject = screen.orientation;
+                syiro.device.OrientationObject = screen.orientation;
                 syiro.events.eventStrings["orientationchange"] = ["change"];
             }
             else if (typeof screen.onmsorientationchange !== "undefined") {
@@ -570,7 +571,7 @@ var syiro;
                 syiro.events.eventStrings["orientationchange"] = ["orientationchange-viainterval"];
             }
             if (typeof syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval") {
-                syiro.events.Add(syiro.events.eventStrings["orientationchange"], screenObject, orientationChangeHandler);
+                syiro.events.Add(syiro.events.eventStrings["orientationchange"], syiro.device.OrientationObject, orientationChangeHandler);
             }
             else {
                 window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000);

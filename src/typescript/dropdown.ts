@@ -62,11 +62,11 @@ module syiro.dropdown {
 				properties["position"] = ["below", "center"]; // Default to showing the List centered, below the Dropdown
 			}
 
-			syiro.component.componentData[listComponent["id"]] = { "render" : properties["position"] }; // Set the componentData for the List with a render key/val w/ vert, horiz string array
+			syiro.data.Write(listComponent["id"] + "->render", properties["position"]); // Write to syiro.data.storage, updating / adding render key/val to ListComponent
 
 			// #endregion
 
-			syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Add the component to the componentData
+			syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 			return { "id" : componentId, "type" : "dropdown" }; // Return a Component Object
 		}
 		else{ // If the necessary properties are NOT defined
@@ -96,7 +96,7 @@ module syiro.dropdown {
 			syiro.component.CSS(linkedListComponentElement, "visibility", false); // Remove the visibility attribute and hide the List
 		}
 		else{ // If the linked List is not active / showing
-			var positionInformation : Array<string> = syiro.component.componentData[linkedListComponentObject["id"]]["render"]; // Get the position information on where we should render the List
+			var positionInformation : Array<string> = syiro.data.Read(linkedListComponentObject["id"] + "->render"); // Get the position information on where we should render the List
 			syiro.render.Position(positionInformation, linkedListComponentObject, component); // Set the position of the List according to the position information for the Dropdown
 
 			if (currentIcon !== false){ // If the currentIcon exists

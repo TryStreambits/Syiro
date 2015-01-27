@@ -2,11 +2,11 @@
 	This is the module for core Syiro functionality.
 */
 
-/// <reference path="syiro.ts" />
+/// <reference path="data.ts" />
 /// <reference path="interfaces.ts" />
 
 module syiro.component {
-	export var componentData : Object = {}; // An object that stores generated component(s) / component(s) information
+	export var componentData : Object = syiro.data.storage; // componentData is a backwards-compatibility variable that points to syiro.data.storage
 
 	// #region Meta function for defining existing Syiro components or Elements as Components
 
@@ -101,8 +101,8 @@ module syiro.component {
 	export function Fetch(component : Object) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
 		var componentElement : Element; // The (HTML)Element of the Syiro component we'll be returning
 
-		if (typeof syiro.component.componentData[component["id"]]["HTMLElement"] !== "undefined"){ // If an HTMLElement  is defined, meaning this is a new component that has not been put in the DOM yet
-			componentElement = syiro.component.componentData[component["id"]]["HTMLElement"]; // Get the HTMLElement stored in the componentData
+		if (syiro.data.Read(component["id"] + "->" + "HTMLElement") !== false){ // If an HTMLElement is defined, meaning this is a new component that has not been put in the DOM yet
+			componentElement = syiro.data.Read(component["id"] + "->" + "HTMLElement"); // Get the HTMLElement via syiro.data APIs
 		}
 		else{ // If the HTMLElement  is NOT defined (meaning the element is could be in the DOM)
 			componentElement = document.querySelector('*[data-syiro-component-id="' + component["id"] + '"]'); // Look for the component in the DOM, may return null
@@ -149,8 +149,6 @@ module syiro.component {
 
 				componentElement.setAttribute("data-syiro-component-id", componentId); // Set this component's Id
 				componentElement.setAttribute("data-syiro-component", componentType); // Set the component's type
-
-				syiro.component.componentData[componentId] = {}; // Add an empty object for the Component in the componentData
 			}
 			else{ // If the componentElement has attributes, meaning it has already been defined before
 				previouslyDefined = true; // Set previouslyDefined to true
@@ -239,30 +237,27 @@ module syiro.component {
 
 		// #region Scaling Data Definition
 
-		var storedScalingState : string; // Define scalingState as the stored scaling state
+		var storedScalingState : any = syiro.data.Read(componentId + "->scaling->state"); // Define scalingState as the stored scaling state (if any)
 
 		if (typeof scalingData !== "undefined"){ // If scalingData has been defined (passed as second arg)
-			syiro.component.componentData[componentId]["scaling"] = scalingData; // Define the scaling data in the componentData for this particular Component as the scalingData passed along
+			syiro.data.Write(componentId + "->scaling", scalingData); // Write the scalingData to the componentId scaling key/val
 		}
 
-		if (typeof syiro.component.componentData[componentId]["scaling"]["state"] == "undefined"){ // If the scaling state of this Component is not defined (like an Element that has never been scaled before) or we are forcing scaling
+		if (storedScalingState == false){ // If the scaling state of this Component is not defined (like an Element that has never been scaled before) or we are forcing scaling
 			storedScalingState = "initial"; // Default to initial so we'll properly scale
-		}
-		else{ // If scaling state of this Component is defined
-			storedScalingState = syiro.component.componentData[componentId]["scaling"]["state"]; // Define scalingState as the current scaling state stored in the componentData
 		}
 
 		// #endregion
 
 		// #region Initial Dimension Checking
 
-		var initialDimensions : Array<number> = []; // Define initialDimensions as an array of numbers
+		var initialDimensions : Array<number> = syiro.data.Read(componentId + "->scaling->initialDimensions"); // Define initialDimensions as an array of numbers, defaulting to any value (which can technically be false) from componentId->scaling->initialDimensions via syiro.data APIs
 
-		if (typeof syiro.component.componentData[componentId]["scaling"]["initialDimensions"] !== "undefined"){ // If the initialDimensions in the scaling section of componentData for this Component is NOT undefined
-			initialDimensions = syiro.component.componentData[componentId]["scaling"]["initialDimensions"]; // Define initialDimensions as the dimensions in the scaling section of the componentData for this Component
-		}
+		if ((initialDimensions.length !== 2) || (typeof initialDimensions == "boolean")){ // If initialDimensions is not a length of two <height, width>
+			if (typeof initialDimensions == "boolean"){ // If initialDimensions were not provided (was returned false because it didn't exist)
+					initialDimensions = []; // Define initialDimensions as an empty Array
+			}
 
-		if (initialDimensions.length !== 2){ // If initialDimensions is not a length of two <height, width>
 			initialDimensions.push(componentElement.clientHeight); // Append the clientHeight as the second item (or first, depending on if there was any length to begin with)
 
 			if (initialDimensions.length == 1){ // If, after pushing the clientHeight, the initialDimensions is 1 (only height)
@@ -272,7 +267,7 @@ module syiro.component {
 				initialDimensions.reverse(); // Reverse the initialDimensions to <height, width>
 			}
 
-			syiro.component.componentData[componentId]["scaling"]["initialDimensions"] = initialDimensions; // Update the componentData initialDimensions for this Component
+			syiro.data.Write(componentId + "->scaling->initialDimensions", initialDimensions); // Call syiro.data.Update with the keyList and initialDimensions
 		}
 
 		var updatedComponentHeight : number = initialDimensions[0]; // Define the updatedComponentHeight as the initial height defined
@@ -282,33 +277,25 @@ module syiro.component {
 
 		// #region Ratio and Fill Data Parsing
 
-		var ratios : any = null; // Define ratios an array of numbers <height, width> or NULL
-		var fill : any = null; // Define ratios as an array of numbers <height, width> or NULL
+		var ratios : any = syiro.data.Read(componentId + "->scaling->ratios"); // Define ratios an array of numbers <height, width> or false (whatever is initially provided by syiro.data.Read)
+		var fill : any = syiro.data.Read(componentId + "->scaling->fill"); // Define ratios as an array of numbers <height, width> or false (whatever is initially provided by syiro.data.Read)
 
-		if (typeof syiro.component.componentData[componentId]["scaling"]["ratios"] !== "undefined"){ // If ratios are defined in the scaling data
-			ratios = syiro.component.componentData[componentId]["scaling"]["ratios"]; // Define ratios as data already defined
-
-			if (ratios.length == 1){ // If only one dimension is defined
-				ratios.push(1.0); // Push 1.0 as the height ratio. Currently it is the second argument instead of first.
-				ratios.reverse(); // Reverse the items so it is once again <height, width>
-			}
+		if (ratios !== false && (ratios.length == 1)){ // If ratios are defined in the scaling data but only one dimension is defined
+			ratios.push(1.0); // Push 1.0 as the height ratio. Currently it is the second argument instead of first.
+			ratios.reverse(); // Reverse the items so it is once again <height, width>
 		}
 
-		if (typeof syiro.component.componentData[componentId]["scaling"]["fill"] !== "undefined"){ // If fill data is defined in scaling data
-			fill = syiro.component.componentData[componentId]["scaling"]["fill"]; // Define fill as data already defined
-
-			if (fill.length == 1){ // If only one dimension is defined
-				fill.push(1.0) // Push 1.0 as the height fill. Currently it is the second argument instead of first.
-				fill.reverse(); // Reverse the items so it is once again <height, width>
-			}
+		if ((fill !== false) && (fill.length == 1)){ // If fill data is defined in scaling data but only one dimension is defined
+			fill.push(1.0) // Push 1.0 as the height fill. Currently it is the second argument instead of first.
+			fill.reverse(); // Reverse the items so it is once again <height, width>
 		}
 
 		// #endregion
 
 		// #region Component Scaling
 
-		if ((storedScalingState !== "scaled") && ((ratios !== null) || (fill !== null))){ // If we have not "disabled" scaling by not providing ratio or fill data and we need to scale the Component
-			if (ratios !== null){ // If ratios is defined (not of type null)
+		if ((storedScalingState !== "scaled") && ((ratios !== false) || (fill !== false))){ // If we have not "disabled" scaling by not providing ratio or fill data and we need to scale the Component
+			if (ratios !== false){ // If ratios is defined (not of type false)
 				if (ratios[0] !== 0){ // If the height is supposed to scale
 					updatedComponentHeight = (initialDimensions[0] * ratios[0]); // Updated componentHeight is the initialDimensions height * height ratio
 				}
@@ -323,7 +310,7 @@ module syiro.component {
 					updatedComponentWidth = initialDimensions[1]; // Set the width to the initialDimensions width
 				}
 			}
-			else if (fill !== null){ // If fill is defined (not of type null)
+			else if (fill !== false){ // If fill is defined (not of type false)
 				if (fill[0] !== 0){ // If the height is supposed to scale with the parent
 					updatedComponentHeight = (parentHeight * fill[0]); // Define updatedComponentHeight as the height of the parent our fill percentage
 				}
@@ -347,7 +334,7 @@ module syiro.component {
 		if (updatedComponentWidth > userHorizontalSpace){ // If the width of the updatedComponentWidth is greater than the horizontal space available to the user
 			updatedComponentWidth = userHorizontalSpace; // Initially the updatedComponentWidth to horizontal space available to the user
 
-			if ((ratios !== null) && (ratios[0] !== 0)){ // If we can scale the height of the Component as necessary
+			if ((ratios !== false) && (ratios[0] !== 0)){ // If we can scale the height of the Component as necessary
 				updatedComponentHeight = (updatedComponentWidth * (initialDimensions[0] / initialDimensions[1])); // Define the updatedComponentHeight as the width times the height-to-width pixel ratio
 			}
 		}
@@ -360,39 +347,44 @@ module syiro.component {
 		// #region Initial Ratio / Fill Dimension Setting
 		// This section is responsible for ensuring that Components that are being initialized, that have fill or ratio properties, remember the changed updatedComponent dimensions
 
-		if (storedScalingState == "initial"){ // If this Component is in an initial state and fill
-			syiro.component.componentData[componentId]["scaling"]["initialDimensions"] = [updatedComponentHeight, updatedComponentWidth];
+		if (storedScalingState == "initial"){ // If this Component is in an initial state
+			syiro.data.Write(componentId + "->scaling->initialDimensions", [updatedComponentHeight, updatedComponentWidth]); // Write the new dimensions to initialDimensions
 		}
 
 		// #region Component Child Scaling
 
-		if (typeof syiro.component.componentData[component["id"]]["scaling"]["children"] !== "undefined"){ // If we are scaling child Components or Elements
+		var potentialComponentScalableChildren : any = syiro.data.Read(component["id"] + "->scaling->children"); // Get any children that need scaling in this Component
+
+		if (potentialComponentScalableChildren !== false){ // If we are scaling child Components or Elements
 
 			// #region Children Component Data Parsing
-			// Parses any component data like scaling information passed regarding Children of the Component, sets to own componentData and changes "children" key / val to point to an array instead
+			// Parses any component data like scaling information passed regarding Children of the Component, sets to own data and changes "children" key / val to point to an array instead
 
-			if (typeof syiro.component.componentData[component["id"]]["scaling"]["children"].pop == "undefined"){ // If children key / val is an Object rather than an Array (Array would have .pop)
+			if (typeof potentialComponentScalableChildren.pop == "undefined"){ // If children key / val is an Object rather than an Array (Array would have .pop)
 				var childComponentsArray : Array<Object> = []; // Define childComponents as an array of Objects
 
-				for (var childSelector in syiro.component.componentData[component["id"]]["scaling"]["children"]){ // For each childSelector in the children section of scaling
+				for (var childSelector in potentialComponentScalableChildren){ // For each childSelector in the children section of scaling
 					var childElement : Element = componentElement.querySelector(childSelector); // Get the childElement from componentElement based on the querySelector of the componentElement
 					var childComponent : Object = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
 
-					if (typeof syiro.component.componentData[childComponent["id"]] == "undefined"){ // If the childComponent has no componentData
-						syiro.component.componentData[childComponent["id"]] = {}; // Create an empty Object for the childComponent in componentData
+					if (syiro.data.Read(childComponent["id"]) !== false){ // If the childComponent has no data
+						syiro.data.Write(childComponent["id"], {}); // Create an empty Object for the childComponent in the syiro.data.storage
 					}
 
-					syiro.component.componentData[childComponent["id"]]["scaling"] = syiro.component.componentData[component["id"]]["scaling"]["children"][childSelector]["scaling"]; // Define the scaling data of the childComponent to be equal to the scaling data passed for the parent Component
+					syiro.data.Write(childComponent["id"] + "->scaling", syiro.data.Read(component["id"] + "->scaling->children->" + childSelector + "->scaling")); // Write the scaling information from component->scaling->children ETC to the childComponent scaling key/val
 					childComponentsArray.push(childComponent); // Push the childComponent to the childComponentsArray Array of Objects
-					delete syiro.component.componentData[component["id"]]["scaling"]["children"][childSelector]; // Delete the childSelector from the "children"
+					syiro.data.Delete(component["id"] + "->scaling->children->" + childSelector); // Delete the childSelector from scaling children in component
 				}
-				syiro.component.componentData[component["id"]]["scaling"]["children"] = childComponentsArray; // Set the children to now be an Array<Object>
+
+				syiro.data.Write(component["id"] + "->scaling->children", childComponentsArray); // Set the childComponentsArray to the component->scaling->children via syiro.data.Write
 			}
 
 			// #endregion
 
-			for (var childComponentIndex = 0; childComponentIndex < syiro.component.componentData[component["id"]]["scaling"]["children"].length; childComponentIndex++){ // For each childComponent in the Children scaling Object
-				var childComponentObject : Object = syiro.component.componentData[component["id"]]["scaling"]["children"][childComponentIndex]; // Define childComponentObject as the index of the Object from key / val children
+			var componentChildren : Array<Object> = syiro.data.Read(component["id"] + "->scaling->children"); // Define componentChildren as the children in component->scaling->children
+
+			for (var childComponentIndex = 0; childComponentIndex < componentChildren.length; childComponentIndex++){ // For each childComponent in the Children scaling Object
+				var childComponentObject : Object = componentChildren[childComponentIndex]; // Define childComponentObject as the index of the Object from key / val children
 				syiro.component.Scale(childComponentObject); // Scale the child Component
 			}
 		}
@@ -410,7 +402,7 @@ module syiro.component {
 			updatedScalingState = "scaled"; // Set to "scaled" state
 		}
 
-		syiro.component.componentData[componentId]["scaling"]["state"] = updatedScalingState; // Set to the updated scaling state
+		syiro.data.Write(componentId + "->scaling->state", updatedScalingState); // Update the state of the Component
 
 		// #endregion
 	}
@@ -420,8 +412,8 @@ module syiro.component {
 	// #region Update Stored Component's HTMLElement, but only if it exists in the first place.
 
 	export function Update(componentId : string, componentElement : Element){
-		if (syiro.component.componentData[componentId]["HTMLElement"] !== undefined){ // If the HTMLElement is defined in the componentData (by the id of the component being in the componentData)
-			syiro.component.componentData[componentId]["HTMLElement"] = componentElement; // Update with the componentElement we defined
+		if (syiro.data.Read(componentId + "->HTMLElement") !== false){ // If the HTMLElement is defined in for this Component
+			syiro.data.Write(componentId + "->HTMLElement", componentElement); // Update the componentElement with what we defined
 		}
 	}
 
@@ -459,7 +451,7 @@ module syiro.component {
 					allowAdding = true; // Allow adding the childComponent
 				}
 			}
-			else if (childComponent["link"] !== undefined){ // If a component "link" key is defined, meaning it is a link
+			else if (typeof childComponent["link"] !== "undefined"){ // If a component "link" key is defined, meaning it is a link
 				childElement = syiro.generator.ElementCreator("a", // Create a link element
 					{
 						"title" : childComponent["title"], // Set the title as the one specified in the component object
@@ -480,7 +472,7 @@ module syiro.component {
 			allowAdding = true;
 		}
 
-		if ((allowAdding == true) && (parentElement !== null) && (childElement !== null)){ // If we are allowing the adding of the childComponent and both the parentElement and childElement exist in componentData or DOM
+		if ((allowAdding == true) && (parentElement !== null) && (childElement !== null)){ // If we are allowing the adding of the childComponent and both the parentElement and childElement exist in syiro.data.storage or DOM
 			if (append == false){ // If we are prepending the childElement
 				parentElement.insertBefore(childElement, parentElement.firstChild); // Insert before the first component
 			}
@@ -492,7 +484,7 @@ module syiro.component {
 			allowAdding = false; // Reset allowAdding to false in the event it was set to true
 		}
 
-		syiro.component.Update(parentComponent["id"], parentElement); // Update the storedComponent HTMLElement if necessary
+		syiro.data.Write(parentComponent["id"], parentElement); // Update the HTMLElement of parentComponent if necessary
 
 		return allowAdding; // Return the updated component object
 	}
@@ -531,8 +523,8 @@ module syiro.component {
 				var parentElement : Element = individualComponentElement.parentElement; // Get the individualComponentElement's parentElement
 				parentElement.removeChild(individualComponentElement); // Remove this Component from the DOM, if it exists
 
-				if (typeof syiro.component.componentData[individualComponentObject["id"]] !== "undefined"){ // It there is componentData regarding individualComponentObject
-					delete syiro.component.componentData[individualComponentObject["id"]]; // Delete the Component's data
+				if (syiro.data.Read(individualComponentObject["id"]) !== false){ // It there is data regarding individualComponentObject in syiro.data.storage
+					syiro.data.Delete(individualComponentObject["id"]); // Delete the Component's data
 				}
 			}
 		}

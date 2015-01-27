@@ -14,7 +14,7 @@ module syiro.searchbox {
 	export function Generate(properties : Object) : Object { // Generate a Searchbox Component and return a Component Object
 		var componentId : string = syiro.generator.IdGen("searchbox"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "searchbox"); // Generate a Searchbox Element
-		var searchboxComponentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored in syiro.component.componentData
+		var searchboxComponentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored via syiro.data
 
 		if (properties == undefined){ // If no properties were passed during the Generate call
 			properties = {}; // Set as an empty Object
@@ -68,7 +68,7 @@ module syiro.searchbox {
 		}
 
 		searchboxComponentData["HTMLElement"] = componentElement; // Define the HTMLElement of the Searchbox as the componentElement
-		syiro.component.componentData[componentId] = searchboxComponentData; // Add the component to the componentData
+		syiro.data.Write(componentId, searchboxComponentData); // Add the searchboxComponentData to the syiro.data.storage for this Searchbox Component
 
 		return { "id" : componentId, "type" : "searchbox" }; // Return a Component Object
 	}
@@ -88,7 +88,7 @@ module syiro.searchbox {
 		syiro.render.Position(["below", "center"], linkedListComponent, searchboxComponent); // Position the Linked List Component below and centered in relation to the Searchbox Component
 
 		if (searchboxValue !== ""){ // If the value is not empty
-			if (syiro.component.componentData[searchboxComponent["id"]]["preseed"] == true){ // If preseed is enabled
+			if (syiro.data.Read(searchboxComponent["id"] + "->preseed") == true){ // If preseed is enabled
 				syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Immediately ensure the Linked List of the Searchbox is visible
 
 				if (innerListItemsOfLinkedList.length > 0){ // If the Linked List of the Searchbox has List Items
@@ -114,7 +114,7 @@ module syiro.searchbox {
 			else{ // If preseed is not enabled
 				syiro.component.CSS(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List until we get suggestions and generate the new List Items
 
-				var suggestions : Array<string> = syiro.component.componentData[searchboxComponent["id"]]["handlers"]["suggestions"].call(this, searchboxValue); // Call the suggestions handler function
+				var suggestions : Array<string> = syiro.data.Read(searchboxComponent["id"] + "->handlers->suggestions").call(this, searchboxValue); // Call the suggestions handler function
 
 				if (suggestions.length !== 0){ // If we were provided suggestions
 					if (innerListItemsOfLinkedList.length > 0){ // If the Linked List of the Searchbox has List Items
@@ -124,7 +124,7 @@ module syiro.searchbox {
 					for (var suggestionIndex in suggestions){ // For each suggestion in suggestions
 						var suggestionListItem : Object = syiro.listitem.Generate({ "label" : suggestions[suggestionIndex] }); // Create a List Item with the label being the suggestion
 						syiro.list.AddItem(true, linkedListComponent, suggestionListItem); // Append the List Item to the Linked List
-						syiro.events.Add(syiro.events.eventStrings["up"], suggestionListItem, syiro.component.componentData[searchboxComponent["id"]]["handlers"]["list-item-handler"]); // Add the list-item-handler we have stored in componentData to the suggestionListItem
+						syiro.events.Add(syiro.events.eventStrings["up"], suggestionListItem, syiro.data.Read(searchboxComponent["id"] + "handlers->list-item-handler")); // Add the list-item-handler we have stored from syiro.data to the suggestionListItem
 					}
 
 					syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Show the List Item now that we have parsed the suggestions and generated List Items
@@ -143,7 +143,7 @@ module syiro.searchbox {
 	export function SetText(component : Object, placeholderText : any) : void {
 		var searchboxElement : Element = syiro.component.Fetch(component); // Get the Searchbox Syiro component element
 
-		if (searchboxElement !== null){ // If the searchboxElement exists in syiro.component.componentData or DOM
+		if (searchboxElement !== null){ // If the searchboxElement exists in syiro.data.storage or DOM
 			var searchboxInputElement : HTMLInputElement = searchboxElement.getElementsByTagName("input")[0]; // Get the inner input tag of the searchboxElement
 
 			if (placeholderText !== false){ // If we are updating the placeholderText

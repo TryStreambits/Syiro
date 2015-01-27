@@ -17,7 +17,7 @@ module syiro.plugin.alternativeInit {
         (function mutationTimer(){
             window.setTimeout( // Set interval to 5000 (5 seconds) with a timeout, forcing the execution to happen within 3 seconds
                 function(){ // Call this function
-                    for (var componentId in syiro.component.componentData){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
+                    for (var componentId in syiro.data.storage){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
                         var potentiallyExistingComponent = document.querySelector('*[data-syiro-component-id="' + componentId + '"]');
 
                         if (potentiallyExistingComponent !== null){ // If the component exists in the DOM
@@ -32,7 +32,7 @@ module syiro.plugin.alternativeInit {
                                 syiro.component.Scale(componentObject); // Scale the Audio Player or Video Player
                             }
                             else if (componentObject["type"] == "searchbox"){ // If the Component is a Searchbox
-                                if (typeof syiro.component.componentData[componentObject["id"]]["suggestions"] !== "undefined"){ // If suggestions is enabled on this Searchbox
+                                if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
                                     syiro.events.Add("keyup", componentObject, syiro.searchbox.Suggestions); // Add  an event with the Suggestions function to the Searchbox to listen on keyup value
                                     syiro.events.Add("blur", componentObject, // Add an event to the Searchbox to listen to when it loses focus
                                         function(){
@@ -44,11 +44,7 @@ module syiro.plugin.alternativeInit {
                                 }
                             }
 
-                            if (typeof syiro.component.componentData[componentObject["id"]] !== "undefined"){
-                                if (typeof syiro.component.componentData[componentObject["id"]]["HTMLElement"] !== "undefined"){
-                                    delete syiro.component.componentData[componentObject["id"]]["HTMLElement"]; // Ensure the Component's Element in the componentData is deleted
-                                }
-                            }
+                            syiro.data.Delete(componentObject["id"] + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
                         }
                     }
 

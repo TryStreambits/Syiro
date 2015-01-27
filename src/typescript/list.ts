@@ -27,7 +27,7 @@ module syiro.list {
 			}
 		}
 
-		syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Add the component to the componentData
+		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 
 		return { "id" : componentId, "type" : "list" }; // Return a Component Object
 	}
@@ -81,7 +81,7 @@ module syiro.listitem {
 			}
 		}
 
-		syiro.component.componentData[componentId] = { "HTMLElement" :  componentElement }; // Add the component to the componentData
+		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 
 		return { "id" : componentId, "type" : "list-item" }; // Return a Component Object
 	}
@@ -104,7 +104,7 @@ module syiro.listitem {
 				if (control["type"] == "button"){ // If the type of the control Component is a button
 					var innerControlElement = syiro.component.Fetch(control); // Get the Element of the inner control Component
 
-					if (innerControlElement !== null){ // If the Component Element is actually stored in syiro.component.componentData
+					if (innerControlElement !== null){ // If the Component Element is actually stored in syiro.data.storage
 						listItemElement.appendChild(innerControlElement); // Append the control Component
 						syiro.events.Remove(component); // Ensure the List Item has no Listeners after adding the new Control
 						syiro.component.Update(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary

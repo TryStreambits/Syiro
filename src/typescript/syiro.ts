@@ -3,6 +3,7 @@
 */
 /// <reference path="animation.ts" />
 /// <reference path="component.ts" />
+/// <reference path="data.ts" />
 /// <reference path="device.ts" />
 /// <reference path="events.ts" />
 /// <reference path="generator.ts" />
@@ -23,22 +24,6 @@ module syiro {
 	export function Init() : void {
 
 		syiro.device.Detect(); // Detect Device information and functionality support by using our Detect() function.
-
-		// #region Event Listener Tweaking For Touch Devices
-
-		var eventsToRemove : Array<string>; // Define eventsToRemove as an array of strings to remove from eventStrings
-
-		if (syiro.device.SupportsTouch == true){ // If the device supports touch, define removal of mouse-oriented events from eventStrings
-			eventsToRemove = ["mousedown", "mouseup"]; // Set eventsToRemove as an array of mouse-oriented event strings to remove
-		}
-		else{ // If the device does not support touch, define removal of touch-oriented events from eventStrings
-			eventsToRemove = ["touchstart", "touchend"]; // Set eventsToRemove as an array of touch-oriented event strings to remove
-		}
-
-		syiro.events.eventStrings["down"].splice(syiro.events.eventStrings["down"].indexOf(eventsToRemove[0]), 1); // Remove either mousedown or touchstart
-		syiro.events.eventStrings["up"].splice(syiro.events.eventStrings["up"].indexOf(eventsToRemove[1]), 1); // Remove either mouseup or touchend
-
-		// #endregion
 
 		// #region Document Scroll Event Listening
 
@@ -132,7 +117,7 @@ module syiro {
 													syiro.component.Scale(componentObject); // Scale the Audio Player or Video Player
 												}
 												else if (componentObject["type"] == "searchbox"){ // If the Component is a Searchbox
-													if (typeof syiro.component.componentData[componentObject["id"]]["suggestions"] !== "undefined"){ // If suggestions is enabled on this Searchbox
+													if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
 														syiro.events.Add("keyup", componentObject, syiro.searchbox.Suggestions);// Add  an event with the Suggestions function to the Searchbox to listen on keyup value
 														syiro.events.Add("blur", componentObject,// Add an event to the Searchbox to listen to when it loses focus
 															function(){
@@ -151,11 +136,7 @@ module syiro {
 													}
 												}
 
-												if (typeof syiro.component.componentData[componentObject["id"]] !== "undefined"){
-													if (typeof syiro.component.componentData[componentObject["id"]]["HTMLElement"] !== "undefined"){
-														delete syiro.component.componentData[componentObject["id"]]["HTMLElement"]; // Ensure the Component's Element in the componentData is deleted
-													}
-												}
+												syiro.data.Delete(componentObject["id"] + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
 											}
 										}
 									}
@@ -189,7 +170,7 @@ module syiro {
 
 	// #endregion
 
-	export var Define = syiro.component.Define; // Meta-function for defining Syiro components (which is actually a meta-function of FetchComponentObject)
+	export var Define = syiro.component.FetchComponentObject; // Meta-function for defining Syiro components (which is actually a meta-function of FetchComponentObject)
 
 	export var Fetch = syiro.component.Fetch; // Meta-function for fetching Syiro component HTMLElements
 

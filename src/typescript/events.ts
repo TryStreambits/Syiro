@@ -10,7 +10,8 @@ module syiro.events {
     export var eventStrings : Object = { // Set syiro.component.listenerStrings as an Object containing commonly used event lister combinations
         "down" : ["mousedown", "touchstart"],
         "up" : ["mouseup", "touchend"],
-        "fullscreenchange" : ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"]
+        "fullscreenchange" : ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"],
+        "orientationchange" : ["orientationchange", "mozorientationchange", "msorientationchange"]
     };
 
     // #region Syiro Component and Generic Element Event Handler
@@ -83,7 +84,7 @@ module syiro.events {
 
         // #endregion
 
-        if (typeof syiro.component.componentData[componentId]["ignoreClick"] == "undefined"){ // If this Handler isn't being triggered by touchstart or touchend bubbling to mouse events
+        if (syiro.data.Read(componentId + "->ignoreClick") == false){ // If this Handler isn't being triggered by touchstart or touchend bubbling to mouse events
             if (animationString !== null){ // If we are in fact working with a Syiro Toggle Button
                 syiro.animation.Animate(component, // Animate the Toggle Button
                     {
@@ -102,25 +103,26 @@ module syiro.events {
                 );
             }
 
-            for (var individualFunctionId in syiro.component.componentData[componentId]["handlers"][listener]){ // For each function that is related to the Component for this particular listener
-                syiro.component.componentData[componentId]["handlers"][listener][individualFunctionId].call(syiro, component, passableValue); // Call the function, passing along the passableValue and the Component
+            var functionsForListener : Array<Function> = syiro.data.Read(componentId + "->handlers->" + listener); // Fetch all functions for this particular listener
+            for (var individualFunctionId in functionsForListener){ // For each function that is related to the Component for this particular listener
+                functionsForListener[individualFunctionId].call(syiro, component, passableValue); // Call the function, passing along the passableValue and the Component
             }
 
             // #region Phantom Click Prevention
 
             if (listener.indexOf("touch") == 0){ // If this is a touch event
-                syiro.component.componentData[componentId]["ignoreClick"] = true; // Set "ignoreClick" key to true in the componentData for this Component
+                syiro.data.Write(componentId + "->ignoreClick", true); // Set ignoreClick key/val to true for this Component
 
                 var timeoutId = window.setTimeout( // Create a setTimeout timer
                     function(){
                         var componentId = arguments[0]; // Define componentId as the first argument passed
-                        delete syiro.component.componentData[componentId]["ignoreClick"]; // Remove the ignoreClick event
-                        window.clearTimeout(syiro.component.componentData[componentId]["ignoreClick-TimeoutId"]); // Clear the window timeout by getting ignoreClick-TimeoutId int and clearing based on that
+                        syiro.data.Delete(componentId + "->ignoreClick"); // Remove the ignoreClick event
+                        window.clearTimeout(syiro.data.Read(componentId + "->ignoreClick-TimeoutId")); // Clear the window timeout by getting ignoreClick-TimeoutId int and clearing based on that
                     }.bind(this, componentId) // Attach the Component Id to the function
                     ,350 // Prevent click action for 350ms as most
                 );
 
-                syiro.component.componentData[componentId]["ignoreClick-TimeoutId"] = timeoutId; // Define ignoreClick-TimeoutId of this Component as the timeoutId we get from setTimeout
+                syiro.data.Write(componentId + "->ignoreClick-TimeoutId", timeoutId); // Define ignoreClick-TimeoutId of this Component as the timeoutId we get from setTimeout
             }
 
             // #endregion
@@ -133,7 +135,7 @@ module syiro.events {
 
     export function Add(... args : any[]) : boolean { // Takes (optional) space-separated listeners, Component Object or a generic Element, and the handler function.
         var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
-        var componentId : string; // Define componentId as the ID which we query for in syiro.component.componentData
+        var componentId : string; // Define componentId as the ID which we query for in syiro.data.storage
         var listeners : any; // Define listeners as any (array or string -> array)
         var component : any; // Define Component as a Syiro Component Object or an Element
         var listenerCallback : Function; // Default to having the listenerCallback be the handler we are passed.
@@ -198,23 +200,18 @@ module syiro.events {
             }
 
             if (allowListening == true){ // If allowListening is TRUE
-                if (typeof syiro.component.componentData[componentId] == "undefined"){ // If the Component is not defined in componentData yet (for instance, normal Elements, document, or window)
-                    syiro.component.componentData[componentId] = {}; // Define componentId in componentData as an empty Object
-                }
-
-                if (typeof syiro.component.componentData[componentId]["handlers"] == "undefined"){ // If the Component's listeners are already defined
-                    syiro.component.componentData[componentId]["handlers"] = {}; // Define handlers as a blank Object
-                }
-
                 for (var individualListenerIndex in listeners){ // For each listener in the listeners array
                     var listener = listeners[individualListenerIndex]; // Define listener as the individual listener in the listeners array
 
-                    if (typeof syiro.component.componentData[componentId]["handlers"][listener] == "undefined"){ // If the individual listener key is undefined in the handlers of the Component
-                        syiro.component.componentData[componentId]["handlers"][listener] = []; // Define the listener value as an empty array that will hold functions we'll be calling.
+                    var currentListenersArray : any = syiro.data.Read(componentId + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
+
+                    if (currentListenersArray == false){ // If the individual listener key is undefined in the handlers of the Component
+                        currentListenersArray = []; // Define currentListenersArray as an empty array
                         componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component
                     }
 
-                    syiro.component.componentData[componentId]["handlers"][listener].push(listenerCallback); // Simply add the function to the listener Array of Functions
+                    currentListenersArray.push(listenerCallback); // Push the listenerCallback to the currentListenersArray
+                    syiro.data.Write(componentId + "->handlers->" + listener, currentListenersArray); // Write currentListenersArray (whether it is an empty array or a newly updated one) to the Component's handlers for this listener
                 }
             }
         }
@@ -272,21 +269,14 @@ module syiro.events {
                 componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
                 componentElement = component; // Define componentElement as the Component
             }
-            else if (component == document){ // If the Component passed is the document Object
-                componentId = "document"; // Define componentId as "document
-                componentElement = component; // Define componentElement as the document
-            }
-            else if (component == window){ // If the componentElement is the window
-                componentId = "window"; // Define componentId as "window"
-                componentElement = component; // Define componentElement as the window
-            }
-            else{ // If the component is neither a Syiro Component Object, an Element, the document, or the window
-                allowRemoval = false; // Disallow removal of the Component Listeners
+            else{ // If the component is NOT a Syiro Component Object or an Element
+                componentId = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentId equal to the string form, stripping out [], "object", etc.
+                componentElement = component; // Define componentElement as the component passed
             }
 
             if (allowRemoval == true){ // If we are going to allow the removal of event listeners from the Element
                 if (typeof listeners == "undefined"){ // If listeners weren't defined
-                    listeners = Object.keys(syiro.component.componentData[componentId]["handlers"]); // Get each key defined in handlers (ex: keyup,keydown) and set that to the listeners
+                    listeners = Object.keys(syiro.data.Read(componentId + "->handlers")); // Get each key defined in handlers (ex: keyup,keydown) and set that to the listeners
                 }
 
                 if ((componentElement !== undefined) && (componentElement !== null)){
@@ -295,7 +285,7 @@ module syiro.events {
                         var componentListeners : any = null; // Define componentListeners as an array of functions specific to that listener, only for specFunc, or null (default) if all functions should be removed
 
                         if (typeof specFunc == "function") { // If a specific function is defined
-                            componentListeners = syiro.component.componentData[componentId]["handlers"][listener]; // Define componentListeners as the array of functions specific to that listener
+                            componentListeners = syiro.data.Read(componentId + "->handlers->" + listener); // Define componentListeners as the array of functions specific to that listener
 
                             for (var individualFuncIndex in componentListeners){ // For each individual function in the componentListeners
                                 if (componentListeners[individualFuncIndex].toString() == specFunc.toString()){ // If the stringified forms of both functions match
@@ -305,8 +295,11 @@ module syiro.events {
                         }
 
                         if ((componentListeners == null) || (componentListeners.length == 0)){ // If the componentListeners is null or does NOT have a length (essentially null)
-                            delete syiro.component.componentData[componentId]["handlers"][listener]; // Remove the specific listener from this handler from the particular Component
+                            syiro.data.Delete(componentId + "->handlers->" + listener); // Remove the specific listener from this handler from the particular Component
                             componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component)); // Remove the event listener (specific to the listener and func)
+                        }
+                        else{ // If componentListeners.length is still not zero after removing the specFunc
+                            syiro.data.Write(componentId + "->handlers->" + listener, componentListeners); // Update the listener functions array for this handler
                         }
                     }
 

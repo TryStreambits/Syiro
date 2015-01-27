@@ -43,7 +43,7 @@ module syiro.button {
 			}
 		}
 
-		syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Add the component to the componentData
+		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 
 		return { "id" : componentId, "type" : "button" }; // Return a Component Object
 	}
@@ -57,9 +57,9 @@ module syiro.button {
 
 		var componentElement = syiro.component.Fetch(component); // Get the componentElement
 
-		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") == "basic")){ // If the button exists in componentData or DOM AND button is "basic" rather than toggle
+		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") == "basic")){ // If the button exists in syiro.data.storage or DOM AND button is "basic" rather than toggle
 			componentElement.textContent = content; // Set the button component textContent
-			syiro.component.Update(component["id"], componentElement); // Update the storedComponent (if necessary)
+			syiro.component.Update(component["id"] + "->HTMLElement", componentElement); // Update the storedComponent (if necessary)
 			setSucceeded = true; // Define setSucceeded as true
 		}
 		else{ // If it is NOT a basic button

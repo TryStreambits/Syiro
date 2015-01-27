@@ -31,30 +31,52 @@ module syiro.device {
 
     export function Detect(){
 
-        if (navigator.doNotTrack !== undefined){ // If DoNotTrack is defined in the navigator Object
+        // #region Do Not Track
+
+        if (typeof navigator.doNotTrack !== "undefined"){ // If DoNotTrack is defined in the navigator Object
             syiro.device.DoNotTrack = Boolean(navigator.doNotTrack); // Set the DoNotTrack variable to the value defined in navigator and converted to boolean
         }
         else{  // If DoNotTrack is not defined in the navigator Object
             syiro.device.DoNotTrack = true; // Set DoNotTrack to true by default
         }
 
-        if (window.crypto == undefined){ // If Crypto is not defined in the window Object
+        // #endregion
+
+        // #region Basic Crypto Functionality
+
+        if (typeof window.crypto == "undefined"){ // If Crypto is not defined in the window Object
             syiro.device.HasCryptography = false; // Set HasCryptography to false
         }
 
-        if (navigator.geolocation == undefined){ // If Geolocation is not defined in the navigator Object
+        // #endregion
+
+        // #region Geolocation Support
+
+        if (typeof navigator.geolocation == "undefined"){ // If Geolocation is not defined in the navigator Object
             syiro.device.HasGeolocation = false; // Set HasGeolocation to false
         }
 
-        if (window.indexedDB == undefined){ // If IndexedDB is not defined in the window Object
+        // #endregion
+
+        // #region IndexedDB Support
+
+        if (typeof window.indexedDB == "undefined"){ // If IndexedDB is not defined in the window Object
             syiro.device.HasIndexedDB = false; // Set HasIndexedDB to false
         }
 
-        if (window.localStorage == undefined){ // If LocalStorage is not defined in the window Object
+        // #endregion
+
+        // #region LocalStorage Support
+
+        if (typeof window.localStorage == "undefined"){ // If LocalStorage is not defined in the window Object
             syiro.device.HasLocalStorage = false; // Set HasLocalStorage to false
         }
 
-        if (navigator.onLine !== undefined){ // If the browser is online
+        // #endregion
+
+        // #region Online Status Support
+
+        if (typeof navigator.onLine !== "undefined"){ // If the browser is online
             syiro.device.IsOnline = navigator.onLine; // Set the IsOnline to the browser's online status
 
             syiro.events.Add("online", document,  // Add an event listener that listens to the "online" event, which means the user went from offline to online, and update the IsOnline value
@@ -70,32 +92,75 @@ module syiro.device {
             );
         }
 
+        // #endregion
+
+        // #region Touch Support Checking
+
+        var eventsToRemove : Array<string>; // Define eventsToRemove as an array of strings to remove from eventStrings
+
         if ((typeof window.ontouchend !== "undefined") || ((typeof navigator.maxTouchPoints !== "undefined") && (navigator.maxTouchPoints > 0))){ // If the device supports ontouchend event or supports touch points
             syiro.device.SupportsTouch = true; // Set syiro.device.SupportsTouch to true
+            eventsToRemove = ["mousedown", "mouseup"]; // Set eventsToRemove as an array of mouse-oriented event strings to remove
         }
+        else{ // If touch is not supported on this device
+            eventsToRemove = ["touchstart", "touchend"]; // Set eventsToRemove as an array of touch-oriented event strings to remove
+        }
+
+        syiro.events.eventStrings["down"].splice(syiro.events.eventStrings["down"].indexOf(eventsToRemove[0]), 1); // Remove either mousedown or touchstart
+        syiro.events.eventStrings["up"].splice(syiro.events.eventStrings["up"].indexOf(eventsToRemove[1]), 1); // Remove either mouseup or touchend
+
+        // #endregion
 
         syiro.device.FetchScreenDetails(); // Do an initial fetch of the screen details
         syiro.device.orientation = syiro.device.FetchScreenOrientation(); // Do an initial fetch of the screen orientation
+        syiro.events.Add("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing for updating the screen details
 
-        syiro.events.Add("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing
+        // #region Orientation Listening and Determinination Support
 
-        window.setInterval( // Set a timer for every two seconds to check for change in device orientation. We are using this due to the lack of full orientationchange event support in major browsers.
-            function(){
-                var currentOrientation : string = syiro.device.FetchScreenOrientation(); // Fetch the current screen orientation (portrait or landscape)
+        var orientationChangeHandler : Function = function(){ // This function is the handler for when the orientation is changed (or if we fire the function during a window interval / timer)
+            var currentOrientation : string = syiro.device.FetchScreenOrientation(); // Fetch the current screen orientation (portrait or landscape)
 
-                if (currentOrientation !== syiro.device.orientation){ // If currentOrientation does not match the syiro.device.orientation stored already
-                    syiro.device.orientation = currentOrientation; // Update orientation value for syiro.device.orientation
+            if (currentOrientation !== syiro.device.orientation){ // If currentOrientation does not match the syiro.device.orientation stored already
+                syiro.device.orientation = currentOrientation; // Update orientation value for syiro.device.orientation
 
-                    var allPlayers : NodeList = document.querySelectorAll('div[data-syiro-component$="player"]'); // Get all Audio Players and Video Players
+                var allPlayers : NodeList = document.querySelectorAll('div[data-syiro-component$="player"]'); // Get all Audio Players and Video Players
 
-                    for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++){ // For each Player
-                        var thisPlayer : any = allPlayers[allPlayersIndex]; // Define thisPlayer as the index of allPlayers
-                        syiro.component.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
+                for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++){ // For each Player
+                    var thisPlayer : any = allPlayers[allPlayersIndex]; // Define thisPlayer as the index of allPlayers
+                    syiro.component.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
+                }
+
+                if (arguments[0] == "interval"){ // If we are calling orientationChangeHandler via window.setInterval, call all the other [vendor]orientationchange handlers
+                    var orientationChangeViaIntervalHanders : Array<Function> = syiro.data.Read("screen->handlers->orientationchange-viainterval"); // Define orientationChangeViaIntervalHanders as the fetched array of Functions from screen
+                    for (var orientationChangeIndex in orientationChangeViaIntervalHanders){ // For each orientation handler
+                        orientationChangeViaIntervalHanders[orientationChangeIndex](); // Call the function
                     }
                 }
             }
-            , 2000
-        );
+        }
+
+        if (typeof screen.onorientationchange !== "undefined"){ // If the non-vendor-prefixed form of orientationchange is supported for the screen Object
+            syiro.events.eventStrings["orientationchange"] = ["orientationchange"]; // Set our eventStrings orientationchange to only orientationchange
+        }
+        else if (typeof screen.onmsorientationchange !== "undefined"){ // If this is the Internet Explorer vendor-prefixed orientation change
+            syiro.events.eventStrings["orientationchange"] = ["msorientationchange"]; // Set our eventStrings orientationchange to only the IE event string
+        }
+        else if (typeof screen.onmozorientationchange !== "undefined"){ // If this is the Gecko vendor-prefixing (Mozilla) orientation change
+            syiro.events.eventStrings["orientationchange"] = ["mozorientationchange"]; // Set our eventStrings orientationchange to only the Moz event string
+        }
+        else{ // If orientationchange simply isn't supported
+            syiro.events.eventStrings["orientationchange"] = ["orientationchange-viainterval"]; // Delete our event string for orientationchange
+        }
+
+        if (typeof syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval"){ // If orientation change is supported on the device
+            syiro.events.Add(syiro.events.eventStrings["orientationchange"], screen, orientationChangeHandler); // Add an orientation change event for the screen with our orientationChangeHandler
+        }
+        else{ // If the device does not support orientation change
+            window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000); // Set a timer for every two seconds to check for change in device orientation. We are using this due to the lack of full orientationchange event support in major browsers.
+        }
+
+        // #endregion
+
     }
 
     // #endregion
@@ -129,7 +194,16 @@ module syiro.device {
     export function FetchScreenOrientation() : string {
         var deviceOrientation : string = "portrait"; // Define deviceOrientation as the orientation of the device, defaulting to portrait
 
-        if (screen.height < screen.width){ // If the screen width is larger than the height
+        if ((typeof screen.orientation !== "undefined") && (screen.orientation == "landscape-primary")){
+            deviceOrientation = "landscape"; // We are in landscape mode
+        }
+        else if ((typeof screen.msOrientation !== "undefined") && (screen.msOrientation == "landscape-primary")){
+            deviceOrientation = "landscape"; // We are in landscape mode
+        }
+        else if ((typeof screen.mozOrientation !== "undefined") && (screen.mozOrientation == "landscape-primary")){
+            deviceOrientation = "landscape"; // We are in landscape mode
+        }
+        else if (screen.height < screen.width){ // If none of the Screen Orientation API is supported AND the screen width is larger than the height
             deviceOrientation = "landscape"; // We are in landscape mode
         }
 

@@ -34,8 +34,8 @@ module syiro.footer {
 			}
 		}
 
-		syiro.component.componentData[componentId] = { "HTMLElement" : componentElement }; // Add the component to the componentData
-
+		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
+		
 		return { "id" : componentId, "type" : "footer" }; // Return a Component Object
 	}
 

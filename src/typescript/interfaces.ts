@@ -3,13 +3,13 @@
 */
 
 interface Object { // As ComponentObject is inherently an Object, extend the Object interface / type
-	id ?: string; // Unique Component ID. Marked as Optional since it only applies for returned Component Objects, syiro.core.componentData stores the key / val differently.
+	id ?: string; // Unique Component ID. Marked as Optional since it only applies for returned Component Objects, syiro.data.storage stores the key / val differently.
 	type : string; // Component Type (ex. header)
 	link : string; // Used for Link Properties in the Footer
 	title : string; // Used for Link Properties in the Footer
 	listeners ?: Array<string>; // Define listeners as an array of strings
 	handlers ?: Array<Function>; // Define handlers as an array of functions
-	HTMLElement ?: Element; // HTMLElement that is really an Element. Only applies in syiro.core.componentData when the component is newly generated.
+	HTMLElement ?: Element; // HTMLElement that is really an Element. Only applies in syiro.data.storage when the component is newly generated.
 }
 
 interface Document {
@@ -51,6 +51,8 @@ interface HTMLElement { // Implementation of HTMLElement
 interface Screen { // Implementation of Screen
 	orientation : string;
 	mozOrientation : string;
+	onorientationchange : any;
+	onmozorientationchange : any;
 }
 
 interface Window { // Implementation of valid spec not found in lib.d.ts

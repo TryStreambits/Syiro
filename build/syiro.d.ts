@@ -38,6 +38,8 @@ interface HTMLElement {
 interface Screen {
     orientation: string;
     mozOrientation: string;
+    onorientationchange: any;
+    onmozorientationchange: any;
 }
 interface Window {
     crypto: any;
@@ -51,6 +53,13 @@ declare module syiro.animation {
     function Animate(component: Object, properties: Object): void;
     function FadeIn(component: Object, postAnimationFunction?: Function): void;
     function FadeOut(component: Object, postAnimationFunction?: Function): void;
+}
+declare module syiro.data {
+    var storage: Object;
+    function Manage(modificationType: string, keyList: string, data?: any): any;
+    function Read(keyList: string): any;
+    function Write(keyList: string, data: any): any;
+    function Delete(keyList: string): any;
 }
 declare module syiro.component {
     var componentData: Object;
@@ -136,7 +145,6 @@ declare module syiro.player {
     function Init(component: Object): void;
     function FetchInnerContentElement(component: Object): HTMLMediaElement;
     function GetPlayerLengthInfo(component: Object): Object;
-    function TimeOrVolumeChanger(): void;
     function IsPlaying(component: Object): boolean;
     function PlayOrPause(component: Object, playButtonComponentObject?: Object): void;
     function FetchSources(component: Object): Object[];
@@ -170,7 +178,7 @@ declare module syiro.searchbox {
 }
 declare module syiro {
     function Init(): void;
-    var Define: Function;
+    var Define: typeof component.FetchComponentObject;
     var Fetch: typeof component.Fetch;
     var FetchComponentObject: typeof component.FetchComponentObject;
     var FetchDimensionsAndPosition: typeof component.FetchDimensionsAndPosition;

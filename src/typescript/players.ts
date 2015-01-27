@@ -70,21 +70,23 @@ module syiro.player {
             if (posterImageElement !== null){ // If the posterImageElement exists
                 syiro.component.CSS(playerControlArea, "opacity", "0.8"); // Set opacity to 0.8
 
-                syiro.events.Add(syiro.events.eventStrings["up"], posterImageElement, // Add mouseup, touchend, etc listeners to the posterImageElement
-                    function(){
-                        var posterImageElement : Element = arguments[0]; // Set the posterImageElement as the first argument passed
-                        var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
-                        var playerComponentObject = syiro.component.FetchComponentObject(posterImageElement.parentElement); // Fetch the Video Player Component (which is the parent of posterImageElement)
+                if (syiro.device.SupportsTouch == false){ // If the device does not support touch, allow pressing on the poster image to start the video, otherwise disallow since the user may be intending to scroll and instead start the video
+                    syiro.events.Add(syiro.events.eventStrings["up"], posterImageElement, // Add mouseup, touchend, etc listeners to the posterImageElement
+                        function(){
+                            var posterImageElement : Element = arguments[0]; // Set the posterImageElement as the first argument passed
+                            var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
+                            var playerComponentObject = syiro.component.FetchComponentObject(posterImageElement.parentElement); // Fetch the Video Player Component (which is the parent of posterImageElement)
 
-                        syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
-                        syiro.player.PlayOrPause(playerComponentObject); // Play the video
+                            syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
+                            syiro.player.PlayOrPause(playerComponentObject); // Play the video
 
-                        if (syiro.device.SupportsTouch == true){ // If the device supports touch
-                            var playerControlComponent = syiro.component.FetchComponentObject(posterImageElement.parentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Player Control
-                            syiro.playercontrol.Toggle(playerControlComponent, false); // Hide the Player Control as well
+                            if (syiro.device.SupportsTouch == true){ // If the device supports touch
+                                var playerControlComponent = syiro.component.FetchComponentObject(posterImageElement.parentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Player Control
+                                syiro.playercontrol.Toggle(playerControlComponent, false); // Hide the Player Control as well
+                            }
                         }
-                    }
-                );
+                    );
+                }
             }
 
             // #endregion
@@ -189,7 +191,29 @@ module syiro.player {
                 }
             );
 
-            syiro.events.Add(syiro.events.eventStrings["up"], playerRange, syiro.player.TimeOrVolumeChanger); // Add mouseup / touchend events to the playerRange, which calls syiro.player.TimeOrVolumeChanger
+            syiro.events.Add(syiro.events.eventStrings["up"], playerRange, // Add mouseup / touchend events to the playerRange, which callsa function to either change the time or volume
+                function(){
+                    var playerRange : HTMLInputElement = arguments[0]; // Define playerRangeElement as the Element passed to us
+                    var playerControlElement = playerRange.parentElement; // Get the Player Control Element, which is the parent of the playerRange
+
+                    var playerElement = playerControlElement.parentElement; // Get the Player Control's parent Player container
+                    var playerComponentObject : Object = syiro.component.FetchComponentObject(playerElement); // Get the Component Object of the Player
+                    var contentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(playerComponentObject); // Get the Player's Audio or Video Element
+
+                    var valueNum : any = Number(playerRange.value); // Define valueNum as "any" (actually Number), which we do calculation for later
+
+                    if (playerElement.hasAttribute("data-syiro-component-changevolume") == false){ // If we are doing a time change
+                        syiro.player.SetTime(playerComponentObject, valueNum.toFixed()); // Set the Time
+                    }
+                    else{
+                        syiro.player.SetVolume(playerComponentObject, (valueNum / 100)); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
+                    }
+
+                    if (playerElement.hasAttribute("data-syiro-component-changevolume") !== true){ // If we are not currently changing the volume
+                        playerElement.removeAttribute("data-syiro-component-status"); // Remove the status to indicate we are no longer changing the playerRange values
+                    }
+                }
+            );
 
             // #endregion
 
@@ -304,32 +328,6 @@ module syiro.player {
         }
 
         return playerLengthInfo; // Return the playerLengthInfo Object
-    }
-
-    // #endregion
-
-    // #region Player Time or Volume Changer
-
-    export function TimeOrVolumeChanger(){
-        var playerRange : HTMLInputElement = arguments[0]; // Define playerRangeElement as the Element passed to us
-        var playerControlElement = playerRange.parentElement; // Get the Player Control Element, which is the parent of the playerRange
-
-        var playerElement = playerControlElement.parentElement; // Get the Player Control's parent Player container
-        var playerComponentObject : Object = syiro.component.FetchComponentObject(playerElement); // Get the Component Object of the Player
-        var contentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(playerComponentObject); // Get the Player's Audio or Video Element
-
-        var valueNum : any = Number(playerRange.value); // Define valueNum as "any" (actually Number), which we do calculation for later
-
-        if (playerElement.hasAttribute("data-syiro-component-changevolume") == false){ // If we are doing a time change
-            syiro.player.SetTime(playerComponentObject, valueNum.toFixed()); // Set the Time
-        }
-        else{
-            syiro.player.SetVolume(playerComponentObject, (valueNum / 100)); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
-        }
-
-        if (playerElement.hasAttribute("data-syiro-component-changevolume") !== true){ // If we are not currently changing the volume
-            playerElement.removeAttribute("data-syiro-component-status"); // Remove the status to indicate we are no longer changing the playerRange values
-        }
     }
 
     // #endregion
@@ -469,23 +467,22 @@ module syiro.player {
             var sourceTagAttributes = { "src" : source}; // Create an initial source tag attributes Object that we'll pass to ElementCreator
 
             if (source.substr(-1) !== ";"){ // If the source does not end with a semi-colon, common to prevent Shoutcast browser detection
-                if ((sourceExtension !== "mov") && (sourceExtension !== "m3u8")){ // If the source extension is not mov or a m3u8
-                    sourceTagAttributes["type"] = sourceExtension; // Append videoExtension to the videoType
-                }
-                else if (sourceExtension == "m3u8"){ // If we are dealing with a playlist m3u8 (live streaming)
-                    if (type == "audio"){ // If we are dealing with an audio player
-                        sourceTagAttributes["type"] = "mp3"; // Set the type to an mp3, which is the most common audio streaming codec
-                    }
-                    else{ // If the player is video
-                        sourceTagAttributes["type"] = "mp4"; // Set the type to an mp4, which is the most common video streaming codec
-                    }
-                }
-                else if (sourceExtension == "mov"){ // If the source extension IS mov
-                    sourceTagAttributes["type"] = "quicktime"; // Append the quicktime string
-                }
+                var streamingProtocol : string = source.substr(0, source.indexOf(":")); // Get the streaming protocol (rtsp, rtmp, hls) by creating a substring, starting at 0 and ended at the protocol end mark (://)
 
-                if (sourceTagAttributes["type"] !== undefined){ // If we have defined a type for the source
-                    sourceTagAttributes["type"] = type + "/" + sourceTagAttributes["type"] // Prepend the type (audio or video) and a / delimiter
+                if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")){ // If we are working strictly with a streaming protocol and not normal HTTP (or HLS)
+                    sourceTagAttributes["type"] = streamingProtocol + "/" + sourceExtension; // Define the type as streaming protocol + sourceExtension, like rtmp/mp4
+                }
+                else{ // If we are not dealing with a streaming protocol (or are but in the form of HLS)
+                    if (sourceExtension == "m3u8"){ // If we are dealing with a playlist m3u8 (live streaming)
+                        sourceTagAttributes["type"] = "application/x-mpegurl"; // Set the type to a valid mpegurl type which is accepted by Android, iOS, etc.
+                    }
+                    else{
+                        if (sourceExtension == "mov"){ // IF the source extension is MOV
+                            sourceExtension = "quicktime"; // Change sourceExtension to quicktime to enable easier type setting
+                        }
+
+                        sourceTagAttributes["type"] = type + "/" + sourceExtension; // Append sourceExtension to the type
+                    }
                 }
             }
 
@@ -723,10 +720,8 @@ module syiro.playercontrol {
 
         componentElement.appendChild(syiro.component.Fetch(volumeButton)); // Append the volume control
 
-        syiro.component.componentData[componentId] = { // Store the Component Data of the Player Control
-            "HTMLElement" : componentElement,
-            "scaling" : {} // Define scaling as an empty Object
-        };
+
+        syiro.data.Write(componentId + "->HTMLElement", componentElement); // Store the Component HTMLElement of the Player Control
 
         return { "id" : componentId, "type" : "player-control" }; // Return a Component Object
     }
@@ -885,20 +880,22 @@ module syiro.audioplayer {
 
             componentElement.appendChild(playerControlElement); // Append the player control
 
-            syiro.component.componentData[componentId] = { // Store the Audio Player Component Element Details we generated
-                "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
-                "scaling" : { // Create a scaling details Object
-                    "initialDimensions" : [160, properties["width"]], // Set the initialDimensions to 160px height and width as properties[width]
-                    "ratio" : [0,0], // Do not scale (unless forced)
-                    "children" : { // Children that should scale with the Audio Player
-                        'div[data-syiro-component="player-control"]' : { // Player Control should scale
-                            "scaling" : { // Player Control scaling details Object
-                                "fill" : [0, 1] // Fill of 0 (maintain height) with 1.0 fill as width (100% of parent Audio Player)
+            syiro.data.Write(componentId, // Store the Audio Player Component Element Details we generated
+                {
+                    "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
+                    "scaling" : { // Create a scaling details Object
+                        "initialDimensions" : [160, properties["width"]], // Set the initialDimensions to 160px height and width as properties[width]
+                        "ratio" : [0,0], // Do not scale (unless forced)
+                        "children" : { // Children that should scale with the Audio Player
+                            'div[data-syiro-component="player-control"]' : { // Player Control should scale
+                                "scaling" : { // Player Control scaling details Object
+                                    "fill" : [0, 1] // Fill of 0 (maintain height) with 1.0 fill as width (100% of parent Audio Player)
+                                }
                             }
                         }
                     }
                 }
-            };
+            );
 
             return { "id" : componentId, "type" : "audio-player" }; // Return a Component Object
         }
@@ -991,25 +988,27 @@ module syiro.videoplayer {
             }
 
             // #endregion
-            syiro.component.componentData[componentId] = { // Store the Video Player Component Element Details we generated
-                "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
-                "scaling" : { // Create a scaling details Object
-                    "initialDimensions" : [properties["height"], properties["width"]], // Set the initialDimensions to video Height and width as video Width
-                    "ratios" : [1, 1.77], // The Video Player should scale so the ratio is 16:9 (for every 1px in height, 1.77 pixels in width)
-                    "children" : { // Children that should scale with the Video Player
-                        'img[data-syiro-minor-component="video-poster"]' : { // Video Poster should scale
-                            "scaling" : {  // Video Poster scaling details Object
-                                "fill" : [1,1]// Match the dimensions of the parent
-                            }
-                        },
-                        'div[data-syiro-component="player-control"]' : { // Player Control should scale
-                            "scaling" : { // Player Control scaling details Object
-                                "fill" : [0,1] // Fills of 0 (maintain height) with 1.0 fill as width (100% of parent Video Player)
+            syiro.data.Write(componentId, // Store the Video Player Component Element Details we generated
+                {
+                    "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
+                    "scaling" : { // Create a scaling details Object
+                        "initialDimensions" : [properties["height"], properties["width"]], // Set the initialDimensions to video Height and width as video Width
+                        "ratios" : [1, 1.77], // The Video Player should scale so the ratio is 16:9 (for every 1px in height, 1.77 pixels in width)
+                        "children" : { // Children that should scale with the Video Player
+                            'img[data-syiro-minor-component="video-poster"]' : { // Video Poster should scale
+                                "scaling" : {  // Video Poster scaling details Object
+                                    "fill" : [1,1]// Match the dimensions of the parent
+                                }
+                            },
+                            'div[data-syiro-component="player-control"]' : { // Player Control should scale
+                                "scaling" : { // Player Control scaling details Object
+                                    "fill" : [0,1] // Fills of 0 (maintain height) with 1.0 fill as width (100% of parent Video Player)
+                                }
                             }
                         }
                     }
                 }
-            };
+            );
 
             return { "id" : componentId, "type" : "video-player" }; // Return a Component Object
         }

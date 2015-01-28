@@ -136,7 +136,7 @@
 				function(x){
 					var componentObject = arguments[0];
 					var event = arguments[1];
-					var screenInfoElement = syiro.generator.ElementCreator("section", { "content" : syiro.device.orientation });
+					var screenInfoElement = syiro.generator.ElementCreator("section", { "content" : syiro.device.Orientation });
 					document.querySelector('div[data-syiro-component="page"]').insertBefore(screenInfoElement, document.querySelector('div[data-syiro-component="page"]').firstChild);
 				}
 			); // Listen to the Basic Button

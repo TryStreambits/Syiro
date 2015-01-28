@@ -92,8 +92,6 @@ module syiro.player {
                 var posterImageElement : Element = componentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
 
                 if (posterImageElement !== null){ // If the posterImageElement exists
-                    syiro.component.CSS(playerControlArea, "opacity", "0.8"); // Set opacity to 0.8
-
                     syiro.events.Add(syiro.events.eventStrings["up"], posterImageElement, // Add mouseup, touchend, etc listeners to the posterImageElement
                         function(){
                             var posterImageElement : Element = arguments[0]; // Set the posterImageElement as the first argument passed

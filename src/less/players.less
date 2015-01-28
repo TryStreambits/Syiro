@@ -67,6 +67,7 @@ div[data-syiro-component="player-control"]{
             width: 100% !important; // Have it fill the entire player-control top
             background-color: @syiroWhite;
             border: 0; // No border
+            outline: 0;
             margin: 0 !important;
             padding: 0 !important;
         }
@@ -93,18 +94,9 @@ div[data-syiro-component="player-control"]{
 
         // #endregion
 
-        // #region Range "Outer Focus" (Border around track when interacting with Element)
-
-        &:focus, &::-moz-focus-outer{ // Chrome and Firefox Border on Focus
-            border: 0 !important;
-            outline: 0 !important;
-        }
-
-        // #endregion
-
         // #region Range Thumb
 
-        .thumbProperties() {
+        .thumbProperties(){
             -moz-appearance: none !important; // No Firefox appearance
             -webkit-appearance: none !important; // No WebKit appearance
 

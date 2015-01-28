@@ -1435,7 +1435,6 @@ var syiro;
                     });
                     var posterImageElement = componentElement.querySelector('img[data-syiro-minor-component="video-poster"]');
                     if (posterImageElement !== null) {
-                        syiro.component.CSS(playerControlArea, "opacity", "0.8");
                         syiro.events.Add(syiro.events.eventStrings["up"], posterImageElement, function () {
                             var posterImageElement = arguments[0];
                             var e = arguments[1];

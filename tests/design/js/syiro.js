@@ -274,17 +274,12 @@ var syiro;
         function Scale(component, data) {
             var componentId = component["id"];
             var componentElement = syiro.component.Fetch(component);
-            var data = arguments[1];
             var userHorizontalSpace = window.screen.width;
             var parentHeight = componentElement.parentElement.clientHeight;
             var parentWidth = componentElement.parentElement.clientWidth;
-            var scalingData;
-            if (typeof data !== "undefined") {
-                scalingData = data;
-            }
             var storedScalingState = syiro.data.Read(componentId + "->scaling->state");
-            if (typeof scalingData !== "undefined") {
-                syiro.data.Write(componentId + "->scaling", scalingData);
+            if (typeof arguments[1] !== "undefined") {
+                syiro.data.Write(componentId + "->scaling", arguments[1]);
             }
             if (storedScalingState == false) {
                 storedScalingState = "initial";
@@ -363,9 +358,6 @@ var syiro;
                     for (var childSelector in potentialComponentScalableChildren) {
                         var childElement = componentElement.querySelector(childSelector);
                         var childComponent = syiro.component.FetchComponentObject(childElement);
-                        if (syiro.data.Read(childComponent["id"]) == false) {
-                            syiro.data.Write(childComponent["id"], {});
-                        }
                         syiro.data.Write(childComponent["id"] + "->scaling", syiro.data.Read(component["id"] + "->scaling->children->" + childSelector + "->scaling"));
                         childComponentsArray.push(childComponent);
                         syiro.data.Delete(component["id"] + "->scaling->children->" + childSelector);

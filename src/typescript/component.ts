@@ -221,7 +221,6 @@ module syiro.component {
 		// #region Variable Setup
 		var componentId = component["id"]; // Get the Component Id of the Component
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement
-		var data : any = arguments[1]; // Define data as any second argument passed to us
 
 		var userHorizontalSpace : number = window.screen.width; // Define userHorizontalSpace as the space the user has, in pixels, horizontally.
 		var parentHeight : number = componentElement.parentElement.clientHeight; // Set the parentHeight to the parent Element's clientHeight of the Component Element
@@ -229,18 +228,12 @@ module syiro.component {
 
 		// #endregion
 
-		var scalingData : Object; // Define scalingData as an Object passed with Scaling Data
-
-		if (typeof data !== "undefined"){ // If the optional data passed is data for scaling
-			scalingData = data; // Set the scalingData equal to the data passed
-		}
-
 		// #region Scaling Data Definition
 
 		var storedScalingState : any = syiro.data.Read(componentId + "->scaling->state"); // Define scalingState as the stored scaling state (if any)
 
-		if (typeof scalingData !== "undefined"){ // If scalingData has been defined (passed as second arg)
-			syiro.data.Write(componentId + "->scaling", scalingData); // Write the scalingData to the componentId scaling key/val
+		if (typeof arguments[1] !== "undefined"){ // If data has been defined (passed as second arg)
+			syiro.data.Write(componentId + "->scaling", arguments[1]); // Write the data to the componentId scaling key/val
 		}
 
 		if (storedScalingState == false){ // If the scaling state of this Component is not defined (like an Element that has never been scaled before) or we are forcing scaling
@@ -366,10 +359,6 @@ module syiro.component {
 				for (var childSelector in potentialComponentScalableChildren){ // For each childSelector in the children section of scaling
 					var childElement : Element = componentElement.querySelector(childSelector); // Get the childElement from componentElement based on the querySelector of the componentElement
 					var childComponent : Object = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
-
-					if (syiro.data.Read(childComponent["id"]) == false){ // If the childComponent has no data
-						syiro.data.Write(childComponent["id"], {}); // Create an empty Object for the childComponent in the syiro.data.storage
-					}
 
 					syiro.data.Write(childComponent["id"] + "->scaling", syiro.data.Read(component["id"] + "->scaling->children->" + childSelector + "->scaling")); // Write the scaling information from component->scaling->children ETC to the childComponent scaling key/val
 					childComponentsArray.push(childComponent); // Push the childComponent to the childComponentsArray Array of Objects

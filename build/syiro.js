@@ -497,8 +497,8 @@ var syiro;
         device.IsHD;
         device.IsFullHDOrAbove;
         device.Orientation;
+        device.orientation;
         device.OrientationObject = screen;
-        device.orientation = syiro.device.Orientation;
         function Detect() {
             if (typeof navigator.doNotTrack !== "undefined") {
                 syiro.device.DoNotTrack = Boolean(navigator.doNotTrack);
@@ -539,11 +539,13 @@ var syiro;
             syiro.events.eventStrings["up"].splice(syiro.events.eventStrings["up"].indexOf(eventsToRemove[1]), 1);
             syiro.device.FetchScreenDetails();
             syiro.device.Orientation = syiro.device.FetchScreenOrientation();
+            syiro.device.orientation = syiro.device.Orientation;
             syiro.events.Add("resize", window, syiro.device.FetchScreenDetails);
             var orientationChangeHandler = function () {
                 var currentOrientation = syiro.device.FetchScreenOrientation();
                 if (currentOrientation !== syiro.device.Orientation) {
                     syiro.device.Orientation = currentOrientation;
+                    syiro.device.orientation = currentOrientation;
                     var allPlayers = document.querySelectorAll('div[data-syiro-component$="player"]');
                     for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++) {
                         var thisPlayer = allPlayers[allPlayersIndex];

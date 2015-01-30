@@ -18,7 +18,7 @@ createSnapshot(){ # Create a snapshot of the branch and package it
 	cp -r src/typescript/plugins/alternativeInit.min.js ./build/active-snapshot/Syiro/ # Copy over the alternativeInit.min.js in the event someone wants it
 	cp -r src/less/fonts src/less/img README.md License.txt VERSION.txt ./build/active-snapshot/Syiro # Copy over particular non-build data to the snapshot
 	mkdir ./build/active-snapshot/Syiro/css # Make the css directory to put the fonts and img in.
-	cp -r build/syiro.min.css ./build/active-snapshot/Syiro/css/ # Move the CSS file to the css folder
+	cp -r build/syiro.css ./build/active-snapshot/Syiro/css/ # Move the CSS file to the css folder
 	mv ./build/active-snapshot/Syiro/fonts ./build/active-snapshot/Syiro/css/ # Move the fonts to the css folder
 	mv ./build/active-snapshot/Syiro/img ./build/active-snapshot/Syiro/css/ # Move the images to the css folder
  

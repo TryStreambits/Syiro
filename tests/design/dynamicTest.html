@@ -16,10 +16,11 @@
 			var generatedDropdownObject = {};
 
 			if (syiro.device.IsSubHD == false){ // If the device is NOT sub HD
+				var boldContentForListItem = syiro.generator.ElementCreator("b", {"content" : "List Item with any HTML!"});
 				generatedDropdownObject = syiro.dropdown.Generate(
 						{
 							"label" : "Test Dropdown",
-							"items" : [	{ "label" : "Test Item" }, { "label" : "Second Test Item" }	],
+							"items" : [	{ "label" : "Test Item" }, { "label" : "Second Test Item" }, { "html" : boldContentForListItem }],
 							"position" : { "vertical" : "below", "horizontal" : "center"}
 						}
 				);

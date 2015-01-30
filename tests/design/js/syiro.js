@@ -1161,31 +1161,37 @@ var syiro;
         function Generate(properties) {
             var componentId = syiro.generator.IdGen("list-item");
             var componentElement = syiro.generator.ElementCreator(componentId, "list-item");
-            for (var propertyKey in properties) {
-                if (propertyKey == "control") {
-                    if (properties["image"] == undefined) {
-                        var controlComponentObject = properties[propertyKey];
-                        if (controlComponentObject["type"] == "button") {
-                            var controlComponentElement = syiro.component.Fetch(controlComponentObject);
-                            componentElement.appendChild(controlComponentElement);
+            if (typeof properties["html"] == "undefined") {
+                for (var propertyKey in properties) {
+                    if (propertyKey == "control") {
+                        if (properties["image"] == undefined) {
+                            var controlComponentObject = properties[propertyKey];
+                            if (controlComponentObject["type"] == "button") {
+                                var controlComponentElement = syiro.component.Fetch(controlComponentObject);
+                                componentElement.appendChild(controlComponentElement);
+                            }
+                        }
+                    }
+                    else if (propertyKey == "image") {
+                        if (properties["control"] == undefined) {
+                            var imageComponent = syiro.generator.ElementCreator("img", { "src": properties["image"] });
+                            componentElement.insertBefore(imageComponent, componentElement.firstChild);
+                        }
+                    }
+                    else if (propertyKey == "label") {
+                        var labelComponent = syiro.generator.ElementCreator("label", { "content": properties["label"] });
+                        if (componentElement.querySelector("img") == null) {
+                            componentElement.insertBefore(labelComponent, componentElement.firstChild);
+                        }
+                        else {
+                            componentElement.appendChild(labelComponent);
                         }
                     }
                 }
-                else if (propertyKey == "image") {
-                    if (properties["control"] == undefined) {
-                        var imageComponent = syiro.generator.ElementCreator("img", { "src": properties["image"] });
-                        componentElement.insertBefore(imageComponent, componentElement.firstChild);
-                    }
-                }
-                else if (propertyKey == "label") {
-                    var labelComponent = syiro.generator.ElementCreator("label", { "content": properties["label"] });
-                    if (componentElement.querySelector("img") == null) {
-                        componentElement.insertBefore(labelComponent, componentElement.firstChild);
-                    }
-                    else {
-                        componentElement.appendChild(labelComponent);
-                    }
-                }
+            }
+            else {
+                componentElement.setAttribute("data-syiro-nonstrict-formatting", "");
+                componentElement.appendChild(properties["html"]);
             }
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "list-item" };

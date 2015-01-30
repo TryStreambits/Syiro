@@ -8,7 +8,7 @@ div[data-syiro-component="list"]{ // Syiro List Component
 	min-width: 200px; // 100% of the parent of the List component
 	overflow: hidden; // Hide overflow
 
-	& > div[data-syiro-component="list-item"]{ // Syiro List Item Component
+	& > div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Syiro List Item Component (Only applies if the List Item does not have the attribute nonstrict-formatting)
 		float: left;
 		display: block;
 		height: 40px;

@@ -52,33 +52,39 @@ module syiro.listitem {
 		var componentId : string = syiro.generator.IdGen("list-item"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "list-item"); // Generate a List Item Element
 
-		for (var propertyKey in properties){ // Recursive go through each propertyKey
-			if (propertyKey == "control"){ // If we are adding a control
-				if (properties["image"] == undefined){ // If we are not adding an image, then allow for adding a control
-					var controlComponentObject = properties[propertyKey]; // Get the Syiro component's Object
+		if (typeof properties["html"] == "undefined"){ // If we are not adding ANY HTML code to the List Item (therefore not needing nonstrict formatting)
+			for (var propertyKey in properties){ // Recursive go through each propertyKey
+				if (propertyKey == "control"){ // If we are adding a control
+					if (properties["image"] == undefined){ // If we are not adding an image, then allow for adding a control
+						var controlComponentObject = properties[propertyKey]; // Get the Syiro component's Object
 
-					if (controlComponentObject["type"] == "button"){ // If the component is either a basic or toggle button
-						var controlComponentElement : Element= syiro.component.Fetch(controlComponentObject); // Get the component's (HTML)Element
-						componentElement.appendChild(controlComponentElement); // Append the component to the List Item
+						if (controlComponentObject["type"] == "button"){ // If the component is either a basic or toggle button
+							var controlComponentElement : Element= syiro.component.Fetch(controlComponentObject); // Get the component's (HTML)Element
+							componentElement.appendChild(controlComponentElement); // Append the component to the List Item
+						}
+					}
+				}
+				else if (propertyKey == "image"){ // If we are adding an image
+					if (properties["control"] == undefined){ // If we are not adding a control, then allow for adding an image
+						var imageComponent : HTMLElement = syiro.generator.ElementCreator("img", { "src" : properties["image"]} ); // Create an image with the source set the properties["image"]
+						componentElement.insertBefore(imageComponent, componentElement.firstChild); // Prepend the label to the List Item component
+					}
+				}
+				else if (propertyKey == "label"){ // If we are adding a label
+					var labelComponent : HTMLElement = syiro.generator.ElementCreator("label", { "content" : properties["label"] }); // Create a label within the "label" (labelception) to hold the defined text.
+
+					if (componentElement.querySelector("img") == null){ // If we have not added an image to the List Item
+						componentElement.insertBefore(labelComponent, componentElement.firstChild); // Prepend the label to the List Item component
+					}
+					else{ // If an image does exist
+						componentElement.appendChild(labelComponent); // Append the label after the image
 					}
 				}
 			}
-			else if (propertyKey == "image"){ // If we are adding an image
-				if (properties["control"] == undefined){ // If we are not adding a control, then allow for adding an image
-					var imageComponent : HTMLElement = syiro.generator.ElementCreator("img", { "src" : properties["image"]} ); // Create an image with the source set the properties["image"]
-					componentElement.insertBefore(imageComponent, componentElement.firstChild); // Prepend the label to the List Item component
-				}
-			}
-			else if (propertyKey == "label"){ // If we are adding a label
-				var labelComponent : HTMLElement = syiro.generator.ElementCreator("label", { "content" : properties["label"] }); // Create a label within the "label" (labelception) to hold the defined text.
-
-				if (componentElement.querySelector("img") == null){ // If we have not added an image to the List Item
-					componentElement.insertBefore(labelComponent, componentElement.firstChild); // Prepend the label to the List Item component
-				}
-				else{ // If an image does exist
-					componentElement.appendChild(labelComponent); // Append the label after the image
-				}
-			}
+		}
+		else{ // If HTML is being added to the List Item
+			componentElement.setAttribute("data-syiro-nonstrict-formatting", ""); // Add the nonstrict-formatting attribute to the List Item so we know not to apply any styling
+			componentElement.appendChild(properties["html"]); // Insert the HTML (which should be an Element)
 		}
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component

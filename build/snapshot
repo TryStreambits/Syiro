@@ -12,12 +12,14 @@ createSnapshot(){ # Create a snapshot of the branch and package it
 	echo "Building Syiro snapshot as $snapshotType and v $syiroVersion"
 
 	mkdir -p "build/active-snapshot/Syiro" # Create a temporary snapshot directory
+	mkdir ./build/active-snapshot/Syiro/css # Make the css directory to put the fonts and img in.
+	mkdir ./build/active-snapshot/Syiro/js # Make the js directory to put the JS in.
+
 	echo "$syiroVersion" > VERSION.txt # Update the VERSION.txt file
 
-	cp -r build/syiro.min.js build/syiro.min.js.gz ./build/active-snapshot/Syiro # Copy over particular build content to the snapshot
-	cp -r src/typescript/plugins/alternativeInit.min.js ./build/active-snapshot/Syiro/ # Copy over the alternativeInit.min.js in the event someone wants it
+	cp -r build/syiro.min.js build/syiro.min.js.gz ./build/active-snapshot/Syiro/js/ # Copy over particular build content to the snapshot
+	cp -r src/typescript/plugins/alternativeInit.min.js ./build/active-snapshot/Syiro/js/ # Copy over the alternativeInit.min.js in the event someone wants it
 	cp -r src/less/fonts src/less/img README.md License.txt VERSION.txt ./build/active-snapshot/Syiro # Copy over particular non-build data to the snapshot
-	mkdir ./build/active-snapshot/Syiro/css # Make the css directory to put the fonts and img in.
 	cp -r build/syiro.css ./build/active-snapshot/Syiro/css/ # Move the CSS file to the css folder
 	mv ./build/active-snapshot/Syiro/fonts ./build/active-snapshot/Syiro/css/ # Move the fonts to the css folder
 	mv ./build/active-snapshot/Syiro/img ./build/active-snapshot/Syiro/css/ # Move the images to the css folder

@@ -74,6 +74,7 @@ module syiro.player {
 
                     var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]'); // Fetch the Player Control Element
                     var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
+                    var playerInputRange = playerControlElement.querySelector("input"); // Get the input range of the Player Control
 
                     // #endregion
 
@@ -82,7 +83,11 @@ module syiro.player {
                     syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime); // Update the label
 
                     if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false){ // If the user is NOT using the input range to change volume or time
-                        playerControlElement.querySelector("input").value = Math.floor(currentTime); // Set the range input to the currentTime (rounded down)
+                        var roundedDownTime : number = Math.floor(currentTime);
+                        playerInputRange.value = roundedDownTime; // Set the range input to roundedDownTime
+
+                        var priorInputSpaceWidth : number = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
+                        syiro.component.CSS(playerInputRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
                     }
                 }
             );

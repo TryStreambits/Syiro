@@ -1430,10 +1430,14 @@ var syiro;
                 var playerComponent = syiro.component.FetchComponentObject(playerComponentElement);
                 var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]');
                 var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
+                var playerInputRange = playerControlElement.querySelector("input");
                 var currentTime = playerElement.currentTime;
                 syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime);
                 if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false) {
-                    playerControlElement.querySelector("input").value = Math.floor(currentTime);
+                    var roundedDownTime = Math.floor(currentTime);
+                    playerInputRange.value = roundedDownTime;
+                    var priorInputSpaceWidth = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth);
+                    syiro.component.CSS(playerInputRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
                 }
             });
             syiro.events.Add("ended", innerContentElement, function () {

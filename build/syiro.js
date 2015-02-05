@@ -1412,6 +1412,18 @@ var syiro;
             var innerContentElement = syiro.player.FetchInnerContentElement(component);
             var playerControlArea = componentElement.querySelector('div[data-syiro-component="player-control"]');
             var playerControlComponent = syiro.component.FetchComponentObject(playerControlArea);
+            syiro.events.Add("durationchange", innerContentElement, function () {
+                var playerElement = arguments[0];
+                var playerComponentElement = playerElement.parentElement;
+                var playerComponent = syiro.component.FetchComponentObject(playerComponentElement);
+                var playerControlComponent = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-component="player-control"]'));
+                var playerRange = playerComponentElement.querySelector('input[type="range"]');
+                var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(playerComponent);
+                for (var playerRangeAttribute in playerMediaLengthInformation) {
+                    playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]);
+                }
+                syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
+            });
             syiro.events.Add("timeupdate", innerContentElement, function () {
                 var playerElement = arguments[0];
                 var playerComponentElement = playerElement.parentElement;
@@ -1423,9 +1435,12 @@ var syiro;
                 if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false) {
                     playerControlElement.querySelector("input").value = Math.floor(currentTime);
                 }
-                if (playerElement.ended == true) {
-                    syiro.player.Reset(playerComponent);
-                }
+            });
+            syiro.events.Add("ended", innerContentElement, function () {
+                var playerElement = arguments[0];
+                var playerComponentElement = playerElement.parentElement;
+                var playerComponent = syiro.component.FetchComponentObject(playerComponentElement);
+                syiro.player.Reset(playerComponent);
             });
             if (component["type"] == "video-player") {
                 if (syiro.device.SupportsTouch == false) {
@@ -1462,7 +1477,7 @@ var syiro;
                         syiro.playercontrol.Toggle(playerControlComponent);
                     }
                 });
-                syiro.events.Add("contextmenu", componentElement, function () {
+                syiro.events.Add("contextmenu", innerContentElement, function () {
                     var e = arguments[1];
                     e.preventDefault();
                 });
@@ -1593,18 +1608,11 @@ var syiro;
                 }
                 var playButton = syiro.component.Fetch(playButtonComponentObject);
                 if (innerContentElement.currentTime == 0) {
-                    var playerControlComponent = syiro.component.FetchComponentObject(playButton.parentElement);
                     var posterImageElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]');
                     if (posterImageElement !== null) {
                         syiro.component.CSS(posterImageElement, "visibility", "hidden");
-                        syiro.component.CSS(playerControlComponent, "opacity", false);
+                        syiro.component.CSS(playButton.parentElement, "opacity", false);
                     }
-                    var playerRange = playerComponentElement.querySelector('input[type="range"]');
-                    var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(component);
-                    for (var playerRangeAttribute in playerMediaLengthInformation) {
-                        playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]);
-                    }
-                    syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
                 }
                 if (innerContentElement.paused !== true) {
                     innerContentElement.pause();

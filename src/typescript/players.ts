@@ -19,43 +19,93 @@ module syiro.player {
         var innerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Fetch the Audio or Video Player Element
 
         // #region Player Controls List
+
         var playerControlArea = componentElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control section
         var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlArea); // Get the Player Control Component Object
 
         // #endregion
 
-        // #region Audio / Video Time Updating
+        // #region Audio / Video Player Timing Events
 
-        syiro.events.Add("timeupdate", innerContentElement, // Add an event listener to track timeupdate
-            function(){
-                // #region Player Component & Element Defining
+            // #region Audio / Video Duration Changed
+            // This event is triggered when the audio or video content is first initialized as well as when the source is changed and therefore duration changed.
 
-                var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
-                var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
-                var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
+            syiro.events.Add("durationchange", innerContentElement, // Add an event listener to the audio / video durationchange
+                function(){
+                    // #region Player Component & Element Defining
 
-                // #endregion
+                    var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
+                    var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
+                    var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
+                    var playerControlComponent : Object = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-component="player-control"]')); // Get the Player Control Component
 
-                // #region Player Control Component & Element Defining
+                    // #endregion
 
-                var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]'); // Fetch the Player Control Element
-                var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
+                    // #region Player Range Configuration
 
-                // #endregion
+                    var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
+                    var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(playerComponent); // Get information about the appropriate settings for the input range
 
-                var currentTime = playerElement.currentTime; // Get the currentTime
+                    for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
+                        playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
+                    }
 
-                syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime); // Update the label
+                    // #endregion
 
-                if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false){ // If the user is NOT using the input range to change volume or time
-                    playerControlElement.querySelector("input").value = Math.floor(currentTime); // Set the range input to the currentTime (rounded down)
+                    syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
                 }
+            );
 
-                if (playerElement.ended == true){ // If playback has ended
+            // #endregion
+
+            // #region Audio / Video Time Updating
+
+            syiro.events.Add("timeupdate", innerContentElement, // Add an event listener to track timeupdate
+                function(){
+                    // #region Player Component & Element Defining
+
+                    var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
+                    var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
+                    var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
+
+                    // #endregion
+
+                    // #region Player Control Component & Element Defining
+
+                    var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]'); // Fetch the Player Control Element
+                    var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
+
+                    // #endregion
+
+                    var currentTime = playerElement.currentTime; // Get the currentTime
+
+                    syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime); // Update the label
+
+                    if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false){ // If the user is NOT using the input range to change volume or time
+                        playerControlElement.querySelector("input").value = Math.floor(currentTime); // Set the range input to the currentTime (rounded down)
+                    }
+                }
+            );
+
+            // #endregion
+
+            // #region Audio / Video Time Ending
+
+            syiro.events.Add("ended", innerContentElement, // Add an event listener to track when the content ends
+                function(){
+                    // #region Player Component & Element Defining
+
+                    var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
+                    var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
+                    var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
+
+                    // #endregion
+
                     syiro.player.Reset(playerComponent); // Reset the Player
                 }
-            }
-        );
+            );
+
+            // #endregion
 
         // #endregion
 
@@ -131,7 +181,7 @@ module syiro.player {
 
             // #region Video ContextMenu Prevention
 
-            syiro.events.Add("contextmenu", componentElement,
+            syiro.events.Add("contextmenu", innerContentElement,
                 function(){
                     var e : Event = arguments[1]; // Get the Mouse Event typically passed to the function
                     e.preventDefault();
@@ -359,31 +409,16 @@ module syiro.player {
             var playButton : Element = syiro.component.Fetch(playButtonComponentObject); // Get the Play Button Element
 
             if (innerContentElement.currentTime == 0){ // If the video current time is zero when played
-                var playerControlComponent : Object = syiro.component.FetchComponentObject(playButton.parentElement); // Get the Player Control Component based on the Play Button's Parent Element
-
                 // #region Poster Image Hiding
 
                 var posterImageElement : HTMLElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
 
                 if (posterImageElement !== null){ // If the posterImageElement is defined
                     syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
-                    syiro.component.CSS(playerControlComponent, "opacity", false); // Remove opacity setting
+                    syiro.component.CSS(playButton.parentElement, "opacity", false); // Remove opacity setting
                 }
 
                 // #endregion
-
-                // #region Player Range Configuration
-
-                var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
-                var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(component); // Get information about the appropriate settings for the input range
-
-                for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
-                    playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
-                }
-
-                // #endregion
-
-                syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
             }
 
             if (innerContentElement.paused !== true){ // If the audio or video Element is playing

@@ -19,7 +19,7 @@ module syiro.dropdown {
 	export function Generate(properties : Object) : Object { // Generate a Dropdown Component and return a Component Object
 		if ((typeof properties["items"] !== "undefined") || (typeof properties["list"] !== "undefined")){ // If the necessary List or List Item(s) Object(s) are provided
 			var componentId : string = syiro.generator.IdGen("dropdown"); // Generate a component Id
-			var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "dropdown"); // Generate a Dropdown Element
+			var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "dropdown", { "aria-readonly" : "true", "role" : "combobox" }); // Generate a Dropdown Element with the aria-readonly set to true and role of combobox (for ARIA)
 
 			// #region Dropdown Creation
 
@@ -53,6 +53,8 @@ module syiro.dropdown {
 			var listComponentElement : Element = syiro.component.Fetch(listComponent); // Fetch the List Component Element
 			document.querySelector("body").appendChild(listComponentElement); // Append the List Element to the end of the document
 			listComponentElement.setAttribute("data-syiro-component-owner", componentId); // Set the List's owner to be the Dropdown
+
+			componentElement.setAttribute("aria-owns", listComponent["id"]); // Define the aria-owns, setting it to the List Component to declare for ARIA that the Dropbox Component "owns" the List Component
 
 			// #endregion
 

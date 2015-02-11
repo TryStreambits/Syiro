@@ -147,6 +147,10 @@ module syiro.events {
 
                 if (component["type"] !== "searchbox"){ // If we are adding listeners to a Component that is NOT a Searchbox (which uses a unique listener)
                     listeners = syiro.events.eventStrings["up"]; // Use click / touch related events
+
+                    if (component["type"] == "button"){ // If we are adding listeners to a Button Component specifically
+                        listeners.push("keyup"); // Add keyup as an event listener for accessibility reasons
+                    }
                 }
                 else{ // If the Component IS a Searchbox
                     listeners = ["keyup"]; // Use the keyup listener

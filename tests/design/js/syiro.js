@@ -720,6 +720,9 @@ var syiro;
                     listenerCallback = args[1];
                     if (component["type"] !== "searchbox") {
                         listeners = syiro.events.eventStrings["up"];
+                        if (component["type"] == "button") {
+                            listeners.push("keyup");
+                        }
                     }
                     else {
                         listeners = ["keyup"];
@@ -937,7 +940,7 @@ var syiro;
     (function (header) {
         function Generate(properties) {
             var componentId = syiro.generator.IdGen("header");
-            var componentElement = syiro.generator.ElementCreator(componentId, "header");
+            var componentElement = syiro.generator.ElementCreator(componentId, "header", { "role": "navigation" });
             for (var propertyKey in properties) {
                 if (propertyKey == "items") {
                     for (var individualItemIndex in properties["items"]) {
@@ -1089,7 +1092,8 @@ var syiro;
             }
             var componentId = syiro.generator.IdGen("button");
             var componentElement = syiro.generator.ElementCreator(componentId, "button", {
-                "data-syiro-component-type": properties["type"]
+                "data-syiro-component-type": properties["type"],
+                "role": "button"
             });
             for (var propertyKey in properties) {
                 if ((propertyKey == "icon") && (properties["type"] == "basic")) {
@@ -1136,7 +1140,7 @@ var syiro;
     (function (list) {
         function Generate(properties) {
             var componentId = syiro.generator.IdGen("list");
-            var componentElement = syiro.generator.ElementCreator(componentId, "list");
+            var componentElement = syiro.generator.ElementCreator(componentId, "list", { "aria-live": "polite", "id": componentId, "role": "listbox" });
             if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)) {
                 for (var individualItemIndex in properties["items"]) {
                     var individualItem = properties["items"][individualItemIndex];
@@ -1160,7 +1164,7 @@ var syiro;
     (function (listitem) {
         function Generate(properties) {
             var componentId = syiro.generator.IdGen("list-item");
-            var componentElement = syiro.generator.ElementCreator(componentId, "list-item");
+            var componentElement = syiro.generator.ElementCreator(componentId, "list-item", { "role": "option" });
             if (typeof properties["html"] == "undefined") {
                 for (var propertyKey in properties) {
                     if (propertyKey == "control") {
@@ -1266,7 +1270,7 @@ var syiro;
         function Generate(properties) {
             if ((typeof properties["items"] !== "undefined") || (typeof properties["list"] !== "undefined")) {
                 var componentId = syiro.generator.IdGen("dropdown");
-                var componentElement = syiro.generator.ElementCreator(componentId, "dropdown");
+                var componentElement = syiro.generator.ElementCreator(componentId, "dropdown", { "aria-readonly": "true", "role": "combobox" });
                 if (properties["image"] !== undefined) {
                     var primaryImage = syiro.generator.ElementCreator("img", { "src": properties["image"] });
                     componentElement.appendChild(primaryImage);
@@ -1288,6 +1292,7 @@ var syiro;
                 var listComponentElement = syiro.component.Fetch(listComponent);
                 document.querySelector("body").appendChild(listComponentElement);
                 listComponentElement.setAttribute("data-syiro-component-owner", componentId);
+                componentElement.setAttribute("aria-owns", listComponent["id"]);
                 if (properties["position"] == undefined) {
                     properties["position"] = ["below", "center"];
                 }
@@ -2161,7 +2166,7 @@ var syiro;
     (function (searchbox) {
         function Generate(properties) {
             var componentId = syiro.generator.IdGen("searchbox");
-            var componentElement = syiro.generator.ElementCreator(componentId, "searchbox");
+            var componentElement = syiro.generator.ElementCreator(componentId, "searchbox", { "aria-autocomplete": "list", "role": "textbox" });
             var searchboxComponentData = {};
             if (properties == undefined) {
                 properties = {};
@@ -2195,6 +2200,7 @@ var syiro;
                 }
                 var searchSuggestionsList = syiro.list.Generate({ "items": listItems });
                 var searchSuggestionsListElement = syiro.component.Fetch(searchSuggestionsList);
+                componentElement.setAttribute("aria-owns", searchSuggestionsList["id"]);
                 searchSuggestionsListElement.setAttribute("data-syiro-component-owner", componentId);
                 document.querySelector("body").appendChild(searchSuggestionsListElement);
                 if (typeof properties["preseed"] !== "undefined") {

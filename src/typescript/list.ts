@@ -13,7 +13,7 @@ module syiro.list {
 
 	export function Generate(properties : Object) : Object { // Generate a List Component and return a Component Object
 		var componentId : string = syiro.generator.IdGen("list"); // Generate a component Id
-		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "list"); // Generate a List Element
+		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "list", { "aria-live" : "polite", "id" : componentId, "role" : "listbox" }); // Generate a List Element with an ID and listbox role for ARIA purposes
 
 		if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)){ // If we are adding List Items
 			for (var individualItemIndex in properties["items"]){ // For each list item in navigationItems Object array
@@ -50,7 +50,7 @@ module syiro.listitem {
 
 	export function Generate(properties : Object) : Object { // Generate a ListItem Component and return a Component Object
 		var componentId : string = syiro.generator.IdGen("list-item"); // Generate a component Id
-		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "list-item"); // Generate a List Item Element
+		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "list-item", { "role" : "option" }); // Generate a List Item Element with the role as "option" for ARIA
 
 		if (typeof properties["html"] == "undefined"){ // If we are not adding ANY HTML code to the List Item (therefore not needing nonstrict formatting)
 			for (var propertyKey in properties){ // Recursive go through each propertyKey

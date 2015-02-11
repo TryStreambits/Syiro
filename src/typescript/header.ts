@@ -11,7 +11,7 @@ module syiro.header {
 
 	export function Generate(properties : Object) : Object { // Generate a Header Component and return a Component Object
 		var componentId : string = syiro.generator.IdGen("header"); // Generate a component Id
-		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "header"); // Generate a Header Element
+		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "header", { "role" : "navigation" }); // Generate a Header Element with the role of "navigation" (for ARIA) since the Header is typically used for navigational items
 
 		for (var propertyKey in properties){ // Recursive go through each propertyKey
 			if (propertyKey == "items"){ // If we are adding items to the Header
@@ -52,7 +52,7 @@ module syiro.header {
 		}
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
-		
+
 		return { "id" : componentId, "type" : "header" }; // Return a Component Object
 	}
 

@@ -17,7 +17,8 @@ module syiro.button {
 		var componentId : string = syiro.generator.IdGen("button"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "button", // Generate a Button Element
 			{
-				"data-syiro-component-type" : properties["type"] // Be more granular with exactly what type of Button this is
+				"data-syiro-component-type" : properties["type"], // Be more granular with exactly what type of Button this is
+				"role" : "button" // Define the ARIA role as button
 			}
 		);
 

@@ -13,7 +13,7 @@ module syiro.searchbox {
 
 	export function Generate(properties : Object) : Object { // Generate a Searchbox Component and return a Component Object
 		var componentId : string = syiro.generator.IdGen("searchbox"); // Generate a component Id
-		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "searchbox"); // Generate a Searchbox Element
+		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "searchbox", { "aria-autocomplete" : "list", "role" : "textbox" }); // Generate a Searchbox Element with the ARIA aria-autocomplete to List (to imply there is a List of suggestions) and textbox role
 		var searchboxComponentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored via syiro.data
 
 		if (properties == undefined){ // If no properties were passed during the Generate call
@@ -57,7 +57,9 @@ module syiro.searchbox {
 			var searchSuggestionsList : Object = syiro.list.Generate( { "items" : listItems }); // Generate a List with the items provided (if any)
 			var searchSuggestionsListElement : Element = syiro.component.Fetch(searchSuggestionsList); // Get the List Component Element
 
+			componentElement.setAttribute("aria-owns", searchSuggestionsList["id"]); // Define the aria-owns, setting it to the List Component to declare for ARIA that the Searchbox Component "owns" the List Component
 			searchSuggestionsListElement.setAttribute("data-syiro-component-owner", componentId); // Set the List's Component owner to be the component Id
+
 			document.querySelector("body").appendChild(searchSuggestionsListElement); // Append the List Element to the end of the document
 
 			if (typeof properties["preseed"] !== "undefined"){ // If a preseed []string is provided

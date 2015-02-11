@@ -2,6 +2,8 @@
 This is the module for render-oriented functionality for Components, such as positioning.
 */
 
+/// <reference path="component.ts" />
+
 module syiro.render {
 
     // #region Positioning of Components or Elements

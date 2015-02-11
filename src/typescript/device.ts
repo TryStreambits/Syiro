@@ -2,6 +2,7 @@
  This is the module for information and functionality Syiro provides regarding the device using Syiro.
 */
 
+/// <reference path="events.ts" />
 /// <reference path="interfaces.ts" />
 
 // #region Syiro Device Information and Functionality

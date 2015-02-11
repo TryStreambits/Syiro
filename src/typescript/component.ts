@@ -3,6 +3,7 @@
 */
 
 /// <reference path="data.ts" />
+/// <reference path="events.ts" />
 /// <reference path="interfaces.ts" />
 
 module syiro.component {

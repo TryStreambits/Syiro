@@ -2,7 +2,9 @@
     This is the module for Syiro Component and Generic Element Event Handling
 */
 
+/// <reference path="animation.ts" />
 /// <reference path="component.ts" />
+/// <reference path="generator.ts" />
 /// <reference path="interfaces.ts" />
 
 module syiro.events {

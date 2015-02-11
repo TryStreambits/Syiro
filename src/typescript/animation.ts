@@ -2,6 +2,7 @@
     This is the module for animation in Syiro
 */
 
+/// <reference path="component.ts" />
 /// <reference path="interfaces.ts" />
 
 // #region Syiro Animation System

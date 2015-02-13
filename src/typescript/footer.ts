@@ -16,11 +16,12 @@ module syiro.footer {
 		for (var propertyKey in properties){ // Recursive go through each propertyKey
 			if (propertyKey == "items"){ // If we are adding items to the Footer
 				for (var individualItem in properties["items"]){ // For each individualItem in navigationItems Object array
-					if (properties["items"][individualItem]["type"] == "link"){ // If we are adding a link
+					var individualItem : any = properties["items"][individualItem]; // Get the individualItem
+					if (syiro.component.IsComponentObject(individualItem) == false){ // If we are adding a link
 						var generatedElement : HTMLElement = syiro.generator.ElementCreator("a", // Generate a generic link element
 							{
-								"href" : properties["items"][individualItem]["link"], // Set the href (link)
-								"content" : properties["items"][individualItem]["content"] // Also set the inner content of the <a> tag to title
+								"href" : individualItem["link"], // Set the href (link)
+								"content" : individualItem["content"] // Also set the inner content of the <a> tag to title
 							}
 						);
 
@@ -35,7 +36,7 @@ module syiro.footer {
 		}
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
-		
+
 		return { "id" : componentId, "type" : "footer" }; // Return a Component Object
 	}
 

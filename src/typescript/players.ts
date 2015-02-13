@@ -49,6 +49,8 @@ module syiro.player {
                     var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
                     var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(playerComponent); // Get information about the appropriate settings for the input range
 
+                    playerMediaLengthInformation["value"] = "0";
+
                     for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
                         playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
                     }
@@ -270,6 +272,9 @@ module syiro.player {
                     else{ // If we are doing a volume change
                         syiro.player.SetVolume(playerComponent, (valueNum / 100)); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
                     }
+
+                    var priorInputSpaceWidth : number = Math.round((valueNum / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
+                    syiro.component.CSS(playerRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
                 }
             );
 
@@ -307,6 +312,7 @@ module syiro.player {
                         volumeButton.removeAttribute("data-syiro-component-status"); // Remove component-status to imply volume icon is not active
 
                         playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent); // Get a returned Object with the max the input range should be, as well as a reasonable, pre-calculated amount of steps.
+                        playerRange.value = playerContentElement.currentTime; // Set the playerRange value to the currentTime
 
                         syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false); // Set the IsChangingInputValue to infer we are no longer changing the input value
                         syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", false); // Set the IsChangingVolume to false to infer we are no longer changing the volume
@@ -315,6 +321,9 @@ module syiro.player {
                     for (var playerRangeAttribute in playerRangeAttributes){ // For each attribute defined in the playerRangeAttributes Object
                         playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]); // Set the attribute on the playerRange
                     }
+
+                    var priorInputSpaceWidth : number = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
+                    syiro.component.CSS(playerRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
                 }
             );
 
@@ -416,18 +425,16 @@ module syiro.player {
 
             var playButton : Element = syiro.component.Fetch(playButtonComponentObject); // Get the Play Button Element
 
-            if (innerContentElement.currentTime == 0){ // If the video current time is zero when played
-                // #region Poster Image Hiding
+            // #region Poster Image Hiding
 
-                var posterImageElement : HTMLElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
+            var posterImageElement : HTMLElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
 
-                if (posterImageElement !== null){ // If the posterImageElement is defined
-                    syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
-                    syiro.component.CSS(playButton.parentElement, "opacity", false); // Remove opacity setting
-                }
-
-                // #endregion
+            if (posterImageElement !== null){ // If the posterImageElement is defined
+                syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
+                syiro.component.CSS(playButton.parentElement, "opacity", false); // Remove opacity setting
             }
+
+            // #endregion
 
             if (innerContentElement.paused !== true){ // If the audio or video Element is playing
                 innerContentElement.pause(); // Pause the audio or video Element

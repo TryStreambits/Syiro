@@ -22,31 +22,59 @@ module syiro.button {
 			}
 		);
 
-		for (var propertyKey in properties){ // Recursive go through each propertyKey
-			if ((propertyKey == "icon") && (properties["type"] == "basic")){ // If we are adding an icon and the button type is basic
-				syiro.component.CSS(componentElement, "background-image", "url(" + properties["icon"] + ")"); // Set the backgroundImage to the icon URL specified
+		if (properties["type"] == "basic"){ // If this is a Basic Button that is being generated
+			if (typeof properties["icon"] == "string"){ // If an icon is defined and it is a string
+				syiro.component.CSS(componentElement, "background-image", 'url("' + properties["icon"] + '")'); // Set the backgroundImage to the icon URL specified
+				delete properties["icon"]; // Remove the "icon" key
 			}
-			else if (propertyKey == "content"){ // If we are adding a label
+
+			if (typeof properties["content"] == "string"){ // If content is defined and it is a string
 				componentElement.textContent = properties["content"]; // Set the textContent of the button
+				delete properties["icon"]; // Remove the "content" key
 			}
-			else if ((propertyKey == "type") && (properties["type"] == "toggle")) { // If the Button type is toggle
-				var buttonToggleAttributes = { "data-syiro-minor-component" : "buttonToggle"}; // Create an Object to hold the attributes we'll pass when creating the buttonToggle
+		}
+		else{ // If this is a Toggle Button that is being generated
+			var buttonToggleAttributes = { "data-syiro-minor-component" : "buttonToggle"}; // Create an Object to hold the attributes we'll pass when creating the buttonToggle
 
-				if (properties["default"] == true){ // If a default state for the button is defined as true (already active)
-					buttonToggleAttributes["data-syiro-component-status"] = "true"; // Add the data-syiro-component-status attribute with "true" as the value
-				}
+			if ((typeof properties["default"] == "boolean") && (properties["default"] == true)){ // If a default state for the button is defined and is defined as true (already active)
+				buttonToggleAttributes["data-syiro-component-status"] = "true"; // Add the data-syiro-component-status attribute with "true" as the value
+				delete properties["default"]; // Remove the "content" key
+			}
 
-				var buttonToggle = syiro.generator.ElementCreator("div", buttonToggleAttributes); // Create the buttonToggle of the Toggle Button
-				componentElement.appendChild(buttonToggle); // Append the buttonToggle to the toggle button
-			}
-			else{ // If it is none of the above properties
-				componentElement.setAttribute(propertyKey, properties[propertyKey]); // Treat it like an attribute
-			}
+			var buttonToggle = syiro.generator.ElementCreator("div", buttonToggleAttributes); // Create the buttonToggle of the Toggle Button
+			componentElement.appendChild(buttonToggle); // Append the buttonToggle to the toggle button
+		}
+
+		delete properties["type"]; // Remove the "type" key
+
+		for (var propertyKey in properties){ // Recursive go through any other attributes that needs to be set.
+			componentElement.setAttribute(propertyKey, properties[propertyKey]); // Treat it like an attribute
 		}
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 
 		return { "id" : componentId, "type" : "button" }; // Return a Component Object
+	}
+
+	// #endregion
+
+	// #region Function for setting the icon of a Button
+
+	export function SetIcon(component : Object, content : string) : boolean { // Returns boolean value in relation to success
+		var setSucceeded : boolean; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
+
+		var componentElement = syiro.component.Fetch(component); // Get the componentElement
+
+		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") == "basic")){ // If the button exists in syiro.data.storage or DOM AND button is "basic" rather than toggle
+			syiro.component.CSS(componentElement, "background-image", 'url("' + content + '")'); // Set the backgroundImage to the content specified
+			syiro.component.Update(component["id"] + "->HTMLElement", componentElement); // Update the storedComponent (if necessary)
+			setSucceeded = true; // Define setSucceeded as true
+		}
+		else{ // If it is NOT a basic button
+			setSucceeded = false; // Define setSucceeded as false
+		}
+
+		return setSucceeded; // Return the boolean value
 	}
 
 	// #endregion

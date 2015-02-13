@@ -1,6 +1,6 @@
 /*
  This is the module for Syiro Searchbox component.
- */
+*/
 
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />

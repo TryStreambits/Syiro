@@ -1,54 +1,5 @@
 var syiro;
 (function (syiro) {
-    var animation;
-    (function (animation) {
-        function Animate(component, properties) {
-            var componentElement = syiro.component.Fetch(component);
-            if ((componentElement !== null) && (typeof properties["animation"] == "string")) {
-                if (typeof properties["duration"] == "undefined") {
-                    properties["duration"] = 250;
-                }
-                var postAnimationFunction = properties["function"];
-                if (typeof properties["function"] !== "undefined") {
-                    var elementTimeoutId = window.setTimeout(function () {
-                        var component = arguments[0];
-                        var componentElement = syiro.component.Fetch(component);
-                        var postAnimationFunction = arguments[1];
-                        var timeoutId = syiro.data.Read(component["id"] + "->AnimationTimeoutId");
-                        syiro.data.Delete(component["id"] + "->AnimationTimeoutId");
-                        window.clearTimeout(timeoutId);
-                        postAnimationFunction(component);
-                    }.bind(syiro, component, postAnimationFunction), properties["duration"]);
-                    syiro.data.Write(component["id"] + "->AnimationTimeoutId", elementTimeoutId);
-                }
-                if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
-                    var tempElement = componentElement;
-                    componentElement = tempElement.querySelector('div[data-syiro-minor-component="buttonToggle"]');
-                }
-                componentElement.setAttribute("class", properties["animation"]);
-            }
-        }
-        animation.Animate = Animate;
-        function FadeIn(component, postAnimationFunction) {
-            syiro.animation.Animate(component, {
-                "animation": "fade-in-animation",
-                "duration": 125,
-                "function": postAnimationFunction
-            });
-        }
-        animation.FadeIn = FadeIn;
-        function FadeOut(component, postAnimationFunction) {
-            syiro.animation.Animate(component, {
-                "animation": "fade-out-animation",
-                "duration": 125,
-                "function": postAnimationFunction
-            });
-        }
-        animation.FadeOut = FadeOut;
-    })(animation = syiro.animation || (syiro.animation = {}));
-})(syiro || (syiro = {}));
-var syiro;
-(function (syiro) {
     var data;
     (function (_data) {
         _data.storage = {};
@@ -112,6 +63,329 @@ var syiro;
         }
         _data.Delete = Delete;
     })(data = syiro.data || (syiro.data = {}));
+})(syiro || (syiro = {}));
+var syiro;
+(function (syiro) {
+    var generator;
+    (function (generator) {
+        generator.lastUniqueIds = {};
+        function IdGen(type) {
+            var lastUniqueIdOfType;
+            if (syiro.generator.lastUniqueIds[type] == undefined) {
+                lastUniqueIdOfType = 0;
+            }
+            else {
+                lastUniqueIdOfType = syiro.generator.lastUniqueIds[type];
+            }
+            var newUniqueIdOfType = lastUniqueIdOfType + 1;
+            syiro.generator.lastUniqueIds[type] = newUniqueIdOfType;
+            return (type + newUniqueIdOfType.toString());
+        }
+        generator.IdGen = IdGen;
+        function ElementCreator() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var attributes;
+            var generatedElement;
+            if (((args.length == 2) && (typeof args[1] == "string")) || (args.length == 3)) {
+                var componentId = args[0];
+                var componentType = args[1];
+                attributes = args[2];
+                if ((componentType == "header") || (componentType == "footer")) {
+                    generatedElement = document.createElement(componentType);
+                }
+                else if (componentType == "searchbox") {
+                    generatedElement = document.createElement("input");
+                    generatedElement.setAttribute("type", "text");
+                }
+                else {
+                    generatedElement = document.createElement("div");
+                }
+                generatedElement.setAttribute("data-syiro-component-id", componentId);
+                generatedElement.setAttribute("data-syiro-component", componentType);
+            }
+            else {
+                attributes = args[1];
+                generatedElement = document.createElement(args[0]);
+            }
+            if (attributes !== undefined) {
+                for (var attributeKey in attributes) {
+                    var attributeValue = attributes[attributeKey];
+                    if (attributeKey !== "content") {
+                        if (attributeKey == "content-attr") {
+                            attributeKey = "content";
+                        }
+                        generatedElement.setAttribute(attributeKey, attributeValue);
+                    }
+                    else {
+                        var innerComponentContent = attributeValue;
+                        innerComponentContent = innerComponentContent.replace("<", "");
+                        innerComponentContent = innerComponentContent.replace(">", "");
+                        innerComponentContent = innerComponentContent.replace("&lt;", "");
+                        innerComponentContent = innerComponentContent.replace("&gt;", "");
+                        generatedElement.textContent = innerComponentContent;
+                    }
+                }
+            }
+            return generatedElement;
+        }
+        generator.ElementCreator = ElementCreator;
+    })(generator = syiro.generator || (syiro.generator = {}));
+})(syiro || (syiro = {}));
+var syiro;
+(function (syiro) {
+    var events;
+    (function (events) {
+        events.eventStrings = {
+            "down": ["mousedown", "touchstart"],
+            "up": ["mouseup", "touchend"],
+            "fullscreenchange": ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"],
+            "orientationchange": ["orientationchange", "mozorientationchange", "msorientationchange"]
+        };
+        function Handler() {
+            var component = arguments[0];
+            var eventData = arguments[1];
+            var componentId;
+            var componentElement;
+            var passableValue = null;
+            var listener = (eventData.type).toLowerCase().slice(0, 2).replace("on", "") + (eventData.type).toLowerCase().slice(2);
+            if (syiro.component.IsComponentObject(component)) {
+                componentId = component["id"];
+                componentElement = syiro.component.Fetch(component);
+            }
+            else {
+                var componentType = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase();
+                if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
+                    if (component.hasAttribute("data-syiro-component-id")) {
+                        componentId = component.getAttribute("data-syiro-component-id");
+                    }
+                    else {
+                        if (component.hasAttribute("id")) {
+                            componentId = component.getAttribute("id");
+                        }
+                        else {
+                            componentId = syiro.generator.IdGen(component.tagName.toLowerCase());
+                        }
+                        component.setAttribute("data-syiro-component-id", componentId);
+                    }
+                }
+                else if (component == document) {
+                    componentId = "document";
+                }
+                else {
+                    componentId = componentType;
+                }
+                componentElement = component;
+            }
+            var animationString = null;
+            if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
+                if (componentElement.hasAttribute("data-syiro-component-status") == false) {
+                    animationString = "toggle-forward-animation";
+                    passableValue = true;
+                }
+                else {
+                    animationString = "toggle-backward-animation";
+                    passableValue = false;
+                }
+            }
+            else if (component["type"] == "searchbox") {
+                passableValue = componentElement.value;
+            }
+            else {
+                passableValue = eventData;
+            }
+            if (syiro.data.Read(componentId + "->ignoreClick") == false) {
+                if (animationString !== null) {
+                    syiro.animation.Animate(component, {
+                        "animation": animationString,
+                        "function": function (component) {
+                            var buttonElement = syiro.component.Fetch(component);
+                            if (buttonElement.hasAttribute("data-syiro-component-status") == false) {
+                                buttonElement.setAttribute("data-syiro-component-status", "true");
+                            }
+                            else {
+                                buttonElement.removeAttribute("data-syiro-component-status");
+                            }
+                        }
+                    });
+                }
+                var functionsForListener = syiro.data.Read(componentId + "->handlers->" + listener);
+                for (var individualFunctionId in functionsForListener) {
+                    functionsForListener[individualFunctionId].call(syiro, component, passableValue);
+                }
+                if (listener.indexOf("touch") == 0) {
+                    syiro.data.Write(componentId + "->ignoreClick", true);
+                    var timeoutId = window.setTimeout(function () {
+                        var componentId = arguments[0];
+                        syiro.data.Delete(componentId + "->ignoreClick");
+                        window.clearTimeout(syiro.data.Read(componentId + "->ignoreClick-TimeoutId"));
+                    }.bind(this, componentId), 350);
+                    syiro.data.Write(componentId + "->ignoreClick-TimeoutId", timeoutId);
+                }
+            }
+        }
+        events.Handler = Handler;
+        function Add() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var allowListening = true;
+            var componentId;
+            var listeners;
+            var component;
+            var listenerCallback;
+            if ((args.length == 2) || (args.length == 3)) {
+                if (args.length == 2) {
+                    component = args[0];
+                    listenerCallback = args[1];
+                    if (component["type"] !== "searchbox") {
+                        listeners = syiro.events.eventStrings["up"];
+                        if (component["type"] == "button") {
+                            listeners.push("keyup");
+                        }
+                    }
+                    else {
+                        listeners = ["keyup"];
+                    }
+                }
+                else {
+                    listeners = args[0];
+                    component = args[1];
+                    listenerCallback = args[2];
+                }
+                if (typeof listeners == "string") {
+                    listeners = listeners.trim().split(" ");
+                }
+                var componentElement;
+                if (syiro.component.IsComponentObject(component)) {
+                    componentId = component["id"];
+                    componentElement = syiro.component.Fetch(component);
+                    if (component["type"] == "list-item") {
+                        if (componentElement.querySelector("div") !== null) {
+                            allowListening = false;
+                        }
+                    }
+                }
+                else {
+                    var componentType = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase();
+                    if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
+                        if (component.hasAttribute("data-syiro-component-id")) {
+                            componentId = component.getAttribute("data-syiro-component-id");
+                        }
+                        else {
+                            if (component.hasAttribute("id")) {
+                                componentId = component.getAttribute("id");
+                            }
+                            else {
+                                componentId = syiro.generator.IdGen(component.tagName.toLowerCase());
+                            }
+                            component.setAttribute("data-syiro-component-id", componentId);
+                        }
+                    }
+                    else {
+                        componentId = componentType;
+                    }
+                    componentElement = component;
+                }
+                if (allowListening == true) {
+                    for (var individualListenerIndex in listeners) {
+                        var listener = listeners[individualListenerIndex];
+                        var currentListenersArray = syiro.data.Read(componentId + "->handlers->" + listener);
+                        if (currentListenersArray == false) {
+                            currentListenersArray = [];
+                            componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component));
+                        }
+                        currentListenersArray.push(listenerCallback);
+                        syiro.data.Write(componentId + "->handlers->" + listener, currentListenersArray);
+                    }
+                }
+            }
+            else {
+                allowListening = false;
+            }
+            return allowListening;
+        }
+        events.Add = Add;
+        function Remove() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var allowRemoval = true;
+            var successfulRemoval = false;
+            var listeners;
+            var component;
+            var componentId;
+            var componentElement;
+            var specFunc;
+            if (args.length < 4) {
+                if ((typeof args[0] == "string") || ((typeof args[0] == "object") && (typeof args[0]["id"] == "undefined"))) {
+                    listeners = args[0];
+                    if (typeof listeners == "string") {
+                        listeners = listeners.trim().split(" ");
+                    }
+                    component = args[1];
+                }
+                else if (typeof args[0]["id"] !== "undefined") {
+                    component = args[0];
+                }
+                if (((args.length == 2) && (typeof args[1] == "function")) || ((args.length == 3) && (typeof args[2] == "function"))) {
+                    specFunc = args[(args.length - 1)];
+                }
+                if (syiro.component.IsComponentObject(component)) {
+                    componentId = component["id"];
+                    componentElement = syiro.component.Fetch(component);
+                    if (componentElement !== null) {
+                        if (component["type"] == "list-item") {
+                            if (componentElement.querySelector('div[data-syiro-component="button"]') !== null) {
+                                allowRemoval = false;
+                            }
+                        }
+                    }
+                }
+                else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
+                    componentId = component.getAttribute("data-syiro-component-id");
+                    componentElement = component;
+                }
+                else {
+                    componentId = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase();
+                    componentElement = component;
+                }
+                if (allowRemoval == true) {
+                    if (typeof listeners == "undefined") {
+                        listeners = Object.keys(syiro.data.Read(componentId + "->handlers"));
+                    }
+                    if ((componentElement !== undefined) && (componentElement !== null)) {
+                        for (var individualListenerIndex in listeners) {
+                            var listener = listeners[individualListenerIndex];
+                            var componentListeners = null;
+                            if (typeof specFunc == "function") {
+                                componentListeners = syiro.data.Read(componentId + "->handlers->" + listener);
+                                for (var individualFuncIndex in componentListeners) {
+                                    if (componentListeners[individualFuncIndex].toString() == specFunc.toString()) {
+                                        componentListeners.splice(individualFuncIndex, 1);
+                                    }
+                                }
+                            }
+                            if ((componentListeners == null) || (componentListeners.length == 0)) {
+                                syiro.data.Delete(componentId + "->handlers->" + listener);
+                                componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component));
+                            }
+                            else {
+                                syiro.data.Write(componentId + "->handlers->" + listener, componentListeners);
+                            }
+                        }
+                        successfulRemoval = true;
+                    }
+                }
+            }
+            return successfulRemoval;
+        }
+        events.Remove = Remove;
+    })(events = syiro.events || (syiro.events = {}));
 })(syiro || (syiro = {}));
 var syiro;
 (function (syiro) {
@@ -476,6 +750,55 @@ var syiro;
 })(syiro || (syiro = {}));
 var syiro;
 (function (syiro) {
+    var animation;
+    (function (animation) {
+        function Animate(component, properties) {
+            var componentElement = syiro.component.Fetch(component);
+            if ((componentElement !== null) && (typeof properties["animation"] == "string")) {
+                if (typeof properties["duration"] == "undefined") {
+                    properties["duration"] = 250;
+                }
+                var postAnimationFunction = properties["function"];
+                if (typeof properties["function"] !== "undefined") {
+                    var elementTimeoutId = window.setTimeout(function () {
+                        var component = arguments[0];
+                        var componentElement = syiro.component.Fetch(component);
+                        var postAnimationFunction = arguments[1];
+                        var timeoutId = syiro.data.Read(component["id"] + "->AnimationTimeoutId");
+                        syiro.data.Delete(component["id"] + "->AnimationTimeoutId");
+                        window.clearTimeout(timeoutId);
+                        postAnimationFunction(component);
+                    }.bind(syiro, component, postAnimationFunction), properties["duration"]);
+                    syiro.data.Write(component["id"] + "->AnimationTimeoutId", elementTimeoutId);
+                }
+                if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
+                    var tempElement = componentElement;
+                    componentElement = tempElement.querySelector('div[data-syiro-minor-component="buttonToggle"]');
+                }
+                componentElement.setAttribute("class", properties["animation"]);
+            }
+        }
+        animation.Animate = Animate;
+        function FadeIn(component, postAnimationFunction) {
+            syiro.animation.Animate(component, {
+                "animation": "fade-in-animation",
+                "duration": 125,
+                "function": postAnimationFunction
+            });
+        }
+        animation.FadeIn = FadeIn;
+        function FadeOut(component, postAnimationFunction) {
+            syiro.animation.Animate(component, {
+                "animation": "fade-out-animation",
+                "duration": 125,
+                "function": postAnimationFunction
+            });
+        }
+        animation.FadeOut = FadeOut;
+    })(animation = syiro.animation || (syiro.animation = {}));
+})(syiro || (syiro = {}));
+var syiro;
+(function (syiro) {
     var device;
     (function (device) {
         device.DoNotTrack;
@@ -613,329 +936,6 @@ var syiro;
 })(syiro || (syiro = {}));
 var syiro;
 (function (syiro) {
-    var events;
-    (function (events) {
-        events.eventStrings = {
-            "down": ["mousedown", "touchstart"],
-            "up": ["mouseup", "touchend"],
-            "fullscreenchange": ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"],
-            "orientationchange": ["orientationchange", "mozorientationchange", "msorientationchange"]
-        };
-        function Handler() {
-            var component = arguments[0];
-            var eventData = arguments[1];
-            var componentId;
-            var componentElement;
-            var passableValue = null;
-            var listener = (eventData.type).toLowerCase().slice(0, 2).replace("on", "") + (eventData.type).toLowerCase().slice(2);
-            if (syiro.component.IsComponentObject(component)) {
-                componentId = component["id"];
-                componentElement = syiro.component.Fetch(component);
-            }
-            else {
-                var componentType = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase();
-                if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
-                    if (component.hasAttribute("data-syiro-component-id")) {
-                        componentId = component.getAttribute("data-syiro-component-id");
-                    }
-                    else {
-                        if (component.hasAttribute("id")) {
-                            componentId = component.getAttribute("id");
-                        }
-                        else {
-                            componentId = syiro.generator.IdGen(component.tagName.toLowerCase());
-                        }
-                        component.setAttribute("data-syiro-component-id", componentId);
-                    }
-                }
-                else if (component == document) {
-                    componentId = "document";
-                }
-                else {
-                    componentId = componentType;
-                }
-                componentElement = component;
-            }
-            var animationString = null;
-            if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
-                if (componentElement.hasAttribute("data-syiro-component-status") == false) {
-                    animationString = "toggle-forward-animation";
-                    passableValue = true;
-                }
-                else {
-                    animationString = "toggle-backward-animation";
-                    passableValue = false;
-                }
-            }
-            else if (component["type"] == "searchbox") {
-                passableValue = componentElement.value;
-            }
-            else {
-                passableValue = eventData;
-            }
-            if (syiro.data.Read(componentId + "->ignoreClick") == false) {
-                if (animationString !== null) {
-                    syiro.animation.Animate(component, {
-                        "animation": animationString,
-                        "function": function (component) {
-                            var buttonElement = syiro.component.Fetch(component);
-                            if (buttonElement.hasAttribute("data-syiro-component-status") == false) {
-                                buttonElement.setAttribute("data-syiro-component-status", "true");
-                            }
-                            else {
-                                buttonElement.removeAttribute("data-syiro-component-status");
-                            }
-                        }
-                    });
-                }
-                var functionsForListener = syiro.data.Read(componentId + "->handlers->" + listener);
-                for (var individualFunctionId in functionsForListener) {
-                    functionsForListener[individualFunctionId].call(syiro, component, passableValue);
-                }
-                if (listener.indexOf("touch") == 0) {
-                    syiro.data.Write(componentId + "->ignoreClick", true);
-                    var timeoutId = window.setTimeout(function () {
-                        var componentId = arguments[0];
-                        syiro.data.Delete(componentId + "->ignoreClick");
-                        window.clearTimeout(syiro.data.Read(componentId + "->ignoreClick-TimeoutId"));
-                    }.bind(this, componentId), 350);
-                    syiro.data.Write(componentId + "->ignoreClick-TimeoutId", timeoutId);
-                }
-            }
-        }
-        events.Handler = Handler;
-        function Add() {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
-            }
-            var allowListening = true;
-            var componentId;
-            var listeners;
-            var component;
-            var listenerCallback;
-            if ((args.length == 2) || (args.length == 3)) {
-                if (args.length == 2) {
-                    component = args[0];
-                    listenerCallback = args[1];
-                    if (component["type"] !== "searchbox") {
-                        listeners = syiro.events.eventStrings["up"];
-                        if (component["type"] == "button") {
-                            listeners.push("keyup");
-                        }
-                    }
-                    else {
-                        listeners = ["keyup"];
-                    }
-                }
-                else {
-                    listeners = args[0];
-                    component = args[1];
-                    listenerCallback = args[2];
-                }
-                if (typeof listeners == "string") {
-                    listeners = listeners.trim().split(" ");
-                }
-                var componentElement;
-                if (syiro.component.IsComponentObject(component)) {
-                    componentId = component["id"];
-                    componentElement = syiro.component.Fetch(component);
-                    if (component["type"] == "list-item") {
-                        if (componentElement.querySelector("div") !== null) {
-                            allowListening = false;
-                        }
-                    }
-                }
-                else {
-                    var componentType = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase();
-                    if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
-                        if (component.hasAttribute("data-syiro-component-id")) {
-                            componentId = component.getAttribute("data-syiro-component-id");
-                        }
-                        else {
-                            if (component.hasAttribute("id")) {
-                                componentId = component.getAttribute("id");
-                            }
-                            else {
-                                componentId = syiro.generator.IdGen(component.tagName.toLowerCase());
-                            }
-                            component.setAttribute("data-syiro-component-id", componentId);
-                        }
-                    }
-                    else {
-                        componentId = componentType;
-                    }
-                    componentElement = component;
-                }
-                if (allowListening == true) {
-                    for (var individualListenerIndex in listeners) {
-                        var listener = listeners[individualListenerIndex];
-                        var currentListenersArray = syiro.data.Read(componentId + "->handlers->" + listener);
-                        if (currentListenersArray == false) {
-                            currentListenersArray = [];
-                            componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component));
-                        }
-                        currentListenersArray.push(listenerCallback);
-                        syiro.data.Write(componentId + "->handlers->" + listener, currentListenersArray);
-                    }
-                }
-            }
-            else {
-                allowListening = false;
-            }
-            return allowListening;
-        }
-        events.Add = Add;
-        function Remove() {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
-            }
-            var allowRemoval = true;
-            var successfulRemoval = false;
-            var listeners;
-            var component;
-            var componentId;
-            var componentElement;
-            var specFunc;
-            if (args.length < 4) {
-                if ((typeof args[0] == "string") || ((typeof args[0] == "object") && (typeof args[0]["id"] == "undefined"))) {
-                    listeners = args[0];
-                    if (typeof listeners == "string") {
-                        listeners = listeners.trim().split(" ");
-                    }
-                    component = args[1];
-                }
-                else if (typeof args[0]["id"] !== "undefined") {
-                    component = args[0];
-                }
-                if (((args.length == 2) && (typeof args[1] == "function")) || ((args.length == 3) && (typeof args[2] == "function"))) {
-                    specFunc = args[(args.length - 1)];
-                }
-                if (syiro.component.IsComponentObject(component)) {
-                    componentId = component["id"];
-                    componentElement = syiro.component.Fetch(component);
-                    if (componentElement !== null) {
-                        if (component["type"] == "list-item") {
-                            if (componentElement.querySelector('div[data-syiro-component="button"]') !== null) {
-                                allowRemoval = false;
-                            }
-                        }
-                    }
-                }
-                else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)) {
-                    componentId = component.getAttribute("data-syiro-component-id");
-                    componentElement = component;
-                }
-                else {
-                    componentId = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase();
-                    componentElement = component;
-                }
-                if (allowRemoval == true) {
-                    if (typeof listeners == "undefined") {
-                        listeners = Object.keys(syiro.data.Read(componentId + "->handlers"));
-                    }
-                    if ((componentElement !== undefined) && (componentElement !== null)) {
-                        for (var individualListenerIndex in listeners) {
-                            var listener = listeners[individualListenerIndex];
-                            var componentListeners = null;
-                            if (typeof specFunc == "function") {
-                                componentListeners = syiro.data.Read(componentId + "->handlers->" + listener);
-                                for (var individualFuncIndex in componentListeners) {
-                                    if (componentListeners[individualFuncIndex].toString() == specFunc.toString()) {
-                                        componentListeners.splice(individualFuncIndex, 1);
-                                    }
-                                }
-                            }
-                            if ((componentListeners == null) || (componentListeners.length == 0)) {
-                                syiro.data.Delete(componentId + "->handlers->" + listener);
-                                componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component));
-                            }
-                            else {
-                                syiro.data.Write(componentId + "->handlers->" + listener, componentListeners);
-                            }
-                        }
-                        successfulRemoval = true;
-                    }
-                }
-            }
-            return successfulRemoval;
-        }
-        events.Remove = Remove;
-    })(events = syiro.events || (syiro.events = {}));
-})(syiro || (syiro = {}));
-var syiro;
-(function (syiro) {
-    var generator;
-    (function (generator) {
-        generator.lastUniqueIds = {};
-        function IdGen(type) {
-            var lastUniqueIdOfType;
-            if (syiro.generator.lastUniqueIds[type] == undefined) {
-                lastUniqueIdOfType = 0;
-            }
-            else {
-                lastUniqueIdOfType = syiro.generator.lastUniqueIds[type];
-            }
-            var newUniqueIdOfType = lastUniqueIdOfType + 1;
-            syiro.generator.lastUniqueIds[type] = newUniqueIdOfType;
-            return (type + newUniqueIdOfType.toString());
-        }
-        generator.IdGen = IdGen;
-        function ElementCreator() {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
-            }
-            var attributes;
-            var generatedElement;
-            if (((args.length == 2) && (typeof args[1] == "string")) || (args.length == 3)) {
-                var componentId = args[0];
-                var componentType = args[1];
-                attributes = args[2];
-                if ((componentType == "header") || (componentType == "footer")) {
-                    generatedElement = document.createElement(componentType);
-                }
-                else if (componentType == "searchbox") {
-                    generatedElement = document.createElement("input");
-                    generatedElement.setAttribute("type", "text");
-                }
-                else {
-                    generatedElement = document.createElement("div");
-                }
-                generatedElement.setAttribute("data-syiro-component-id", componentId);
-                generatedElement.setAttribute("data-syiro-component", componentType);
-            }
-            else {
-                attributes = args[1];
-                generatedElement = document.createElement(args[0]);
-            }
-            if (attributes !== undefined) {
-                for (var attributeKey in attributes) {
-                    var attributeValue = attributes[attributeKey];
-                    if (attributeKey !== "content") {
-                        if (attributeKey == "content-attr") {
-                            attributeKey = "content";
-                        }
-                        generatedElement.setAttribute(attributeKey, attributeValue);
-                    }
-                    else {
-                        var innerComponentContent = attributeValue;
-                        innerComponentContent = innerComponentContent.replace("<", "");
-                        innerComponentContent = innerComponentContent.replace(">", "");
-                        innerComponentContent = innerComponentContent.replace("&lt;", "");
-                        innerComponentContent = innerComponentContent.replace("&gt;", "");
-                        generatedElement.textContent = innerComponentContent;
-                    }
-                }
-            }
-            return generatedElement;
-        }
-        generator.ElementCreator = ElementCreator;
-    })(generator = syiro.generator || (syiro.generator = {}));
-})(syiro || (syiro = {}));
-var syiro;
-(function (syiro) {
     var header;
     (function (header) {
         function Generate(properties) {
@@ -945,7 +945,10 @@ var syiro;
                 if (propertyKey == "items") {
                     for (var individualItemIndex in properties["items"]) {
                         var individualItem = properties["items"][individualItemIndex];
-                        if (individualItem["type"] == "link") {
+                        if (typeof individualItem["component"] !== "undefined") {
+                            individualItem = individualItem["component"];
+                        }
+                        if (syiro.component.IsComponentObject(individualItem) == false) {
                             var generatedElement = syiro.generator.ElementCreator("a", {
                                 "href": individualItem["link"],
                                 "content": individualItem["content"]
@@ -953,9 +956,6 @@ var syiro;
                             componentElement.appendChild(generatedElement);
                         }
                         else {
-                            if (typeof individualItem["component"] !== "undefined") {
-                                individualItem = individualItem["component"];
-                            }
                             if (syiro.component.IsComponentObject(individualItem)) {
                                 componentElement.appendChild(syiro.component.Fetch(individualItem));
                             }
@@ -1007,10 +1007,11 @@ var syiro;
             for (var propertyKey in properties) {
                 if (propertyKey == "items") {
                     for (var individualItem in properties["items"]) {
-                        if (properties["items"][individualItem]["type"] == "link") {
+                        var individualItem = properties["items"][individualItem];
+                        if (syiro.component.IsComponentObject(individualItem) == false) {
                             var generatedElement = syiro.generator.ElementCreator("a", {
-                                "href": properties["items"][individualItem]["link"],
-                                "content": properties["items"][individualItem]["content"]
+                                "href": individualItem["link"],
+                                "content": individualItem["content"]
                             });
                             componentElement.appendChild(generatedElement);
                         }
@@ -1095,29 +1096,47 @@ var syiro;
                 "data-syiro-component-type": properties["type"],
                 "role": "button"
             });
-            for (var propertyKey in properties) {
-                if ((propertyKey == "icon") && (properties["type"] == "basic")) {
-                    syiro.component.CSS(componentElement, "background-image", "url(" + properties["icon"] + ")");
+            if (properties["type"] == "basic") {
+                if (typeof properties["icon"] == "string") {
+                    syiro.component.CSS(componentElement, "background-image", 'url("' + properties["icon"] + '")');
+                    delete properties["icon"];
                 }
-                else if (propertyKey == "content") {
+                if (typeof properties["content"] == "string") {
                     componentElement.textContent = properties["content"];
+                    delete properties["icon"];
                 }
-                else if ((propertyKey == "type") && (properties["type"] == "toggle")) {
-                    var buttonToggleAttributes = { "data-syiro-minor-component": "buttonToggle" };
-                    if (properties["default"] == true) {
-                        buttonToggleAttributes["data-syiro-component-status"] = "true";
-                    }
-                    var buttonToggle = syiro.generator.ElementCreator("div", buttonToggleAttributes);
-                    componentElement.appendChild(buttonToggle);
+            }
+            else {
+                var buttonToggleAttributes = { "data-syiro-minor-component": "buttonToggle" };
+                if ((typeof properties["default"] == "boolean") && (properties["default"] == true)) {
+                    buttonToggleAttributes["data-syiro-component-status"] = "true";
+                    delete properties["default"];
                 }
-                else {
-                    componentElement.setAttribute(propertyKey, properties[propertyKey]);
-                }
+                var buttonToggle = syiro.generator.ElementCreator("div", buttonToggleAttributes);
+                componentElement.appendChild(buttonToggle);
+            }
+            delete properties["type"];
+            for (var propertyKey in properties) {
+                componentElement.setAttribute(propertyKey, properties[propertyKey]);
             }
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "button" };
         }
         button.Generate = Generate;
+        function SetIcon(component, content) {
+            var setSucceeded;
+            var componentElement = syiro.component.Fetch(component);
+            if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") == "basic")) {
+                syiro.component.CSS(componentElement, "background-image", 'url("' + content + '")');
+                syiro.component.Update(component["id"] + "->HTMLElement", componentElement);
+                setSucceeded = true;
+            }
+            else {
+                setSucceeded = false;
+            }
+            return setSucceeded;
+        }
+        button.SetIcon = SetIcon;
         function SetLabel(component, content) {
             var setSucceeded;
             var componentElement = syiro.component.Fetch(component);
@@ -1144,7 +1163,7 @@ var syiro;
             if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)) {
                 for (var individualItemIndex in properties["items"]) {
                     var individualItem = properties["items"][individualItemIndex];
-                    if (individualItem["type"] !== "list-item") {
+                    if (syiro.component.IsComponentObject(individualItem) == false) {
                         individualItem = syiro.listitem.Generate(individualItem);
                     }
                     componentElement.appendChild(syiro.component.Fetch(individualItem));
@@ -1343,6 +1362,11 @@ var syiro;
             syiro.component.Update(component["id"], dropdownElement);
         }
         dropdown.SetText = SetText;
+        function SetIcon(component, content) {
+            var dropdownElement = syiro.component.Fetch(component);
+            syiro.component.CSS(component, "background-image", content);
+        }
+        dropdown.SetIcon = SetIcon;
         function SetImage(component, content) {
             var dropdownElement = syiro.component.Fetch(component);
             var dropdownLabelImage = dropdownElement.querySelector("img");
@@ -1359,11 +1383,6 @@ var syiro;
             syiro.component.Update(component["id"], dropdownElement);
         }
         dropdown.SetImage = SetImage;
-        function SetIcon(component, content) {
-            var dropdownElement = syiro.component.Fetch(component);
-            syiro.component.CSS(component, "background-image", content);
-        }
-        dropdown.SetIcon = SetIcon;
         function AddItem(component, listItemComponent) {
             var listComponentObject = syiro.component.FetchLinkedListComponentObject(component);
             syiro.component.Add(true, listComponentObject, listItemComponent);
@@ -1424,6 +1443,7 @@ var syiro;
                 var playerControlComponent = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-component="player-control"]'));
                 var playerRange = playerComponentElement.querySelector('input[type="range"]');
                 var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(playerComponent);
+                playerMediaLengthInformation["value"] = "0";
                 for (var playerRangeAttribute in playerMediaLengthInformation) {
                     playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]);
                 }
@@ -1525,6 +1545,8 @@ var syiro;
                 else {
                     syiro.player.SetVolume(playerComponent, (valueNum / 100));
                 }
+                var priorInputSpaceWidth = Math.round((valueNum / Number(playerRange.max)) * playerRange.clientWidth);
+                syiro.component.CSS(playerRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
             });
             var volumeButtonComponent = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]'));
             syiro.events.Add(volumeButtonComponent, function () {
@@ -1547,12 +1569,15 @@ var syiro;
                 else {
                     volumeButton.removeAttribute("data-syiro-component-status");
                     playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent);
+                    playerRange.value = playerContentElement.currentTime;
                     syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false);
                     syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", false);
                 }
                 for (var playerRangeAttribute in playerRangeAttributes) {
                     playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]);
                 }
+                var priorInputSpaceWidth = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth);
+                syiro.component.CSS(playerRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
             });
             var menuButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]');
             if (menuButton !== null) {
@@ -1616,12 +1641,10 @@ var syiro;
                     playButtonComponentObject = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-minor-component="player-button-play"]'));
                 }
                 var playButton = syiro.component.Fetch(playButtonComponentObject);
-                if (innerContentElement.currentTime == 0) {
-                    var posterImageElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]');
-                    if (posterImageElement !== null) {
-                        syiro.component.CSS(posterImageElement, "visibility", "hidden");
-                        syiro.component.CSS(playButton.parentElement, "opacity", false);
-                    }
+                var posterImageElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]');
+                if (posterImageElement !== null) {
+                    syiro.component.CSS(posterImageElement, "visibility", "hidden");
+                    syiro.component.CSS(playButton.parentElement, "opacity", false);
                 }
                 if (innerContentElement.paused !== true) {
                     innerContentElement.pause();

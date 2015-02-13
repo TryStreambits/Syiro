@@ -19,7 +19,7 @@ module syiro.list {
 			for (var individualItemIndex in properties["items"]){ // For each list item in navigationItems Object array
 				var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as an Object
 
-				if (individualItem["type"] !== "list-item"){ // If the individualItem is NOT a List Item Object
+				if (syiro.component.IsComponentObject(individualItem) == false){ // If the individualItem is NOT a List Item Object
 					individualItem = syiro.listitem.Generate(individualItem); // Generate a List Item based on the individualItem properties
 				}
 

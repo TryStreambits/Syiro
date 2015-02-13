@@ -131,6 +131,15 @@ module syiro.dropdown {
 
 	// #endregion
 
+	// #region Set Dropdown Label Icon
+
+	export function SetIcon(component : Object, content : string) : void {
+		var dropdownElement : Element = syiro.component.Fetch(component); // Get the Dropdown
+		syiro.component.CSS(component, "background-image", content); // Set the background-image CSS attribute
+	}
+
+	// #endregion
+
 	// #region Set Dropdown Label Image
 
 	export function SetImage(component : Object, content : any) : void {
@@ -151,15 +160,6 @@ module syiro.dropdown {
 		}
 
 		syiro.component.Update(component["id"], dropdownElement); // Update the storedComponent HTMLElement if necessary
-	}
-
-	// #endregion
-
-	// #region Set Dropdown Label Icon
-
-	export function SetIcon(component : Object, content : string) : void {
-		var dropdownElement : Element = syiro.component.Fetch(component); // Get the Dropdown
-		syiro.component.CSS(component, "background-image", content); // Set the background-image CSS attribute
 	}
 
 	// #endregion

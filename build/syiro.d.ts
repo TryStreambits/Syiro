@@ -49,17 +49,23 @@ declare module syiro.plugin.alternativeInit {
     function Init(): void;
     function Wait(): void;
 }
-declare module syiro.animation {
-    function Animate(component: Object, properties: Object): void;
-    function FadeIn(component: Object, postAnimationFunction?: Function): void;
-    function FadeOut(component: Object, postAnimationFunction?: Function): void;
-}
 declare module syiro.data {
     var storage: Object;
     function Manage(modificationType: string, keyList: string, data?: any): any;
     function Read(keyList: string): any;
     function Write(keyList: string, data: any): any;
     function Delete(keyList: string): any;
+}
+declare module syiro.generator {
+    var lastUniqueIds: Object;
+    function IdGen(type: string): string;
+    function ElementCreator(...args: any[]): HTMLElement;
+}
+declare module syiro.events {
+    var eventStrings: Object;
+    function Handler(): void;
+    function Add(...args: any[]): boolean;
+    function Remove(...args: any[]): boolean;
 }
 declare module syiro.component {
     var componentData: Object;
@@ -74,6 +80,11 @@ declare module syiro.component {
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): boolean;
+}
+declare module syiro.animation {
+    function Animate(component: Object, properties: Object): void;
+    function FadeIn(component: Object, postAnimationFunction?: Function): void;
+    function FadeOut(component: Object, postAnimationFunction?: Function): void;
 }
 declare module syiro.device {
     var DoNotTrack: boolean;
@@ -93,17 +104,6 @@ declare module syiro.device {
     function FetchScreenDetails(): void;
     function FetchScreenOrientation(): string;
 }
-declare module syiro.events {
-    var eventStrings: Object;
-    function Handler(): void;
-    function Add(...args: any[]): boolean;
-    function Remove(...args: any[]): boolean;
-}
-declare module syiro.generator {
-    var lastUniqueIds: Object;
-    function IdGen(type: string): string;
-    function ElementCreator(...args: any[]): HTMLElement;
-}
 declare module syiro.header {
     function Generate(properties: Object): Object;
     function SetLogo(component: Object, image: string): void;
@@ -117,6 +117,7 @@ declare module syiro.footer {
 }
 declare module syiro.button {
     function Generate(properties: Object): Object;
+    function SetIcon(component: Object, content: string): boolean;
     function SetLabel(component: Object, content: string): boolean;
 }
 declare module syiro.list {
@@ -135,8 +136,8 @@ declare module syiro.dropdown {
     function Generate(properties: Object): Object;
     function Toggle(component?: Object): void;
     function SetText(component: Object, content: any): void;
-    function SetImage(component: Object, content: any): void;
     function SetIcon(component: Object, content: string): void;
+    function SetImage(component: Object, content: any): void;
     function AddItem(component: Object, listItemComponent: Object): void;
     function RemoveItem(component: Object, listItemComponent: Object): void;
 }

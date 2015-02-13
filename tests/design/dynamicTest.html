@@ -29,7 +29,6 @@
 					{
 						"items" : [
 							{
-								"type" : "link",
 								"link" : "https://stroblindustries.com",
 								"content" : "Example Link"
 							},
@@ -68,7 +67,7 @@
 
 			/* Share Dialogs List Generation */
 
-			var sharedDialogItems = [
+			var menuDialogItems = [
 				{
 					"image" : "img/facebook.png",
 					"label" : "Facebook"
@@ -83,9 +82,9 @@
 				}
 			];
 
-			var audioShareDialogList = syiro.list.Generate({ "items" : sharedDialogItems } );
+			var audioMenuDialogList = syiro.list.Generate({ "items" : menuDialogItems } );
 
-			var videoShareDialogList = syiro.list.Generate({ "items" : sharedDialogItems } );
+			var videoMenuDialogList = syiro.list.Generate({ "items" : menuDialogItems } );
 
 			/* End of Share Dialogs List Generation */
 
@@ -96,7 +95,7 @@
 						"title" : "Example OGG File",
 						"artist" : "JesseW",
 						"album": "Wikipedia",
-						"menu" : audioShareDialogList
+						"menu" : audioMenuDialogList
 					}
 			);
 
@@ -104,7 +103,7 @@
 					{
 						"art" : "img/video-art.png",
 						"sources" : ["http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v", "http://video.webmfiles.org/big-buck-bunny_trailer.webm"],
-						"menu" : videoShareDialogList
+						"menu" : videoMenuDialogList
 					}
 			);
 

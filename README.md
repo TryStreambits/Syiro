@@ -19,7 +19,7 @@ Absolutely. Since jQuery is not used in Syiro, you will not have to worry about 
 
 #### How easy is it to modify the theming of Syiro to help my application differentiate? ####
 
-Syiro uses LESS / CSS to theme components, making it easy to differentiate your application from the rest. We recommend you take a look at our [theming guide](https://github.com/StroblIndustries/Syiro/wiki/Theming-Syiro).
+Syiro uses LESS / CSS to theme components, making it easy to differentiate your application from the rest. We recommend you take a look at our [theming guide](https://github.com/StroblIndustries/Syiro/wiki/Theming).
 
 #### What is Syiro's policy on backwards compatibility? ####
 
@@ -27,7 +27,7 @@ We have a [document that highlights our policy](https://github.com/StroblIndustr
 
 ### Download ###
 
-You can download either our [stable 1.0.0 release](https://github.com/StroblIndustries/Syiro/blob/master/stable.tar.gz) or our [development releases](https://github.com/StroblIndustries/Syiro/blob/master/devel.tar.gz) which provides the necessary minified CSS, images and JS wrapped in a nice package.
+You can download either our [stable 1.1.0 release](https://github.com/StroblIndustries/Syiro/blob/master/stable.tar.gz) or our [development releases](https://github.com/StroblIndustries/Syiro/blob/master/devel.tar.gz) which provides the necessary minified CSS, images and JS wrapped in a nice package.
 
 The package also comes with a gzipped version of the JavaScript code, so you can easily serve the compressed content.
 
@@ -37,7 +37,7 @@ Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
 Bootstrap | 114kb + 19.2kb (theme.min.css)| 118.9kb | 37.4kb
 Polymer | Varies depending on use of components | 123.5kb | 35.7kb
-**Syiro** | **12.7kb** | **38.5kb** | **8.7kb**
+**Syiro** | **13.3kb** | **83.1kb** | **13.6kb**
 
 Details:
 
@@ -45,7 +45,7 @@ Details:
 2. Bootstrap's size is also calculating in jQuery, which is a requirement for Bootstrap.
 3. Syiro's build script auto-minifies and gzipped JS.
 4. All gzipped  JavaScript was done using [zopfli](https://code.google.com/p/zopfli/) with default iterations: `zopfli x.min.js`
-5. This is as of 1.0.6 and will update for releases (*aside from release candidates*).
+5. This is as of 1.1.0 and will update for releases (*aside from release candidates*).
 
 ### Using Syiro ###
 
@@ -54,8 +54,8 @@ You can get started using Syiro by using the guide below:
 1. [Understanding Syiro Components](https://github.com/StroblIndustries/Syiro/wiki/Understanding-Syiro-Components) - *Honestly not much to understand*
 2. [The Components Index](https://github.com/StroblIndustries/Syiro/wiki/Component-Index) - *Like the Pokèdex but for Components*
 3. [Managing Components](https://github.com/StroblIndustries/Syiro/wiki/Managing-Components) - *Covers creating both static and dynamically defined Components and other Component functions.*
-4. [Using Component Listeners](https://github.com/StroblIndustries/Syiro/wiki/Using-Component-Listeners) - *Covers our AddListener and RemoveListener() functions*
-5. [Theming Syiro](https://github.com/StroblIndustries/Syiro/wiki/Theming-Syiro) - *Yay for writing LESS (see what I did there?)*
+4. [Syiro's Event System](https://github.com/StroblIndustries/Syiro/wiki/Event-System) - *Covers Syiro's Event System and adding / removing listeners.*
+5. [Theming Syiro](https://github.com/StroblIndustries/Syiro/wiki/Theming) - *Yay for writing LESS (see what I did there?)*
 6. [Getting Device Information](https://github.com/StroblIndustries/Syiro/wiki/Getting-Device-Information) - *Are you even using a FullHDOrAbove screen, bro?*
 
 We also highly recommend you take a look at the [Additional Component Functions](https://github.com/StroblIndustries/Syiro/wiki/Additional-Component-Functions) page, which goes into detail additional functions that are exposed to particular Components that are certainly useful.

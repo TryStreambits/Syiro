@@ -40,24 +40,27 @@ module syiro.player {
                     var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
                     var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
                     var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
-                    var playerControlComponent : Object = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-component="player-control"]')); // Get the Player Control Component
+                    var playerControlElement  = playerComponentElement.querySelector('div[data-syiro-component="player-control"]');
+                    var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Player Control Component
+                    var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
 
                     // #endregion
 
                     // #region Player Range Configuration
 
-                    var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
-                    var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(playerComponent); // Get information about the appropriate settings for the input range
+                    if (syiro.data.Read(playerComponent["id"] + "->IsStreaming") == false){ // If the Player is NOT streaming content
+                        var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(playerComponent); // Get information about the appropriate settings for the input range
+                        playerMediaLengthInformation["value"] = "0";
 
-                    playerMediaLengthInformation["value"] = "0";
+                        for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
+                            playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
+                        }
 
-                    for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
-                        playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
+                        syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
                     }
 
                     // #endregion
 
-                    syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
                 }
             );
 
@@ -75,24 +78,25 @@ module syiro.player {
 
                     // #endregion
 
-                    // #region Player Control Component & Element Defining
+                    if (syiro.data.Read(playerComponent["id"] + "->IsStreaming") == false){ // If the Player is NOT streaming content
+                        // #region Player Control Component & Element Defining
 
-                    var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]'); // Fetch the Player Control Element
-                    var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
-                    var playerInputRange = playerControlElement.querySelector("input"); // Get the input range of the Player Control
+                        var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]'); // Fetch the Player Control Element
+                        var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
+                        var playerInputRange = playerControlElement.querySelector("input"); // Get the input range of the Player Control
 
-                    // #endregion
+                        // #endregion
 
-                    var currentTime = playerElement.currentTime; // Get the currentTime
+                        var currentTime = playerElement.currentTime; // Get the currentTime
+                        syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime); // Update the label
 
-                    syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime); // Update the label
+                        if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false){ // If the user is NOT using the input range to change volume or time
+                            var roundedDownTime : number = Math.floor(currentTime);
+                            playerInputRange.value = roundedDownTime; // Set the range input to roundedDownTime
 
-                    if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false){ // If the user is NOT using the input range to change volume or time
-                        var roundedDownTime : number = Math.floor(currentTime);
-                        playerInputRange.value = roundedDownTime; // Set the range input to roundedDownTime
-
-                        var priorInputSpaceWidth : number = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
-                        syiro.component.CSS(playerInputRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
+                            var priorInputSpaceWidth : number = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
+                            syiro.component.CSS(playerInputRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
+                        }
                     }
                 }
             );
@@ -307,12 +311,20 @@ module syiro.player {
                         playerRangeAttributes["max"] = "100"; // Set max to 100
                         playerRangeAttributes["step"] = "1"; // Set step to 1
                         playerRange.value = playerRangeValueFromVolume; // Set the value to the volume (which is 0.1 to 1.0) times 10
+
+                        if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
+                            playerElement.querySelector('div[data-syiro-component="player-control"]').removeAttribute("data-syiro-component-streamstyling"); // Default to NOT having the Player Control "Stream Styling"
+                        }
                     }
                     else{ // If we are already actively doing a volume change, meaning the user wants to switch back to the normal view
                         volumeButton.removeAttribute("data-syiro-component-status"); // Remove component-status to imply volume icon is not active
 
                         playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent); // Get a returned Object with the max the input range should be, as well as a reasonable, pre-calculated amount of steps.
                         playerRange.value = playerContentElement.currentTime; // Set the playerRange value to the currentTime
+
+                        if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
+                            playerElement.querySelector('div[data-syiro-component="player-control"]').setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
+                        }
 
                         syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false); // Set the IsChangingInputValue to infer we are no longer changing the input value
                         syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", false); // Set the IsChangingVolume to false to infer we are no longer changing the volume
@@ -339,6 +351,49 @@ module syiro.player {
 
             // #endregion
 
+            syiro.player.CheckIfStreamable(component); // Check if the content is streamable
+
+        // #endregion
+    }
+
+    // #endregion
+
+    // #region Check if content is streamable and if so, change Player attributes
+
+    export function CheckIfStreamable(component : Object) : void {
+        var componentElement = syiro.component.Fetch(component); // Fetch the componentElement
+        var playerControlElement  = componentElement.querySelector('div[data-syiro-component="player-control"]');
+        var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Player Control Component
+        var playerRange : Element = playerControlElement.querySelector('input[type="range"]'); // Get the input range
+
+        // #region Live Streaming Detection and Player Range Configuration
+        var isStreamable : boolean = false; // Declare isStreamable as a boolean variable as to whether or not the content is streamable
+
+        var contentSources : Array<Object> = syiro.player.FetchSources(component); // Get the contentSources
+
+        for (var contentSourceIndex in contentSources){ // For each content source in contentSources
+            var contentSource : string = contentSources[contentSourceIndex]["src"];
+            var sourceExtension = contentSource.substr(contentSource.lastIndexOf(".")).replace(".", ""); // Get the last index of ., get the substring based on that, and then remove the period on the extension.
+
+            if ((sourceExtension == "m3u8") || (sourceExtension == "mpd")){ // If the source ends in m3u8 (RTMP, RTSP, etc.) or mpd (MPEG-DASH), then we are streaming content
+                isStreamable = true; // Define isStreamable as true
+                break; // Break out of the for loop
+            }
+        }
+
+        if (isStreamable == true){ // If the content IS streamable
+            syiro.data.Write(component["id"] + "->IsStreaming", true); // Declare that we are streaming by recording it in the Syiro Data System
+            playerControlElement.setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
+            playerControlElement.querySelector("time").setAttribute("data-syiro-component-live", ""); // Use "Live" View of Time Label
+            playerControlElement.querySelector("time").textContent = "Live"; // Set the time label to "Live"
+        }
+        else { // If the content is NOT streamable
+            syiro.data.Write(component["id"] + "->IsStreaming", false); // Declare that we are NOT streaming by recording it in the Syiro Data System
+            playerControlElement.removeAttribute("data-syiro-component-streamstyling"); // Remove Stream Styling if it exists in the Player Control
+            playerControlElement.querySelector("time").removeAttribute("data-syiro-component-live"); // Remove the "Live" View of Time Label
+            playerControlElement.querySelector("time").textContent = "00:00"; // Set the time label to "00:00"
+        }
+
         // #endregion
     }
 
@@ -360,7 +415,7 @@ module syiro.player {
 
         var contentDuration : any = syiro.player.FetchInnerContentElement(component).duration; // Get the Player's internal audio or video Element and its duration property
 
-        if ((isNaN(contentDuration) == false) && (String(contentDuration) !== "Infinity")){ // If we are able to properly fetch the duration and we are not streaming
+        if ((isNaN(contentDuration) == false) && (isFinite(contentDuration))){ // If we are able to properly fetch the duration and we are not streaming
             contentDuration = Math.floor(Number(contentDuration)); // Round down the contentDuration
             playerLengthInfo["max"] = contentDuration; // Set the maximum to the contentDuration
 
@@ -377,11 +432,11 @@ module syiro.player {
                 playerLengthInfo["step"] = 15; // Set the step value to 15 seconds
             }
         }
-        else if (isNaN(contentDuration)){ // If the contentDuration is unknowned
+        else if (isNaN(contentDuration)){ // If the contentDuration is unknown
             playerLengthInfo["max"] = "Unknown"; // Set max to unknown
             playerLengthInfo["step"] = 1; // Set step value to 1 second
         }
-        else if (String(contentDuration) == "Infinity"){ // If we are streaming content
+        else if (isFinite(contentDuration) == false){ // If we are streaming content
             playerLengthInfo["max"] = "Streaming"; // Set max to Streaming
             playerLengthInfo["step"] = 1; // Set step value to 1 second
         }
@@ -602,6 +657,7 @@ module syiro.player {
         }
 
         playerInnerContentElement.src = sources[0]; // Set the initial src of the audio or video player to the first source provided
+        syiro.player.CheckIfStreamable(component); // Check if the content is streamable
     }
 
     // #endregion

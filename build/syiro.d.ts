@@ -146,6 +146,7 @@ declare module syiro.utilities {
 }
 declare module syiro.player {
     function Init(component: Object): void;
+    function CheckIfStreamable(component: Object): void;
     function FetchInnerContentElement(component: Object): HTMLMediaElement;
     function GetPlayerLengthInfo(component: Object): Object;
     function IsPlaying(component: Object): boolean;

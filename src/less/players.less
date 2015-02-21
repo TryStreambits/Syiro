@@ -4,9 +4,33 @@
 
 div[data-syiro-component="player-control"]{
     float: left;
-    height: 60px;
     width: 100%; // Scales to width of video player if necessary
-    background-color: @syiroSecondaryColor; // Secondary "Dark" control background
+    background-color: @syiroSecondaryColor;
+
+    &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Player Control
+        height: 50px !important; // Set height to 50px
+        max-height: 50px !important; // Enforce the height of 50px
+
+        & > input { // Input Slider
+            display: none; // Default to not showing
+        }
+    }
+
+    &:not([data-syiro-component-streamstyling]){ // If we are NOT applying "Stream Styling" to the Player Control
+        height: 60px !important; // Set height to 50px
+        max-height: 60px !important; // Enforce the height of 60px
+
+        & > input { // Input Slider
+            display: block; // Default to showing
+        }
+
+        & > time { // Time Label tweaks for NON-Streaming Styling
+            height: 50px;
+            width: auto;
+            line-height: 50px;
+            margin: 0 10px 0 10px;
+        }
+    }
 
     & > div[data-syiro-component="button"][data-syiro-component-type="basic"]{ // Custom LESS for Basic Button Components inside Player Control
         float: left;
@@ -14,9 +38,9 @@ div[data-syiro-component="player-control"]{
         width: 32px;
         min-width: 0 !important; // Override Basic Button minimum width
         background-color: @syiroSecondaryColor;
-        border: 2px solid @syiroWhite; // White background
+        border: 2px solid fadeout(contrast(@syiroSecondaryColor), 25%); // Set the border color to the contrastic color of the Syiro Secondary Color and slightly faded to make the border less bold
         border-radius: 32px; // Make the buttons "circular"
-        margin: 7px !important; // Center on Player Control
+        margin: 7px 5px 7px 5px !important; // Center on Player Control
 
         &:not(:first-of-type){ // If the button is the last one
             float: right; // Float to the right of the Player Control
@@ -43,6 +67,7 @@ div[data-syiro-component="player-control"]{
             background-image : url("img/fullscreen.png"); // Set the background-image to img/fullscreen.png
             background-repeat: no-repeat;
             background-position: center center;
+            background-size: 18px;
         }
 
         &[data-syiro-minor-component="player-button-menu"]{ // Menu Button
@@ -119,12 +144,18 @@ div[data-syiro-component="player-control"]{
 
     & > time {
         float: left;
-        height: 50px;
-        width: auto;
-        color: @syiroWhite;
+        color: contrast(@syiroSecondaryColor); // Set the color to the contrasting color of the Syiro Secondary Color
         font-size: 14px;
-        line-height: 50px;
-        margin: 0 10px 0 10px;
+
+        &[data-syiro-component-live]{ // Live "View"
+            height: 12px;
+            width: 12px;
+            text-indent: 18px;
+            line-height: 12px;
+            background-color: #ff1212;
+            border-radius: 16px;
+            margin: 19px 10px 0 10px;
+        }
     }
 }
 
@@ -135,7 +166,7 @@ div[data-syiro-component="player-control"]{
 div[data-syiro-minor-component="player-error"]{
     float: left;
     height: 40px; // Set to 40px, which is exactly two lines of text at 20px line-height
-    color: @syiroWhite;
+    color: contrast(@syiroSecondaryColor); // Set the color to the contrasting color of the Syiro Secondary Color
     text-align: center;
     line-height: 20px;
     background-color: @syiroSecondaryColor;
@@ -153,8 +184,8 @@ div[data-syiro-minor-component="player-error"]{
 
 div[data-syiro-minor-component="player-menu"]{
     float: left;
-    color: @syiroWhite;
-    background-color: rgba(51,51,51,0.8); // Set the background color to #333333 at 80% opacity
+    color: contrast(@syiroSecondaryColor); // Set the color to the contrasting color of the Syiro Secondary Color
+    background-color: fade(@syiroSecondaryColor, 80%); // Set the background color to the Syiro Secondary Color, faded (transparency) to 80%
     margin: 0;
     padding: 0;
     position: absolute;
@@ -267,20 +298,6 @@ div[data-syiro-component="video-player"]{
         }
     }
 
-    /*
-        & > div[data-syiro-minor-component="video-ad"]{ // Video "Ad" Label
-            float: left;
-            height: 40px;
-            width: 50px;
-            color: #fafafa;
-            text-align: center; // Center text
-            line-height: 40px;
-            background-color: rgba(51,51,51,0.6); // #333333 at 60% opacity
-            position: fixed;
-            z-index: 4; // Sit below video poster, will only show when video-poster disappears
-        }
-    */
-
     & > img[data-syiro-minor-component="video-poster"]{ // Video Poster
         float: left;
         margin: 0;
@@ -302,10 +319,19 @@ div[data-syiro-component="video-player"]{
         }
     }
 
+
     & > div[data-syiro-component="player-control"] { // Overrides for Video Player's Player Control
         position: relative;
         z-index: 6; // Force above video poster
-        bottom: 60px; // Ensure the Player Control is on the bottom edge of the Video Player
+
+        &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Player Control
+            bottom: 50px; // Ensure the Player Control is on the bottom edge of the Video Player
+        }
+
+        &:not([data-syiro-component-streamstyling]){
+            bottom: 60px; // Ensure the Player Control is on the bottom edge of the Video Player
+        }
+
     }
 }
 

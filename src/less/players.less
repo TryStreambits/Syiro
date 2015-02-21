@@ -184,7 +184,7 @@ div[data-syiro-minor-component="player-error"]{
 
 div[data-syiro-minor-component="player-menu"]{
     float: left;
-    color: contrast(@syiroSecondaryColor); // Set the color to the contrasting color of the Syiro Secondary Color
+    color: contrast(@syiroSecondaryColor) !important; // Set the color to the contrasting color of the Syiro Secondary Color
     background-color: fade(@syiroSecondaryColor, 80%); // Set the background color to the Syiro Secondary Color, faded (transparency) to 80%
     margin: 0;
     padding: 0;
@@ -209,6 +209,7 @@ div[data-syiro-minor-component="player-menu"]{
         font-size: 18px !important;
 
         & > div[data-syiro-component="list-item"] {
+            color: contrast(@syiroSecondaryColor) !important; // Set the color to the contrasting color of the Syiro Secondary Color
             cursor: pointer; // Make it obvious that the items are interactable
             margin-bottom: 5px; // Ensure there is enough space between List Items
         }

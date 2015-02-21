@@ -13,6 +13,7 @@ div[data-syiro-component="list"]{ // Syiro List Component
 		display: block;
 		height: 40px;
 		width: 100%;
+		color: contrast(@syiroBackground); // Set the text color to contrast the background color of the List
 		font-size: 15px !important;
 		line-height: 40px;
 		text-indent: 10px;
@@ -39,15 +40,15 @@ div[data-syiro-component="list"]{ // Syiro List Component
 
 	&[data-syiro-component-owner^="dropdown"],&[data-syiro-component-owner^="searchbox"]{ // If the owner of the List is a Dropdown or a Searchbox
 		max-width: 200px; // Set the max width to match the max width of the Dropdown
-		background-color: @syiroGrey;
-		border-top: 2px solid @syiroBorderColor;
+		background-color: @syiroBackground; // Set background to @syiroBackground
+		border-top: 2px solid darken(@syiroBackground, 20%);
 		position: fixed; // Fixed position
 		z-index: 10; // Ensure it floats above other content
 		visibility: hidden; // Hide (not using display: block) so getBoundingClientRect properly calculates dimensions
 
 		// Modifier for toggle buttons that do not have a TRUE status within list items in a Dropdown's List
 		& > div[data-syiro-component="list-item"] > div[data-syiro-component="button"][data-syiro-component-type="toggle"]:not([data-syiro-component-status="toggle"]){
-			border: 1px solid @syiroBorderColor; // Allow easy differentiation between list-item background and toggle button
+			border: 1px solid darken(@syiroBackground, 20%); // Allow easy differentiation between list-item background and toggle button
 		}
 	}
 }

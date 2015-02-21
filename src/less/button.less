@@ -7,7 +7,7 @@ div[data-syiro-component="button"]{ // Syiro Button Component
 	&[data-syiro-component-type="basic"]{ // Syiro "Basic" Button Component
 		height: 40px;
 		min-width: 125px;
-		color: @syiroWhite !important;
+		color: contrast(@syiroPrimaryColor) !important;
 		font-size: 16px;
 		text-align: center;
 		text-decoration: none;
@@ -19,22 +19,22 @@ div[data-syiro-component="button"]{ // Syiro Button Component
 
 		&[data-syiro-component-status="false"]{ // Syiro "Basic" Button Component - "Disabled" Type CSS
 			color: @syiroSecondaryColor;
-			background-color: @syiroBorderColor; // Change the color
+			background-color: desaturate(@syiroPrimaryColor, 50%); // Change the background color to be a desaturated form of @syiroPrimaryColor
 		}
 	}
 
 	&[data-syiro-component-type="toggle"]{ // Syiro "Toggle" Button Component
 		height: 32px; // Make it smaller than the typical button
 		width: 75px; // Fixed width
-		background-color: #eeeeee;
+		background-color: darken(@syiroBackground, 5%);
 		border-radius: 32px; // Make sure the Toggle has a rounded edge
 
 		& > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
 			float: left;
 			height: 32px;
 			width: 32px;
-			background-color: @syiroSecondaryColor;
-			border-radius: 16px; // Make the buttonToggle circular
+			background-color: contrast(darken(@syiroBackground, 5%)); // Ensure the Button Toggle contrasts the background of the Toggle Button
+			border-radius: 32px; // Make the buttonToggle circular
 		}
 
 		&[data-syiro-component-status="true"]{ // Syiro "Toggle" Button - Status Set to True

@@ -90,7 +90,7 @@ div[data-syiro-component="player-control"]{
             float: left;
             height: 10px !important;
             width: 100% !important; // Have it fill the entire player-control top
-            background-color: @syiroWhite;
+            background-color: @syiroBackground;
             border: 0; // No border
             outline: 0;
             margin: 0 !important;
@@ -222,7 +222,7 @@ div[data-syiro-component="audio-player"]{
     height: auto;
     min-height: 50px; // Minimum height of player is the Player Control
     max-height: 160px; // Maximum height of player is the Player Control and Player Information
-    background-color: @syiroGrey; // Grey background
+    background-color: @syiroBackground;
 
     & > audio {
         display: hidden; // Hide the audio player
@@ -269,7 +269,7 @@ div[data-syiro-component="audio-player"]{
             }
 
             & > label {
-                color: @syiroSecondaryColor; // Secondary color
+                color: contrast(@syiroBackground); // Ensure the text is readable by making it contrast the @syiroBackground
                 font-size: 14px; // Slightly smaller than song title
             }
         }

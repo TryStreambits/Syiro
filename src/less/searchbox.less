@@ -11,7 +11,7 @@ input[data-syiro-component="searchbox"]{ // Syiro Searchbox (Input Element) Comp
 	.icon("search", 16); // Use the search icon
 	background-position: 95% center; // Place in the center right
 	border: 0; // No border
-	outline: solid @syiroBorderColor 1px; // Thin (1px) outline of the syiroBorderColor
+	outline: 1px solid darken(@syiroBackground, 20%); // Thin (1px) outline of the darkened form of the @syiroBackground
 	padding: 0; // No padding
 
 	&:focus{  // When the Searchbox is in focus

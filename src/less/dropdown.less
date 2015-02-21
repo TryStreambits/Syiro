@@ -8,18 +8,18 @@ div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
 	min-width: 40px; // Minimum width of 40px
 	max-width: 200px; // Maximum width of 200px
 	width: auto;
-	color: @syiroSecondaryColor;
+	color: contrast(darken(@syiroBackground, 2.5%));
 	font-size: 16px;
 	text-indent: 10px;
 	line-height: 40px;
 
 	.icon("dropdown", 22); // Add the default dropdown icon
-	background-color: @syiroGrey;
+	background-color: darken(@syiroBackground, 2.5%);
 
 	cursor: default; // Default to "arrow" cursor
 
 	&[active]{ // If the Dropdown is "active", change the Dropdown Label
-		color: @syiroWhite; // Ensure the text viewable
+		color: contrast(@syiroPrimaryColor);
 		background-color: @syiroPrimaryColor; // Ensure the active Dropdown is differentiated from the other Dropdowns
 
 		.icon("dropdown-inverted"); // Change the Dropdown image

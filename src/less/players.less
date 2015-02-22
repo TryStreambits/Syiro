@@ -38,9 +38,7 @@ div[data-syiro-component="player-control"]{
         width: 32px;
         min-width: 0 !important; // Override Basic Button minimum width
         background-color: @syiroSecondaryColor;
-        border: 2px solid fadeout(contrast(@syiroSecondaryColor), 25%); // Set the border color to the contrastic color of the Syiro Secondary Color and slightly faded to make the border less bold
-        border-radius: 32px; // Make the buttons "circular"
-        margin: 7px 5px 7px 5px !important; // Center on Player Control
+        margin: 9px 5px 9px 5px !important; // Center on Player Control
 
         &:not(:first-of-type){ // If the button is the last one
             float: right; // Float to the right of the Player Control
@@ -48,7 +46,6 @@ div[data-syiro-component="player-control"]{
 
         &[data-syiro-component-status="true"]{ // When the button is active
             background-color: @syiroPrimaryColor;
-            border: 2px solid @syiroPrimaryColor;
         }
 
         &[data-syiro-minor-component="player-button-play"]{ // Play Button

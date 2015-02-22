@@ -40,7 +40,7 @@ div[data-syiro-component="list"]{ // Syiro List Component
 
 	&[data-syiro-component-owner^="dropdown"],&[data-syiro-component-owner^="searchbox"]{ // If the owner of the List is a Dropdown or a Searchbox
 		max-width: 200px; // Set the max width to match the max width of the Dropdown
-		background-color: @syiroBackground; // Set background to @syiroBackground
+		background-color: darken(@syiroBackground, 2.5); // Set background to slightly darkened form of @syiroBackground
 		border-top: 2px solid darken(@syiroBackground, 20%);
 		position: fixed; // Fixed position
 		z-index: 10; // Ensure it floats above other content

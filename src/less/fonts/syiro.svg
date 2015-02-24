@@ -1,0 +1,48 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<!--
+2015-2-24: Created with FontForge (http://fontforge.org)
+-->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+<metadata>
+Created by FontForge 20150129 at Tue Feb 24 19:39:28 2015
+ By Joshua Strobl
+Copyright (c) 2015, Joshua Strobl
+</metadata>
+<defs>
+<font id="Syiro" horiz-adv-x="512" >
+  <font-face 
+    font-family="Syiro"
+    font-weight="400"
+    font-stretch="normal"
+    units-per-em="512"
+    panose-1="2 0 5 3 0 0 0 0 0 0"
+    ascent="448"
+    descent="-64"
+    bbox="-0.75 -64 512.75 464"
+    underline-thickness="25.6"
+    underline-position="-51.2"
+    unicode-range="U+0020-F106"
+  />
+    <missing-glyph />
+    <glyph glyph-name="space" unicode=" " horiz-adv-x="200" 
+ />
+    <glyph glyph-name="uniF101" unicode="&#xf101;" 
+d="M70 305l73 73l97 -97l-73 -73zM239 382l-87 -86l-86 -87l-33 119l-33 120l120 -33zM442 305l-97 -97l-73 73l97 97zM273 382l119 33l120 33l-33 -120l-33 -119l-86 87zM70 79l97 97l73 -73l-97 -97zM239 2l-119 -33l-120 -33l33 120l33 119l86 -87zM442 79l-73 -73
+l-97 97l73 73zM273 2l87 86l86 87l33 -119l33 -120l-120 33z" />
+    <glyph glyph-name="uniF104" unicode="&#xf104;" 
+d="M0 -64v256v256l256 -128l256 -128l-256 -128z" />
+    <glyph glyph-name="uniF103" unicode="&#xf103;" 
+d="M363 -64v512h149v-512h-149zM0 -64v512h149v-512h-149z" />
+    <glyph glyph-name="uniF100" unicode="&#xf100;" horiz-adv-x="494" 
+d="M47 335l-47 -44l251 -267l243 267l-47 43l-197 -216z" />
+    <glyph glyph-name="uniF102" unicode="&#xf102;" 
+d="M0 368v96h512v-96h-512zM0 144v96h512v-96h-512zM0 -64v96h512v-96h-512z" />
+    <glyph glyph-name="uniF105" unicode="&#xf105;" horiz-adv-x="513" 
+d="M335 391c68 -68 76 -175 23 -251c-7 -10 -14 -18 -23 -27c-8 -8 -17 -16 -26 -22c-77 -54 -184 -46 -252 22c-77 77 -77 201 0 278s201 77 278 0zM331 110c4 3 7 7 10 10c1 1 3 2 4 4c5 6 9 13 10 13l151 -150c9 -9 9 -25 0 -34l-10 -10c-9 -9 -25 -9 -34 0l-150 150
+s2 2 6 5c5 4 10 9 13 12zM307 362c-61 61 -160 61 -221 0s-61 -160 0 -221c54 -54 139 -60 200 -17c7 5 14 10 21 17s13 14 18 22c42 61 36 145 -18 199z" />
+    <glyph glyph-name="uniF106" unicode="&#xf106;" horiz-adv-x="504" 
+d="M260 -4l-110 98l-109 98l109 98l110 98v-196v-196zM0 239c0 24 0 24 24 24h172c24 0 24 0 24 -24v-94c0 -24 0 -24 -24 -24h-172c-24 0 -24 0 -24 24v94zM420 439l-43 -47s63 -47 63 -200s-63 -200 -63 -200l43 -47c4 3 84 76 84 247s-80 244 -84 247zM341 333l-32 -36
+s32 -23 32 -105s-32 -105 -32 -105l32 -36c2 2 48 45 48 141s-46 139 -48 141z" />
+  </font>
+</defs></svg>

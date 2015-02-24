@@ -1,4 +1,5 @@
 @import (reference) "core.less"; // Import Core as a reference
+@import (reference) "icons.less"; // Import Icons as a reference
 
 // #region Shared Player Control
 
@@ -37,6 +38,9 @@ div[data-syiro-component="player-control"]{
         height: 32px;
         width: 32px;
         min-width: 0 !important; // Override Basic Button minimum width
+        color: contrast(@syiroSecondaryColor) !important; // Ensure the color contrasts the Syiro Secondary Color
+        line-height: 32px; // Ensure the icon is centered vertically
+        text-align: center; // Ensure the icon is centered horizontally
         background-color: @syiroSecondaryColor;
         margin: 9px 5px 9px 5px !important; // Center on Player Control
 
@@ -46,32 +50,32 @@ div[data-syiro-component="player-control"]{
 
         &[data-syiro-component-status="true"]{ // When the button is active
             background-color: @syiroPrimaryColor;
-        }
-
-        &[data-syiro-minor-component="player-button-play"]{ // Play Button
-            background-image : url("img/play.png"); // Set the background-image to img/play.png
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        &[data-syiro-minor-component="player-button-volume"]{ // Volume Button
-            background-image : url("img/volume.png"); // Set the background-image to img/volume.png
-            background-repeat: no-repeat;
-            background-position: center center;
+            border-radius: 0; // Eliminate border radiusing
         }
 
         &[data-syiro-minor-component="player-button-fullscreen"]{ // Fullscreen Button
-            background-image : url("img/fullscreen.png"); // Set the background-image to img/fullscreen.png
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: 18px;
+            &:after {
+                .icon("fullscreen"); // Use the fullscreen icon
+            }
         }
 
         &[data-syiro-minor-component="player-button-menu"]{ // Menu Button
             float: right; // Ensure it floats to the right
-            background-image : url("img/menu-inverted.png"); // Set the background-image to use the inverted menu image
-            background-repeat: no-repeat;
-            background-position: center center;
+            &:after {
+                .icon("menu"); // Use the play icon
+            }
+        }
+
+        &[data-syiro-minor-component="player-button-play"]{ // Play Button
+            &:after {
+                .icon("play"); // Use the play icon
+            }
+        }
+
+        &[data-syiro-minor-component="player-button-volume"]{ // Volume Button
+            &:after {
+                .icon("volume"); // Use the volume icon
+            }
         }
     }
 

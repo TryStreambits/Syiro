@@ -1,0 +1,45 @@
+@import (reference) "core.less"; // Import Core as a reference
+
+// #region Icon Parametric Mixin - Allows easy including of a particular icon
+
+
+.icon(@iconName, @iconSize : 16) when (e(@iconName) = dropdown){
+    content: "\f100";
+}
+
+.icon(@iconName, @iconSize : 16) when (e(@iconName) = fullscreen){
+    content: "\f101";
+}
+
+.icon(@iconName, @iconSize : 16) when (e(@iconName) = menu){
+    content: "\f102";
+}
+
+.icon(@iconName, @iconSize : 16) when (e(@iconName) = pause){
+    content: "\f103";
+}
+
+.icon(@iconName, @iconSize : 16) when (e(@iconName) = play){
+    content: "\f104";
+}
+
+.icon(@iconName, @iconSize : 16) when (e(@iconName) = search){
+    content: "\f105";
+}
+
+.icon(@iconName, @iconSize : 16) when (e(@iconName) = volume){
+    content: "\f106";
+}
+
+.icon(@iconName, @iconSize : 16){ // Call .icon from within &:before
+    display: inline-block;
+    font-family: "Syiro";
+    font-size: unit(@iconSize, px); // Set font-size to the provided iconSize or default 16
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-decoration: inherit;
+    text-transform: none;
+}
+
+//#endregion

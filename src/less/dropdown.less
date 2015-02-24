@@ -1,5 +1,6 @@
 @import (reference) "animations.less"; // Import Animations as a reference
 @import (reference) "core.less"; // Import Core as a reference
+@import (reference) "icons.less"; // Import Icons as a reference
 
 div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
 	float: left;
@@ -13,7 +14,12 @@ div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
 	text-indent: 10px;
 	line-height: 40px;
 
-	.icon("dropdown", 22); // Add the default dropdown icon
+	&:after {
+		float: right;
+		.icon("dropdown"); // Use the dropdown icon
+		margin-right: 10px;
+	}
+
 	background-color: darken(@syiroBackground, 2.5%);
 
 	cursor: default; // Default to "arrow" cursor
@@ -22,11 +28,15 @@ div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
 		color: contrast(@syiroPrimaryColor);
 		background-color: @syiroPrimaryColor; // Ensure the active Dropdown is differentiated from the other Dropdowns
 
-		.icon("dropdown-inverted"); // Change the Dropdown image
+		&:after {
+			float: right;
+			.icon("dropdown"); // Use the dropdown icon
+			margin-right: 10px;
+		}
 	}
 
 	&:not(:empty) { // If the Dropdown has children
-		background-position: 95% center; // Have the Dropdown icon float to the right
+		min-width: 200px;
 
 		& > img{ // Syiro Dropdown Label Image (Optional)
 			float: left;
@@ -38,6 +48,7 @@ div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
 	&:empty { // If the Dropdown is icon-only
 		background-position: center center; // Have the Dropdown icon be centered
 		background-size: 40px auto; // Set the background-size to the minimum 40px size
+		min-width: 40px; // Minimum width of 40px
 	}
 
 	&::selection{ // If the dropdown is double-clicked, that acts as a text selection
@@ -47,6 +58,5 @@ div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
 	& > label{ // Syiro Dropdown Label
 		float: left;
 		height: 40px;
-		min-width: 200px;
 	}
 }

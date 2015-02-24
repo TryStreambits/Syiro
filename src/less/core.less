@@ -7,26 +7,38 @@
 	src: local('Source Sans Pro'), local('SourceSansPro-Regular'), local('SourceSansPro'), url(fonts/ssp.woff) format('woff');
 }
 
+@font-face {
+	font-family: "Syiro";
+	src: url(fonts/syiro.eot);
+	src: url(fonts/syiro.eot?#iefix) format("embedded-opentype"),
+		url(fonts/syiro.woff) format("woff"),
+		url(fonts/syiro.ttf) format("truetype"),
+		url(fonts/syiro.svg#Syiro) format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	@font-face {
+		font-family: "Syiro";
+		src: url("./Syiro_884a2f71eb4787486998edb9f5eecb0d.svg#Syiro") format("svg");
+	}
+}
+
 // #endregion
 
 @syiroBackground: #fafafa;
 @syiroPrimaryColor: #0099ff;
 @syiroSecondaryColor: #333333;
 
-// #region Icon Parametric Mixin - Allows easy including of a particular icon
-
-.icon(@iconImage : "dropdown", @iconSize : 22){
-	background-image : url("img/@{iconImage}.png"); // Set the background-image to img/iconImage.png
-	background-size: unit(@iconSize, px); // Set the background-size to the iconSize
-	background-repeat: no-repeat; // Don't repeat the icon
-}
-
-//#endregion
-
 // #region Multi-component font utilization
 
 *[data-syiro-component]{ // Have all components utilize a uniform font
 	font-family: 'Source Sans Pro', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
+	font-smoothing: antialiased; // Ensure font-smoothing
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
 }
 
 // #endregion

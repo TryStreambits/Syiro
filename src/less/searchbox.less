@@ -1,4 +1,5 @@
 @import (reference) "core.less"; // Import Core as a reference
+@import (reference) "icons.less"; // Import Icons as a reference
 
 input[data-syiro-component="searchbox"]{ // Syiro Searchbox (Input Element) Component
 	float: left;
@@ -8,7 +9,11 @@ input[data-syiro-component="searchbox"]{ // Syiro Searchbox (Input Element) Comp
 	line-height: 40px;
 	text-indent: 10px;
 
-	.icon("search", 16); // Use the search icon
+	&:after {
+		color: @syiroPrimaryColor;
+		.icon("search"); // Use the search icon at 16px
+	}
+
 	background-position: 95% center; // Place in the center right
 	border: 0; // No border
 	outline: 1px solid darken(@syiroBackground, 20%); // Thin (1px) outline of the darkened form of the @syiroBackground

@@ -16,11 +16,6 @@ div[data-syiro-component="button"]{ // Syiro Button Component
 		cursor: default; // Force "arrow" cursor
 		border-radius: 3px;
 		-webkit-border-radius: 3px;
-
-		&[data-syiro-component-status="false"]{ // Syiro "Basic" Button Component - "Disabled" Type CSS
-			color: @syiroSecondaryColor;
-			background-color: desaturate(@syiroPrimaryColor, 50%); // Change the background color to be a desaturated form of @syiroPrimaryColor
-		}
 	}
 
 	&[data-syiro-component-type="toggle"]{ // Syiro "Toggle" Button Component

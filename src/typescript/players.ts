@@ -304,7 +304,7 @@ module syiro.player {
                         syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", true); // Set the IsChangingInputValue to true so the timeupdate won't change the value on us
                         syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", true); // Set the IsChangingVolume to true so we don't end up changing the "location" in the content
 
-                        volumeButton.setAttribute("data-syiro-component-status", "true"); // Set component status to true to imply it is active
+                        volumeButton.setAttribute("active", "true"); // Set component active to true to imply it is active
 
                         var playerRangeValueFromVolume : string = (playerContentElement.volume * 100).toString();
 
@@ -317,7 +317,7 @@ module syiro.player {
                         }
                     }
                     else{ // If we are already actively doing a volume change, meaning the user wants to switch back to the normal view
-                        volumeButton.removeAttribute("data-syiro-component-status"); // Remove component-status to imply volume icon is not active
+                        volumeButton.removeAttribute("active"); // Remove component-active to imply volume icon is not active
 
                         playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent); // Get a returned Object with the max the input range should be, as well as a reasonable, pre-calculated amount of steps.
                         playerRange.value = playerContentElement.currentTime; // Set the playerRange value to the currentTime
@@ -764,11 +764,11 @@ module syiro.player {
             syiro.component.CSS(menuDialog, "height", playerMenuHeight.toString() + "px"); // Set the height of the menu dialog
             syiro.component.CSS(menuDialog, "width", componentElement.clientWidth.toString() + "px"); // Set the width of the menu dialog to be the same as the componentElement
 
-            menuButton.setAttribute("data-syiro-component-status", "true"); // Set the menu button status to true
+            menuButton.setAttribute("active", "true"); // Set the menu button active to true
             syiro.component.CSS(menuDialog, "visibility", "visible"); // Show the menu dialog
         }
         else{ // If the Menu dialog currently IS showing
-            menuButton.removeAttribute("data-syiro-component-status"); // Remove the menu button status
+            menuButton.removeAttribute("active"); // Remove the menu button active status
             syiro.component.CSS(menuDialog, "visibility", false); // Hide the menu dialog (removing the visibility attribute, putting the Menu Dialog back to default state)
             syiro.component.CSS(menuDialog, "height", false); // Remove the height attribute from the Player Menu Dialog
             syiro.component.CSS(menuDialog, "width", false); // Remove the width attribute from the Player Menu Dialog
@@ -988,14 +988,17 @@ module syiro.audioplayer {
             // #region Third-Party Streaming Support
             // This section will determine if we are using a third-party library for live streaming support (like dashjs)
 
-            if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)){ // If an external library is going to be tying into the Syiro Audio Player
-                syiro.data.Write(componentId + "->ExternalLibrary", true); // Write an ExternalLibrary key/val to the Syiro Data System regarding this content
+            var usingExternalLibrary = false; // Declare a variable that we'll use to determine if we are using an external library and tying that into Syiro Player
+
+            if ((typeof properties["external-library"] !== "undefined")&& (properties["external-library"] == true)){ // If an external library is going to be tying into the Syiro Video Player
+                usingExternalLibrary = true;
             }
 
             // #endregion
 
             syiro.data.Write(componentId, // Store the Audio Player Component Element Details we generated
                 {
+                    "ExternalLibrary" : usingExternalLibrary, // Define whether we are using an external library with the player or not
                     "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
                     "scaling" : { // Create a scaling details Object
                         "initialDimensions" : [160, properties["width"]], // Set the initialDimensions to 160px height and width as properties[width]
@@ -1106,14 +1109,17 @@ module syiro.videoplayer {
             // #region Third-Party Streaming Support
             // This section will determine if we are using a third-party library for live streaming support (like dashjs)
 
-            if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)){ // If an external library is going to be tying into the Syiro Video Player
-                syiro.data.Write(componentId + "->ExternalLibrary", true); // Write an ExternalLibrary key/val to the Syiro Data System regarding this content
+            var usingExternalLibrary = false; // Declare a variable that we'll use to determine if we are using an external library and tying that into Syiro Player
+
+            if ((typeof properties["external-library"] !== "undefined")&& (properties["external-library"] == true)){ // If an external library is going to be tying into the Syiro Video Player
+                usingExternalLibrary = true;
             }
 
             // #endregion
 
             syiro.data.Write(componentId, // Store the Video Player Component Element Details we generated
                 {
+                    "ExternalLibrary" : usingExternalLibrary, // Define whether we are using an external library with the player or not
                     "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
                     "scaling" : { // Create a scaling details Object
                         "initialDimensions" : [properties["height"], properties["width"]], // Set the initialDimensions to video Height and width as video Width

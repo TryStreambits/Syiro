@@ -1565,7 +1565,7 @@ var syiro;
                 if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true) {
                     syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", true);
                     syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", true);
-                    volumeButton.setAttribute("data-syiro-component-status", "true");
+                    volumeButton.setAttribute("active", "true");
                     var playerRangeValueFromVolume = (playerContentElement.volume * 100).toString();
                     playerRangeAttributes["max"] = "100";
                     playerRangeAttributes["step"] = "1";
@@ -1575,7 +1575,7 @@ var syiro;
                     }
                 }
                 else {
-                    volumeButton.removeAttribute("data-syiro-component-status");
+                    volumeButton.removeAttribute("active");
                     playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent);
                     playerRange.value = playerContentElement.currentTime;
                     if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")) {
@@ -1885,11 +1885,11 @@ var syiro;
                 }
                 syiro.component.CSS(menuDialog, "height", playerMenuHeight.toString() + "px");
                 syiro.component.CSS(menuDialog, "width", componentElement.clientWidth.toString() + "px");
-                menuButton.setAttribute("data-syiro-component-status", "true");
+                menuButton.setAttribute("active", "true");
                 syiro.component.CSS(menuDialog, "visibility", "visible");
             }
             else {
-                menuButton.removeAttribute("data-syiro-component-status");
+                menuButton.removeAttribute("active");
                 syiro.component.CSS(menuDialog, "visibility", false);
                 syiro.component.CSS(menuDialog, "height", false);
                 syiro.component.CSS(menuDialog, "width", false);
@@ -2027,10 +2027,12 @@ var syiro;
                     }
                 }
                 componentElement.appendChild(playerControlElement);
+                var usingExternalLibrary = false;
                 if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)) {
-                    syiro.data.Write(componentId + "->ExternalLibrary", true);
+                    usingExternalLibrary = true;
                 }
                 syiro.data.Write(componentId, {
+                    "ExternalLibrary": usingExternalLibrary,
                     "HTMLElement": componentElement,
                     "scaling": {
                         "initialDimensions": [160, properties["width"]],
@@ -2095,10 +2097,12 @@ var syiro;
                         componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
                     }
                 }
+                var usingExternalLibrary = false;
                 if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)) {
-                    syiro.data.Write(componentId + "->ExternalLibrary", true);
+                    usingExternalLibrary = true;
                 }
                 syiro.data.Write(componentId, {
+                    "ExternalLibrary": usingExternalLibrary,
                     "HTMLElement": componentElement,
                     "scaling": {
                         "initialDimensions": [properties["height"], properties["width"]],

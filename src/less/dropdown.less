@@ -6,23 +6,28 @@ div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
 	float: left;
 	height: auto;
 	min-height: 40px; // Minimum height of 40px
-	min-width: 40px; // Minimum width of 40px
-	max-width: 200px; // Maximum width of 200px
-	width: auto;
-	color: contrast(darken(@syiroBackground, 2.5%));
 	font-size: 16px;
 	text-indent: 10px;
 	line-height: 40px;
+	cursor: default; // Default to "arrow" cursor
 
 	&:after {
 		float: right;
 		.icon("dropdown"); // Use the dropdown icon
-		margin-right: 10px;
 	}
 
-	background-color: darken(@syiroBackground, 2.5%);
 
-	cursor: default; // Default to "arrow" cursor
+	&:not([active]){ // IF the Dropdown is NOT "active"
+		color: contrast(darken(@syiroBackground, 2.5%));
+		background-color: darken(@syiroBackground, 2.5%);
+
+		&:after {
+			float: right;
+			color: @syiroPrimaryColor;
+			.icon("dropdown"); // Use the dropdown icon
+			margin-right: 10px;
+		}
+	}
 
 	&[active]{ // If the Dropdown is "active", change the Dropdown Label
 		color: contrast(@syiroPrimaryColor);

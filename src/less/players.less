@@ -6,7 +6,7 @@
 div[data-syiro-component="player-control"]{
     float: left;
     width: 100%; // Scales to width of video player if necessary
-    background-color: @syiroSecondaryColor;
+    background-color: @syiroPlayerControlColor;
 
     &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Player Control
         height: 50px !important; // Set height to 50px
@@ -38,19 +38,20 @@ div[data-syiro-component="player-control"]{
         height: 32px;
         width: 32px;
         min-width: 0 !important; // Override Basic Button minimum width
-        color: contrast(@syiroSecondaryColor) !important; // Ensure the color contrasts the Syiro Secondary Color
+        color: contrast(@syiroPlayerControlColor) !important; // Ensure the color contrasts the syiroPlayerControlColor
         line-height: 32px; // Ensure the icon is centered vertically
         text-align: center; // Ensure the icon is centered horizontally
-        background-color: @syiroSecondaryColor;
+        background-color: transparent;
+        border-radius: 0;
         margin: 9px 5px 9px 5px !important; // Center on Player Control
 
         &:not(:first-of-type){ // If the button is the last one
             float: right; // Float to the right of the Player Control
         }
 
-        &[data-syiro-component-status="true"]{ // When the button is active
-            background-color: @syiroPrimaryColor;
-            border-radius: 0; // Eliminate border radiusing
+        &[active]:not([data-syiro-minor-component="player-button-play"]){ // If the button is active and it is not the play button
+            color: @syiroPlayerControlColor !important; // Set the text color to the syiroPlayerControlColor
+            background-color: contrast(@syiroPlayerControlColor) !important; // Set the background to the contrast of the syiroPlayerControlColor
         }
 
         &[data-syiro-minor-component="player-button-fullscreen"]{ // Fullscreen Button
@@ -61,6 +62,7 @@ div[data-syiro-component="player-control"]{
 
         &[data-syiro-minor-component="player-button-menu"]{ // Menu Button
             float: right; // Ensure it floats to the right
+
             &:after {
                 .icon("menu"); // Use the play icon
             }
@@ -153,7 +155,7 @@ div[data-syiro-component="player-control"]{
 
     & > time {
         float: left;
-        color: contrast(@syiroSecondaryColor); // Set the color to the contrasting color of the Syiro Secondary Color
+        color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the syiroPlayerControlColor
         font-size: 14px;
 
         &[data-syiro-component-live]{ // Live "View"
@@ -175,10 +177,10 @@ div[data-syiro-component="player-control"]{
 div[data-syiro-minor-component="player-error"]{
     float: left;
     height: 40px; // Set to 40px, which is exactly two lines of text at 20px line-height
-    color: contrast(@syiroSecondaryColor); // Set the color to the contrasting color of the Syiro Secondary Color
+    color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the syiroPlayerControlColor
     text-align: center;
     line-height: 20px;
-    background-color: @syiroSecondaryColor;
+    background-color: @syiroPlayerControlColor;
     margin: 0;
     padding: 0;
     position: absolute;
@@ -193,8 +195,8 @@ div[data-syiro-minor-component="player-error"]{
 
 div[data-syiro-minor-component="player-menu"]{
     float: left;
-    color: contrast(@syiroSecondaryColor) !important; // Set the color to the contrasting color of the Syiro Secondary Color
-    background-color: fade(@syiroSecondaryColor, 80%); // Set the background color to the Syiro Secondary Color, faded (transparency) to 80%
+    color: contrast(@syiroPlayerControlColor) !important; // Set the color to the contrasting color of the background color
+    background-color: fade(@syiroPlayerControlColor, 80%); // Set the background color to the syiroBackgroundColor, faded (transparency) to 80%
     margin: 0;
     padding: 0;
     position: absolute;
@@ -218,7 +220,7 @@ div[data-syiro-minor-component="player-menu"]{
         font-size: 18px !important;
 
         & > div[data-syiro-component="list-item"] {
-            color: contrast(@syiroSecondaryColor) !important; // Set the color to the contrasting color of the Syiro Secondary Color
+            color: contrast(@syiroPlayerControlColor) !important; // Set the color to the contrasting color of the syiroPlayerControlColor
             cursor: pointer; // Make it obvious that the items are interactable
             margin-bottom: 5px; // Ensure there is enough space between List Items
         }

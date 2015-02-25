@@ -1,5 +1,5 @@
 # Our app cache so we don't hit the Blender or Wikipedia servers
-# v1.2
+# v1.3
 
 http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg
 http://upload.wikimedia.org/wikipedia/en/thumb/a/ac/XiphophorusLogoSVG.svg/132px-XiphophorusLogoSVG.svg.png

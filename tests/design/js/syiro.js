@@ -1671,11 +1671,16 @@ var syiro;
             var allowPlaying = false;
             var playerComponentElement = syiro.component.Fetch(component);
             var innerContentElement = syiro.player.FetchInnerContentElement(component);
-            var playerSources = syiro.player.FetchSources(component);
-            for (var playerSourceIndex in playerSources) {
-                if (innerContentElement.canPlayType(playerSources[playerSourceIndex]["type"]) !== "") {
-                    allowPlaying = true;
+            if (syiro.data.Read(component["id"] + "->ExternalLibrary") !== true) {
+                var playerSources = syiro.player.FetchSources(component);
+                for (var playerSourceIndex in playerSources) {
+                    if (innerContentElement.canPlayType(playerSources[playerSourceIndex]["type"]) !== "") {
+                        allowPlaying = true;
+                    }
                 }
+            }
+            else {
+                allowPlaying = true;
             }
             if (allowPlaying == true) {
                 if (playButtonComponentObject == undefined) {
@@ -1689,11 +1694,11 @@ var syiro;
                 }
                 if (innerContentElement.paused !== true) {
                     innerContentElement.pause();
-                    syiro.component.CSS(playButtonComponentObject, "background-image", false);
+                    playButton.removeAttribute("active");
                 }
                 else {
                     innerContentElement.play();
-                    syiro.component.CSS(playButtonComponentObject, "background-image", "url(css/img/pause.png)");
+                    playButton.setAttribute("active", "pause");
                 }
             }
             else {
@@ -2022,6 +2027,9 @@ var syiro;
                     }
                 }
                 componentElement.appendChild(playerControlElement);
+                if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)) {
+                    syiro.data.Write(componentId + "->ExternalLibrary", true);
+                }
                 syiro.data.Write(componentId, {
                     "HTMLElement": componentElement,
                     "scaling": {
@@ -2086,6 +2094,9 @@ var syiro;
                         playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"]));
                         componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
                     }
+                }
+                if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)) {
+                    syiro.data.Write(componentId + "->ExternalLibrary", true);
                 }
                 syiro.data.Write(componentId, {
                     "HTMLElement": componentElement,

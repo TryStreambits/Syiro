@@ -465,12 +465,17 @@ module syiro.player {
         var playerComponentElement = syiro.component.Fetch(component); // Get the Component Element of the Player
         var innerContentElement = syiro.player.FetchInnerContentElement(component); // Get the inner audio or video Element
 
-        var playerSources : Array<Object> = syiro.player.FetchSources(component); // Fetch the sources from the innerContentElement
+        if (syiro.data.Read(component["id"] + "->ExternalLibrary") !== true){ // If an external library is not being used to tie into Syiro Players, check for codec support
+            var playerSources : Array<Object> = syiro.player.FetchSources(component); // Fetch the sources from the innerContentElement
 
-        for (var playerSourceIndex in playerSources){ // For each source in playerSources
-            if (innerContentElement.canPlayType(playerSources[playerSourceIndex]["type"]) !== ""){ // If we do not get an empty string returned, meaning we may be able to play the content
-                allowPlaying = true; // Set allowPlaying to true
+            for (var playerSourceIndex in playerSources){ // For each source in playerSources
+                if (innerContentElement.canPlayType(playerSources[playerSourceIndex]["type"]) !== ""){ // If we do not get an empty string returned, meaning we may be able to play the content
+                    allowPlaying = true; // Set allowPlaying to true
+                }
             }
+        }
+        else{ // If an external library is being used, assume it will make the content playable (else, what is the point in having the library?)
+            allowPlaying = true; // Set allowPlaying to true
         }
 
         if (allowPlaying == true){ // If the content is able to be played
@@ -493,11 +498,11 @@ module syiro.player {
 
             if (innerContentElement.paused !== true){ // If the audio or video Element is playing
                 innerContentElement.pause(); // Pause the audio or video Element
-                syiro.component.CSS(playButtonComponentObject, "background-image", false); // Remove the background-image style / reset to play
+                playButton.removeAttribute("active"); // Remove the active attribute if it exists, since it is used to imply play / pause iconography
             }
             else{ // If the audio or video Element is paused
                 innerContentElement.play(); // Play the audio or video Element
-                syiro.component.CSS(playButtonComponentObject, "background-image", "url(css/img/pause.png)"); // Set background-image to pause
+                playButton.setAttribute("active", "pause"); // Set the active attribute to "pause" to indicate using the pause icon
             }
         }
         else{ // If the content can not be played
@@ -980,6 +985,15 @@ module syiro.audioplayer {
 
             componentElement.appendChild(playerControlElement); // Append the player control
 
+            // #region Third-Party Streaming Support
+            // This section will determine if we are using a third-party library for live streaming support (like dashjs)
+
+            if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)){ // If an external library is going to be tying into the Syiro Audio Player
+                syiro.data.Write(componentId + "->ExternalLibrary", true); // Write an ExternalLibrary key/val to the Syiro Data System regarding this content
+            }
+
+            // #endregion
+
             syiro.data.Write(componentId, // Store the Audio Player Component Element Details we generated
                 {
                     "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
@@ -1088,6 +1102,16 @@ module syiro.videoplayer {
             }
 
             // #endregion
+
+            // #region Third-Party Streaming Support
+            // This section will determine if we are using a third-party library for live streaming support (like dashjs)
+
+            if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)){ // If an external library is going to be tying into the Syiro Video Player
+                syiro.data.Write(componentId + "->ExternalLibrary", true); // Write an ExternalLibrary key/val to the Syiro Data System regarding this content
+            }
+
+            // #endregion
+
             syiro.data.Write(componentId, // Store the Video Player Component Element Details we generated
                 {
                     "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement

@@ -67,8 +67,16 @@ div[data-syiro-component="player-control"]{
         }
 
         &[data-syiro-minor-component="player-button-play"]{ // Play Button
-            &:after {
-                .icon("play"); // Use the play icon
+            &:not([active]){  // If we are not using the icon as "pause"
+                &:after {
+                    .icon("play"); // Use the play icon
+                }
+            }
+
+            &[active]{ // If we are treaing the icon as a pause icon
+                &:after {
+                    .icon("pause"); // Use the play icon
+                }
             }
         }
 

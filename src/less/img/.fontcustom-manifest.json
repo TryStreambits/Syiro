@@ -1,13 +1,13 @@
 {
   "checksum": {
-    "previous": "edef88c6114ff0c5a6f7f3309637d002bd56764a2e63ce6489a088aca1e3237d",
-    "current": "edef88c6114ff0c5a6f7f3309637d002bd56764a2e63ce6489a088aca1e3237d"
+    "previous": "9579ddaee325bd24ce4c52911589a16bfd5d3b717633821dfbd5cf72f1265fb7",
+    "current": "9579ddaee325bd24ce4c52911589a16bfd5d3b717633821dfbd5cf72f1265fb7"
   },
   "fonts": [
-    "Syiro/Syiro_edef88c6114ff0c5a6f7f3309637d002.ttf",
-    "Syiro/Syiro_edef88c6114ff0c5a6f7f3309637d002.svg",
-    "Syiro/Syiro_edef88c6114ff0c5a6f7f3309637d002.woff",
-    "Syiro/Syiro_edef88c6114ff0c5a6f7f3309637d002.eot"
+    "Syiro/Syiro.ttf",
+    "Syiro/Syiro.svg",
+    "Syiro/Syiro.woff",
+    "Syiro/Syiro.eot"
   ],
   "glyphs": {
     "dropdown": {
@@ -54,7 +54,7 @@
       "templates": "./",
       "vectors": "./"
     },
-    "no_hash": false,
+    "no_hash": true,
     "output": {
       "css": "Syiro",
       "fonts": "Syiro",

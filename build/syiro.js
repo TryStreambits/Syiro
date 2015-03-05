@@ -526,7 +526,7 @@ var syiro;
                 componentElement = component;
             }
             dimensionsAndPosition["x"] = componentElement.offsetLeft;
-            dimensionsAndPosition["y"] = componentElement.offsetTop;
+            dimensionsAndPosition["y"] = componentElement.offsetTop - window.scrollY;
             dimensionsAndPosition["height"] = componentElement.offsetHeight;
             dimensionsAndPosition["width"] = componentElement.offsetWidth;
             return dimensionsAndPosition;

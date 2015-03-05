@@ -182,7 +182,7 @@ module syiro.component {
 		}
 
 		dimensionsAndPosition["x"] = componentElement.offsetLeft; // Set the dimensionsAndPosition X to the Element's left offset
-		dimensionsAndPosition["y"] = componentElement.offsetTop; // Set the dimensionsAndPosition Y to the Element's top offset
+		dimensionsAndPosition["y"] = componentElement.offsetTop - window.scrollY; // Set the dimensionsAndPosition Y to the Element's top offset minus the amount of scrolling that has occurred.
 		dimensionsAndPosition["height"] = componentElement.offsetHeight; // Set the dimensionsAndPosition height to the Element's height offset
 		dimensionsAndPosition["width"] = componentElement.offsetWidth; // Set the dimensionsAndPosition width to the Element's width offset
 

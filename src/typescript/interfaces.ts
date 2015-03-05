@@ -58,6 +58,7 @@ interface Screen { // Implementation of Screen
 interface Window { // Implementation of valid spec not found in lib.d.ts
 	crypto : any; // Define crypto as any
 	ontouchend : any; // Define ontouchend as any
+	scrollY : number; // Define scrollY as a number
 }
 
 // #region Official Plugins

@@ -44,6 +44,7 @@ interface Screen {
 interface Window {
     crypto: any;
     ontouchend: any;
+    scrollY: number;
 }
 declare module syiro.plugin.alternativeInit {
     function Init(): void;

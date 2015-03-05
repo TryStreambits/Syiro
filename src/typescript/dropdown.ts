@@ -33,10 +33,6 @@ module syiro.dropdown {
 				componentElement.appendChild(dropdownLabelText); // Append the label to the Dropdown
 			}
 
-			if (properties["icon"] !== undefined){ // If an icon is defined in the labelProperties
-				syiro.component.CSS(componentElement, "background-image", "url(" + properties["icon"] + ")"); // Set the background-image to the icon
-			}
-
 			// #endregion
 
 			// #region Dropdown List Creation or Linking
@@ -87,24 +83,15 @@ module syiro.dropdown {
 		var linkedListComponentObject : Object = syiro.component.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown
 		var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponentObject); // Get the List Component's Element
 
-		var currentIcon = syiro.component.CSS(component, "background-image"); // Get the background-image, assuming it isn't the default
-
 		if (syiro.component.CSS(linkedListComponentElement, "visibility") !== false){ // If the CSS of the linked List Component is stating the List is active (visibility is visible)
-			if (currentIcon !== false){ // If the currentIcon exists
-				syiro.component.CSS(component, "background-image", currentIcon.replace("-inverted", "")); // Remove the -inverted from the icon
-			}
-
 			componentElement.removeAttribute("active"); // Remove the "active" attribute
 			syiro.component.CSS(linkedListComponentElement, "visibility", false); // Remove the visibility attribute and hide the List
 		}
 		else{ // If the linked List is not active / showing
+			syiro.component.CSS(linkedListComponentElement, "width", componentElement.clientWidth + "px"); // Ensure the Linked List is the same width of the Dropdown
+
 			var positionInformation : Array<string> = syiro.data.Read(linkedListComponentObject["id"] + "->render"); // Get the position information on where we should render the List
 			syiro.render.Position(positionInformation, linkedListComponentObject, component); // Set the position of the List according to the position information for the Dropdown
-
-			if (currentIcon !== false){ // If the currentIcon exists
-				var currentIconWithoutExtension = currentIcon.substr(0, currentIcon.indexOf(".")); // Get the entire name of the file without the extension
-				syiro.CSS(component, "background-image", currentIcon.replace(currentIconWithoutExtension, currentIconWithoutExtension + "-inverted")); // Replace the file name with filename-inverted
-			}
 
 			componentElement.setAttribute("active", ""); // Set the "active" attribute
 			syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Show the List

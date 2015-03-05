@@ -81,12 +81,14 @@ module syiro.searchbox {
 
 	export function Suggestions(...args : any[]){
 		var searchboxComponent : Object = arguments[0]; // Define the Searchbox Component as the first argument
+		var searchboxElement : Element = syiro.component.Fetch(searchboxComponent); // Define searchboxElement as the fetched Searchbox Component Element
 		var searchboxValue : string = arguments[1]; // Define searchboxValue as the second argument
 
 		var linkedListComponent : Object = syiro.component.FetchLinkedListComponentObject(searchboxComponent); // Fetch the Linked List of the Searchbox Component
 		var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponent); // Fetch the Element of the List Component
 		var innerListItemsOfLinkedList : any = linkedListComponentElement.querySelectorAll('div[data-syiro-component="list-item"]'); // Fetch a NodeList of Elements of all the List Items in the List
 
+		syiro.component.CSS(linkedListComponentElement, "width", searchboxElement.clientWidth + "px"); // Ensure the Linked List is the same width of the Searchbox
 		syiro.render.Position(["below", "center"], linkedListComponent, searchboxComponent); // Position the Linked List Component below and centered in relation to the Searchbox Component
 
 		if (searchboxValue !== ""){ // If the value is not empty

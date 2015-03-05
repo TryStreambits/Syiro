@@ -5,7 +5,6 @@ div[data-syiro-component="list"]{ // Syiro List Component
 	height: auto;
 	min-height: 40px;
 	width: auto;
-	min-width: 200px; // 100% of the parent of the List component
 	overflow: hidden; // Hide overflow
 
 	& > div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Syiro List Item Component (Only applies if the List Item does not have the attribute nonstrict-formatting)
@@ -39,7 +38,6 @@ div[data-syiro-component="list"]{ // Syiro List Component
 	}
 
 	&[data-syiro-component-owner^="dropdown"],&[data-syiro-component-owner^="searchbox"]{ // If the owner of the List is a Dropdown or a Searchbox
-		max-width: 200px; // Set the max width to match the max width of the Dropdown
 		background-color: darken(@syiroBackground, 2.5); // Set background to slightly darkened form of @syiroBackground
 		border-top: 2px solid darken(@syiroBackground, 20%);
 		position: fixed; // Fixed position

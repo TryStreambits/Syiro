@@ -1,9 +1,11 @@
 /*
- This is the module for Syiro Button component.
+ This is the module for the Syiro Button, Buttongroup, and Toggle Button components.
  */
 
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
+
+// #region Syiro Button and Toggle Button Functionality
 
 module syiro.button {
 
@@ -101,3 +103,27 @@ module syiro.button {
 	// #endregion
 
 }
+
+// #endregion
+
+// #region Syiro Buttongroup Component
+
+module syiro.buttongroup {
+
+	// #region Buttongroup Generator
+
+	export function Generate(properties : Object){
+		if (typeof properties["items"] == "object"){ // If items is an Object (Array<Object>)
+			var buttonGroupContainer : Element = syiro.generator.ElementCreator("div", { "data-syiro-component" : "buttongroup"} );
+
+			for (var buttonItem in properties["items"]){
+				
+			}
+		}
+	}
+
+	// #endreigon
+
+}
+
+// #endregion

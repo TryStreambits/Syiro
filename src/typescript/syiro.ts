@@ -95,7 +95,11 @@ module syiro {
 
 		// #region Watch DOM For Components
 
-		if (typeof MutationObserver !== "undefined"){ // If MutationObserver is supported by the browser
+		if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")){ // If MutationObserver is supported by the browser
+			if (typeof WebKitMutationObserver !== "undefined"){ // If WebKitMutationObserver is used instead (like on iOS)
+				MutationObserver = WebKitMutationObserver; // Set MutationObserver to WebKitMutationObserver
+			}
+
 			var mutationWatcher = new MutationObserver(
 				function(mutations : Array<MutationRecord>){ // Define mutationHandler as a variable that consists of a function that handles mutationRecords
 					mutations.forEach( // For each mutation that occured

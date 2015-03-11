@@ -1,3 +1,4 @@
+var WebKitMutationObserver;
 var syiro;
 (function (syiro) {
     var data;
@@ -887,7 +888,7 @@ var syiro;
             else {
                 syiro.events.eventStrings["orientationchange"] = ["orientationchange-viainterval"];
             }
-            if (typeof syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval") {
+            if (syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval") {
                 syiro.events.Add(syiro.events.eventStrings["orientationchange"], syiro.device.OrientationObject, orientationChangeHandler);
             }
             else {
@@ -1152,6 +1153,20 @@ var syiro;
         }
         button.SetLabel = SetLabel;
     })(button = syiro.button || (syiro.button = {}));
+})(syiro || (syiro = {}));
+var syiro;
+(function (syiro) {
+    var buttongroup;
+    (function (buttongroup) {
+        function Generate(properties) {
+            if (typeof properties["items"] == "object") {
+                var buttonGroupContainer = syiro.generator.ElementCreator("div", { "data-syiro-component": "buttongroup" });
+                for (var buttonItem in properties["items"]) {
+                }
+            }
+        }
+        buttongroup.Generate = Generate;
+    })(buttongroup = syiro.buttongroup || (syiro.buttongroup = {}));
 })(syiro || (syiro = {}));
 var syiro;
 (function (syiro) {
@@ -2400,7 +2415,10 @@ var syiro;
             var viewportMetaTag = syiro.generator.ElementCreator("meta", { "name": "viewport", "content-attr": "width=device-width, initial-scale=1,user-scalable=no" });
             documentHeadSection.appendChild(viewportMetaTag);
         }
-        if (typeof MutationObserver !== "undefined") {
+        if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")) {
+            if (typeof WebKitMutationObserver !== "undefined") {
+                MutationObserver = WebKitMutationObserver;
+            }
             var mutationWatcher = new MutationObserver(function (mutations) {
                 mutations.forEach(function (mutation) {
                     if (mutation.type == "childList") {

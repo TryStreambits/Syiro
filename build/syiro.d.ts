@@ -1,3 +1,4 @@
+declare var WebKitMutationObserver: any;
 interface Object {
     id?: string;
     type: string;
@@ -120,6 +121,9 @@ declare module syiro.button {
     function Generate(properties: Object): Object;
     function SetIcon(component: Object, content: string): boolean;
     function SetLabel(component: Object, content: string): boolean;
+}
+declare module syiro.buttongroup {
+    function Generate(properties: Object): void;
 }
 declare module syiro.list {
     function Generate(properties: Object): Object;

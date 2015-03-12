@@ -90,7 +90,7 @@ module syiro.button {
 
 		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") == "basic")){ // If the button exists in syiro.data.storage or DOM AND button is "basic" rather than toggle
 			componentElement.textContent = content; // Set the button component textContent
-			syiro.component.Update(component["id"] + "->HTMLElement", componentElement); // Update the storedComponent (if necessary)
+			syiro.component.Update(component["id"], componentElement); // Update the storedComponent (if necessary)
 			setSucceeded = true; // Define setSucceeded as true
 		}
 		else{ // If it is NOT a basic button
@@ -113,16 +113,54 @@ module syiro.buttongroup {
 	// #region Buttongroup Generator
 
 	export function Generate(properties : Object){
-		if (typeof properties["items"] == "object"){ // If items is an Object (Array<Object>)
-			var buttonGroupContainer : Element = syiro.generator.ElementCreator("div", { "data-syiro-component" : "buttongroup"} );
+		if (typeof properties["items"] !== "undefined"){ // If items is defined
+			if (properties["items"].length >= 2){ // If the length of items is equal to or greater than 2
+				var componentId : string = syiro.generator.IdGen("buttongroup"); // Generate a component Id
+				var buttonGroupContainer : Element = syiro.generator.ElementCreator("div", { "data-syiro-component" : "buttongroup", "data-syiro-component-id" : componentId } );
 
-			for (var buttonItem in properties["items"]){
-				
+				for (var buttonItemIndex in properties["items"]){
+					var buttonItem : Object = properties["items"][buttonItemIndex];
+
+					if (syiro.component.IsComponentObject(buttonItem) == false){ // If the buttonItem provided is NOT Syiro Component Object
+						buttonItem = syiro.button.Generate(buttonItem); // Redefine buttonItem as the provided Button Component Object when we use generate a Syiro Button with the buttonItem current content
+					}
+
+					var buttonElement : Element = syiro.component.Fetch(buttonItem); // Define buttonElement as the fetched Button Element of the Button Component
+					buttonGroupContainer.appendChild(buttonElement); // Append the buttonElement
+				}
+
+				if ((typeof properties["active"] == "number") && (properties["active"]  <= properties["items"].length)){ // If the active Number is provided and it is less than or equal to the max amount of buttons in this Buttongroup
+					var defaultActiveButton = buttonGroupContainer.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["default"] + ')');
+					var activeButtonComponent = syiro.component.FetchComponentObject(defaultActiveButton); // Get this button's component so we can update any HTMLElement stored in Syiro's data system
+					defaultActiveButton.setAttribute("active", ""); // Set active attribute
+					syiro.component.Update(activeButtonComponent["id"], defaultActiveButton); // Update the default active button HTMLElement
+				}
+
+				syiro.data.Write(componentId + "->HTMLElement", buttonGroupContainer); // Write the HTMLElement to the Syiro Data System
+				return { "id" : componentId, "type" : "buttongroup" }; // Return a Component Object
 			}
 		}
 	}
 
-	// #endreigon
+	// #endregion
+
+	// #region Buttongroup Active Button Toggling
+
+	export function Toggle(buttonComponent ?: Object){
+		var buttonComponent : Object = arguments[0]; // Define buttonComponent as the first argument passed
+		var buttonElement : Element = syiro.component.Fetch(buttonComponent); // Fetch the buttonElement
+
+		var parentButtongroup = buttonElement.parentElement; // Define parentButtongroup as the parent of this buttonElement
+		var potentialActiveButton = parentButtongroup.querySelector('div[data-syiro-component="button"][active]'); // Get any potential button that is active in the Buttongroup already
+
+		if (potentialActiveButton !== null){ // If there is an already active Buttongroup
+			potentialActiveButton.removeAttribute("active"); // Remove the active attribute
+		}
+
+		buttonElement.setAttribute("active", ""); // Set the buttonElement that was clicked to active
+	}
+
+	// #endregion
 
 }
 

@@ -51,9 +51,6 @@ module syiro.events {
                     component.setAttribute("data-syiro-component-id", componentId); // Set the data-syiro-component-id to either the non-Syiro Id or the Id we generated
                 }
             }
-            else if (component == document){ // If the Component passed is the document Object
-                componentId = "document"; // Define componentId as "document
-            }
             else { // If the Component passed is an Object like window, document, screen
                 componentId = componentType; // Define componentId as the componentType since it is most likely unique
             }
@@ -63,31 +60,22 @@ module syiro.events {
 
         // #endregion
 
-        // #region Passable Data Determination
-
-        var animationString : any = null; // Define animationString as the potential animation we should play in the event the Component is a Syiro Toggle Button (default: null)
-
-        if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a toggle button
-            if (componentElement.hasAttribute("data-syiro-component-status") == false){ // If the button is NOT active (has no status)
-                animationString = "toggle-forward-animation"; // Animate forward the toggle
-                passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
-            }
-            else{ // If the button is active and we are setting it as inactive
-                animationString = "toggle-backward-animation"; // Animate backward the toggle
-                passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
-            }
-        }
-        else if (component["type"] == "searchbox"){ // If the component is a Syiro Searchbox
-            passableValue = componentElement.value; // Get the current value of the input
-        }
-        else{
-            passableValue = eventData; // Simply set the passableValue to the event data passed
-        }
-
-        // #endregion
-
         if (syiro.data.Read(componentId + "->ignoreClick") == false){ // If this Handler isn't being triggered by touchstart or touchend bubbling to mouse events
-            if (animationString !== null){ // If we are in fact working with a Syiro Toggle Button
+
+            // #region Passable Data Determination
+
+            if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a toggle button
+                var animationString : string;
+
+                if (componentElement.hasAttribute("data-syiro-component-status") == false){ // If the button is NOT active (has no status)
+                    animationString = "toggle-forward-animation"; // Animate forward the toggle
+                    passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
+                }
+                else{ // If the button is active and we are setting it as inactive
+                    animationString = "toggle-backward-animation"; // Animate backward the toggle
+                    passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
+                }
+
                 syiro.animation.Animate(component, // Animate the Toggle Button
                     {
                         "animation" : animationString, // Define animation as either toggle-forward-animation or toggle-backward-animation
@@ -104,6 +92,14 @@ module syiro.events {
                     }
                 );
             }
+            else if (component["type"] == "searchbox"){ // If the component is a Syiro Searchbox
+                passableValue = componentElement.value; // Get the current value of the input
+            }
+            else{
+                passableValue = eventData; // Simply set the passableValue to the event data passed
+            }
+
+            // #endregion
 
             var functionsForListener : Array<Function> = syiro.data.Read(componentId + "->handlers->" + listener); // Fetch all functions for this particular listener
             for (var individualFunctionId in functionsForListener){ // For each function that is related to the Component for this particular listener
@@ -209,7 +205,7 @@ module syiro.events {
                 for (var individualListenerIndex in listeners){ // For each listener in the listeners array
                     var listener = listeners[individualListenerIndex]; // Define listener as the individual listener in the listeners array
                     var currentListenersArray : any = syiro.data.Read(componentId + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
-                    
+
                     if (currentListenersArray == false){ // If the individual listener key is undefined in the handlers of the Component
                         currentListenersArray = []; // Define currentListenersArray as an empty array
                         componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component

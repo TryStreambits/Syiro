@@ -8,19 +8,18 @@
 		<meta charset="utf-8" />
 	</head>
 	<body>
-		<div data-syiro-component="page" role="main">
-			<div data-syiro-component="buttongroup">
-				<div data-syiro-component="button" data-syiro-component-type="basic" active>Option 1</div>
-				<div data-syiro-component="button" data-syiro-component-type="basic">Option 2</div>
-				<div data-syiro-component="button" data-syiro-component-type="basic">Option 3</div>
-				<div data-syiro-component="button" data-syiro-component-type="basic">Option 4</div>
-			</div>
-		</div>
+		<div data-syiro-component="page" role="main"></div>
 		<script>
 			syiro.Init(); // Use the modern syiro.Init
 
 			var generatedHeader = {};
 			var generatedDropdownObject = {};
+
+			// #region Button Group Generation
+
+			var generatedButtongroup = syiro.buttongroup.Generate({"items" : [{ "content" : "Option 1" }, { "content" : "Option 2" }, { "content" : "Option 3" } ] });
+
+			// #endregion
 
 			if (syiro.device.IsSubHD == false){ // If the device is NOT sub HD
 				var boldContentForListItem = syiro.generator.ElementCreator("b", {"content" : "List Item with any HTML!"});
@@ -134,20 +133,23 @@
 				syiro.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
 			}
 
-			document.querySelector('div[data-syiro-component="page"]').appendChild(syiro.Fetch(generatedButton));
-			document.querySelector('div[data-syiro-component="page"]').appendChild(syiro.Fetch(generatedAudioPlayer));
-			document.querySelector('div[data-syiro-component="page"]').appendChild(syiro.Fetch(generatedVideoPlayer));
-			document.querySelector('div[data-syiro-component="page"]').appendChild(syiro.Fetch(generatedButtonTwo));
+			var syiroPage = document.querySelector('div[data-syiro-component="page"]');
+			syiroPage.appendChild(syiro.Fetch(generatedButtongroup));
+			syiroPage.appendChild(syiro.Fetch(generatedButton));
+			syiroPage.appendChild(syiro.Fetch(generatedAudioPlayer));
+			syiroPage.appendChild(syiro.Fetch(generatedVideoPlayer));
+			syiroPage.appendChild(syiro.Fetch(generatedButtonTwo));
 			document.querySelector("body").appendChild(syiro.Fetch(generatedFooter));
 
-			syiro.AddListeners(generatedButton,
+			syiro.AddListeners(generatedButton, // Listen to the generatedButton
 				function(x){
 					var componentObject = arguments[0];
 					var event = arguments[1];
 					var screenInfoElement = syiro.generator.ElementCreator("section", { "content" : syiro.device.Orientation });
 					document.querySelector('div[data-syiro-component="page"]').insertBefore(screenInfoElement, document.querySelector('div[data-syiro-component="page"]').firstChild);
 				}
-			); // Listen to the Basic Button
+			);
+
 			syiro.AddListeners(generatedButtonTwo, // Listen to the Basic Button
 				function(x){
 					var component = arguments[0];
@@ -162,7 +164,7 @@
 			syiro.listitem.SetControl(testListItem, generatedToggle);
 
 			syiro.AddListeners(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
-			syiro.AddListeners(secondListItem,
+			syiro.AddListeners(secondListItem, // Listen to the second List Item
 				function(){
 							var listItemComponent = arguments[0];
 							document.querySelector("body").querySelector('div[data-syiro-component="page"]').appendChild(
@@ -181,7 +183,7 @@
 						)
 					);
 				}
-			); // Listen to the second List Item
+			);
 		</script>
 	</body>
 </html>

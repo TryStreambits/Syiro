@@ -45,6 +45,16 @@
 
 // #endregion
 
+// #region Text Highlighting  Disabling
+
+*[data-syiro-component]{
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+}
+
+// #endregion
+
 // #region Multi-component link styling
 
 header[data-syiro-component="header"], footer[data-syiro-component="footer"] {
@@ -85,6 +95,5 @@ body {
 div[data-syiro-component="page"]{
 	position: static;
 }
-
 
 // #endregion

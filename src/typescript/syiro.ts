@@ -113,7 +113,15 @@ module syiro {
 											if (passedNode.hasAttribute("data-syiro-component")){ // If the element is a Syiro component
 												var componentObject = syiro.component.FetchComponentObject(passedNode); // Fetch the (potential) Component Object of the passedNode
 
-												if (componentObject["type"] == "dropdown"){ // If the component is a Dropdown
+												if (componentObject["type"] == "buttongroup"){ // If the component is a Buttongroup
+													var innerButtons = passedNode.querySelectorAll('div[data-syiro-component="button"]'); // Get all the Button Components inside this Buttongroup
+
+													for (var innerButtonIndex = 0; innerButtonIndex < innerButtons.length; innerButtonIndex++){ // For each Button
+														var buttonComponentObject = syiro.component.FetchComponentObject(innerButtons[innerButtonIndex]); // Get the buttonComponentObject
+														syiro.events.Add(syiro.events.eventStrings["up"], buttonComponentObject, syiro.buttongroup.Toggle); // Immediately enable parent toggling for this Button
+													}
+												}
+												else if (componentObject["type"] == "dropdown"){ // If the component is a Dropdown
 													syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
 												}
 												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component

@@ -125,7 +125,11 @@ declare module syiro.button {
     function SetLabel(component: Object, content: string): boolean;
 }
 declare module syiro.buttongroup {
-    function Generate(properties: Object): void;
+    function Generate(properties: Object): {
+        "id": string;
+        "type": string;
+    };
+    function Toggle(buttonComponent?: Object): void;
 }
 declare module syiro.list {
     function Generate(properties: Object): Object;

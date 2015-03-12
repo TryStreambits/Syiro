@@ -17,6 +17,7 @@ module syiro.device {
     export var HasIndexedDB : boolean = true; // Define HasIndexedDB as a boolean if the device has IndexedDB support.
     export var HasLocalStorage : boolean = true; // Define HasLocalStorage as a boolean if the device has LocalStorage support.
     export var IsOnline : boolean = true; // Define IsOnline as a boolean if the device is online.
+    export var OperatingSystem : string; // Define OperatingSystem as a string of what the OS is
     export var SupportsTouch : boolean = false; // Define SupportsTouch as a boolean, defaulting to false, as to whether or not the device supports touch.
 
     // #region Screen Variables
@@ -97,15 +98,21 @@ module syiro.device {
 
         // #endregion
 
+        syiro.device.FetchOperatingSystem(); // Fetch the device operating system
+
         // #region Touch Support Checking
 
         var eventsToRemove : Array<string>; // Define eventsToRemove as an array of strings to remove from eventStrings
 
-        if ((typeof window.ontouchend !== "undefined") || ((typeof navigator.maxTouchPoints !== "undefined") && (navigator.maxTouchPoints > 0))){ // If the device supports ontouchend event or supports touch points
+        if (((typeof navigator.maxTouchPoints !== "undefined") && (navigator.maxTouchPoints > 0)) || ((navigator.userAgent.indexOf("iPhone") !== -1) || (navigator.userAgent.indexOf("iPad") !== -1))){ // If the device supports ontouchend event or supports touch points
             syiro.device.SupportsTouch = true; // Set syiro.device.SupportsTouch to true
             eventsToRemove = ["mousedown", "mouseup"]; // Set eventsToRemove as an array of mouse-oriented event strings to remove
         }
         else{ // If touch is not supported on this device
+            if ((syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "Macintosh") && (syiro.device.OperatingSystem == "Windows")){ // If this is not a desktop operating system
+                syiro.device.SupportsTouch = true; // Set syiro.device.SupportsTouch to true
+            }
+
             eventsToRemove = ["touchstart", "touchend"]; // Set eventsToRemove as an array of touch-oriented event strings to remove
         }
 
@@ -167,6 +174,42 @@ module syiro.device {
 
         // #endregion
 
+    }
+
+    // #endregion
+
+    // #region Fetch Operating System
+
+    export function FetchOperatingSystem(){
+        if (navigator.userAgent.indexOf("Android") !== -1){ // If the userAgent is set to claim the device is Android
+            syiro.device.OperatingSystem = "Android"; // Set device to Android
+        }
+        else if ((navigator.userAgent.indexOf("iPhone") !== -1) || (navigator.userAgent.indexOf("iPad") !== -1)){ // If the userAgent is set to claim the device is an iPhone or iPad
+            syiro.device.OperatingSystem = "iOS"; // Set device to iOS
+        }
+        else if ((navigator.userAgent.indexOf("Linux") !== -1) && (navigator.userAgent.indexOf("Android") == -1)){ // If the userAgent is set to claim the device is Linux (but not Android)
+            syiro.device.OperatingSystem = "Linux"; // Set device to Linux
+        }
+        else if (navigator.userAgent.indexOf("Macintosh") !== -1){ // If the userAgent is set to claim the device is a Macintosh
+            syiro.device.OperatingSystem = "OS X"; // Set device to OS X
+        }
+        else if (navigator.userAgent.indexOf("Sailfish") !== -1){ // If the userAgent is set to claim the device is a Sailfish OS device
+            syiro.device.OperatingSystem = "Sailfish"; // Set device to Sailfish OS
+        }
+        else if ((navigator.userAgent.indexOf("Ubuntu") !== -1) && ((navigator.userAgent.indexOf("Mobile") !== -1) || (navigator.userAgent.indexOf("Tablet") !== -1))){ // IF the userAgent is claiming the device is running Ubuntu Touch
+            syiro.device.OperatingSystem = "Ubuntu Touch"; // Set device to Ubuntu Touch
+        }
+        else if (navigator.userAgent.indexOf("Windows Phone") !== -1){ // If the userAgent is set to claim the device is a Windows Phone
+            syiro.device.OperatingSystem = "Windows Phone"; // Set device to Windows Phone
+        }
+        else if (navigator.userAgent.indexOf("Windows NT") !== -1){ // If the userAgent is set to claim the device is Windows
+            syiro.device.OperatingSystem = "Windows"; // Set device to Windows
+        }
+        else{ // If something else
+            syiro.device.OperatingSystem = "Other"; // Set to Other
+        }
+
+        return syiro.device.OperatingSystem; // Return the OS in the event someone directly calls FetchOperatingSystem
     }
 
     // #endregion

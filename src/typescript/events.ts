@@ -209,7 +209,7 @@ module syiro.events {
                 for (var individualListenerIndex in listeners){ // For each listener in the listeners array
                     var listener = listeners[individualListenerIndex]; // Define listener as the individual listener in the listeners array
                     var currentListenersArray : any = syiro.data.Read(componentId + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
-
+                    
                     if (currentListenersArray == false){ // If the individual listener key is undefined in the handlers of the Component
                         currentListenersArray = []; // Define currentListenersArray as an empty array
                         componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component

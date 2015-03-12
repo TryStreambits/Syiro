@@ -8,18 +8,27 @@ var syiro;
                 syiro.device.Detect();
                 (function mutationTimer() {
                     window.setTimeout(function () {
-                        for (var componentId in syiro.component.storedComponents) {
+                        for (var componentId in syiro.data.storage) {
                             var potentiallyExistingComponent = document.querySelector('*[data-syiro-component-id="' + componentId + '"]');
                             if (potentiallyExistingComponent !== null) {
-                                var type = potentiallyExistingComponent.getAttribute("data-syiro-component");
-                                var componentObject = { "id": componentId, "type": type };
+                                var componentObject = syiro.component.FetchComponentObject(potentiallyExistingComponent);
                                 if (componentObject["type"] == "dropdown") {
-                                    syiro.component.AddListeners(syiro.component.listenerStrings["up"], componentObject, syiro.dropdown.Toggle);
+                                    syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.dropdown.Toggle);
                                 }
                                 else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")) {
                                     syiro.player.Init(componentObject);
                                 }
-                                delete syiro.component.storedComponents[componentId];
+                                else if (componentObject["type"] == "searchbox") {
+                                    if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false) {
+                                        syiro.events.Add("keyup", componentObject, syiro.searchbox.Suggestions);
+                                        syiro.events.Add("blur", componentObject, function () {
+                                            var searchboxObject = arguments[0];
+                                            var searchboxLinkedList = syiro.component.FetchLinkedListComponentObject(searchboxObject);
+                                            syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important");
+                                        });
+                                    }
+                                }
+                                syiro.data.Delete(componentObject["id"] + "->HTMLElement");
                             }
                         }
                         mutationTimer();

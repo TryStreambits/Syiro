@@ -95,6 +95,7 @@ declare module syiro.device {
     var HasIndexedDB: boolean;
     var HasLocalStorage: boolean;
     var IsOnline: boolean;
+    var OperatingSystem: string;
     var SupportsTouch: boolean;
     var IsSubHD: boolean;
     var IsHD: boolean;
@@ -103,6 +104,7 @@ declare module syiro.device {
     var orientation: string;
     var OrientationObject: any;
     function Detect(): void;
+    function FetchOperatingSystem(): string;
     function FetchScreenDetails(): void;
     function FetchScreenOrientation(): string;
 }

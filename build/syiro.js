@@ -808,6 +808,7 @@ var syiro;
         device.HasIndexedDB = true;
         device.HasLocalStorage = true;
         device.IsOnline = true;
+        device.OperatingSystem;
         device.SupportsTouch = false;
         device.IsSubHD;
         device.IsHD;
@@ -843,12 +844,16 @@ var syiro;
                     syiro.device.IsOnline = false;
                 });
             }
+            syiro.device.FetchOperatingSystem();
             var eventsToRemove;
-            if ((typeof window.ontouchend !== "undefined") || ((typeof navigator.maxTouchPoints !== "undefined") && (navigator.maxTouchPoints > 0))) {
+            if (((typeof navigator.maxTouchPoints !== "undefined") && (navigator.maxTouchPoints > 0)) || ((navigator.userAgent.indexOf("iPhone") !== -1) || (navigator.userAgent.indexOf("iPad") !== -1))) {
                 syiro.device.SupportsTouch = true;
                 eventsToRemove = ["mousedown", "mouseup"];
             }
             else {
+                if ((syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "Macintosh") && (syiro.device.OperatingSystem == "Windows")) {
+                    syiro.device.SupportsTouch = true;
+                }
                 eventsToRemove = ["touchstart", "touchend"];
             }
             syiro.events.eventStrings["down"].splice(syiro.events.eventStrings["down"].indexOf(eventsToRemove[0]), 1);
@@ -896,6 +901,37 @@ var syiro;
             }
         }
         device.Detect = Detect;
+        function FetchOperatingSystem() {
+            if (navigator.userAgent.indexOf("Android") !== -1) {
+                syiro.device.OperatingSystem = "Android";
+            }
+            else if ((navigator.userAgent.indexOf("iPhone") !== -1) || (navigator.userAgent.indexOf("iPad") !== -1)) {
+                syiro.device.OperatingSystem = "iOS";
+            }
+            else if ((navigator.userAgent.indexOf("Linux") !== -1) && (navigator.userAgent.indexOf("Android") == -1)) {
+                syiro.device.OperatingSystem = "Linux";
+            }
+            else if (navigator.userAgent.indexOf("Macintosh") !== -1) {
+                syiro.device.OperatingSystem = "OS X";
+            }
+            else if (navigator.userAgent.indexOf("Sailfish") !== -1) {
+                syiro.device.OperatingSystem = "Sailfish";
+            }
+            else if ((navigator.userAgent.indexOf("Ubuntu") !== -1) && ((navigator.userAgent.indexOf("Mobile") !== -1) || (navigator.userAgent.indexOf("Tablet") !== -1))) {
+                syiro.device.OperatingSystem = "Ubuntu Touch";
+            }
+            else if (navigator.userAgent.indexOf("Windows Phone") !== -1) {
+                syiro.device.OperatingSystem = "Windows Phone";
+            }
+            else if (navigator.userAgent.indexOf("Windows NT") !== -1) {
+                syiro.device.OperatingSystem = "Windows";
+            }
+            else {
+                syiro.device.OperatingSystem = "Other";
+            }
+            return syiro.device.OperatingSystem;
+        }
+        device.FetchOperatingSystem = FetchOperatingSystem;
         function FetchScreenDetails() {
             if (window.screen.height < 720) {
                 syiro.device.IsSubHD = true;
@@ -1608,14 +1644,19 @@ var syiro;
             var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
             var playerRange = playerControlElement.querySelector('input[type="range"]');
             var isStreamable = false;
-            var contentSources = syiro.player.FetchSources(component);
-            for (var contentSourceIndex in contentSources) {
-                var contentSource = contentSources[contentSourceIndex]["src"];
-                var sourceExtension = contentSource.substr(contentSource.lastIndexOf(".")).replace(".", "");
-                if ((sourceExtension == "m3u8") || (sourceExtension == "mpd")) {
-                    isStreamable = true;
-                    break;
+            if (syiro.data.Read(component["id"] + "->ForceLiveUX") !== true) {
+                var contentSources = syiro.player.FetchSources(component);
+                for (var contentSourceIndex in contentSources) {
+                    var contentSource = contentSources[contentSourceIndex]["src"];
+                    var sourceExtension = contentSource.substr(contentSource.lastIndexOf(".")).replace(".", "");
+                    if ((sourceExtension == "m3u8") || (sourceExtension == "mpd")) {
+                        isStreamable = true;
+                        break;
+                    }
                 }
+            }
+            else {
+                isStreamable = true;
             }
             if (isStreamable == true) {
                 syiro.data.Write(component["id"] + "->IsStreaming", true);
@@ -2084,7 +2125,7 @@ var syiro;
                     var posterImageElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component": "video-poster", "src": properties["art"] });
                     componentElement.appendChild(posterImageElement);
                 }
-                var videoPlayer = syiro.generator.ElementCreator("video", { "preload": "metadata", "volume": "0.5" });
+                var videoPlayer = syiro.generator.ElementCreator("video", { "preload": "metadata", "volume": "0.5", "UIWebView": "allowsInlineMediaPlayback" });
                 videoPlayer.autoplay = false;
                 var arrayofSourceElements = syiro.player.GenerateSources("video", properties["sources"]);
                 for (var sourceElementKey in arrayofSourceElements) {
@@ -2106,9 +2147,14 @@ var syiro;
                 if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)) {
                     usingExternalLibrary = true;
                 }
+                var forceLiveUX = false;
+                if ((typeof properties["live-ux"] !== "undefined") && (properties["live-ux"] == true)) {
+                    forceLiveUX = true;
+                }
                 syiro.data.Write(componentId, {
                     "ExternalLibrary": usingExternalLibrary,
                     "HTMLElement": componentElement,
+                    "ForceLiveUX": forceLiveUX,
                     "scaling": {
                         "initialDimensions": [properties["height"], properties["width"]],
                         "ratios": [1, 1.77],

@@ -21,11 +21,10 @@ module syiro.plugin.alternativeInit {
                         var potentiallyExistingComponent = document.querySelector('*[data-syiro-component-id="' + componentId + '"]');
 
                         if (potentiallyExistingComponent !== null){ // If the component exists in the DOM
-                            var type = potentiallyExistingComponent.getAttribute("data-syiro-component"); // Get the Syiro Component Type
-                            var componentObject = { "id" : componentId, "type" : type };
+                            var componentObject = syiro.component.FetchComponentObject(potentiallyExistingComponent);
 
                             if (componentObject["type"] == "dropdown"){ // If the component is a Dropdown
-                                syiro.component.AddListeners(syiro.component.listenerStrings["up"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
+                                syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
                             }
                             else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
                                 syiro.player.Init(componentObject); // Initialize the Audio or Video Player
@@ -48,7 +47,7 @@ module syiro.plugin.alternativeInit {
                         }
                     }
 
-                    mutationTimer(); // Recursively call setTimeout
+                    mutationTimer();
                 },
                 5000
             )

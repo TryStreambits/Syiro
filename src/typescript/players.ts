@@ -369,16 +369,21 @@ module syiro.player {
         // #region Live Streaming Detection and Player Range Configuration
         var isStreamable : boolean = false; // Declare isStreamable as a boolean variable as to whether or not the content is streamable
 
-        var contentSources : Array<Object> = syiro.player.FetchSources(component); // Get the contentSources
+        if (syiro.data.Read(component["id"] + "->ForceLiveUX") !== true){ // If we are not forcing live UX
+            var contentSources : Array<Object> = syiro.player.FetchSources(component); // Get the contentSources
 
-        for (var contentSourceIndex in contentSources){ // For each content source in contentSources
-            var contentSource : string = contentSources[contentSourceIndex]["src"];
-            var sourceExtension = contentSource.substr(contentSource.lastIndexOf(".")).replace(".", ""); // Get the last index of ., get the substring based on that, and then remove the period on the extension.
+            for (var contentSourceIndex in contentSources){ // For each content source in contentSources
+                var contentSource : string = contentSources[contentSourceIndex]["src"];
+                var sourceExtension = contentSource.substr(contentSource.lastIndexOf(".")).replace(".", ""); // Get the last index of ., get the substring based on that, and then remove the period on the extension.
 
-            if ((sourceExtension == "m3u8") || (sourceExtension == "mpd")){ // If the source ends in m3u8 (RTMP, RTSP, etc.) or mpd (MPEG-DASH), then we are streaming content
-                isStreamable = true; // Define isStreamable as true
-                break; // Break out of the for loop
+                if ((sourceExtension == "m3u8") || (sourceExtension == "mpd")){ // If the source ends in m3u8 (RTMP, RTSP, etc.) or mpd (MPEG-DASH), then we are streaming content
+                    isStreamable = true; // Define isStreamable as true
+                    break; // Break out of the for loop
+                }
             }
+        }
+        else{ // If we are forcing live UX
+            isStreamable = true; // Set isStreamable to true
         }
 
         if (isStreamable == true){ // If the content IS streamable
@@ -1071,7 +1076,7 @@ module syiro.videoplayer {
 
             // #region Video Element and Sources Creation
 
-            var videoPlayer : HTMLElement = syiro.generator.ElementCreator("video", { "preload" : "metadata", "volume" : "0.5"} ); // Create the video player, with the preloading to only metadata and volume to 50%
+            var videoPlayer : HTMLElement = syiro.generator.ElementCreator("video", { "preload" : "metadata", "volume" : "0.5", "UIWebView" : "allowsInlineMediaPlayback"} ); // Create the video player, with the preloading to only metadata and volume to 50%
 
             videoPlayer.autoplay = false; // Set autoplay of video to false
 
@@ -1117,10 +1122,22 @@ module syiro.videoplayer {
 
             // #endregion
 
+            // #region Force Live User Interface
+            // This section will determine if we should force the live UX to be applied to the content
+
+            var forceLiveUX = false; // Declare a variable that we'll use to determine if we should force live UX
+
+            if ((typeof properties["live-ux"] !== "undefined") && (properties["live-ux"] == true)){ // If Live UX is defined as true
+                forceLiveUX = true;
+            }
+
+            // #endregion
+
             syiro.data.Write(componentId, // Store the Video Player Component Element Details we generated
                 {
                     "ExternalLibrary" : usingExternalLibrary, // Define whether we are using an external library with the player or not
                     "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
+                    "ForceLiveUX" : forceLiveUX, // Set ForceLiveUX to forceLiveUX boolean
                     "scaling" : { // Create a scaling details Object
                         "initialDimensions" : [properties["height"], properties["width"]], // Set the initialDimensions to video Height and width as video Width
                         "ratios" : [1, 1.77], // The Video Player should scale so the ratio is 16:9 (for every 1px in height, 1.77 pixels in width)

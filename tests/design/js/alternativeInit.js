@@ -12,11 +12,19 @@ var syiro;
                             var potentiallyExistingComponent = document.querySelector('*[data-syiro-component-id="' + componentId + '"]');
                             if (potentiallyExistingComponent !== null) {
                                 var componentObject = syiro.component.FetchComponentObject(potentiallyExistingComponent);
-                                if (componentObject["type"] == "dropdown") {
+                                if (componentObject["type"] == "buttongroup") {
+                                    var innerButtons = potentiallyExistingComponent.querySelectorAll('div[data-syiro-component="button"]');
+                                    for (var innerButtonIndex = 0; innerButtonIndex < innerButtons.length; innerButtonIndex++) {
+                                        var buttonComponentObject = syiro.component.FetchComponentObject(innerButtons[innerButtonIndex]);
+                                        syiro.events.Add(syiro.events.eventStrings["up"], buttonComponentObject, syiro.buttongroup.Toggle);
+                                    }
+                                }
+                                else if (componentObject["type"] == "dropdown") {
                                     syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.dropdown.Toggle);
                                 }
                                 else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")) {
                                     syiro.player.Init(componentObject);
+                                    syiro.component.Scale(componentObject);
                                 }
                                 else if (componentObject["type"] == "searchbox") {
                                     if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false) {

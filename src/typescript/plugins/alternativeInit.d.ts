@@ -17,6 +17,13 @@ declare module syiro.events {
     function Add(...args: any[]): boolean;
     var eventStrings: Object;
 }
+declare module syiro.buttongroup {
+    function Generate(properties: Object): {
+        "id": string;
+        "type": string;
+    };
+    function Toggle(buttonComponent?: Object): void;
+}
 declare module syiro.searchbox {
     function Suggestions(...args: any[]): void;
 }

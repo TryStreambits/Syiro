@@ -192,6 +192,9 @@ declare module syiro.searchbox {
     function SetText(component: Object, placeholderText: any): void;
 }
 declare module syiro {
+    var backgroundColor: string;
+    var primaryColor: string;
+    var secondaryColor: string;
     function Init(): void;
     var Define: typeof component.FetchComponentObject;
     var Fetch: typeof component.Fetch;

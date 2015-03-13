@@ -77,4 +77,8 @@ module syiro.animation {
 
     // #endregion
 
+    // #region Pulse Animation
+
+    //export function Pulse
+
 }

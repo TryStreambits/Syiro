@@ -25,6 +25,17 @@
 @syiroSecondaryColor: #333333;
 @syiroPlayerControlColor : @syiroSecondaryColor; // Variable for customizing the Syiro Audio & Video Player Controls. Default: @syiroSecondaryColor
 
+// #region Internal CSS-to-TypeScript Styling Element
+
+div[data-syiro-component="internalColorContainer"]{
+	display: none;
+	color: @syiroPrimaryColor;
+	background-color: @syiroBackground;
+	border-color: @syiroSecondaryColor;
+}
+
+// #endregion
+
 // #region Multi-component font utilization
 
 *[data-syiro-component]{ // Have all components utilize a uniform font

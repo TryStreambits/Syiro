@@ -11,6 +11,8 @@
 
 // #endregion
 
+// #region Fading
+
 .fade-in-animation{
 	.animate("opacity, visibility";); // Transform opacity and visibility values
 	opacity: 1;
@@ -23,6 +25,23 @@
 	visibility: hidden;
 }
 
+// #endregion
+
+// #endregion Pulse
+
+*[class="pulse"]{
+	box-shadow: 0 0 0 0 @syiroPrimaryColor; // No box-shadow
+	transition: box-shadow 500ms; // Set transition value of box-shadow
+
+	&:hover{
+		box-shadow: 0 0 10px 2px @syiroPrimaryColor; // Box shadow
+	}
+}
+
+// #endregion
+
+// #region Toggling
+
 .toggle-backward-animation{
 	.animate("translateX(0px)"; 125); // Translate to x position of 0 in 125ms
 }
@@ -30,3 +49,5 @@
 .toggle-forward-animation{
 	.animate("translateX(45px)"; 125); // Translate to x position of 45 in 125ms
 }
+
+// #endregion

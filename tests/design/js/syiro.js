@@ -1530,7 +1530,7 @@ var syiro;
                         var roundedDownTime = Math.floor(currentTime);
                         playerInputRange.value = roundedDownTime;
                         var priorInputSpaceWidth = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth);
-                        syiro.component.CSS(playerInputRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
+                        syiro.component.CSS(playerInputRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)");
                     }
                 }
             });
@@ -1615,7 +1615,7 @@ var syiro;
                     syiro.player.SetVolume(playerComponent, (valueNum / 100));
                 }
                 var priorInputSpaceWidth = Math.round((valueNum / Number(playerRange.max)) * playerRange.clientWidth);
-                syiro.component.CSS(playerRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
+                syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)");
             });
             var volumeButtonComponent = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]'));
             syiro.events.Add(volumeButtonComponent, function () {
@@ -1652,7 +1652,7 @@ var syiro;
                     playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]);
                 }
                 var priorInputSpaceWidth = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth);
-                syiro.component.CSS(playerRange, "background", "linear-gradient(to right, #0099ff " + priorInputSpaceWidth + "px, white 0px)");
+                syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + "  " + priorInputSpaceWidth + "px, white 0px)");
             });
             var menuButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]');
             if (menuButton !== null) {
@@ -2440,6 +2440,9 @@ var syiro;
 })(syiro || (syiro = {}));
 var syiro;
 (function (syiro) {
+    syiro.backgroundColor;
+    syiro.primaryColor;
+    syiro.secondaryColor;
     function Init() {
         syiro.device.Detect();
         syiro.events.Add("scroll", document, function () {
@@ -2484,6 +2487,12 @@ var syiro;
             var viewportMetaTag = syiro.generator.ElementCreator("meta", { "name": "viewport", "content-attr": "width=device-width, initial-scale=1,user-scalable=no" });
             documentHeadSection.appendChild(viewportMetaTag);
         }
+        var syiroInternalColorContainer = syiro.generator.ElementCreator("div", { "data-syiro-component": "internalColorContainer" });
+        document.querySelector("body").appendChild(syiroInternalColorContainer);
+        syiro.backgroundColor = window.getComputedStyle(syiroInternalColorContainer).backgroundColor;
+        syiro.primaryColor = window.getComputedStyle(syiroInternalColorContainer).color;
+        syiro.secondaryColor = window.getComputedStyle(syiroInternalColorContainer).borderColor;
+        syiroInternalColorContainer.parentElement.removeChild(syiroInternalColorContainer);
         if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")) {
             if (typeof WebKitMutationObserver !== "undefined") {
                 MutationObserver = WebKitMutationObserver;

@@ -19,6 +19,10 @@
 
 module syiro {
 
+	export var backgroundColor : string; // Define backgroundColor as the rgba value we get from the CSS of the Syiro Background Color
+	export var primaryColor : string; // Define primaryColor as the rgba value we get from the CSS of the Syiro Primary Color
+	export var secondaryColor : string; // Define secondaryColor as the rgba value we get from the CSS of the Syiro Secondary Color
+
 	// #region Syiro Initialization Function
 
 	export function Init() : void {
@@ -92,6 +96,15 @@ module syiro {
 		}
 
 		// #endregion
+
+		// #region Syiro CSS-To-TypeScript Color Variable Setup
+
+		var syiroInternalColorContainer : Element = syiro.generator.ElementCreator("div", { "data-syiro-component" : "internalColorContainer"});
+		document.querySelector("body").appendChild(syiroInternalColorContainer);
+		syiro.backgroundColor = window.getComputedStyle(syiroInternalColorContainer).backgroundColor; // Get the backgroundColor defined in CSS and set it to syiro.backgroundColor
+		syiro.primaryColor = window.getComputedStyle(syiroInternalColorContainer).color; // Get the primaryColor defined in CSS as color key/val and set it to syiro.primaryColor
+		syiro.secondaryColor = window.getComputedStyle(syiroInternalColorContainer).borderColor; // Get the secondaryColor defined in CSS as border-color key/val and set it to syiro.secondaryColor
+		syiroInternalColorContainer.parentElement.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
 
 		// #region Watch DOM For Components
 

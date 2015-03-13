@@ -286,58 +286,62 @@ module syiro.player {
 
             // #region Volume Button Listener
 
-            var volumeButtonComponent = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]')); // Get the Component Object of the Volume Button
+            var volumeButtonElement = playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]'); // Get any existing volume button in this player
 
-            syiro.events.Add(volumeButtonComponent,
-                function(){
-                    var volumeButtonComponent : Object = arguments[0]; // Get the Volume Button that was clicked
-                    var volumeButton : Element = syiro.component.Fetch(volumeButtonComponent); // Get the Volume Button Element
+            if (volumeButtonElement !== null){ // If there is a volume button (there is no for iOS)
+                var volumeButtonComponent = syiro.component.FetchComponentObject(volumeButtonElement); // Get the Component Object of the Volume Button
 
-                    var playerElement : Element = volumeButton.parentElement.parentElement; // Get the outer parent Player
-                    var playerComponent : Object = syiro.component.FetchComponentObject(playerElement); // Get the Player Component based on the playerElement
-                    var playerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(playerComponent); // Fetch the inner audio or video tag
+                syiro.events.Add(volumeButtonComponent,
+                    function(){
+                        var volumeButtonComponent : Object = arguments[0]; // Get the Volume Button that was clicked
+                        var volumeButton : Element = syiro.component.Fetch(volumeButtonComponent); // Get the Volume Button Element
 
-                    var playerRange : any = playerElement.querySelector("input"); // Get the Player Control Range
-                    var playerRangeAttributes : Object= {}; // Set playerRangeAttributes as an empty Object to hold attribute information that we'll apply to the input range later
+                        var playerElement : Element = volumeButton.parentElement.parentElement; // Get the outer parent Player
+                        var playerComponent : Object = syiro.component.FetchComponentObject(playerElement); // Get the Player Component based on the playerElement
+                        var playerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(playerComponent); // Fetch the inner audio or video tag
 
-                    if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true){ // If we are NOT already actively doing a volume change
-                        syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", true); // Set the IsChangingInputValue to true so the timeupdate won't change the value on us
-                        syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", true); // Set the IsChangingVolume to true so we don't end up changing the "location" in the content
+                        var playerRange : any = playerElement.querySelector("input"); // Get the Player Control Range
+                        var playerRangeAttributes : Object= {}; // Set playerRangeAttributes as an empty Object to hold attribute information that we'll apply to the input range later
 
-                        volumeButton.setAttribute("active", "true"); // Set component active to true to imply it is active
+                        if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true){ // If we are NOT already actively doing a volume change
+                            syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", true); // Set the IsChangingInputValue to true so the timeupdate won't change the value on us
+                            syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", true); // Set the IsChangingVolume to true so we don't end up changing the "location" in the content
 
-                        var playerRangeValueFromVolume : string = (playerContentElement.volume * 100).toString();
+                            volumeButton.setAttribute("active", "true"); // Set component active to true to imply it is active
 
-                        playerRangeAttributes["max"] = "100"; // Set max to 100
-                        playerRangeAttributes["step"] = "1"; // Set step to 1
-                        playerRange.value = playerRangeValueFromVolume; // Set the value to the volume (which is 0.1 to 1.0) times 10
+                            var playerRangeValueFromVolume : string = (playerContentElement.volume * 100).toString();
 
-                        if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
-                            playerElement.querySelector('div[data-syiro-component="player-control"]').removeAttribute("data-syiro-component-streamstyling"); // Default to NOT having the Player Control "Stream Styling"
+                            playerRangeAttributes["max"] = "100"; // Set max to 100
+                            playerRangeAttributes["step"] = "1"; // Set step to 1
+                            playerRange.value = playerRangeValueFromVolume; // Set the value to the volume (which is 0.1 to 1.0) times 10
+
+                            if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
+                                playerElement.querySelector('div[data-syiro-component="player-control"]').removeAttribute("data-syiro-component-streamstyling"); // Default to NOT having the Player Control "Stream Styling"
+                            }
                         }
-                    }
-                    else{ // If we are already actively doing a volume change, meaning the user wants to switch back to the normal view
-                        volumeButton.removeAttribute("active"); // Remove component-active to imply volume icon is not active
+                        else{ // If we are already actively doing a volume change, meaning the user wants to switch back to the normal view
+                            volumeButton.removeAttribute("active"); // Remove component-active to imply volume icon is not active
 
-                        playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent); // Get a returned Object with the max the input range should be, as well as a reasonable, pre-calculated amount of steps.
-                        playerRange.value = playerContentElement.currentTime; // Set the playerRange value to the currentTime
+                            playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent); // Get a returned Object with the max the input range should be, as well as a reasonable, pre-calculated amount of steps.
+                            playerRange.value = playerContentElement.currentTime; // Set the playerRange value to the currentTime
 
-                        if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
-                            playerElement.querySelector('div[data-syiro-component="player-control"]').setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
+                            if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
+                                playerElement.querySelector('div[data-syiro-component="player-control"]').setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
+                            }
+
+                            syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false); // Set the IsChangingInputValue to infer we are no longer changing the input value
+                            syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", false); // Set the IsChangingVolume to false to infer we are no longer changing the volume
                         }
 
-                        syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false); // Set the IsChangingInputValue to infer we are no longer changing the input value
-                        syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", false); // Set the IsChangingVolume to false to infer we are no longer changing the volume
-                    }
+                        for (var playerRangeAttribute in playerRangeAttributes){ // For each attribute defined in the playerRangeAttributes Object
+                            playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]); // Set the attribute on the playerRange
+                        }
 
-                    for (var playerRangeAttribute in playerRangeAttributes){ // For each attribute defined in the playerRangeAttributes Object
-                        playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]); // Set the attribute on the playerRange
+                        var priorInputSpaceWidth : number = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
+                        syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + "  " + priorInputSpaceWidth + "px, white 0px)");
                     }
-
-                    var priorInputSpaceWidth : number = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
-                    syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + "  " + priorInputSpaceWidth + "px, white 0px)");
-                }
-            );
+                );
+            }
 
             // #endregion
 
@@ -617,10 +621,13 @@ module syiro.player {
 
         var playButton = playerControl.querySelector('div[data-syiro-minor-component="player-button-play"]'); // Get the Play Button from the Player Control
         syiro.component.CSS(playButton, "background-image", false); // Remove the background-image style / reset to play image for Play Button
-        playButton.removeAttribute("data-syiro-component-status"); // Remove component-status to imply play icon is not active (in this case, paused)
+        playButton.removeAttribute("active"); // Remove component-status to imply play icon is not active (in this case, paused)
 
         var volumeControl = playerControl.querySelector('div[data-syiro-minor-component="player-button-volume"]'); // Get the Volume Button from the Player Control
-        volumeControl.removeAttribute("data-syiro-component-status"); // Remove component-status to imply volume icon is not active
+
+        if (volumeControl !== null){ // If there is a volume control (there is not on iOS)
+            volumeControl.removeAttribute("active"); // Remove component-status to imply volume icon is not active
+        }
 
         // #endregion
 
@@ -802,8 +809,6 @@ module syiro.playercontrol {
         var inputRange : HTMLElement = syiro.generator.ElementCreator("input", { "type" : "range", "value" : "0"} ); // Create an input range
         var timeStamp : HTMLElement = syiro.generator.ElementCreator("time", { "content" : "00:00 / 00:00"} ); // Create a timestamp time element
 
-        var volumeButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-volume" } ); // Generate a Volume Button
-
         componentElement.appendChild(inputRange); // Append the input range
         componentElement.appendChild(syiro.component.Fetch(playButton)); // Append the play button
         componentElement.appendChild(timeStamp); // Append the timestamp time element
@@ -826,13 +831,14 @@ module syiro.playercontrol {
             componentElement.appendChild(syiro.component.Fetch(fullscreenButton)); // Append the fullscreen control
         }
 
-    // #endregion
+        // #endregion
 
-        componentElement.appendChild(syiro.component.Fetch(volumeButton)); // Append the volume control
-
+        if (syiro.device.OperatingSystem !== "iOS"){ // As iOS does not allow manual control of volume (it has to be done with hardware controls), check if the OS is NOT iOS before volume button generation
+            var volumeButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-volume" } ); // Generate a Volume Button
+            componentElement.appendChild(syiro.component.Fetch(volumeButton)); // Append the volume control
+        }
 
         syiro.data.Write(componentId + "->HTMLElement", componentElement); // Store the Component HTMLElement of the Player Control
-
         return { "id" : componentId, "type" : "player-control" }; // Return a Component Object
     }
 

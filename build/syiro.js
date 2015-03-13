@@ -1617,43 +1617,46 @@ var syiro;
                 var priorInputSpaceWidth = Math.round((valueNum / Number(playerRange.max)) * playerRange.clientWidth);
                 syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)");
             });
-            var volumeButtonComponent = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]'));
-            syiro.events.Add(volumeButtonComponent, function () {
-                var volumeButtonComponent = arguments[0];
-                var volumeButton = syiro.component.Fetch(volumeButtonComponent);
-                var playerElement = volumeButton.parentElement.parentElement;
-                var playerComponent = syiro.component.FetchComponentObject(playerElement);
-                var playerContentElement = syiro.player.FetchInnerContentElement(playerComponent);
-                var playerRange = playerElement.querySelector("input");
-                var playerRangeAttributes = {};
-                if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true) {
-                    syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", true);
-                    syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", true);
-                    volumeButton.setAttribute("active", "true");
-                    var playerRangeValueFromVolume = (playerContentElement.volume * 100).toString();
-                    playerRangeAttributes["max"] = "100";
-                    playerRangeAttributes["step"] = "1";
-                    playerRange.value = playerRangeValueFromVolume;
-                    if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")) {
-                        playerElement.querySelector('div[data-syiro-component="player-control"]').removeAttribute("data-syiro-component-streamstyling");
+            var volumeButtonElement = playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]');
+            if (volumeButtonElement !== null) {
+                var volumeButtonComponent = syiro.component.FetchComponentObject(volumeButtonElement);
+                syiro.events.Add(volumeButtonComponent, function () {
+                    var volumeButtonComponent = arguments[0];
+                    var volumeButton = syiro.component.Fetch(volumeButtonComponent);
+                    var playerElement = volumeButton.parentElement.parentElement;
+                    var playerComponent = syiro.component.FetchComponentObject(playerElement);
+                    var playerContentElement = syiro.player.FetchInnerContentElement(playerComponent);
+                    var playerRange = playerElement.querySelector("input");
+                    var playerRangeAttributes = {};
+                    if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true) {
+                        syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", true);
+                        syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", true);
+                        volumeButton.setAttribute("active", "true");
+                        var playerRangeValueFromVolume = (playerContentElement.volume * 100).toString();
+                        playerRangeAttributes["max"] = "100";
+                        playerRangeAttributes["step"] = "1";
+                        playerRange.value = playerRangeValueFromVolume;
+                        if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")) {
+                            playerElement.querySelector('div[data-syiro-component="player-control"]').removeAttribute("data-syiro-component-streamstyling");
+                        }
                     }
-                }
-                else {
-                    volumeButton.removeAttribute("active");
-                    playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent);
-                    playerRange.value = playerContentElement.currentTime;
-                    if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")) {
-                        playerElement.querySelector('div[data-syiro-component="player-control"]').setAttribute("data-syiro-component-streamstyling", "");
+                    else {
+                        volumeButton.removeAttribute("active");
+                        playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent);
+                        playerRange.value = playerContentElement.currentTime;
+                        if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")) {
+                            playerElement.querySelector('div[data-syiro-component="player-control"]').setAttribute("data-syiro-component-streamstyling", "");
+                        }
+                        syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false);
+                        syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", false);
                     }
-                    syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false);
-                    syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", false);
-                }
-                for (var playerRangeAttribute in playerRangeAttributes) {
-                    playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]);
-                }
-                var priorInputSpaceWidth = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth);
-                syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + "  " + priorInputSpaceWidth + "px, white 0px)");
-            });
+                    for (var playerRangeAttribute in playerRangeAttributes) {
+                        playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]);
+                    }
+                    var priorInputSpaceWidth = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth);
+                    syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + "  " + priorInputSpaceWidth + "px, white 0px)");
+                });
+            }
             var menuButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]');
             if (menuButton !== null) {
                 syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(menuButton), syiro.player.ToggleMenuDialog.bind(this, component));
@@ -1842,9 +1845,11 @@ var syiro;
             var playerControl = playerElement.querySelector('div[data-syiro-component="player-control"]');
             var playButton = playerControl.querySelector('div[data-syiro-minor-component="player-button-play"]');
             syiro.component.CSS(playButton, "background-image", false);
-            playButton.removeAttribute("data-syiro-component-status");
+            playButton.removeAttribute("active");
             var volumeControl = playerControl.querySelector('div[data-syiro-minor-component="player-button-volume"]');
-            volumeControl.removeAttribute("data-syiro-component-status");
+            if (volumeControl !== null) {
+                volumeControl.removeAttribute("active");
+            }
             var playerErrorNotice = playerElement.querySelector('div[data-syiro-minor-component="player-error"]');
             if (playerErrorNotice !== null) {
                 playerElement.removeChild(playerErrorNotice);
@@ -1978,7 +1983,6 @@ var syiro;
             var playButton = syiro.button.Generate({ "data-syiro-minor-component": "player-button-play" });
             var inputRange = syiro.generator.ElementCreator("input", { "type": "range", "value": "0" });
             var timeStamp = syiro.generator.ElementCreator("time", { "content": "00:00 / 00:00" });
-            var volumeButton = syiro.button.Generate({ "data-syiro-minor-component": "player-button-volume" });
             componentElement.appendChild(inputRange);
             componentElement.appendChild(syiro.component.Fetch(playButton));
             componentElement.appendChild(timeStamp);
@@ -1992,7 +1996,10 @@ var syiro;
                 var fullscreenButton = syiro.button.Generate({ "data-syiro-minor-component": "player-button-fullscreen" });
                 componentElement.appendChild(syiro.component.Fetch(fullscreenButton));
             }
-            componentElement.appendChild(syiro.component.Fetch(volumeButton));
+            if (syiro.device.OperatingSystem !== "iOS") {
+                var volumeButton = syiro.button.Generate({ "data-syiro-minor-component": "player-button-volume" });
+                componentElement.appendChild(syiro.component.Fetch(volumeButton));
+            }
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "player-control" };
         }

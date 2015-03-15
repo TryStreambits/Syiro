@@ -69,6 +69,10 @@ declare module syiro.events {
     function Add(...args: any[]): boolean;
     function Remove(...args: any[]): boolean;
 }
+declare module syiro.render {
+    function Position(...args: any[]): boolean;
+    function Scale(component: Object, data?: Object): void;
+}
 declare module syiro.component {
     var componentData: Object;
     var Define: Function;
@@ -78,7 +82,7 @@ declare module syiro.component {
     function FetchDimensionsAndPosition(component: any): Object;
     function FetchLinkedListComponentObject(component: any): Object;
     function IsComponentObject(variable: any): boolean;
-    function Scale(component: Object, data?: any): void;
+    var Scale: typeof render.Scale;
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): boolean;
@@ -182,9 +186,6 @@ declare module syiro.audioplayer {
 }
 declare module syiro.videoplayer {
     function Generate(properties: Object): Object;
-}
-declare module syiro.render {
-    function Position(...args: any[]): boolean;
 }
 declare module syiro.searchbox {
     function Generate(properties: Object): Object;

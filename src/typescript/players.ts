@@ -18,346 +18,348 @@ module syiro.player {
     // #region Shared Player Initialization
 
     export function Init(component : Object){
-        var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
-        var innerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Fetch the Audio or Video Player Element
+        if (syiro.data.Read(component["id"] + "->NoUX") == false){ // If NoUX is NOT applied (NoUX is applied for iPhones so we don't render the Player Controls)
+            var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
+            var innerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Fetch the Audio or Video Player Element
 
-        // #region Player Controls List
+            // #region Player Controls List
 
-        var playerControlArea = componentElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control section
-        var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlArea); // Get the Player Control Component Object
-
-        // #endregion
-
-        // #region Audio / Video Player Timing Events
-
-            // #region Audio / Video Duration Changed
-            // This event is triggered when the audio or video content is first initialized as well as when the source is changed and therefore duration changed.
-
-            syiro.events.Add("durationchange", innerContentElement, // Add an event listener to the audio / video durationchange
-                function(){
-                    // #region Player Component & Element Defining
-
-                    var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
-                    var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
-                    var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
-                    var playerControlElement  = playerComponentElement.querySelector('div[data-syiro-component="player-control"]');
-                    var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Player Control Component
-                    var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
-
-                    // #endregion
-
-                    // #region Player Range Configuration
-
-                    if (syiro.data.Read(playerComponent["id"] + "->IsStreaming") == false){ // If the Player is NOT streaming content
-                        var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(playerComponent); // Get information about the appropriate settings for the input range
-                        playerMediaLengthInformation["value"] = "0";
-
-                        for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
-                            playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
-                        }
-
-                        syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
-                    }
-
-                    // #endregion
-
-                }
-            );
+            var playerControlArea = componentElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control section
+            var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlArea); // Get the Player Control Component Object
 
             // #endregion
 
-            // #region Audio / Video Time Updating
+            // #region Audio / Video Player Timing Events
 
-            syiro.events.Add("timeupdate", innerContentElement, // Add an event listener to track timeupdate
-                function(){
-                    // #region Player Component & Element Defining
+                // #region Audio / Video Duration Changed
+                // This event is triggered when the audio or video content is first initialized as well as when the source is changed and therefore duration changed.
 
-                    var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
-                    var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
-                    var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
+                syiro.events.Add("durationchange", innerContentElement, // Add an event listener to the audio / video durationchange
+                    function(){
+                        // #region Player Component & Element Defining
 
-                    // #endregion
-
-                    if (syiro.data.Read(playerComponent["id"] + "->IsStreaming") == false){ // If the Player is NOT streaming content
-                        // #region Player Control Component & Element Defining
-
-                        var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]'); // Fetch the Player Control Element
-                        var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
-                        var playerInputRange = playerControlElement.querySelector("input"); // Get the input range of the Player Control
+                        var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
+                        var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
+                        var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
+                        var playerControlElement  = playerComponentElement.querySelector('div[data-syiro-component="player-control"]');
+                        var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Player Control Component
+                        var playerRange : Element = playerComponentElement.querySelector('input[type="range"]'); // Get the input range
 
                         // #endregion
 
-                        var currentTime = playerElement.currentTime; // Get the currentTime
-                        syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime); // Update the label
+                        // #region Player Range Configuration
 
-                        if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false){ // If the user is NOT using the input range to change volume or time
-                            var roundedDownTime : number = Math.floor(currentTime);
-                            playerInputRange.value = roundedDownTime; // Set the range input to roundedDownTime
+                        if (syiro.data.Read(playerComponent["id"] + "->IsStreaming") == false){ // If the Player is NOT streaming content
+                            var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(playerComponent); // Get information about the appropriate settings for the input range
+                            playerMediaLengthInformation["value"] = "0";
 
-                            var priorInputSpaceWidth : number = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
-                            syiro.component.CSS(playerInputRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)");
+                            for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
+                                playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
+                            }
+
+                            syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
                         }
-                    }
-                }
-            );
 
-            // #endregion
+                        // #endregion
 
-            // #region Audio / Video Time Ending
-
-            syiro.events.Add("ended", innerContentElement, // Add an event listener to track when the content ends
-                function(){
-                    // #region Player Component & Element Defining
-
-                    var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
-                    var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
-                    var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
-
-                    // #endregion
-
-                    syiro.player.Reset(playerComponent); // Reset the Player
-                }
-            );
-
-            // #endregion
-
-        // #endregion
-
-        // #region Video Player Specific Functionality
-
-        if (component["type"] == "video-player"){ // If this is a Video Player Component
-
-            // #region Mouse Specific Functionality
-
-            if (syiro.device.SupportsTouch == false){ // If the device uses a mouse instead of touch
-
-                // #region Video Player Mousenter / Mouseleave Handling
-
-                syiro.events.Add("mouseenter", componentElement, // Add a mouseenter event for the Video Player that shows the Video Player inner Player Control
-                    function(){
-                        var componentElement : Element = arguments[0]; // Get the componentElement passed as argument 0
-                        var playerControlComponent : Object = syiro.component.FetchComponentObject(componentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Component Object of the Player Control
-                        syiro.playercontrol.Toggle(playerControlComponent, true); // Show the control (send true, signifying to show as oppose to hide)
-                    }
-                );
-
-                syiro.events.Add("mouseleave", componentElement, // Add a mouseleave event for the Video Player that hides the Video Player inner Player Control
-                    function(){
-                        var componentElement : Element = arguments[0]; // Get the componentElement passed as argument 0
-                        var playerControlComponent : Object = syiro.component.FetchComponentObject(componentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Component Object of the Player Control
-                        syiro.playercontrol.Toggle(playerControlComponent, false); // Hide the control (send false, signifying to hide as oppose to show)
                     }
                 );
 
                 // #endregion
 
-                // #region Poster Art Check
+                // #region Audio / Video Time Updating
 
-                var posterImageElement : Element = componentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
+                syiro.events.Add("timeupdate", innerContentElement, // Add an event listener to track timeupdate
+                    function(){
+                        // #region Player Component & Element Defining
 
-                if (posterImageElement !== null){ // If the posterImageElement exists
-                    syiro.events.Add(syiro.events.eventStrings["up"], posterImageElement, // Add mouseup, touchend, etc listeners to the posterImageElement
+                        var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
+                        var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
+                        var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
+
+                        // #endregion
+
+                        if (syiro.data.Read(playerComponent["id"] + "->IsStreaming") == false){ // If the Player is NOT streaming content
+                            // #region Player Control Component & Element Defining
+
+                            var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]'); // Fetch the Player Control Element
+                            var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
+                            var playerInputRange = playerControlElement.querySelector("input"); // Get the input range of the Player Control
+
+                            // #endregion
+
+                            var currentTime = playerElement.currentTime; // Get the currentTime
+                            syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime); // Update the label
+
+                            if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false){ // If the user is NOT using the input range to change volume or time
+                                var roundedDownTime : number = Math.floor(currentTime);
+                                playerInputRange.value = roundedDownTime; // Set the range input to roundedDownTime
+
+                                var priorInputSpaceWidth : number = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
+                                syiro.component.CSS(playerInputRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)");
+                            }
+                        }
+                    }
+                );
+
+                // #endregion
+
+                // #region Audio / Video Time Ending
+
+                syiro.events.Add("ended", innerContentElement, // Add an event listener to track when the content ends
+                    function(){
+                        // #region Player Component & Element Defining
+
+                        var playerElement = arguments[0]; // Define the audio or video element as the Element being effected by timeupdate
+                        var playerComponentElement = playerElement.parentElement; // Set the playerComponentElement as the parentElement of the innerContentElement (argument [0])
+                        var playerComponent = syiro.component.FetchComponentObject(playerComponentElement); // Fetch the Player Component Object
+
+                        // #endregion
+
+                        syiro.player.Reset(playerComponent); // Reset the Player
+                    }
+                );
+
+                // #endregion
+
+            // #endregion
+
+            // #region Video Player Specific Functionality
+
+            if (component["type"] == "video-player"){ // If this is a Video Player Component
+
+                // #region Mouse Specific Functionality
+
+                if (syiro.device.SupportsTouch == false){ // If the device uses a mouse instead of touch
+
+                    // #region Video Player Mousenter / Mouseleave Handling
+
+                    syiro.events.Add("mouseenter", componentElement, // Add a mouseenter event for the Video Player that shows the Video Player inner Player Control
                         function(){
-                            var posterImageElement : Element = arguments[0]; // Set the posterImageElement as the first argument passed
-                            var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
-                            var playerComponentObject = syiro.component.FetchComponentObject(posterImageElement.parentElement); // Fetch the Video Player Component (which is the parent of posterImageElement)
+                            var componentElement : Element = arguments[0]; // Get the componentElement passed as argument 0
+                            var playerControlComponent : Object = syiro.component.FetchComponentObject(componentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Component Object of the Player Control
+                            syiro.playercontrol.Toggle(playerControlComponent, true); // Show the control (send true, signifying to show as oppose to hide)
+                        }
+                    );
 
-                            syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
-                            syiro.player.PlayOrPause(playerComponentObject); // Play the video
+                    syiro.events.Add("mouseleave", componentElement, // Add a mouseleave event for the Video Player that hides the Video Player inner Player Control
+                        function(){
+                            var componentElement : Element = arguments[0]; // Get the componentElement passed as argument 0
+                            var playerControlComponent : Object = syiro.component.FetchComponentObject(componentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Component Object of the Player Control
+                            syiro.playercontrol.Toggle(playerControlComponent, false); // Hide the control (send false, signifying to hide as oppose to show)
+                        }
+                    );
+
+                    // #endregion
+
+                    // #region Poster Art Check
+
+                    var posterImageElement : Element = componentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
+
+                    if (posterImageElement !== null){ // If the posterImageElement exists
+                        syiro.events.Add(syiro.events.eventStrings["up"], posterImageElement, // Add mouseup, touchend, etc listeners to the posterImageElement
+                            function(){
+                                var posterImageElement : Element = arguments[0]; // Set the posterImageElement as the first argument passed
+                                var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
+                                var playerComponentObject = syiro.component.FetchComponentObject(posterImageElement.parentElement); // Fetch the Video Player Component (which is the parent of posterImageElement)
+
+                                syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
+                                syiro.player.PlayOrPause(playerComponentObject); // Play the video
+                            }
+                        );
+                    }
+
+                    // #endregion
+                }
+
+                // #endregion
+
+                // #region Video Element Click / Tap Handling
+
+                syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, // Add mouseup / touchup listeners to the innerContentElement
+                    function(){
+                        var innerContentElement : Element = arguments[0]; // Get the innerContentElement passed as argument 0
+                        var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
+
+                        if (syiro.device.SupportsTouch !== true){ // If it was not touch that triggered the event
+                            var playerComponent = syiro.component.FetchComponentObject(innerContentElement.parentElement); // Fetch the Component Object of the innerContentElement's parentElement
+                            syiro.player.PlayOrPause(playerComponent); // Play / pause the video
+                        }
+                        else{ // If it was touch that triggered the event
+                            var playerControlComponent = syiro.component.FetchComponentObject(innerContentElement.parentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Component Object of the innerContentElement's Player Control
+                            syiro.playercontrol.Toggle(playerControlComponent); // Toggle the control
+                        }
+                    }
+                );
+
+                // #endregion
+
+                // #region Video ContextMenu Prevention
+
+                syiro.events.Add("contextmenu", innerContentElement,
+                    function(){
+                        var e : Event = arguments[1]; // Get the Mouse Event typically passed to the function
+                        e.preventDefault();
+                    }
+                );
+
+                // #endregion
+
+                // #region Video Player Fullscreen Button Enabling
+
+                var fullscreenButtonElement : Element = componentElement.querySelector('div[data-syiro-minor-component="player-button-fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
+                syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(fullscreenButtonElement), syiro.player.ToggleFullscreen); // Listen to up events on the fullscreen button
+
+                // #endregion
+
+            }
+
+            // #endregion
+
+            // #region Player Control Listeners
+
+                // #region Play Button Listener
+
+                var playButtonComponent : Object = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-minor-component="player-button-play"]')); // Get the Component Object of the Play Button
+
+                syiro.events.Add(playButtonComponent,
+                    function(){
+                        var playButtonComponent : Object = arguments[0]; // Get the Play Button that was clicked
+                        var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
+                        var playButton : Element = syiro.component.Fetch(playButtonComponent); // Get the Play Button Element
+
+                        // #region Player Component & Element Defining
+
+                        var playerElement = playButton.parentElement.parentElement; // Get the Play Button's parent Player
+                        var playerComponent : Object = syiro.component.FetchComponentObject(playerElement); // Get the Player Component based on the playerElement
+
+                        // #endregion
+
+                        syiro.player.PlayOrPause(playerComponent, playButtonComponent); // Switch the status of the Player to either play or pause
+                    }
+                );
+
+                // #endregion
+
+                // #region Player Range Initialization
+
+                var playerRange = playerControlArea.querySelector('input[type="range"]'); // Get the input range
+
+                syiro.events.Add(syiro.events.eventStrings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
+                    function(){
+                        var playerRangeElement : Element = arguments[0]; // Get the Player Range element passed
+                        var playerComponent : Object = syiro.component.FetchComponentObject(playerRangeElement.parentElement.parentElement) // Define playerComponentElement as the player range's player control's parent and fetch the Component Object
+                        syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", true); // Set the ChangingInputValue to true to infer we are changing the input value of the playerRange
+                    }
+                );
+
+                syiro.events.Add(syiro.events.eventStrings["up"], playerRange, // Add mouseup / touchend events to the playerRange, which calls a function to indicate we are no longer changing the input value
+                    function(){
+                        var playerRange : HTMLInputElement = arguments[0]; // Define playerRangeElement as the Element passed to us
+                        var playerComponent : Object = syiro.component.FetchComponentObject(playerRange.parentElement.parentElement); // Get the Component Object of the Player
+
+                        if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true){ // If we are doing a time change and not a volume change
+                            syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false); // Since we not changing the volume, immediately set IsChangingInputValue to false
+                        }
+                    }
+                );
+
+                syiro.events.Add("input", playerRange, // Add input event to the playerRange, which updates either the time or volume whenever the input is changed
+                    function(){
+                        var playerRange : HTMLInputElement = arguments[0]; // Define playerRangeElement as the Element passed to us
+                        var playerComponent : Object = syiro.component.FetchComponentObject(playerRange.parentElement.parentElement); // Get the Component Object of the Player
+
+                        var valueNum : number = Number(playerRange.value); // Define valueNum as the converted string-to-number, where the value was the playerRange value
+
+                        if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true){ // If we are doing a time change and not a volume change
+                            syiro.player.SetTime(playerComponent, valueNum); // Set the Time
+                        }
+                        else{ // If we are doing a volume change
+                            syiro.player.SetVolume(playerComponent, (valueNum / 100)); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
+                        }
+
+                        var priorInputSpaceWidth : number = Math.round((valueNum / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
+                        syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)");
+                    }
+                );
+
+                // #endregion
+
+                // #region Volume Button Listener
+
+                var volumeButtonElement = playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]'); // Get any existing volume button in this player
+
+                if (volumeButtonElement !== null){ // If there is a volume button (there is no for iOS)
+                    var volumeButtonComponent = syiro.component.FetchComponentObject(volumeButtonElement); // Get the Component Object of the Volume Button
+
+                    syiro.events.Add(volumeButtonComponent,
+                        function(){
+                            var volumeButtonComponent : Object = arguments[0]; // Get the Volume Button that was clicked
+                            var volumeButton : Element = syiro.component.Fetch(volumeButtonComponent); // Get the Volume Button Element
+
+                            var playerElement : Element = volumeButton.parentElement.parentElement; // Get the outer parent Player
+                            var playerComponent : Object = syiro.component.FetchComponentObject(playerElement); // Get the Player Component based on the playerElement
+                            var playerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(playerComponent); // Fetch the inner audio or video tag
+
+                            var playerRange : any = playerElement.querySelector("input"); // Get the Player Control Range
+                            var playerRangeAttributes : Object= {}; // Set playerRangeAttributes as an empty Object to hold attribute information that we'll apply to the input range later
+
+                            if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true){ // If we are NOT already actively doing a volume change
+                                syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", true); // Set the IsChangingInputValue to true so the timeupdate won't change the value on us
+                                syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", true); // Set the IsChangingVolume to true so we don't end up changing the "location" in the content
+
+                                volumeButton.setAttribute("active", "true"); // Set component active to true to imply it is active
+
+                                var playerRangeValueFromVolume : string = (playerContentElement.volume * 100).toString();
+
+                                playerRangeAttributes["max"] = "100"; // Set max to 100
+                                playerRangeAttributes["step"] = "1"; // Set step to 1
+                                playerRange.value = playerRangeValueFromVolume; // Set the value to the volume (which is 0.1 to 1.0) times 10
+
+                                if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
+                                    playerElement.querySelector('div[data-syiro-component="player-control"]').removeAttribute("data-syiro-component-streamstyling"); // Default to NOT having the Player Control "Stream Styling"
+                                }
+                            }
+                            else{ // If we are already actively doing a volume change, meaning the user wants to switch back to the normal view
+                                volumeButton.removeAttribute("active"); // Remove component-active to imply volume icon is not active
+
+                                playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent); // Get a returned Object with the max the input range should be, as well as a reasonable, pre-calculated amount of steps.
+                                playerRange.value = playerContentElement.currentTime; // Set the playerRange value to the currentTime
+
+                                if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
+                                    playerElement.querySelector('div[data-syiro-component="player-control"]').setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
+                                }
+
+                                syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false); // Set the IsChangingInputValue to infer we are no longer changing the input value
+                                syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", false); // Set the IsChangingVolume to false to infer we are no longer changing the volume
+                            }
+
+                            for (var playerRangeAttribute in playerRangeAttributes){ // For each attribute defined in the playerRangeAttributes Object
+                                playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]); // Set the attribute on the playerRange
+                            }
+
+                            var priorInputSpaceWidth : number = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
+                            syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + "  " + priorInputSpaceWidth + "px, white 0px)");
                         }
                     );
                 }
 
                 // #endregion
-            }
 
-            // #endregion
+                // #region Player Menu Dialog
 
-            // #region Video Element Click / Tap Handling
+                var menuButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the menuButton if it exists
 
-            syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, // Add mouseup / touchup listeners to the innerContentElement
-                function(){
-                    var innerContentElement : Element = arguments[0]; // Get the innerContentElement passed as argument 0
-                    var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
-
-                    if (syiro.device.SupportsTouch !== true){ // If it was not touch that triggered the event
-                        var playerComponent = syiro.component.FetchComponentObject(innerContentElement.parentElement); // Fetch the Component Object of the innerContentElement's parentElement
-                        syiro.player.PlayOrPause(playerComponent); // Play / pause the video
-                    }
-                    else{ // If it was touch that triggered the event
-                        var playerControlComponent = syiro.component.FetchComponentObject(innerContentElement.parentElement.querySelector('div[data-syiro-component="player-control"]')); // Fetch the Component Object of the innerContentElement's Player Control
-                        syiro.playercontrol.Toggle(playerControlComponent); // Toggle the control
-                    }
+                if (menuButton !== null){ // If the menu button exists
+                    syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(menuButton), syiro.player.ToggleMenuDialog.bind(this, component)); // Add an event listener to the button that calls ToggleMenuDialog, binding to the Player Component
                 }
-            );
+
+                // #endregion
+
+                syiro.player.CheckIfStreamable(component); // Check if the content is streamable
 
             // #endregion
-
-            // #region Video ContextMenu Prevention
-
-            syiro.events.Add("contextmenu", innerContentElement,
-                function(){
-                    var e : Event = arguments[1]; // Get the Mouse Event typically passed to the function
-                    e.preventDefault();
-                }
-            );
-
-            // #endregion
-
-            // #region Video Player Fullscreen Button Enabling
-
-            var fullscreenButtonElement : Element = componentElement.querySelector('div[data-syiro-minor-component="player-button-fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
-            syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(fullscreenButtonElement), syiro.player.ToggleFullscreen); // Listen to up events on the fullscreen button
-
-            // #endregion
-
         }
-
-        // #endregion
-
-        // #region Player Control Listeners
-
-            // #region Play Button Listener
-
-            var playButtonComponent : Object = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-minor-component="player-button-play"]')); // Get the Component Object of the Play Button
-
-            syiro.events.Add(playButtonComponent,
-                function(){
-                    var playButtonComponent : Object = arguments[0]; // Get the Play Button that was clicked
-                    var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
-                    var playButton : Element = syiro.component.Fetch(playButtonComponent); // Get the Play Button Element
-
-                    // #region Player Component & Element Defining
-
-                    var playerElement = playButton.parentElement.parentElement; // Get the Play Button's parent Player
-                    var playerComponent : Object = syiro.component.FetchComponentObject(playerElement); // Get the Player Component based on the playerElement
-
-                    // #endregion
-
-                    syiro.player.PlayOrPause(playerComponent, playButtonComponent); // Switch the status of the Player to either play or pause
-                }
-            );
-
-            // #endregion
-
-            // #region Player Range Initialization
-
-            var playerRange = playerControlArea.querySelector('input[type="range"]'); // Get the input range
-
-            syiro.events.Add(syiro.events.eventStrings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
-                function(){
-                    var playerRangeElement : Element = arguments[0]; // Get the Player Range element passed
-                    var playerComponent : Object = syiro.component.FetchComponentObject(playerRangeElement.parentElement.parentElement) // Define playerComponentElement as the player range's player control's parent and fetch the Component Object
-                    syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", true); // Set the ChangingInputValue to true to infer we are changing the input value of the playerRange
-                }
-            );
-
-            syiro.events.Add(syiro.events.eventStrings["up"], playerRange, // Add mouseup / touchend events to the playerRange, which calls a function to indicate we are no longer changing the input value
-                function(){
-                    var playerRange : HTMLInputElement = arguments[0]; // Define playerRangeElement as the Element passed to us
-                    var playerComponent : Object = syiro.component.FetchComponentObject(playerRange.parentElement.parentElement); // Get the Component Object of the Player
-
-                    if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true){ // If we are doing a time change and not a volume change
-                        syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false); // Since we not changing the volume, immediately set IsChangingInputValue to false
-                    }
-                }
-            );
-
-            syiro.events.Add("input", playerRange, // Add input event to the playerRange, which updates either the time or volume whenever the input is changed
-                function(){
-                    var playerRange : HTMLInputElement = arguments[0]; // Define playerRangeElement as the Element passed to us
-                    var playerComponent : Object = syiro.component.FetchComponentObject(playerRange.parentElement.parentElement); // Get the Component Object of the Player
-
-                    var valueNum : number = Number(playerRange.value); // Define valueNum as the converted string-to-number, where the value was the playerRange value
-
-                    if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true){ // If we are doing a time change and not a volume change
-                        syiro.player.SetTime(playerComponent, valueNum); // Set the Time
-                    }
-                    else{ // If we are doing a volume change
-                        syiro.player.SetVolume(playerComponent, (valueNum / 100)); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
-                    }
-
-                    var priorInputSpaceWidth : number = Math.round((valueNum / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
-                    syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)");
-                }
-            );
-
-            // #endregion
-
-            // #region Volume Button Listener
-
-            var volumeButtonElement = playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]'); // Get any existing volume button in this player
-
-            if (volumeButtonElement !== null){ // If there is a volume button (there is no for iOS)
-                var volumeButtonComponent = syiro.component.FetchComponentObject(volumeButtonElement); // Get the Component Object of the Volume Button
-
-                syiro.events.Add(volumeButtonComponent,
-                    function(){
-                        var volumeButtonComponent : Object = arguments[0]; // Get the Volume Button that was clicked
-                        var volumeButton : Element = syiro.component.Fetch(volumeButtonComponent); // Get the Volume Button Element
-
-                        var playerElement : Element = volumeButton.parentElement.parentElement; // Get the outer parent Player
-                        var playerComponent : Object = syiro.component.FetchComponentObject(playerElement); // Get the Player Component based on the playerElement
-                        var playerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(playerComponent); // Fetch the inner audio or video tag
-
-                        var playerRange : any = playerElement.querySelector("input"); // Get the Player Control Range
-                        var playerRangeAttributes : Object= {}; // Set playerRangeAttributes as an empty Object to hold attribute information that we'll apply to the input range later
-
-                        if (syiro.data.Read(playerComponent["id"] + "->IsChangingVolume") !== true){ // If we are NOT already actively doing a volume change
-                            syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", true); // Set the IsChangingInputValue to true so the timeupdate won't change the value on us
-                            syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", true); // Set the IsChangingVolume to true so we don't end up changing the "location" in the content
-
-                            volumeButton.setAttribute("active", "true"); // Set component active to true to imply it is active
-
-                            var playerRangeValueFromVolume : string = (playerContentElement.volume * 100).toString();
-
-                            playerRangeAttributes["max"] = "100"; // Set max to 100
-                            playerRangeAttributes["step"] = "1"; // Set step to 1
-                            playerRange.value = playerRangeValueFromVolume; // Set the value to the volume (which is 0.1 to 1.0) times 10
-
-                            if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
-                                playerElement.querySelector('div[data-syiro-component="player-control"]').removeAttribute("data-syiro-component-streamstyling"); // Default to NOT having the Player Control "Stream Styling"
-                            }
-                        }
-                        else{ // If we are already actively doing a volume change, meaning the user wants to switch back to the normal view
-                            volumeButton.removeAttribute("active"); // Remove component-active to imply volume icon is not active
-
-                            playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponent); // Get a returned Object with the max the input range should be, as well as a reasonable, pre-calculated amount of steps.
-                            playerRange.value = playerContentElement.currentTime; // Set the playerRange value to the currentTime
-
-                            if (syiro.data.Read(playerComponent["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
-                                playerElement.querySelector('div[data-syiro-component="player-control"]').setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
-                            }
-
-                            syiro.data.Write(playerComponent["id"] + "->IsChangingInputValue", false); // Set the IsChangingInputValue to infer we are no longer changing the input value
-                            syiro.data.Write(playerComponent["id"] + "->IsChangingVolume", false); // Set the IsChangingVolume to false to infer we are no longer changing the volume
-                        }
-
-                        for (var playerRangeAttribute in playerRangeAttributes){ // For each attribute defined in the playerRangeAttributes Object
-                            playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]); // Set the attribute on the playerRange
-                        }
-
-                        var priorInputSpaceWidth : number = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
-                        syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + "  " + priorInputSpaceWidth + "px, white 0px)");
-                    }
-                );
-            }
-
-            // #endregion
-
-            // #region Player Menu Dialog
-
-            var menuButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the menuButton if it exists
-
-            if (menuButton !== null){ // If the menu button exists
-                syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(menuButton), syiro.player.ToggleMenuDialog.bind(this, component)); // Add an event listener to the button that calls ToggleMenuDialog, binding to the Player Component
-            }
-
-            // #endregion
-
-            syiro.player.CheckIfStreamable(component); // Check if the content is streamable
-
-        // #endregion
     }
 
     // #endregion
@@ -1048,6 +1050,9 @@ module syiro.videoplayer {
     export function Generate(properties : Object) : Object { // Generate a Video Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the video property is defined
             var componentId : string = syiro.generator.IdGen("video-player"); // Generate a component Id
+            var syiroComponentData : Object = { "scaling" : {}}; // Define syiroComponentData as an Object to hold data we'll be writing to the Syiro Data System
+            var syiroVideoElementProperties : Object = { "preload" : "metadata", "UIWebView" : "allowsInlineMediaPlayback"}; // Define syiroVideoElementProperties as a core set of properties we need for the Video Element
+
             var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "video-player", // Generate an Video Player Element
                 {
                     "id" : componentId, // Set the id (followed by name below) to act as a fragment ID for a page to jump to
@@ -1055,34 +1060,83 @@ module syiro.videoplayer {
                 }
             );
 
-            if (typeof properties["share"] !== "undefined"){ // If the "share" menu attribute is still being used
-                properties["menu"] = properties["share"]; // Set "menu" attribute equal to "share" attribute
+            if (navigator.userAgent.indexOf("iPhone") == -1) { // If the browser is NOT an iPhone, generate a proper Video Player Component
+                console.log("Hello");
+                syiroVideoElementProperties["volume"] = "0.5"; // Set volume to 0.5
+
+                // #region Video Art Poster Creation
+
+                if (properties["art"] !== undefined){ // If art has been defined
+                    var posterImageElement : HTMLElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component" : "video-poster", "src" : properties["art"] }); // Create an img Element with the src set to the artwork
+                    componentElement.appendChild(posterImageElement); // Append to the Video Player container
+                }
+
+                // #endregion
+
+                // #region Player Menu Element Creation (If Applicable)
+
+                if (typeof properties["share"] !== "undefined"){ // If the "share" menu attribute is still being used
+                    properties["menu"] = properties["share"]; // Set "menu" attribute equal to "share" attribute
+                }
+
+                if (properties["menu"] !== undefined){ // If the menu attribute is defined
+                    if (properties["menu"]["type"] == "list"){ // If the component provided is a List
+                        var playerMenuDialog : Element = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
+                        playerMenuDialog.appendChild(syiro.generator.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
+                        playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
+                        componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
+                    }
+                }
+
+                // #endregion
+
+                // #region Player Control Creation
+
+                properties["is-video-player"] = true; // Add "is-video-player" key before calling playercontrol Generate so it'll generate the fullscreen button
+                var playerControlComponent : Object = syiro.playercontrol.Generate(properties);
+                componentElement.appendChild(syiro.component.Fetch(playerControlComponent)); // Fetch the HTMLElement and append the player control
+
+                // #endregion
+
+                // #region Force Live User Interface
+                // This section will determine if we should force the live UX to be applied to the content
+
+                if ((typeof properties["live-ux"] !== "undefined") && (properties["live-ux"] == true)){ // If Live UX is defined as true
+                    syiroComponentData["ForceUX"] = true; // Define the syiroComponentData ForceUX as true
+                }
+
+                // #endregion
+
+                // #region Scaling Properties
+
+                syiroComponentData["scaling"]["children"] = { // Add scaling->children data
+                    'img[data-syiro-minor-component="video-poster"]' : { // Video Poster should scale
+                        "scaling" : {  // Video Poster scaling details Object
+                            "fill" : [1,1]// Match the dimensions of the parent
+                        }
+                    },
+                    'div[data-syiro-component="player-control"]' : { // Player Control should scale
+                        "scaling" : { // Player Control scaling details Object
+                            "fill" : [0,1] // Fills of 0 (maintain height) with 1.0 fill as width (100% of parent Video Player)
+                        }
+                    }
+                };
+
+                // #endregion
             }
+            else{ // If the device IS an iPhone
+                syiroComponentData["NoUX"] = true; // Define NoUX as true so we know to simplify player initialization
 
-            // #region Video Dimensions Defining
+                if (typeof properties["art"] !== "undefined"){ // If art has been defined
+                    syiroVideoElementProperties["poster"] = properties["art"]; // Define the poster property of the Video Element to be the art
+                }
 
-            if (properties["height"] == undefined){ // If the properties has a declared height in it
-                properties["height"] = 300; // Set the height to 300px
+                syiroVideoElementProperties["controls"] = "controls"; // Use the build-in iOS controls
             }
-
-            if (properties["width"] == undefined){ // If the properties has a declared width in it
-                properties["width"] = 531; // Set the height to 531px (ensure 16:9 ratio)
-            }
-
-            // #endregion
-
-            // #region Video Art Poster Creation
-
-            if (properties["art"] !== undefined){ // If art has been defined
-                var posterImageElement : HTMLElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component" : "video-poster", "src" : properties["art"] }); // Create an img Element with the src set to the artwork
-                componentElement.appendChild(posterImageElement); // Append to the Video Player container
-            }
-
-            // #endregion
 
             // #region Video Element and Sources Creation
 
-            var videoPlayer : HTMLElement = syiro.generator.ElementCreator("video", { "preload" : "metadata", "volume" : "0.5", "UIWebView" : "allowsInlineMediaPlayback"} ); // Create the video player, with the preloading to only metadata and volume to 50%
+            var videoPlayer : HTMLElement = syiro.generator.ElementCreator("video", syiroVideoElementProperties); // Create the video player with the defined properties
 
             videoPlayer.autoplay = false; // Set autoplay of video to false
 
@@ -1092,27 +1146,22 @@ module syiro.videoplayer {
                 videoPlayer.appendChild(arrayofSourceElements[sourceElementKey]); // Append the HTMLElement
             }
 
-            componentElement.appendChild(videoPlayer); // Append the video player
+            componentElement.insertBefore(videoPlayer, componentElement.lastChild); // Append the video player
+
+            syiroComponentData["HTMLElement"] = componentElement; // Define the HTMLElement in syiroComponentData as the componentElement
 
             // #endregion
 
-            // #region Player Control Creation
+            // #region Scaling Check
 
-            properties["is-video-player"] = true; // Add "is-video-player" key before calling playercontrol Generate so it'll generate the fullscreen button
-            var playerControlComponent : Object = syiro.playercontrol.Generate(properties);
-            componentElement.appendChild(syiro.component.Fetch(playerControlComponent)); // Fetch the HTMLElement and append the player control
-
-            // #endregion
-
-            // #region Player Menu Element Creation (If Applicable)
-
-            if (properties["menu"] !== undefined){ // If the menu attribute is defined
-                if (properties["menu"]["type"] == "list"){ // If the component provided is a List
-                    var playerMenuDialog : Element = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
-                    playerMenuDialog.appendChild(syiro.generator.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
-                    playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
-                    componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
-                }
+            if (typeof properties["ratio"] !== "undefined"){ // If ratio is defined
+                syiroComponentData["scaling"]["ratio"] = properties["ratio"]; // Define the ratio properties in syiroComponentData->scaling as the provided ratio property
+            }
+            else if (typeof properties["fill"] !== "undefined"){ // If fill is defined
+                syiroComponentData["scaling"]["scale"] = properties["scale"]; // Define the scale properties in syiroComponentData->scaling as the provided scale property
+            }
+            else{ // If neither ratio nor fill are defined
+                syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]]; // Define initialDimensions as [height, width]
             }
 
             // #endregion
@@ -1120,49 +1169,13 @@ module syiro.videoplayer {
             // #region Third-Party Streaming Support
             // This section will determine if we are using a third-party library for live streaming support (like dashjs)
 
-            var usingExternalLibrary = false; // Declare a variable that we'll use to determine if we are using an external library and tying that into Syiro Player
-
-            if ((typeof properties["external-library"] !== "undefined")&& (properties["external-library"] == true)){ // If an external library is going to be tying into the Syiro Video Player
-                usingExternalLibrary = true;
+            if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)){ // If an external library is going to be tying into the Syiro Video Player
+                syiroComponentData["ExternalLibrary"] = true; // Set ExternalLibrary as true
             }
 
             // #endregion
 
-            // #region Force Live User Interface
-            // This section will determine if we should force the live UX to be applied to the content
-
-            var forceLiveUX = false; // Declare a variable that we'll use to determine if we should force live UX
-
-            if ((typeof properties["live-ux"] !== "undefined") && (properties["live-ux"] == true)){ // If Live UX is defined as true
-                forceLiveUX = true;
-            }
-
-            // #endregion
-
-            syiro.data.Write(componentId, // Store the Video Player Component Element Details we generated
-                {
-                    "ExternalLibrary" : usingExternalLibrary, // Define whether we are using an external library with the player or not
-                    "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
-                    "ForceLiveUX" : forceLiveUX, // Set ForceLiveUX to forceLiveUX boolean
-                    "scaling" : { // Create a scaling details Object
-                        "initialDimensions" : [properties["height"], properties["width"]], // Set the initialDimensions to video Height and width as video Width
-                        "ratios" : [1, 1.77], // The Video Player should scale so the ratio is 16:9 (for every 1px in height, 1.77 pixels in width)
-                        "children" : { // Children that should scale with the Video Player
-                            'img[data-syiro-minor-component="video-poster"]' : { // Video Poster should scale
-                                "scaling" : {  // Video Poster scaling details Object
-                                    "fill" : [1,1]// Match the dimensions of the parent
-                                }
-                            },
-                            'div[data-syiro-component="player-control"]' : { // Player Control should scale
-                                "scaling" : { // Player Control scaling details Object
-                                    "fill" : [0,1] // Fills of 0 (maintain height) with 1.0 fill as width (100% of parent Video Player)
-                                }
-                            }
-                        }
-                    }
-                }
-            );
-
+            syiro.data.Write(componentId, syiroComponentData); // Write the syiroComponentData of this Video Player to Syiro's Data System
             return { "id" : componentId, "type" : "video-player" }; // Return a Component Object
         }
         else{ // If video is not defined in the properties

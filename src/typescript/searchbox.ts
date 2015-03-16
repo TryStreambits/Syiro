@@ -157,7 +157,7 @@ module syiro.searchbox {
 				searchboxInputElement.removeAttribute("placeholder"); // Remove the placeholder attribute
 			}
 
-			syiro.component.Update(component["id"], searchboxElement); // Update the storedComponent HTMLElement if necessary
+			syiro.component.Update(component["id"], searchboxElement); // Update the searchboxElement HTMLElement if necessary
 		}
 	}
 

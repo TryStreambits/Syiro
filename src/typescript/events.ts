@@ -67,7 +67,7 @@ module syiro.events {
             if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a toggle button
                 var animationString : string;
 
-                if (componentElement.hasAttribute("data-syiro-component-status") == false){ // If the button is NOT active (has no status)
+                if (componentElement.hasAttribute("active") == false){ // If the button is NOT active
                     animationString = "toggle-forward-animation"; // Animate forward the toggle
                     passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
                 }
@@ -82,11 +82,11 @@ module syiro.events {
                         "function" : function(component : Object){ // Post-Animation Function
                             var buttonElement : Element = syiro.component.Fetch(component); // Get the buttonElement based on the component Object
 
-                            if (buttonElement.hasAttribute("data-syiro-component-status") == false){ // If the status is not "true" / active
-                                buttonElement.setAttribute("data-syiro-component-status", "true"); // Set to true
+                            if (buttonElement.hasAttribute("active") == false){ // If the status is not active
+                                buttonElement.setAttribute("active", "active"); // Set to active
                             }
-                            else{ // If the status IS true
-                                buttonElement.removeAttribute("data-syiro-component-status"); // Remove the buttonElement component status
+                            else{ // If the status IS active
+                                buttonElement.removeAttribute("active"); // Remove the active attribute
                             }
                         }
                     }

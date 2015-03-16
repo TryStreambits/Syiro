@@ -4,8 +4,8 @@ interface Object {
     type: string;
     link: string;
     title: string;
-    listeners?: string[];
-    handlers?: Function[];
+    listeners?: Array<string>;
+    handlers?: Array<Function>;
     HTMLElement?: Element;
 }
 interface Document {
@@ -76,7 +76,7 @@ declare module syiro.render {
 declare module syiro.component {
     var componentData: Object;
     var Define: Function;
-    function CSS(component: any, property: string, newValue?: any): any;
+    function CSS(component: any, property: string, newValue?: (string | boolean)): any;
     function Fetch(component: Object): any;
     function FetchComponentObject(...args: any[]): Object;
     function FetchDimensionsAndPosition(component: any): Object;
@@ -85,7 +85,7 @@ declare module syiro.component {
     var Scale: typeof render.Scale;
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
-    function Remove(componentsToRemove: any): boolean;
+    function Remove(componentsToRemove: any): void;
 }
 declare module syiro.animation {
     function Animate(component: Object, properties: Object): void;
@@ -120,8 +120,8 @@ declare module syiro.header {
 declare module syiro.footer {
     function Generate(properties: Object): Object;
     function SetLabel(component: Object, labelText: string): boolean;
-    function AddLink(prepend: boolean, component: Object, linkProperties: Object): boolean;
-    function RemoveLink(component: Object, linkProperties: Object): boolean;
+    function AddLink(prepend: boolean, component: Object, properties: Object): boolean;
+    function RemoveLink(component: Object, properties: Object): boolean;
 }
 declare module syiro.button {
     function Generate(properties: Object): Object;
@@ -166,8 +166,8 @@ declare module syiro.player {
     function GetPlayerLengthInfo(component: Object): Object;
     function IsPlaying(component: Object): boolean;
     function PlayOrPause(component: Object, playButtonComponentObject?: Object): void;
-    function FetchSources(component: Object): Object[];
-    function GenerateSources(type: string, sources: any): HTMLElement[];
+    function FetchSources(component: Object): Array<Object>;
+    function GenerateSources(type: string, sources: any): Array<HTMLElement>;
     function Reset(component: Object): void;
     function SetSources(component: Object, sources: any): void;
     function SetTime(component: Object, time: number): void;
@@ -198,13 +198,16 @@ declare module syiro {
     var secondaryColor: string;
     function Init(): void;
     var Define: typeof component.FetchComponentObject;
+    var CSS: typeof component.CSS;
     var Fetch: typeof component.Fetch;
     var FetchComponentObject: typeof component.FetchComponentObject;
     var FetchDimensionsAndPosition: typeof component.FetchDimensionsAndPosition;
+    var FetchLinkedListComponentObject: typeof component.FetchLinkedListComponentObject;
+    var IsComponentObject: typeof component.IsComponentObject;
     var Add: typeof component.Add;
     var Remove: typeof component.Remove;
-    function Animate(...args: any[]): void;
-    var CSS: typeof component.CSS;
+    var Position: typeof render.Position;
     var AddListeners: typeof events.Add;
     var RemoveListeners: typeof events.Remove;
+    function Animate(...args: any[]): void;
 }

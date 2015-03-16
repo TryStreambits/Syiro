@@ -45,26 +45,20 @@ module syiro.footer {
 	// #region Function to set the Footer label (typically something like a Copyright notice)
 
 	export function SetLabel(component : Object, labelText : string) : boolean{ // Set the label text of the footer component to the labelText defined
-		if (component !== undefined){ // If the component is defined
-			if (labelText !== undefined){ // If the labelText is defined
-				var parentElement = syiro.component.Fetch(component); // Get the Element of the footer component
-				var labelComponent : Element = document.querySelector("pre"); // Fetch the labelComponent if it exists
+		if ((typeof component !== "undefined") && (typeof labelText !== "undefined")){ // If the component and labelText is defined
+			var parentElement = syiro.component.Fetch(component); // Get the Element of the footer component
+			var labelComponent : Element = parentElement.querySelector("pre"); // Fetch the labelComponent if it exists
 
-				if (labelComponent == null){ // If the labelComponent does not exist
-					labelComponent = syiro.generator.ElementCreator("pre", { "content" : labelText }); // Create a label Element with the content set to labelText
-					parentElement.insertBefore(labelComponent, parentElement.firstChild); // Pre-emptively insert the empty label
-				}
-				else{ // If the labelComponent does exist
-					labelComponent.textContent = labelText; // Set the labelComponent textContent to the labelText defined
-				}
-
-				syiro.component.Update(component["id"], parentElement); // Update the storedComponent HTMLElement if necessary
-
-				return true; // Return a success boolean
+			if (labelComponent == null){ // If the labelComponent does not exist
+				labelComponent = syiro.generator.ElementCreator("pre", { "content" : labelText }); // Create a label Element with the content set to labelText
+				parentElement.insertBefore(labelComponent, parentElement.firstChild); // Pre-emptively insert the empty label
 			}
-			else{ // If the labelText is NOT defined
-				return false; // Return a failure boolean
+			else{ // If the labelComponent does exist
+				labelComponent.textContent = labelText; // Set the labelComponent textContent to the labelText defined
 			}
+
+			syiro.component.Update(component["id"], parentElement); // Update the storedComponent HTMLElement if necessary
+			return true; // Return a success boolean
 		}
 		else{ // If the component is NOT defined
 			return false; // Return a failure boolean
@@ -75,12 +69,13 @@ module syiro.footer {
 
 	// #region Function to add a link to the Footer based on properties of that link
 
-	export function AddLink(prepend : boolean, component : Object, linkProperties : Object) : boolean { // Returns boolean if it was successful or not
+	export function AddLink(prepend : boolean, component : Object, properties : Object) : boolean { // Returns boolean if it was successful or not
 		var componentAddingSucceeded : boolean; // Variable to store the determination of success
 
-		if (typeof linkProperties == "Object"){ // If the linkProperties is in fact an Object
-			if ((linkProperties["title"] !== undefined) && (linkProperties["link"] !== undefined)){ // If the linkProperties object has the valid properties needed
-				componentAddingSucceeded = syiro.component.Add(prepend, component, linkProperties);
+		if (typeof properties == "Object"){ // If the linkProperties is in fact an Object
+			if ((typeof properties["title"] !== "undefined") && (typeof properties["link"] !== "undefined")){ // If the linkProperties object has the valid properties needed
+				var linkElement : Element = syiro.generator.ElementCreator("a", { "title" : properties["title"], "content" : properties["title"], "href" : properties["link"] }); // Create a link Element
+				componentAddingSucceeded = syiro.component.Add(prepend, component, linkElement);
 			}
 			else{ // If it did not contain the appropriate properties
 				componentAddingSucceeded = false; // Set to false
@@ -97,10 +92,10 @@ module syiro.footer {
 
 	// #region Function to remove a link from the Footer based on the properties of that link
 
-	export function RemoveLink(component : Object, linkProperties : Object) : boolean { // Return boolean if it was successful or not
+	export function RemoveLink(component : Object, properties : Object) : boolean { // Return boolean if it was successful or not
 		var componentRemovingSucceed : boolean; // Variable to store the determination of success
 		var footerElement : Element = syiro.component.Fetch(component); // Get the Element of the Footer component
-		var potentialLinkElement : Element = footerElement.querySelector('a[href="' + linkProperties["link"] + '"][title="' + linkProperties["title"] + '"]'); // Get the potential link element.
+		var potentialLinkElement : Element = footerElement.querySelector('a[href="' + properties["link"] + '"][title="' + properties["title"] + '"]'); // Get the potential link element.
 
 		if (potentialLinkElement !== null){ // If we successfully got the link element
 			footerElement.removeChild(potentialLinkElement); // Remove the element

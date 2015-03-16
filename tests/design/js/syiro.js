@@ -180,7 +180,7 @@ var syiro;
             if (syiro.data.Read(componentId + "->ignoreClick") == false) {
                 if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
                     var animationString;
-                    if (componentElement.hasAttribute("data-syiro-component-status") == false) {
+                    if (componentElement.hasAttribute("active") == false) {
                         animationString = "toggle-forward-animation";
                         passableValue = true;
                     }
@@ -192,11 +192,11 @@ var syiro;
                         "animation": animationString,
                         "function": function (component) {
                             var buttonElement = syiro.component.Fetch(component);
-                            if (buttonElement.hasAttribute("data-syiro-component-status") == false) {
-                                buttonElement.setAttribute("data-syiro-component-status", "true");
+                            if (buttonElement.hasAttribute("active") == false) {
+                                buttonElement.setAttribute("active", "active");
                             }
                             else {
-                                buttonElement.removeAttribute("data-syiro-component-status");
+                                buttonElement.removeAttribute("active");
                             }
                         }
                     });
@@ -816,41 +816,35 @@ var syiro;
             else {
                 allowAdding = false;
             }
-            syiro.data.Write(parentComponent["id"], parentElement);
+            syiro.component.Update(parentComponent["id"], parentElement);
             return allowAdding;
         }
         _component.Add = Add;
         function Remove(componentsToRemove) {
-            var allowRemoval = false;
             var componentList;
-            if (componentsToRemove["id"] !== undefined) {
-                allowRemoval = true;
+            if ((syiro.component.IsComponentObject(componentsToRemove)) || ((typeof componentsToRemove == "object") && (typeof componentsToRemove.length == "undefined"))) {
                 componentList = [componentsToRemove];
             }
             else if ((typeof componentsToRemove == "object") && (componentsToRemove.length > 0)) {
-                allowRemoval = true;
                 componentList = componentsToRemove;
             }
-            if (allowRemoval == true) {
-                for (var individualComponentIndex = 0; individualComponentIndex < componentList.length; individualComponentIndex++) {
-                    var individualComponentObject;
-                    var individualComponentElement;
-                    if (syiro.component.IsComponentObject(componentList[individualComponentIndex])) {
-                        individualComponentObject = componentList[individualComponentIndex];
-                        individualComponentElement = syiro.component.Fetch(individualComponentObject);
-                    }
-                    else {
-                        individualComponentObject = syiro.component.FetchComponentObject(componentList[individualComponentIndex]);
-                        individualComponentElement = componentList[individualComponentIndex];
-                    }
-                    var parentElement = individualComponentElement.parentElement;
-                    parentElement.removeChild(individualComponentElement);
-                    if (syiro.data.Read(individualComponentObject["id"]) !== false) {
-                        syiro.data.Delete(individualComponentObject["id"]);
-                    }
+            for (var individualComponentIndex = 0; individualComponentIndex < componentList.length; individualComponentIndex++) {
+                var individualComponentObject;
+                var individualComponentElement;
+                if (syiro.component.IsComponentObject(componentList[individualComponentIndex])) {
+                    individualComponentObject = componentList[individualComponentIndex];
+                    individualComponentElement = syiro.component.Fetch(individualComponentObject);
+                }
+                else {
+                    individualComponentObject = syiro.component.FetchComponentObject(componentList[individualComponentIndex]);
+                    individualComponentElement = componentList[individualComponentIndex];
+                }
+                var parentElement = individualComponentElement.parentElement;
+                parentElement.removeChild(individualComponentElement);
+                if (syiro.data.Read(individualComponentObject["id"]) !== false) {
+                    syiro.data.Delete(individualComponentObject["id"]);
                 }
             }
-            return allowRemoval;
         }
         _component.Remove = Remove;
     })(component = syiro.component || (syiro.component = {}));
@@ -1132,8 +1126,9 @@ var syiro;
         header.SetLogo = SetLogo;
         function RemoveLogo(component) {
             var headerElement = syiro.component.Fetch(component);
-            if (headerElement.querySelectorAll('img[data-syiro-minor-component="logo"]').length > 0) {
-                headerElement.removeChild(headerElement.firstChild);
+            var imageElement = headerElement.querySelector('img[data-syiro-minor-component="logo"]');
+            if (imageElement !== null) {
+                syiro.component.Remove(imageElement);
                 syiro.component.Update(component["id"], headerElement);
             }
         }
@@ -1170,34 +1165,30 @@ var syiro;
         }
         footer.Generate = Generate;
         function SetLabel(component, labelText) {
-            if (component !== undefined) {
-                if (labelText !== undefined) {
-                    var parentElement = syiro.component.Fetch(component);
-                    var labelComponent = document.querySelector("pre");
-                    if (labelComponent == null) {
-                        labelComponent = syiro.generator.ElementCreator("pre", { "content": labelText });
-                        parentElement.insertBefore(labelComponent, parentElement.firstChild);
-                    }
-                    else {
-                        labelComponent.textContent = labelText;
-                    }
-                    syiro.component.Update(component["id"], parentElement);
-                    return true;
+            if ((typeof component !== "undefined") && (typeof labelText !== "undefined")) {
+                var parentElement = syiro.component.Fetch(component);
+                var labelComponent = parentElement.querySelector("pre");
+                if (labelComponent == null) {
+                    labelComponent = syiro.generator.ElementCreator("pre", { "content": labelText });
+                    parentElement.insertBefore(labelComponent, parentElement.firstChild);
                 }
                 else {
-                    return false;
+                    labelComponent.textContent = labelText;
                 }
+                syiro.component.Update(component["id"], parentElement);
+                return true;
             }
             else {
                 return false;
             }
         }
         footer.SetLabel = SetLabel;
-        function AddLink(prepend, component, linkProperties) {
+        function AddLink(prepend, component, properties) {
             var componentAddingSucceeded;
-            if (typeof linkProperties == "Object") {
-                if ((linkProperties["title"] !== undefined) && (linkProperties["link"] !== undefined)) {
-                    componentAddingSucceeded = syiro.component.Add(prepend, component, linkProperties);
+            if (typeof properties == "Object") {
+                if ((typeof properties["title"] !== "undefined") && (typeof properties["link"] !== "undefined")) {
+                    var linkElement = syiro.generator.ElementCreator("a", { "title": properties["title"], "content": properties["title"], "href": properties["link"] });
+                    componentAddingSucceeded = syiro.component.Add(prepend, component, linkElement);
                 }
                 else {
                     componentAddingSucceeded = false;
@@ -1209,10 +1200,10 @@ var syiro;
             return componentAddingSucceeded;
         }
         footer.AddLink = AddLink;
-        function RemoveLink(component, linkProperties) {
+        function RemoveLink(component, properties) {
             var componentRemovingSucceed;
             var footerElement = syiro.component.Fetch(component);
-            var potentialLinkElement = footerElement.querySelector('a[href="' + linkProperties["link"] + '"][title="' + linkProperties["title"] + '"]');
+            var potentialLinkElement = footerElement.querySelector('a[href="' + properties["link"] + '"][title="' + properties["title"] + '"]');
             if (potentialLinkElement !== null) {
                 footerElement.removeChild(potentialLinkElement);
                 syiro.component.Update(component["id"], footerElement);
@@ -2579,11 +2570,17 @@ var syiro;
     }
     syiro.Init = Init;
     syiro.Define = syiro.component.FetchComponentObject;
+    syiro.CSS = syiro.component.CSS;
     syiro.Fetch = syiro.component.Fetch;
     syiro.FetchComponentObject = syiro.component.FetchComponentObject;
     syiro.FetchDimensionsAndPosition = syiro.component.FetchDimensionsAndPosition;
+    syiro.FetchLinkedListComponentObject = syiro.component.FetchLinkedListComponentObject;
+    syiro.IsComponentObject = syiro.component.IsComponentObject;
     syiro.Add = syiro.component.Add;
     syiro.Remove = syiro.component.Remove;
+    syiro.Position = syiro.render.Position;
+    syiro.AddListeners = syiro.events.Add;
+    syiro.RemoveListeners = syiro.events.Remove;
     function Animate() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -2602,7 +2599,4 @@ var syiro;
         syiro.animation.Animate(syiro.component, animationProperties);
     }
     syiro.Animate = Animate;
-    syiro.CSS = syiro.component.CSS;
-    syiro.AddListeners = syiro.events.Add;
-    syiro.RemoveListeners = syiro.events.Remove;
 })(syiro || (syiro = {}));

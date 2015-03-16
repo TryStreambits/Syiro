@@ -195,17 +195,27 @@ module syiro {
 
 	// #endregion
 
+	// #region Meta Functions
+
 	export var Define = syiro.component.FetchComponentObject; // Meta-function for defining Syiro components (which is actually a meta-function of FetchComponentObject)
+	export var CSS = syiro.component.CSS; // Meta-function for modifying Syiro Component CSS styling
 
 	export var Fetch = syiro.component.Fetch; // Meta-function for fetching Syiro component HTMLElements
-
 	export var FetchComponentObject = syiro.component.FetchComponentObject; // Meta-function for fetching Syiro Component Objects from Component Elements.
-
 	export var FetchDimensionsAndPosition = syiro.component.FetchDimensionsAndPosition; // Meta-function for fetching the dimensions and position of a Component Object Element or any (HTML)Element.
+	export var FetchLinkedListComponentObject = syiro.component.FetchLinkedListComponentObject; // Meta-function for fetching the linked List of a Component such as a Dropdown or Searchbox
+
+	export var IsComponentObject = syiro.component.IsComponentObject; // Meta-function for checking if the variable passed is a Component Object
 
 	export var Add = syiro.component.Add; // Meta-function for adding Syiro components to each other
-
 	export var Remove = syiro.component.Remove; // Meta-function for removing Syiro components
+
+	export var Position = syiro.render.Position; // Meta function for setting the position of a Syiro Componetn
+
+	export var AddListeners = syiro.events.Add; // Meta-function for adding event listeners to Syiro Components
+	export var RemoveListeners = syiro.events.Remove; // Meta-function for removing event listeners to Syiro Components
+
+	// #endregion
 
 	// #region Meta-function / API Compatibility for syiro.Animate()
 
@@ -227,11 +237,5 @@ module syiro {
 		}
 
 	// #endregion
-
-	export var CSS = syiro.component.CSS; // Meta-function for modifying Syiro Component CSS styling
-
-	export var AddListeners = syiro.events.Add; // Meta-function for adding event listeners to Syiro Components
-
-	export var RemoveListeners = syiro.events.Remove; // Meta-function for removing event listeners to Syiro Components
 
 }

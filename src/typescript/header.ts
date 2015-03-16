@@ -81,9 +81,10 @@ module syiro.header {
 
 	export function RemoveLogo(component : Object){ // Requires only the component object
 		var headerElement : Element = syiro.component.Fetch(component); // Get the HTMLElement with Get()
+		var imageElement : Element = headerElement.querySelector('img[data-syiro-minor-component="logo"]'); // If the header has a logo
 
-		if (headerElement.querySelectorAll('img[data-syiro-minor-component="logo"]').length > 0){ // If the headerElement has a logo
-			headerElement.removeChild(headerElement.firstChild); // Remove the image element (which has to be the first child in the Header component)
+		if (imageElement !== null){ // If the headerElement has a logo
+			syiro.component.Remove(imageElement); // Remove the image element (which is the first child in the Header component)
 			syiro.component.Update(component["id"], headerElement); // Update the storedComponent HTMLElement if necessary
 		}
 	}

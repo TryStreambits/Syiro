@@ -18,7 +18,7 @@ module syiro.component {
 
 	// #region Component CSS Fetcher / Modifier
 
-	export function CSS(component : any, property : string, newValue ?: any){
+	export function CSS(component : any, property : string, newValue ?: (string | boolean)){
 		var modifiableElement : Element; // Define modifiableElement as the Element we are going to modify
 		var returnedValue : any; // Define returnedValue as value we are returning
 		var modifiedStyling : any = false; // Define modifiedStyling as a boolean value to indicate whether we modified the Element's styling or not. Defaults to false.
@@ -178,7 +178,7 @@ module syiro.component {
 		if (syiro.component.IsComponentObject(component)){ // If the Component provided is a Syiro Component Object
 			componentElement = syiro.component.Fetch(component); // Fetch the Component Element
 		}
-		else{ // If the Component provided is NOT a Syiro Component Object
+		else { // If the Component provided is NOT a Syiro Component Object
 			componentElement = component; // Set the componentElement to the component (Element) provided
 		}
 
@@ -293,8 +293,7 @@ module syiro.component {
 			allowAdding = false; // Reset allowAdding to false in the event it was set to true
 		}
 
-		syiro.data.Write(parentComponent["id"], parentElement); // Update the HTMLElement of parentComponent if necessary
-
+		syiro.component.Update(parentComponent["id"], parentElement); // Update the HTMLElement of parentComponent if necessary
 		return allowAdding; // Return the updated component object
 	}
 
@@ -302,43 +301,36 @@ module syiro.component {
 
 	// #region Remove Component function - Responsible for removing components or Elements from their parents
 
-	export function Remove(componentsToRemove : any) : boolean {
-		var allowRemoval : boolean = false; // Define allowRemoval as a boolean value of whether or not we will allow Component remove. Defaults to false.
+	export function Remove(componentsToRemove : any) {
 		var componentList : Array<any>; // Define componentList as an array of Component Objects to remove
 
-		if (componentsToRemove["id"] !== undefined){ // If the componentsToRemove actually has an "id" key / value, meaning it is a single Component Object
-			allowRemoval = true; // Set allowRemoval to true
+		if ((syiro.component.IsComponentObject(componentsToRemove)) || ((typeof componentsToRemove == "object") && (typeof componentsToRemove.length == "undefined"))){ // If the componentsToRemove is a Component Object or Element
 			componentList = [componentsToRemove]; // Set componentList to an Array consisting of the single Component Object
 		}
 		else if ((typeof componentsToRemove == "object") && (componentsToRemove.length > 0)){ // If the componentsToRemove is an object (a.k.a array) and has a length (which an array does)
-			allowRemoval = true; // Set allowRemoval to true
 			componentList = componentsToRemove; // Set componentList to the componentsToRemove
 		}
 
-		if (allowRemoval == true){ // If we are allowing the removal of Components
-			for (var individualComponentIndex = 0; individualComponentIndex < componentList.length; individualComponentIndex++){ // For each Component and Sub-Component in componentList
-				var individualComponentObject : Object; // Define individualComponentObject as an Object, which will be the Component Object if it is needed
-				var individualComponentElement : Element; // Define individualComponentElement as an Element
+		for (var individualComponentIndex = 0; individualComponentIndex < componentList.length; individualComponentIndex++){ // For each Component and Sub-Component in componentList
+			var individualComponentObject : Object; // Define individualComponentObject as an Object, which will be the Component Object if it is needed
+			var individualComponentElement : Element; // Define individualComponentElement as an Element
 
-				if (syiro.component.IsComponentObject(componentList[individualComponentIndex])){ // If the individual Component is a Syiro Component Object
-					individualComponentObject = componentList[individualComponentIndex]; //  Define individualComponentObject as the Object provided
-					individualComponentElement = syiro.component.Fetch(individualComponentObject); // Define individualComponentElement as the fetched Element of the Component
-				}
-				else{ // If the individual Component is NOT an Object (theoretically an Element)
-					individualComponentObject = syiro.component.FetchComponentObject(componentList[individualComponentIndex]); // Define individualComponentObject as the Component Object we'll fetch for the Element
-					individualComponentElement = componentList[individualComponentIndex]; // Define individualComponentElement as the Element provided
-				}
+			if (syiro.component.IsComponentObject(componentList[individualComponentIndex])){ // If the individual Component is a Syiro Component Object
+				individualComponentObject = componentList[individualComponentIndex]; //  Define individualComponentObject as the Object provided
+				individualComponentElement = syiro.component.Fetch(individualComponentObject); // Define individualComponentElement as the fetched Element of the Component
+			}
+			else{ // If the individual Component is NOT an Object (theoretically an Element)
+				individualComponentObject = syiro.component.FetchComponentObject(componentList[individualComponentIndex]); // Define individualComponentObject as the Component Object we'll fetch for the Element
+				individualComponentElement = componentList[individualComponentIndex]; // Define individualComponentElement as the Element provided
+			}
 
-				var parentElement : Element = individualComponentElement.parentElement; // Get the individualComponentElement's parentElement
-				parentElement.removeChild(individualComponentElement); // Remove this Component from the DOM, if it exists
+			var parentElement : Element = individualComponentElement.parentElement; // Get the individualComponentElement's parentElement
+			parentElement.removeChild(individualComponentElement); // Remove this Component from the DOM, if it exists
 
-				if (syiro.data.Read(individualComponentObject["id"]) !== false){ // It there is data regarding individualComponentObject in syiro.data.storage
-					syiro.data.Delete(individualComponentObject["id"]); // Delete the Component's data
-				}
+			if (syiro.data.Read(individualComponentObject["id"]) !== false){ // It there is data regarding individualComponentObject in syiro.data.storage
+				syiro.data.Delete(individualComponentObject["id"]); // Delete the Component's data
 			}
 		}
-
-		return allowRemoval; // Return the boolean value of IF we allowed Component removal or not
 	}
 
 	// #endregion

@@ -28,7 +28,6 @@ module syiro.list {
 		}
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
-
 		return { "id" : componentId, "type" : "list" }; // Return a Component Object
 	}
 

@@ -35,9 +35,9 @@ The package also comes with a gzipped version of the JavaScript code, so you can
 
 Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
-Bootstrap | 114kb + 19.2kb (theme.min.css)| 118.9kb | 37.4kb
+Bootstrap | 117kb + 20.0kb (theme.min.css)| 119.8kb | 37.5kb
 Polymer | Varies depending on use of components | 123.5kb | 35.7kb
-**Syiro** | **13.3kb** | **83.1kb** | **13.6kb**
+Syiro | 13.3kb | 83.1kb | 13.6kb
 
 Details:
 

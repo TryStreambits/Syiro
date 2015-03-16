@@ -13,30 +13,38 @@ module syiro.footer {
 		var componentId : string = syiro.generator.IdGen("footer"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "footer"); // Generate a Footer Element
 
-		for (var propertyKey in properties){ // Recursive go through each propertyKey
-			if (propertyKey == "items"){ // If we are adding items to the Footer
-				for (var individualItem in properties["items"]){ // For each individualItem in navigationItems Object array
-					var individualItem : any = properties["items"][individualItem]; // Get the individualItem
-					if (syiro.component.IsComponentObject(individualItem) == false){ // If we are adding a link
-						var generatedElement : HTMLElement = syiro.generator.ElementCreator("a", // Generate a generic link element
+		if (typeof properties["items"] !== "undefined"){ // If we are adding items to the Footer
+			for (var individualItem in properties["items"]){ // For each individualItem in navigationItems Object array
+				var individualItem : any = properties["items"][individualItem]; // Get the individualItem
+
+
+				if (syiro.component.IsComponentObject(individualItem) == false){ // If we are adding a link
+					var generatedElement : HTMLElement; // Define generatedElement as the element we will be appending
+
+					if (typeof individualItem.nodeType == "undefined"){ // If a nodeType is not defined, meaning it is not an element
+						generatedElement = syiro.generator.ElementCreator("a", // Generate a generic link element
 							{
-								"href" : individualItem["link"], // Set the href (link)
-								"content" : individualItem["content"] // Also set the inner content of the <a> tag to title
+								"href" : individualItem["href"], // Set the href (link)
+								"title" : individualItem["title"], // Also set title of the <a> tag to title provided
+								"content" : individualItem["title"] // Also set the inner content of the <a> tag to title
 							}
 						);
-
-						componentElement.appendChild(generatedElement); // Append the component to the parent component element
 					}
+					else{ // If a nodeType is defined meaning it is an Element
+						generatedElement = individualItem; // Define generatedElement as individualItem
+					}
+
+					componentElement.appendChild(generatedElement); // Append the component to the parent component element
 				}
-			}
-			else if (propertyKey == "content"){ // If we are adding a Footer label
-				var generatedElement : HTMLElement = syiro.generator.ElementCreator("label", { "content" : properties["content"] }); // Generate a generic label element
-				componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the footer
 			}
 		}
 
-		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
+		if (typeof properties["content"] !== "undefined"){ // If we are adding a Footer label
+			var generatedElement : HTMLElement = syiro.generator.ElementCreator("label", { "content" : properties["content"] }); // Generate a generic label element
+			componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the footer
+		}
 
+		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 		return { "id" : componentId, "type" : "footer" }; // Return a Component Object
 	}
 

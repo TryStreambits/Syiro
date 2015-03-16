@@ -619,24 +619,26 @@ module syiro.player {
         var playerInnerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Get the associated audio or video player
         var playerControl = playerElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control
 
-        // #region Button Attribute Resetting
+        if (syiro.data.Read(component["id"] + "->NoUX") == false){ // If this player has UX
+            // #region Button Attribute Resetting
 
-        var playButton = playerControl.querySelector('div[data-syiro-minor-component="player-button-play"]'); // Get the Play Button from the Player Control
-        syiro.component.CSS(playButton, "background-image", false); // Remove the background-image style / reset to play image for Play Button
-        playButton.removeAttribute("active"); // Remove component-status to imply play icon is not active (in this case, paused)
+            var playButton = playerControl.querySelector('div[data-syiro-minor-component="player-button-play"]'); // Get the Play Button from the Player Control
+            syiro.component.CSS(playButton, "background-image", false); // Remove the background-image style / reset to play image for Play Button
+            playButton.removeAttribute("active"); // Remove component-status to imply play icon is not active (in this case, paused)
 
-        var volumeControl = playerControl.querySelector('div[data-syiro-minor-component="player-button-volume"]'); // Get the Volume Button from the Player Control
+            var volumeControl = playerControl.querySelector('div[data-syiro-minor-component="player-button-volume"]'); // Get the Volume Button from the Player Control
 
-        if (volumeControl !== null){ // If there is a volume control (there is not on iOS)
-            volumeControl.removeAttribute("active"); // Remove component-status to imply volume icon is not active
-        }
+            if (volumeControl !== null){ // If there is a volume control (there is not on iOS)
+                volumeControl.removeAttribute("active"); // Remove component-status to imply volume icon is not active
+            }
 
-        // #endregion
+            // #endregion
 
-        var playerErrorNotice : HTMLElement = playerElement.querySelector('div[data-syiro-minor-component="player-error"]'); // Define playerErrorNotice as any error notice on this Player
+            var playerErrorNotice : HTMLElement = playerElement.querySelector('div[data-syiro-minor-component="player-error"]'); // Define playerErrorNotice as any error notice on this Player
 
-        if (playerErrorNotice !== null){ // If the Player Error dialog exists
-            playerElement.removeChild(playerErrorNotice); // Remove the Player Error dialog
+            if (playerErrorNotice !== null){ // If the Player Error dialog exists
+                playerElement.removeChild(playerErrorNotice); // Remove the Player Error dialog
+            }
         }
 
         syiro.data.Write(component["id"] + "->IsChangingInputValue", false); // Set IsChangingInputValue for this Component to false
@@ -665,7 +667,7 @@ module syiro.player {
 
         syiro.player.Reset(component); // Reset the component
 
-        if (component["type"] == "video-player"){ // If this is a video player
+        if ((syiro.data.Read(component["id"] + "->NoUX") == false) && (component["type"] == "video-player")){ // If this is a video player and there is a UX
             syiro.component.CSS(playerElement.querySelector('img[data-syiro-minor-component="video-poster"]'), "visibility", "hidden"); // Hide the Video Poster
         }
 
@@ -689,8 +691,11 @@ module syiro.player {
 
         if (playerInnerContentElement.currentTime !== time){ // If we are not setting the time to what it already is (for instance 0, which would cause an InvalidStateError)
             playerInnerContentElement.currentTime = time; // Set the playerInnerContentElement's currentTime to the time provided
-            playerElement.querySelector('input[type="range"]').value = Math.floor(time); // Set the range input to the currentTime (rounded down)
-            syiro.playercontrol.TimeLabelUpdater(syiro.component.FetchComponentObject(playerElement.querySelector('div[data-syiro-component="player-control"]')), 0, time); // Update the label
+
+            if (syiro.data.Read(component["id"] + "->NoUX") == false){ // If the player has a UX
+                playerElement.querySelector('input[type="range"]').value = Math.floor(time); // Set the range input to the currentTime (rounded down)
+                syiro.playercontrol.TimeLabelUpdater(syiro.component.FetchComponentObject(playerElement.querySelector('div[data-syiro-component="player-control"]')), 0, time); // Update the label
+            }
         }
     }
 
@@ -1061,7 +1066,6 @@ module syiro.videoplayer {
             );
 
             if (navigator.userAgent.indexOf("iPhone") == -1) { // If the browser is NOT an iPhone, generate a proper Video Player Component
-                console.log("Hello");
                 syiroVideoElementProperties["volume"] = "0.5"; // Set volume to 0.5
 
                 // #region Video Art Poster Creation

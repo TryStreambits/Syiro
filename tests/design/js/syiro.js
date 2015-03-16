@@ -1142,23 +1142,28 @@ var syiro;
         function Generate(properties) {
             var componentId = syiro.generator.IdGen("footer");
             var componentElement = syiro.generator.ElementCreator(componentId, "footer");
-            for (var propertyKey in properties) {
-                if (propertyKey == "items") {
-                    for (var individualItem in properties["items"]) {
-                        var individualItem = properties["items"][individualItem];
-                        if (syiro.component.IsComponentObject(individualItem) == false) {
-                            var generatedElement = syiro.generator.ElementCreator("a", {
-                                "href": individualItem["link"],
-                                "content": individualItem["content"]
+            if (typeof properties["items"] !== "undefined") {
+                for (var individualItem in properties["items"]) {
+                    var individualItem = properties["items"][individualItem];
+                    if (syiro.component.IsComponentObject(individualItem) == false) {
+                        var generatedElement;
+                        if (typeof individualItem.nodeType == "undefined") {
+                            generatedElement = syiro.generator.ElementCreator("a", {
+                                "href": individualItem["href"],
+                                "title": individualItem["title"],
+                                "content": individualItem["title"]
                             });
-                            componentElement.appendChild(generatedElement);
                         }
+                        else {
+                            generatedElement = individualItem;
+                        }
+                        componentElement.appendChild(generatedElement);
                     }
                 }
-                else if (propertyKey == "content") {
-                    var generatedElement = syiro.generator.ElementCreator("label", { "content": properties["content"] });
-                    componentElement.insertBefore(generatedElement, componentElement.firstChild);
-                }
+            }
+            if (typeof properties["content"] !== "undefined") {
+                var generatedElement = syiro.generator.ElementCreator("label", { "content": properties["content"] });
+                componentElement.insertBefore(generatedElement, componentElement.firstChild);
             }
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "footer" };
@@ -1305,7 +1310,7 @@ var syiro;
                         buttonGroupContainer.appendChild(buttonElement);
                     }
                     if ((typeof properties["active"] == "number") && (properties["active"] <= properties["items"].length)) {
-                        var defaultActiveButton = buttonGroupContainer.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["default"] + ')');
+                        var defaultActiveButton = buttonGroupContainer.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["active"] + ')');
                         var activeButtonComponent = syiro.component.FetchComponentObject(defaultActiveButton);
                         defaultActiveButton.setAttribute("active", "");
                         syiro.component.Update(activeButtonComponent["id"], defaultActiveButton);
@@ -1953,16 +1958,18 @@ var syiro;
             var playerElement = syiro.component.Fetch(component);
             var playerInnerContentElement = syiro.player.FetchInnerContentElement(component);
             var playerControl = playerElement.querySelector('div[data-syiro-component="player-control"]');
-            var playButton = playerControl.querySelector('div[data-syiro-minor-component="player-button-play"]');
-            syiro.component.CSS(playButton, "background-image", false);
-            playButton.removeAttribute("active");
-            var volumeControl = playerControl.querySelector('div[data-syiro-minor-component="player-button-volume"]');
-            if (volumeControl !== null) {
-                volumeControl.removeAttribute("active");
-            }
-            var playerErrorNotice = playerElement.querySelector('div[data-syiro-minor-component="player-error"]');
-            if (playerErrorNotice !== null) {
-                playerElement.removeChild(playerErrorNotice);
+            if (syiro.data.Read(component["id"] + "->NoUX") == false) {
+                var playButton = playerControl.querySelector('div[data-syiro-minor-component="player-button-play"]');
+                syiro.component.CSS(playButton, "background-image", false);
+                playButton.removeAttribute("active");
+                var volumeControl = playerControl.querySelector('div[data-syiro-minor-component="player-button-volume"]');
+                if (volumeControl !== null) {
+                    volumeControl.removeAttribute("active");
+                }
+                var playerErrorNotice = playerElement.querySelector('div[data-syiro-minor-component="player-error"]');
+                if (playerErrorNotice !== null) {
+                    playerElement.removeChild(playerErrorNotice);
+                }
             }
             syiro.data.Write(component["id"] + "->IsChangingInputValue", false);
             syiro.data.Write(component["id"] + "->IsChangingVolume", false);
@@ -1980,7 +1987,7 @@ var syiro;
             }
             var arrayofSourceElements = syiro.player.GenerateSources(component["type"].replace("-player", ""), sources);
             syiro.player.Reset(component);
-            if (component["type"] == "video-player") {
+            if ((syiro.data.Read(component["id"] + "->NoUX") == false) && (component["type"] == "video-player")) {
                 syiro.component.CSS(playerElement.querySelector('img[data-syiro-minor-component="video-poster"]'), "visibility", "hidden");
             }
             playerInnerContentElement.innerHTML = "";
@@ -1996,8 +2003,10 @@ var syiro;
             var playerInnerContentElement = syiro.player.FetchInnerContentElement(component);
             if (playerInnerContentElement.currentTime !== time) {
                 playerInnerContentElement.currentTime = time;
-                playerElement.querySelector('input[type="range"]').value = Math.floor(time);
-                syiro.playercontrol.TimeLabelUpdater(syiro.component.FetchComponentObject(playerElement.querySelector('div[data-syiro-component="player-control"]')), 0, time);
+                if (syiro.data.Read(component["id"] + "->NoUX") == false) {
+                    playerElement.querySelector('input[type="range"]').value = Math.floor(time);
+                    syiro.playercontrol.TimeLabelUpdater(syiro.component.FetchComponentObject(playerElement.querySelector('div[data-syiro-component="player-control"]')), 0, time);
+                }
             }
         }
         player.SetTime = SetTime;
@@ -2255,7 +2264,6 @@ var syiro;
                     "name": componentId
                 });
                 if (navigator.userAgent.indexOf("iPhone") == -1) {
-                    console.log("Hello");
                     syiroVideoElementProperties["volume"] = "0.5";
                     if (properties["art"] !== undefined) {
                         var posterImageElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component": "video-poster", "src": properties["art"] });

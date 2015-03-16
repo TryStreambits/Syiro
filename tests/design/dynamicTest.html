@@ -17,7 +17,7 @@
 
 			// #region Button Group Generation
 
-			var generatedButtongroup = syiro.buttongroup.Generate({"items" : [{ "content" : "Option 1" }, { "content" : "Option 2" }, { "content" : "Option 3" } ] });
+			var generatedButtongroup = syiro.buttongroup.Generate({"active" : 1, "items" : [{ "content" : "Option 1" }, { "content" : "Option 2" }, { "content" : "Option 3" } ] });
 
 			// #endregion
 
@@ -119,7 +119,8 @@
 			var generatedButton = syiro.button.Generate({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
 			var generatedButtonTwo = syiro.button.Generate({"type" : "basic", "content" : "Change Source"}); // Generate a Basic Button that changes the video source
 			var generatedToggle = syiro.button.Generate({"type" : "toggle"}); // Generate a Toggle Button
-			var generatedFooter = syiro.footer.Generate({"content" : "Strobl Industries"}); // Generate a Footer
+			var exampleLink = syiro.generator.ElementCreator("a", {"href" : "#", "content" : "Test2"});
+			var generatedFooter = syiro.footer.Generate({"content" : "Strobl Industries", "items" : [{"title" : "Test", "href" : "#" }, exampleLink]}); // Generate a Footer
 
 			if (syiro.device.IsSubHD == true){ // If the device is sub HD
 				syiro.CSS(generatedDropdownObject, "float", "right"); // Float the Icon Header to the right

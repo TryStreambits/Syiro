@@ -130,7 +130,7 @@ module syiro.buttongroup {
 				}
 
 				if ((typeof properties["active"] == "number") && (properties["active"]  <= properties["items"].length)){ // If the active Number is provided and it is less than or equal to the max amount of buttons in this Buttongroup
-					var defaultActiveButton = buttonGroupContainer.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["default"] + ')');
+					var defaultActiveButton = buttonGroupContainer.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["active"] + ')');
 					var activeButtonComponent = syiro.component.FetchComponentObject(defaultActiveButton); // Get this button's component so we can update any HTMLElement stored in Syiro's data system
 					defaultActiveButton.setAttribute("active", ""); // Set active attribute
 					syiro.component.Update(activeButtonComponent["id"], defaultActiveButton); // Update the default active button HTMLElement

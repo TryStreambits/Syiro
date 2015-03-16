@@ -8,7 +8,7 @@ footer[data-syiro-component="footer"]{ // Syiro Footer Component
 	font-size: 16px;
 	line-height: 80px;
 	background-color: darken(@syiroBackground, 2.5%);
-	position: static;
+	position: absolute;
 	bottom: 0;
 	left: 0;
 	right: 0;
@@ -18,10 +18,15 @@ footer[data-syiro-component="footer"]{ // Syiro Footer Component
 		margin-left: 20px;
 	}
 
-	@media (min-width: 800px) and (max-width: 1280px){ /* For resolutions 800 to 1280 in width */
-		& { // Syiro Footer Component
-			height: 60px; // Shorten Footer Height
-			line-height: 60px; // Change line-height for links and text
+	@media (max-width: 1280px){ /* For resolutions with a max of 1280 in width */
+		&{
+			height: 60px; // Change the height of the link to match what the header and footer height would be
+			line-height: 60px; // Change the line-height as well
+
+			& > a { // Inner Links
+				height: 60px; // Change the height of the link to match what the header and footer height would be
+				line-height: 60px; // Change the line-height as well
+			}
 		}
 	}
 }

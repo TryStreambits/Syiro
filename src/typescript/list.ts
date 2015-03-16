@@ -101,22 +101,23 @@ module syiro.listitem {
 		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
 			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
 
-			if (typeof control == "object"){ // If the content is of type Object
+			if ((syiro.component.IsComponentObject(control)) && (control["type"] == "button")){ // If the content is a Component Object and is a Button
 				if (listItemElement.querySelector("div") !== null){ // If there is already a control inside the List Item
 					listItemElement.removeChild(listItemElement.querySelector("div")); // Remove the inner Control
 				}
 
-				if (control["type"] == "button"){ // If the type of the control Component is a button
-					var innerControlElement = syiro.component.Fetch(control); // Get the Element of the inner control Component
-
-					if (innerControlElement !== null){ // If the Component Element is actually stored in syiro.data.storage
-						listItemElement.appendChild(innerControlElement); // Append the control Component
-						syiro.events.Remove(component); // Ensure the List Item has no Listeners after adding the new Control
-						syiro.component.Update(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
-
-						setControlSucceeded = true; // Set setLabelSucceeded to true
-					}
+				if ((listItemElement.querySelector("label") !== null) && (listItemElement.querySelector("img") !== null)){ // If there already is an image and a label
+					var innerListImage : Element = listItemElement.querySelector("img"); // Get this inner image and set it to innerlistImage
+					syiro.component.Remove(innerListImage); // Remove the innerListImage
 				}
+
+				var innerControlElement = syiro.component.Fetch(control); // Get the Element of the inner control Component
+
+				listItemElement.appendChild(innerControlElement); // Append the control Component
+				syiro.events.Remove(component); // Ensure the List Item has no Listeners after adding the new Control
+				syiro.component.Update(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
+
+				setControlSucceeded = true; // Set setLabelSucceeded to true
 			}
 		}
 
@@ -133,16 +134,18 @@ module syiro.listitem {
 		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
 			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
 
-			if (typeof content == "string"){ // Make sure the  content is a string
+			if (typeof content == "string"){ // Make sure the content is a string
+				var listItemLabel = listItemElement.querySelector("label"); // Define listItemLabel as the potential label within the List Item Element
 				var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]'); // Define listItemControl as the potential control within the List Item Element
 
-				if (listItemControl !== null){ // If there is already a control in the List Item
-					var generatedImage = syiro.generator.ElementCreator("img", { "src" : content } ); // Generate an img
-					listItemElement.removeChild(listItemControl); // Remove the listItemControl
-					listItemElement.insertBefore(generatedImage, listItemElement.firstChild); // Prepend the img tag
-
-					setImageSucceeded = true; // Set setImageSucceeded to true
+				if ((listItemLabel !== null) && (listItemControl !== null)){ // If there is already a label and control in the List Item
+					syiro.component.Remove(listItemControl); // Remove this inner control
 				}
+
+				var generatedImage = syiro.generator.ElementCreator("img", { "src" : content } ); // Generate an img
+				listItemElement.insertBefore(generatedImage, listItemElement.firstChild); // Prepend the img tag
+
+				setImageSucceeded = true; // Set setImageSucceeded to true
 			}
 		}
 
@@ -161,6 +164,13 @@ module syiro.listitem {
 
 			if (typeof content == "string"){ // If the content is of type string
 				var listItemLabelElement : Element; // Define listItemLabelElement to be an Element
+
+				var listItemImage = listItemElement.querySelector("img"); // Define listItemImage as the potential image within the List Item Element
+				var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]'); // Define listItemControl as the potential control within the List Item Element
+
+				if ((listItemImage !== null) && (listItemControl !== null)){ // If there is already a label and control in the List Item
+					syiro.component.Remove(listItemImage); // Remove this inner control
+				}
 
 				if (listItemElement.querySelector("label") !== null){ // If a label is already in the List Item
 					listItemLabelElement = listItemElement.querySelector("label"); // Set listItemLabelElement as the queried label tag from listItemElement

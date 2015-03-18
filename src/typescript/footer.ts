@@ -17,7 +17,6 @@ module syiro.footer {
 			for (var individualItem in properties["items"]){ // For each individualItem in navigationItems Object array
 				var individualItem : any = properties["items"][individualItem]; // Get the individualItem
 
-
 				if (syiro.component.IsComponentObject(individualItem) == false){ // If we are adding a link
 					var generatedElement : HTMLElement; // Define generatedElement as the element we will be appending
 
@@ -77,20 +76,26 @@ module syiro.footer {
 
 	// #region Function to add a link to the Footer based on properties of that link
 
-	export function AddLink(prepend : boolean, component : Object, properties : Object) : boolean { // Returns boolean if it was successful or not
-		var componentAddingSucceeded : boolean; // Variable to store the determination of success
+	export function AddLink(append : boolean, component : Object, elementOrProperties : any) : boolean { // Returns boolean if it was successful or not
+		var componentAddingSucceeded : boolean = false; // Variable to store the determination of success (default to false)
+		var generatedElement : HTMLElement; // Define generatedElement as the element we will be appending
 
-		if (typeof properties == "Object"){ // If the linkProperties is in fact an Object
-			if ((typeof properties["title"] !== "undefined") && (typeof properties["link"] !== "undefined")){ // If the linkProperties object has the valid properties needed
-				var linkElement : Element = syiro.generator.ElementCreator("a", { "title" : properties["title"], "content" : properties["title"], "href" : properties["link"] }); // Create a link Element
-				componentAddingSucceeded = syiro.component.Add(prepend, component, linkElement);
-			}
-			else{ // If it did not contain the appropriate properties
-				componentAddingSucceeded = false; // Set to false
-			}
+		if (typeof elementOrProperties.nodeType == "undefined"){ // If a nodeType is not defined, meaning it is not an element
+			generatedElement = syiro.generator.ElementCreator("a", // Generate a generic link element
+				{
+					"href" : elementOrProperties["href"], // Set the href (link)
+					"title" : elementOrProperties["title"], // Also set title of the <a> tag to title provided
+					"content" : elementOrProperties["title"] // Also set the inner content of the <a> tag to title
+				}
+			);
 		}
-		else{ // If linkProperties was NOT an Object
-			componentAddingSucceeded = false; // Set to false
+		else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")){ // If a nodeType is defined meaning it is a link Element
+			generatedElement = elementOrProperties; // Define generatedElement as elementOrProperties
+		}
+
+		if (typeof generatedElement !== "undefined"){ // If the generatedElement is not undefined
+			componentAddingSucceeded = true; // Set to true
+			syiro.component.Add(append, component, generatedElement); // Prepend or append the component to the parent component element
 		}
 
 		return componentAddingSucceeded;
@@ -100,19 +105,22 @@ module syiro.footer {
 
 	// #region Function to remove a link from the Footer based on the properties of that link
 
-	export function RemoveLink(component : Object, properties : Object) : boolean { // Return boolean if it was successful or not
-		var componentRemovingSucceed : boolean; // Variable to store the determination of success
+	export function RemoveLink(component : Object, elementOrProperties : any) : boolean { // Return boolean if it was successful or not
+		var componentRemovingSucceed : boolean = false; // Variable to store the determination of success
 		var footerElement : Element = syiro.component.Fetch(component); // Get the Element of the Footer component
-		var potentialLinkElement : Element = footerElement.querySelector('a[href="' + properties["link"] + '"][title="' + properties["title"] + '"]'); // Get the potential link element.
+		var potentialLinkElement : Element; // Get the potential link element.
 
-		if (potentialLinkElement !== null){ // If we successfully got the link element
-			footerElement.removeChild(potentialLinkElement); // Remove the element
-
-			syiro.component.Update(component["id"], footerElement); // Update the storedComponent HTMLElement if necessary
-			componentRemovingSucceed = true; // Set the removingSucceed to true
+		if (typeof elementOrProperties.nodeType == "undefined"){ // If a nodeType is not defined, meaning it is not an element
+			potentialLinkElement =  footerElement.querySelector('a[href="' + elementOrProperties["link"] + '"][title="' + elementOrProperties["title"] + '"]'); // Get the potential link element.
 		}
-		else{ // If the link does not exist in the footer
-			componentRemovingSucceed = false; // Set the removingSucceed to false
+		else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")){ // If a nodeType is defined meaning it is a link Element
+			potentialLinkElement = elementOrProperties; // Define potentialLinkElement as elementOrProperties
+		}
+
+		if (typeof potentialLinkElement !== "undefined"){ // If the potentialLinkElement is not undefined
+			componentRemovingSucceed = true; // Set to true
+			footerElement.removeChild(potentialLinkElement); // Remove the element
+			syiro.component.Update(component["id"], footerElement); // Update the storedComponent HTMLElement if necessary
 		}
 
 		return componentRemovingSucceed;

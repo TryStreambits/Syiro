@@ -276,7 +276,7 @@ module syiro.component {
 				allowAdding = true; // Allow adding the childComponent
 			}
 		}
-		else if (childComponentType.indexOf("element") > -1){ // If the childComponentType is an (HTML)Element
+		else if (typeof childComponent.nodeType !== "undefined"){ // If the childComponentType is an (HTML)Element
 			childElement = childComponent; // Set the childElement to the childComponent
 			allowAdding = true;
 		}

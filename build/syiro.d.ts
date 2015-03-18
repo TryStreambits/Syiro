@@ -120,8 +120,8 @@ declare module syiro.header {
 declare module syiro.footer {
     function Generate(properties: Object): Object;
     function SetLabel(component: Object, labelText: string): boolean;
-    function AddLink(prepend: boolean, component: Object, properties: Object): boolean;
-    function RemoveLink(component: Object, properties: Object): boolean;
+    function AddLink(append: boolean, component: Object, elementOrProperties: any): boolean;
+    function RemoveLink(component: Object, elementOrProperties: any): boolean;
 }
 declare module syiro.button {
     function Generate(properties: Object): Object;

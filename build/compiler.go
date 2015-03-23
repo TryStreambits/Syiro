@@ -33,10 +33,10 @@ func fileChanged(contentType, fileFullPath string, fileChangeChannel chan int) {
 
     fileHandler, _ := os.Open(fileFullPath) // Open the file, returning an os.File struct
     fileContent := ReadFullFile(fileHandler) // Read the file content and push it to fileContent []byte
+    fileHandler.Close() // Close the file
+
     byteSum := sha1.Sum(fileContent) // Get the byte array of the sum of the fileContent
     hashOfCurrentFile = hex.EncodeToString(byteSum[:]) // Convert byte array to slice, encode it to a string and output it as hash
-
-    fileHandler.Close() // Close the file
 
     storedSha1sumFile, storedSha1sumFileError := os.OpenFile(sha1sumFilePath, syscall.O_RDWR, 0755) // Open the sha1sum file using os.Openfile so we can do read AND write, returning an os.File struct and any error
 
@@ -73,7 +73,7 @@ func recursiveFileFetching(contentType, directory string) []string {
     var contentTypeExt string
 
     if contentType != "typescript" { // If the contentType is not Typescript
-        contentTypeExt = contentType // Define the contentTypeExt as the contentType itself (html, less)
+        contentTypeExt = contentType // Define the contentTypeExt as the contentType itself (html, less, go)
     } else { // If the contentType IS typescript
         contentTypeExt = "ts" // Defule contentTypeExt as typescript
     }
@@ -211,18 +211,27 @@ func main(){
 
                 if contentType == "html" { // If the contentType is html
                     if strings.Contains(projectConfig.UsesTests, "y") == true { // If we have tests
-                        fmt.Println("Copying HTML file to tests/design.")
+                        fmt.Println("Copying HTML files to tests/design.")
 
-                        htmlSrcFile, htmlSrcError := os.Open("src/html/" + lowercaseProjectName + ".html") // Use os.Open to create an os.File handler of the src/html/lowercaseProjectName.html
+                        for _, fileNameAndPath := range allDirectoryFiles { // For each HTML file in the src/html
+                            filePath, fileName := filepath.Split(fileNameAndPath)// Get the filePath
+                            testsPath := strings.Replace(filePath, "src/html", "tests/design", -1) // Replace the src/html with the tests/design so we get what the path should be for the file when it is in test
 
-                        if htmlSrcError == nil { // If there is no error when opening the file
-                            updatedHTMLContent  := ReadFullFile(htmlSrcFile) // Read the full file contents of htmlSrcFile
-                            WriteOrUpdateFile("tests/design/" + lowercaseProjectName + ".html", updatedHTMLContent) // Update the tests/design/ with the src/html content
+                            os.MkdirAll(testsPath, 0755) // Make the proposed path if necessary
+                            htmlSrcFile, htmlSrcError := os.Open(filePath) // Use os.Open to create an os.File handler of the file
+
+                            if htmlSrcError == nil { // If there is no error when opening the file
+                                htmlContent  := ReadFullFile(htmlSrcFile) // Read the full file contents of htmlSrcFile
+                                WriteOrUpdateFile(testsPath + "/" + fileName, htmlContent) // Update the tests/design/ with the src/html content
+                            }
                         }
                     }
+                } else if contentType == "go" { // If the contentType is go
+                    commandUtil = "go" // Use go (go compiler)
+                    commandArgs = append(commandArgs, "build src/go/" + lowercaseProjectName + ".go")
                 } else if contentType == "less" { // If the contentType is less
                     commandUtil = "lessc" // Use lessc (less compiler)
-                    commandArgs = append(commandArgs, "--no-js", "--no-color", "--no-ie-compat", "--clean-css")
+                    commandArgs = append(commandArgs, "--strict-math=on", "--no-js", "--no-color", "--no-ie-compat", "--clean-css")
                     commandArgs = append(commandArgs, "src/less/" + lowercaseProjectName + ".less")
                     commandArgs = append(commandArgs, "build/" + lowercaseProjectName + ".css")
                 } else if contentType == "typescript" { // If the contentType is typescript
@@ -240,16 +249,25 @@ func main(){
                     fmt.Println(strings.Title(contentType) + " files have been changed. Re-compiling.")
                     commandOutput := execCommand(commandUtil, commandArgs) // Call execCommand and get its commandOutput
 
-                    if contentType == "less" { // If the contentType is less
-                        cssFile, cssFileError := os.Open("build/" + lowercaseProjectName + ".css") // Use os.Open to return an os.File to the CSS file, with any necessary error @ cssFileError
+                    if contentType == "go" { // If the contentType is go
+                        if strings.Contains(commandOutput, "./" + lowercaseProjectName + ".go:") == true { // If running the go build shows there are obvious issues
+                            fmt.Println(commandOutput);
+                        } else { // IF there was no obvious issues
+                            execCommand(commandUtil, []string{"install"}) // Run go but using install rather than build
+                        }
+                    } else if contentType == "less" { // If the contentType is less
+                        if strings.Contains(commandOutput, "ParseError") == false && strings.Contains(commandOutput, "SyntaxError") == false { // If there was no parse or syntax errors in the LESS
+                            cssFile, cssFileError := os.Open("build/" + lowercaseProjectName + ".css") // Use os.Open to return an os.File to the CSS file, with any necessary error @ cssFileError
 
-                        if cssFileError == nil { // If there was no error when opening the CSS file
-                            cssContent := ReadFullFile(cssFile) // Read the entire contents of the cssFile
-                            WriteOrUpdateFile("tests/design/css/" + lowercaseProjectName + ".css", cssContent) // Copy to tests/design/css/lowercaseProjectName.css
+                            if cssFileError == nil { // If there was no error when opening the CSS file
+                                cssContent := ReadFullFile(cssFile) // Read the entire contents of the cssFile
+                                WriteOrUpdateFile("tests/design/css/" + lowercaseProjectName + ".css", cssContent) // Copy to tests/design/css/lowercaseProjectName.css
+                            }
+                        } else {
+                            fmt.Println(commandOutput);
                         }
                     } else if contentType == "typescript" { // If the contentType is typescript
                         if strings.Contains(commandOutput, "error TS") == false { // If tsc did not report any errors
-
                             if strings.Contains(projectConfig.UsesTests, "y") { // If we are using tests
                                 jsFile, jsFileError := os.Open("build/" + lowercaseProjectName + ".js") // Use os.Open to return an os.File to the JS file, with any necessary error @ jsFileError
 

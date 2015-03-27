@@ -36,7 +36,7 @@
 						"items" : [
 							{
 								"link" : "https://stroblindustries.com",
-								"content" : "Example Link"
+								"title" : "Example Link"
 							},
 							{
 								"type" : "dropdown",
@@ -108,10 +108,9 @@
 			var generatedVideoPlayer = syiro.videoplayer.Generate(
 					{
 						"art" : "img/video-art.png",
-						"external-library" : true, // Declare that we are using an external library and to ignore canPlayType error
+						"UsingExternalLibrary" : true, // Declare that we are using an external library and to ignore canPlayType error
 						"menu" : videoMenuDialogList,
-						"height" : 300,
-						"width" : (300 * 1.77),
+						"fill" : [1,1],
 						"sources" : ["http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v", "http://video.webmfiles.org/big-buck-bunny_trailer.webm"]
 					}
 			);
@@ -140,9 +139,14 @@
 			syiroPage.appendChild(syiro.Fetch(generatedButtongroup));
 			syiroPage.appendChild(syiro.Fetch(generatedButton));
 			syiroPage.appendChild(syiro.Fetch(generatedAudioPlayer));
-			syiroPage.appendChild(syiro.Fetch(generatedVideoPlayer));
 			syiroPage.appendChild(syiro.Fetch(generatedButtonTwo));
 			document.querySelector("body").appendChild(syiro.Fetch(generatedFooter));
+
+			var videoPlayerContainer = syiro.generator.ElementCreator("div");
+			syiroPage.appendChild(videoPlayerContainer);
+			syiro.CSS(videoPlayerContainer, "height", "400px");
+			syiro.CSS(videoPlayerContainer, "width", (400 * 1.77).toString() + "px");
+			videoPlayerContainer.appendChild(syiro.Fetch(generatedVideoPlayer));
 
 			syiro.AddListeners(generatedButton, // Listen to the generatedButton
 				function(x){

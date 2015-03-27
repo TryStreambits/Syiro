@@ -26,7 +26,8 @@ module syiro.header {
 						var generatedElement : HTMLElement = syiro.generator.ElementCreator("a", // Generate a generic link element
 							{
 								"href" : individualItem["link"], // Set the href (link)
-								"content" : individualItem["content"] // Also set the inner content of the <a> tag to title
+								"title" : individualItem["title"], // Set the title of the link to the one passed
+								"content" : individualItem["title"] // Also set the inner content of the <a> tag to title
 							}
 						);
 

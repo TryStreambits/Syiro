@@ -27,7 +27,7 @@ We have a [document that highlights our policy](https://github.com/StroblIndustr
 
 ### Download ###
 
-You can download either our [stable 1.1.0 release](https://github.com/StroblIndustries/Syiro/blob/master/stable.tar.gz) or our [development releases](https://github.com/StroblIndustries/Syiro/blob/master/devel.tar.gz) which provides the necessary minified CSS, images and JS wrapped in a nice package.
+You can download either our [stable 1.2.0 release](https://github.com/StroblIndustries/Syiro/blob/master/stable.tar.gz) or our [development releases](https://github.com/StroblIndustries/Syiro/blob/master/devel.tar.gz), which provides the necessary minified CSS, images and JS wrapped in a nice package.
 
 The package also comes with a gzipped version of the JavaScript code, so you can easily serve the compressed content.
 
@@ -37,7 +37,7 @@ Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
 Bootstrap | 117kb + 20.0kb (theme.min.css)| 119.8kb | 37.5kb
 Polymer | Varies depending on use of components | 123.5kb | 35.7kb
-Syiro | 13.3kb | 83.1kb | 13.6kb
+Syiro | 17.5kb | 91.5kb | 14.8kb
 
 Details:
 
@@ -45,7 +45,7 @@ Details:
 2. Bootstrap's size is also calculating in jQuery, which is a requirement for Bootstrap.
 3. Syiro's build script auto-minifies and gzipped JS.
 4. All gzipped  JavaScript was done using [zopfli](https://code.google.com/p/zopfli/) with default iterations: `zopfli x.min.js`
-5. This is as of 1.1.0 and will update for releases (*aside from release candidates*).
+5. This is as of 1.2.0 and will update for releases (*aside from release candidates*).
 
 ### Using Syiro ###
 

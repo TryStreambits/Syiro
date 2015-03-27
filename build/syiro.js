@@ -781,7 +781,7 @@ var syiro;
                 }
                 else if (childComponent["type"] == "list-item") {
                     if (parentComponent["type"] == "dropdown") {
-                        parentComponent = syiro.dropdown.FetchLinkedListComponentObject(parentComponent);
+                        parentComponent = syiro.component.FetchLinkedListComponentObject(parentComponent);
                         parentElement = syiro.component.Fetch(parentComponent);
                     }
                     if (parentComponent["type"] == "list") {
@@ -1088,7 +1088,8 @@ var syiro;
                         if (syiro.component.IsComponentObject(individualItem) == false) {
                             var generatedElement = syiro.generator.ElementCreator("a", {
                                 "href": individualItem["link"],
-                                "content": individualItem["content"]
+                                "title": individualItem["title"],
+                                "content": individualItem["title"]
                             });
                             componentElement.appendChild(generatedElement);
                         }
@@ -2229,7 +2230,7 @@ var syiro;
                 }
                 componentElement.appendChild(playerControlElement);
                 var usingExternalLibrary = false;
-                if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)) {
+                if ((typeof properties["UsingExternalLibrary"] !== "undefined") && (properties["UsingExternalLibrary"] == true)) {
                     usingExternalLibrary = true;
                 }
                 syiro.data.Write(componentId, {
@@ -2289,8 +2290,8 @@ var syiro;
                     properties["is-video-player"] = true;
                     var playerControlComponent = syiro.playercontrol.Generate(properties);
                     componentElement.appendChild(syiro.component.Fetch(playerControlComponent));
-                    if ((typeof properties["live-ux"] !== "undefined") && (properties["live-ux"] == true)) {
-                        syiroComponentData["ForceUX"] = true;
+                    if ((typeof properties["ForceLiveUX"] !== "undefined") && (properties["ForceLiveUX"] == true)) {
+                        syiroComponentData["ForceLiveUX"] = true;
                     }
                     syiroComponentData["scaling"]["children"] = {
                         'img[data-syiro-minor-component="video-poster"]': {
@@ -2322,15 +2323,17 @@ var syiro;
                 syiroComponentData["HTMLElement"] = componentElement;
                 if (typeof properties["ratio"] !== "undefined") {
                     syiroComponentData["scaling"]["ratio"] = properties["ratio"];
+                    syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]];
                 }
                 else if (typeof properties["fill"] !== "undefined") {
-                    syiroComponentData["scaling"]["scale"] = properties["scale"];
+                    syiroComponentData["scaling"]["fill"] = properties["fill"];
                 }
                 else {
                     syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]];
                 }
-                if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)) {
-                    syiroComponentData["ExternalLibrary"] = true;
+                var usingExternalLibrary = false;
+                if ((typeof properties["UsingExternalLibrary"] !== "undefined") && (properties["UsingExternalLibrary"] == true)) {
+                    usingExternalLibrary = true;
                 }
                 syiro.data.Write(componentId, syiroComponentData);
                 return { "id": componentId, "type": "video-player" };

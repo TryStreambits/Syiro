@@ -252,7 +252,7 @@ module syiro.component {
 			}
 			else if (childComponent["type"] == "list-item"){ // If the childComponent is a ListItem
 				if (parentComponent["type"] == "dropdown"){ // If the parentComponent is a Dropdown
-					parentComponent = syiro.dropdown.FetchLinkedListComponentObject(parentComponent); // Change parentComponent type to the one we get from FetchLinkedListComponentObject
+					parentComponent = syiro.component.FetchLinkedListComponentObject(parentComponent); // Change parentComponent type to the one we get from FetchLinkedListComponentObject
 					parentElement = syiro.component.Fetch(parentComponent); // Change parentElement to be the Dropdown's linked List Component Element
 				}
 

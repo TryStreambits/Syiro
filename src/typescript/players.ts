@@ -1008,7 +1008,7 @@ module syiro.audioplayer {
 
             var usingExternalLibrary = false; // Declare a variable that we'll use to determine if we are using an external library and tying that into Syiro Player
 
-            if ((typeof properties["external-library"] !== "undefined")&& (properties["external-library"] == true)){ // If an external library is going to be tying into the Syiro Video Player
+            if ((typeof properties["UsingExternalLibrary"] !== "undefined")&& (properties["UsingExternalLibrary"] == true)){ // If an external library is going to be tying into the Syiro Video Player
                 usingExternalLibrary = true;
             }
 
@@ -1105,8 +1105,8 @@ module syiro.videoplayer {
                 // #region Force Live User Interface
                 // This section will determine if we should force the live UX to be applied to the content
 
-                if ((typeof properties["live-ux"] !== "undefined") && (properties["live-ux"] == true)){ // If Live UX is defined as true
-                    syiroComponentData["ForceUX"] = true; // Define the syiroComponentData ForceUX as true
+                if ((typeof properties["ForceLiveUX"] !== "undefined") && (properties["ForceLiveUX"] == true)){ // If Force Live UX is defined as true
+                    syiroComponentData["ForceLiveUX"] = true; // Define the syiroComponentData ForceLiveUX as true
                 }
 
                 // #endregion
@@ -1160,9 +1160,10 @@ module syiro.videoplayer {
 
             if (typeof properties["ratio"] !== "undefined"){ // If ratio is defined
                 syiroComponentData["scaling"]["ratio"] = properties["ratio"]; // Define the ratio properties in syiroComponentData->scaling as the provided ratio property
+                syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]]; // Define initialDimensions as [height, width]
             }
             else if (typeof properties["fill"] !== "undefined"){ // If fill is defined
-                syiroComponentData["scaling"]["scale"] = properties["scale"]; // Define the scale properties in syiroComponentData->scaling as the provided scale property
+                syiroComponentData["scaling"]["fill"] = properties["fill"]; // Define the fill properties in syiroComponentData->scaling as the provided fill property
             }
             else{ // If neither ratio nor fill are defined
                 syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]]; // Define initialDimensions as [height, width]
@@ -1173,8 +1174,10 @@ module syiro.videoplayer {
             // #region Third-Party Streaming Support
             // This section will determine if we are using a third-party library for live streaming support (like dashjs)
 
-            if ((typeof properties["external-library"] !== "undefined") && (properties["external-library"] == true)){ // If an external library is going to be tying into the Syiro Video Player
-                syiroComponentData["ExternalLibrary"] = true; // Set ExternalLibrary as true
+            var usingExternalLibrary = false; // Declare a variable that we'll use to determine if we are using an external library and tying that into Syiro Player
+
+            if ((typeof properties["UsingExternalLibrary"] !== "undefined")&& (properties["UsingExternalLibrary"] == true)){ // If an external library is going to be tying into the Syiro Video Player
+                usingExternalLibrary = true;
             }
 
             // #endregion

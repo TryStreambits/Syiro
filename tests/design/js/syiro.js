@@ -121,12 +121,21 @@ var syiro;
                         generatedElement.setAttribute(attributeKey, attributeValue);
                     }
                     else {
-                        var innerComponentContent = attributeValue;
-                        innerComponentContent = innerComponentContent.replace("<", "");
-                        innerComponentContent = innerComponentContent.replace(">", "");
-                        innerComponentContent = innerComponentContent.replace("&lt;", "");
-                        innerComponentContent = innerComponentContent.replace("&gt;", "");
-                        generatedElement.textContent = innerComponentContent;
+                        if (typeof attributeValue == "string") {
+                            generatedElement.innerHTML = attributeValue.replace(/<*[^]script*>/g, "");
+                        }
+                        else if (typeof attributeValue.nodeType !== "undefined") {
+                            if (attributeValue.tagName.toLowerCase() !== "script") {
+                                var innerScriptElements = attributeValue.getElementsByTagName("script");
+                                if (innerScriptElements.length !== 0) {
+                                    for (var innerScriptElementIndex = 0; innerScriptElementIndex < innerScriptElements.length; innerScriptElementIndex++) {
+                                        var innerScriptElement = innerScriptElements[innerScriptElementIndex];
+                                        innerScriptElement.parentElement.removeChild(innerScriptElement);
+                                    }
+                                }
+                            }
+                            generatedElement.appendChild(attributeValue);
+                        }
                     }
                 }
             }

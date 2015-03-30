@@ -73,13 +73,22 @@ module syiro.generator {
                     generatedElement.setAttribute(attributeKey, attributeValue); // Set the attribute
                 }
                 else{ // If the attributeKey IS "content"
-                    var innerComponentContent = attributeValue; // Set innerComponentContent to the attributes content
-                    innerComponentContent = innerComponentContent.replace("<", ""); // Remove < symbol
-                    innerComponentContent = innerComponentContent.replace(">", ""); // Remove > symbol
-                    innerComponentContent = innerComponentContent.replace("&lt;", ""); // Remove < (entity) symbol
-                    innerComponentContent = innerComponentContent.replace("&gt;", ""); // Remove > (entity) symbol
+                    if (typeof attributeValue == "string"){ // If the attributeValue we passed is a string
+                        generatedElement.innerHTML = attributeValue.replace(/<*[^]script*>/g, ""); // Replace all <script> and </script> tags
+                    }
+                    else if (typeof attributeValue.nodeType !== "undefined"){ // If this is an Element
+                        if (attributeValue.tagName.toLowerCase() !== "script"){ // If we are not including a singular script tag
+                            var innerScriptElements = attributeValue.getElementsByTagName("script"); // Get all inner JavaScript tags
 
-                    generatedElement.textContent = innerComponentContent; // Set the innerText of the componentElement
+                            if (innerScriptElements.length !== 0){ // If there are inner JavaScript tags
+                                for (var innerScriptElementIndex = 0; innerScriptElementIndex < innerScriptElements.length; innerScriptElementIndex++){ // For each inner JavaScript tag
+                                    var innerScriptElement = innerScriptElements[innerScriptElementIndex];
+                                    innerScriptElement.parentElement.removeChild(innerScriptElement); // Remove the script tag
+                                }
+                            }
+                        }
+                        generatedElement.appendChild(attributeValue); // Append the attributeValue
+                    }
                 }
             }
         }

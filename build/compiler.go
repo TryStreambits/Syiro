@@ -174,7 +174,6 @@ func main(){
             func(allDirectoryFiles []string) {
                 lengthOfFiles := len(allDirectoryFiles) // Get the length of the slice of files
                 var fileChangeChannel = make(chan int, lengthOfFiles) // Make a channel that passes bool values, max buffer of lengthOfFiles
-                var quitChannel = make(chan bool, 1) // Make a quit channel that we use to signal that we should exit the func, max buffer of 1
 
                 for _, file := range allDirectoryFiles { // For each range in
                     go fileChanged(contentType, file, fileChangeChannel) // Check if the file was changed
@@ -192,13 +191,8 @@ func main(){
 
                                 if lengthOfFiles == 0 { // If there are no more files to process
                                     close(fileChangeChannel) // Close the fileChangeChannel
-                                    quitChannel <- true // Send a signal to quit
+                                    return // Exit the function
                                 }
-                            }
-                        case quitFunc := <- quitChannel: // Look for a quitFunc signal
-                            if quitFunc == true {
-                                close(quitChannel) // Close the quitChannel
-                                return // Exit the function
                             }
                         default: // No nothing
                     }
@@ -228,7 +222,7 @@ func main(){
                     }
                 } else if contentType == "go" { // If the contentType is go
                     commandUtil = "go" // Use go (go compiler)
-                    commandArgs = append(commandArgs, "build src/go/" + lowercaseProjectName + ".go")
+                    commandArgs = append(commandArgs, "build src/go/*")
                 } else if contentType == "less" { // If the contentType is less
                     commandUtil = "lessc" // Use lessc (less compiler)
                     commandArgs = append(commandArgs, "--strict-math=on", "--no-js", "--no-color", "--no-ie-compat", "--clean-css")
@@ -250,8 +244,8 @@ func main(){
                     commandOutput := execCommand(commandUtil, commandArgs) // Call execCommand and get its commandOutput
 
                     if contentType == "go" { // If the contentType is go
-                        if strings.Contains(commandOutput, "./" + lowercaseProjectName + ".go:") == true { // If running the go build shows there are obvious issues
-                            fmt.Println(commandOutput);
+                        if strings.Contains(commandOutput, lowercaseProjectName + ".go:") == true { // If running the go build shows there are obvious issues
+                            fmt.Println(commandOutput)
                         } else { // IF there was no obvious issues
                             execCommand(commandUtil, []string{"install"}) // Run go but using install rather than build
                         }

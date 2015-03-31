@@ -1,25 +1,35 @@
 @import (reference) "core.less"; // Import Core as a reference
 @import (reference) "icons.less"; // Import Icons as a reference
 
-input[data-syiro-component="searchbox"]{ // Syiro Searchbox (Input Element) Component
+div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
 	float: left;
-	height: 40px;
-	width: 200px;
-	color: @syiroSecondaryColor;
-	line-height: 40px;
-	text-indent: 10px;
+	height: 38px;
+	width: 198px;
+	color: fadeout(contrast(@syiroBackground), 10%); // Contrast the background but slightly fade the text
+	background-color: @syiroBackground;
+	border: 1px solid darken(@syiroBackground, 20%); // Thin (1px) outline of the darkened form of the @syiroBackground
 
-	&:after {
-		color: @syiroPrimaryColor;
-		.icon("search"); // Use the search icon at 16px
+	& > input{ // Syiro Searchbox (Input Element) Component
+		float: left;
+		height: 38px;
+		width: 100%;
+		line-height: 38px;
+		text-indent: 10px;
+		background-color: transparent;
+		border: 0; // No border
+		padding: 0; // No padding
+		outline: 0;
+
+		&:focus{  // When the Searchbox is in focus
+			outline-offset: 0; // Disable any offsetting of the outline
+		}
 	}
 
-	background-position: 95% center; // Place in the center right
-	border: 0; // No border
-	outline: 1px solid darken(@syiroBackground, 20%); // Thin (1px) outline of the darkened form of the @syiroBackground
-	padding: 0; // No padding
-
-	&:focus{  // When the Searchbox is in focus
-		outline-offset: 0; // Disable any offsetting of the outline
+	&:after {
+		float: right;
+		.icon("search"); // Use the search icon at 16px
+		margin: -58px 5% 0 0;
+		position: relative;
+		z-index: 2;
 	}
 }

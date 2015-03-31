@@ -38,7 +38,7 @@ div[data-syiro-component="internalColorContainer"]{
 
 // #region Multi-component font utilization
 
-*[data-syiro-component]{ // Have all components utilize a uniform font
+*[data-syiro-component], *[data-syiro-component] > input { // Have all components utilize a uniform font
 	font-family: 'Source Sans Pro', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
 	font-smoothing: antialiased; // Ensure font-smoothing
 	-moz-osx-font-smoothing: grayscale;

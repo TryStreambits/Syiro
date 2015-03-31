@@ -17,12 +17,15 @@ module syiro.button {
 		}
 
 		var componentId : string = syiro.generator.IdGen("button"); // Generate a component Id
-		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "button", // Generate a Button Element
-			{
-				"data-syiro-component-type" : properties["type"], // Be more granular with exactly what type of Button this is
-				"role" : "button" // Define the ARIA role as button
-			}
-		);
+		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
+
+		// #region Initial Button Component Data Generation
+
+		var componentData : Object = {
+			"data-syiro-component" : "button", // Set data-syiro-component to Button
+			"data-syiro-component-type" : properties["type"], // Be more granular with exactly what type of Button this is
+			"role" : "button" // Define the ARIA role as button
+		};
 
 		if (properties["type"] == "basic"){ // If this is a Basic Button that is being generated
 			if (typeof properties["icon"] == "string"){ // If an icon is defined and it is a string
@@ -31,8 +34,8 @@ module syiro.button {
 			}
 
 			if (typeof properties["content"] == "string"){ // If content is defined and it is a string
-				componentElement.textContent = properties["content"]; // Set the textContent of the button
-				delete properties["icon"]; // Remove the "content" key
+				componentData["content"] = properties["content"]; // Set the componentData content of the button
+				delete properties["content"]; // Remove the "content" key
 			}
 		}
 		else{ // If this is a Toggle Button that is being generated
@@ -43,18 +46,18 @@ module syiro.button {
 				delete properties["default"]; // Remove the "content" key
 			}
 
-			var buttonToggle = syiro.generator.ElementCreator("div", buttonToggleAttributes); // Create the buttonToggle of the Toggle Button
-			componentElement.appendChild(buttonToggle); // Append the buttonToggle to the toggle button
+			componentData["content"] = syiro.generator.ElementCreator("div", buttonToggleAttributes); // Set the componentData content to the Button Toggle we generate
 		}
 
 		delete properties["type"]; // Remove the "type" key
+
+		componentElement = syiro.generator.ElementCreator(componentId, "div", componentData); // Generate the Component Element with the componentData provided
 
 		for (var propertyKey in properties){ // Recursive go through any other attributes that needs to be set.
 			componentElement.setAttribute(propertyKey, properties[propertyKey]); // Treat it like an attribute
 		}
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
-
 		return { "id" : componentId, "type" : "button" }; // Return a Component Object
 	}
 
@@ -116,7 +119,7 @@ module syiro.buttongroup {
 		if (typeof properties["items"] !== "undefined"){ // If items is defined
 			if (properties["items"].length >= 2){ // If the length of items is equal to or greater than 2
 				var componentId : string = syiro.generator.IdGen("buttongroup"); // Generate a component Id
-				var buttonGroupContainer : Element = syiro.generator.ElementCreator("div", { "data-syiro-component" : "buttongroup", "data-syiro-component-id" : componentId } );
+				var componentElement : HTMLElement = syiro.generator.ElementCreator("div", { "data-syiro-component" : "buttongroup", "data-syiro-component-id" : componentId } );
 
 				for (var buttonItemIndex in properties["items"]){
 					var buttonItem : Object = properties["items"][buttonItemIndex];
@@ -126,17 +129,17 @@ module syiro.buttongroup {
 					}
 
 					var buttonElement : Element = syiro.component.Fetch(buttonItem); // Define buttonElement as the fetched Button Element of the Button Component
-					buttonGroupContainer.appendChild(buttonElement); // Append the buttonElement
+					componentElement.appendChild(buttonElement); // Append the buttonElement
 				}
 
 				if ((typeof properties["active"] == "number") && (properties["active"]  <= properties["items"].length)){ // If the active Number is provided and it is less than or equal to the max amount of buttons in this Buttongroup
-					var defaultActiveButton = buttonGroupContainer.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["active"] + ')');
+					var defaultActiveButton = componentElement.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["active"] + ')');
 					var activeButtonComponent = syiro.component.FetchComponentObject(defaultActiveButton); // Get this button's component so we can update any HTMLElement stored in Syiro's data system
 					defaultActiveButton.setAttribute("active", ""); // Set active attribute
 					syiro.component.Update(activeButtonComponent["id"], defaultActiveButton); // Update the default active button HTMLElement
 				}
 
-				syiro.data.Write(componentId + "->HTMLElement", buttonGroupContainer); // Write the HTMLElement to the Syiro Data System
+				syiro.data.Write(componentId + "->HTMLElement", componentElement); // Write the HTMLElement to the Syiro Data System
 				return { "id" : componentId, "type" : "buttongroup" }; // Return a Component Object
 			}
 		}

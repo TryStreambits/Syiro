@@ -13,8 +13,10 @@ module syiro.searchbox {
 
 	export function Generate(properties : Object) : Object { // Generate a Searchbox Component and return a Component Object
 		var componentId : string = syiro.generator.IdGen("searchbox"); // Generate a component Id
-		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "searchbox", { "aria-autocomplete" : "list", "role" : "textbox" }); // Generate a Searchbox Element with the ARIA aria-autocomplete to List (to imply there is a List of suggestions) and textbox role
-		var searchboxComponentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored via syiro.data
+		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
+		var componentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored via syiro.data
+
+		var searchboxContainerData : Object = { "data-syiro-component" : "searchbox" }; // Define searchboxContainerData to contain properties we should apply to the Searchbox
 
 		if (properties == undefined){ // If no properties were passed during the Generate call
 			properties = {}; // Set as an empty Object
@@ -24,40 +26,34 @@ module syiro.searchbox {
 			properties["content"] = "Search here..."; // Default to "Search here..." message
 		}
 
-		for (var propertyKey in properties){ // Recursive go through each propertyKey
-			if (propertyKey == "icon"){ // If we are adding an icon
-				syiro.component.CSS(componentElement, "background-image", "url(" + properties["icon"] + ")"); // Set the backgroundImage to the icon URL specified
-			}
-			else if (propertyKey == "content"){ // If we are adding a placeholder / content
-				componentElement.setAttribute("placeholder", properties["content"]); // Set the searchbox input placeholder to the one defined
-			}
-		}
+		var inputElement : HTMLElement = syiro.generator.ElementCreator("input", { "aria-autocomplete" : "list", "role" : "textbox", "placeholder" : properties["content"] }); // Searchbox Inner Input Generation
+		searchboxContainerData["content"] = inputElement; // Define the inner content of the Searchbox Container to the input Element
 
 		if ((typeof properties["suggestions"] !== "undefined") && (properties["suggestions"] == true)){ // If suggestions is enabled
-			searchboxComponentData["suggestions"] = "enabled"; // Define suggestions as a string "enabled" to imply suggestions are enabled
+			componentData["suggestions"] = "enabled"; // Define suggestions as a string "enabled" to imply suggestions are enabled
 
-			searchboxComponentData["handlers"] = { // Add "handlers" to the searchboxComponentData
+			componentData["handlers"] = { // Add "handlers" to the searchboxComponentData
 				"list-item-handler" : properties["list-item-handler"] // Handler for dynamically generated List Items as well as preseeded ones.
 			};
 
 			var listItems : Array<Object> = []; // Define listItems as an array of Objects, defaulting to an empty array
 
 			if (typeof properties["preseed"] == "object"){ // If a preseed []string is provided
-				searchboxComponentData["preseed"] = true; // Define preseed value in searchboxComponentData as true
+				componentData["preseed"] = true; // Define preseed value in searchboxComponentData as true
 
 				for (var preseedItemIndex in properties["preseed"]){ // For each item in preseed
 					listItems.push(syiro.listitem.Generate({ "label" : properties["preseed"][preseedItemIndex] })); /// Push a new generated List Item Component Object to listItemsArray
 				}
 			}
 			else{ // If preseed []string is not provided
-				searchboxComponentData["handlers"]["suggestions"] = properties["handler"]; // Faux "suggestions" key with the val as the handler passed (that we will use to get suggestions)
-				searchboxComponentData["preseed"] = false; // Define preseed value in searchboxComponentData as false
+				componentData["handlers"]["suggestions"] = properties["handler"]; // Faux "suggestions" key with the val as the handler passed (that we will use to get suggestions)
+				componentData["preseed"] = false; // Define preseed value in searchboxComponentData as false
 			}
 
 			var searchSuggestionsList : Object = syiro.list.Generate( { "items" : listItems }); // Generate a List with the items provided (if any)
 			var searchSuggestionsListElement : Element = syiro.component.Fetch(searchSuggestionsList); // Get the List Component Element
 
-			componentElement.setAttribute("aria-owns", searchSuggestionsList["id"]); // Define the aria-owns, setting it to the List Component to declare for ARIA that the Searchbox Component "owns" the List Component
+			searchboxContainerData["aria-owns"] = searchSuggestionsList["id"]; // Define the aria-owns, setting it to the List Component to declare for ARIA that the Searchbox Component "owns" the List Component
 			searchSuggestionsListElement.setAttribute("data-syiro-component-owner", componentId); // Set the List's Component owner to be the component Id
 
 			document.querySelector("body").appendChild(searchSuggestionsListElement); // Append the List Element to the end of the document
@@ -69,8 +65,9 @@ module syiro.searchbox {
 			}
 		}
 
-		searchboxComponentData["HTMLElement"] = componentElement; // Define the HTMLElement of the Searchbox as the componentElement
-		syiro.data.Write(componentId, searchboxComponentData); // Add the searchboxComponentData to the syiro.data.storage for this Searchbox Component
+		componentElement = syiro.generator.ElementCreator(componentId, "div", searchboxContainerData); // Generate the Searchbox Container with the inner input as content
+		componentData["HTMLElement"] = componentElement; // Define the HTMLElement of the Searchbox as the componentElement
+		syiro.data.Write(componentId, componentData); // Add the searchboxComponentData to the syiro.data.storage for this Searchbox Component
 
 		return { "id" : componentId, "type" : "searchbox" }; // Return a Component Object
 	}
@@ -80,8 +77,8 @@ module syiro.searchbox {
 	// #region Searchbox Suggestions Handler
 
 	export function Suggestions(...args : any[]){
-		var searchboxComponent : Object = arguments[0]; // Define the Searchbox Component as the first argument
-		var searchboxElement : Element = syiro.component.Fetch(searchboxComponent); // Define searchboxElement as the fetched Searchbox Component Element
+		var searchboxComponent : Object = syiro.component.FetchComponentObject(arguments[0].parentElement); // Define the Searchbox Component as the fetched Component Object based on the arg passed (input Element)
+		var searchboxElement : Element = arguments[0].parentElement; // Define searchboxElement as Searchbox inner input Element passed by the Event System
 		var searchboxValue : string = arguments[1]; // Define searchboxValue as the second argument
 
 		var linkedListComponent : Object = syiro.component.FetchLinkedListComponentObject(searchboxComponent); // Fetch the Linked List of the Searchbox Component

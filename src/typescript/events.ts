@@ -92,7 +92,7 @@ module syiro.events {
                     }
                 );
             }
-            else if (component["type"] == "searchbox"){ // If the component is a Syiro Searchbox
+            else if ((typeof component.parentElement !== "undefined") && (component.parentElement.getAttribute("data-syiro-component") == "searchbox")){ // If the component is a Syiro Searchbox
                 passableValue = componentElement.value; // Get the current value of the input
             }
             else{

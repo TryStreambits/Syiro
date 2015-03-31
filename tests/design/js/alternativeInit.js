@@ -28,12 +28,12 @@ var syiro;
                                 }
                                 else if (componentObject["type"] == "searchbox") {
                                     if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false) {
-                                        syiro.events.Add("keyup", componentObject, syiro.searchbox.Suggestions);
-                                        syiro.events.Add("blur", componentObject, function () {
+                                        syiro.events.Add("keyup", potentiallyExistingComponent.querySelector("input"), syiro.searchbox.Suggestions);
+                                        syiro.events.Add("blur", potentiallyExistingComponent.querySelector("input"), function () {
                                             var searchboxObject = arguments[0];
                                             var searchboxLinkedList = syiro.component.FetchLinkedListComponentObject(searchboxObject);
                                             syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important");
-                                        });
+                                        }.bind(this, componentObject));
                                     }
                                 }
                                 syiro.data.Delete(componentObject["id"] + "->HTMLElement");

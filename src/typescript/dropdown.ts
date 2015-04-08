@@ -88,7 +88,13 @@ module syiro.dropdown {
 			syiro.component.CSS(linkedListComponentElement, "visibility", false); // Remove the visibility attribute and hide the List
 		}
 		else{ // If the linked List is not active / showing
-			syiro.component.CSS(linkedListComponentElement, "width", componentElement.clientWidth + "px"); // Ensure the Linked List is the same width of the Dropdown
+			var linkedListComponentElementWidth : number = componentElement.clientWidth; // Define linkedListComponentELementWidth as a number, defaulting to the Dropdown width
+
+			if (componentElement.clientWidth == 40){ // If this is an icon-only Dropdown
+				linkedListComponentElementWidth = 200; // Set to 200(px)
+			}
+
+			syiro.component.CSS(linkedListComponentElement, "width", linkedListComponentElementWidth + "px"); // Ensure the Linked List is the same width of the Dropdown
 
 			var positionInformation : Array<string> = syiro.data.Read(linkedListComponentObject["id"] + "->render"); // Get the position information on where we should render the List
 			syiro.render.Position(positionInformation, linkedListComponentObject, component); // Set the position of the List according to the position information for the Dropdown

@@ -1641,7 +1641,11 @@ var syiro;
                 syiro.component.CSS(linkedListComponentElement, "visibility", false);
             }
             else {
-                syiro.component.CSS(linkedListComponentElement, "width", componentElement.clientWidth + "px");
+                var linkedListComponentElementWidth = componentElement.clientWidth;
+                if (componentElement.clientWidth == 40) {
+                    linkedListComponentElementWidth = 200;
+                }
+                syiro.component.CSS(linkedListComponentElement, "width", linkedListComponentElementWidth + "px");
                 var positionInformation = syiro.data.Read(linkedListComponentObject["id"] + "->render");
                 syiro.render.Position(positionInformation, linkedListComponentObject, component);
                 componentElement.setAttribute("active", "");

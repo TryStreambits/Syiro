@@ -1,3 +1,5 @@
+@syiroTheme : "default"; // Define syiroTheme we are compiling - set to default
+
 // #region Required Fonts
 
 @font-face {
@@ -48,14 +50,6 @@ div[data-syiro-component="internalColorContainer"]{
 
 // #endregion
 
-// #region Disabled UI Design
-
-*[data-syiro-component-disabled] { // When the Element is "disabled"
-	opacity: 0.5; // Set the opacity / darken the Element
-}
-
-// #endregion
-
 // #region Text Highlighting  Disabling
 
 *[data-syiro-component]{
@@ -65,28 +59,6 @@ div[data-syiro-component="internalColorContainer"]{
 }
 
 // #endregion
-
-// #region Multi-component link styling
-
-header[data-syiro-component="header"], footer[data-syiro-component="footer"] {
-	a {
-		float: left; // Float left
-		height: 80px; // Default height of 80px
-		width: auto; // Automatic width
-		color: contrast(darken(@syiroBackground, 2.5%)); // Have the text color contrast the darkened syiroBackground
-		line-height: 80px; // Default height of 80px
-		text-decoration: none; // No decoration
-		padding: 0 0 0 30px; // Padding of 30px on the left
-	}
-
-	&[data-syiro-component="header"] a {
-		min-width: 200px;
-		text-align: center; // Center the text
-		padding: 0 !important; // No padding
-	}
-
-
-}
 
 // #region Page Component
 

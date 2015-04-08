@@ -133,6 +133,7 @@ declare module syiro.buttongroup {
         "id": string;
         "type": string;
     };
+    function CalculateInnerButtonWidth(component: any): HTMLElement;
     function Toggle(buttonComponent?: Object): void;
 }
 declare module syiro.list {

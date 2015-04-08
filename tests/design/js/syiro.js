@@ -1,9 +1,16 @@
+/*
+    These are interface extensions so Typescript doesn't freak out.
+*/
 var WebKitMutationObserver;
+/*
+This is the module for managing Syiro Data.
+*/
+/// <reference path="interfaces.ts" />
 var syiro;
 (function (syiro) {
     var data;
-    (function (_data) {
-        _data.storage = {};
+    (function (data_1) {
+        data_1.storage = {};
         function Manage(modificationType, keyList, data) {
             var dataLocation = syiro.data.storage;
             var keyHeirarchy = keyList.split("->");
@@ -50,21 +57,27 @@ var syiro;
             }
             return returnableValue;
         }
-        _data.Manage = Manage;
+        data_1.Manage = Manage;
         function Read(keyList) {
             return syiro.data.Manage("read", keyList);
         }
-        _data.Read = Read;
+        data_1.Read = Read;
         function Write(keyList, data) {
             return syiro.data.Manage("write", keyList, data);
         }
-        _data.Write = Write;
+        data_1.Write = Write;
         function Delete(keyList) {
             return syiro.data.Manage("delete", keyList);
         }
-        _data.Delete = Delete;
+        data_1.Delete = Delete;
     })(data = syiro.data || (syiro.data = {}));
 })(syiro || (syiro = {}));
+/*
+ This is the module for generating Syiro components.
+ */
+/// <reference path="syiro.ts" />
+/// <reference path="component.ts" />
+/// <reference path="interfaces.ts" />
 var syiro;
 (function (syiro) {
     var generator;
@@ -144,6 +157,13 @@ var syiro;
         generator.ElementCreator = ElementCreator;
     })(generator = syiro.generator || (syiro.generator = {}));
 })(syiro || (syiro = {}));
+/*
+    This is the module for Syiro Component and Generic Element Event Handling
+*/
+/// <reference path="animation.ts" />
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
+/// <reference path="interfaces.ts" />
 var syiro;
 (function (syiro) {
     var events;
@@ -392,6 +412,11 @@ var syiro;
         events.Remove = Remove;
     })(events = syiro.events || (syiro.events = {}));
 })(syiro || (syiro = {}));
+/*
+This is the module for render-oriented functionality for Components, such as positioning.
+*/
+/// <reference path="component.ts" />
+/// <reference path="data.ts" />
 var syiro;
 (function (syiro) {
     var render;
@@ -501,6 +526,7 @@ var syiro;
         }
         render.Position = Position;
         function Scale(component, data) {
+            // #region Variable Setup
             var componentId = component["id"];
             var componentElement = syiro.component.Fetch(component);
             var userHorizontalSpace = window.screen.width;
@@ -611,12 +637,19 @@ var syiro;
         render.Scale = Scale;
     })(render = syiro.render || (syiro.render = {}));
 })(syiro || (syiro = {}));
+/*
+    This is the module for core Syiro functionality.
+*/
+/// <reference path="data.ts" />
+/// <reference path="events.ts" />
+/// <reference path="interfaces.ts" />
+/// <reference path="render.ts" />
 var syiro;
 (function (syiro) {
     var component;
-    (function (_component) {
-        _component.componentData = syiro.data.storage;
-        _component.Define = syiro.component.FetchComponentObject;
+    (function (component_1) {
+        component_1.componentData = syiro.data.storage;
+        component_1.Define = syiro.component.FetchComponentObject;
         function CSS(component, property, newValue) {
             var modifiableElement;
             var returnedValue;
@@ -680,7 +713,7 @@ var syiro;
             }
             return returnedValue;
         }
-        _component.CSS = CSS;
+        component_1.CSS = CSS;
         function Fetch(component) {
             var componentElement;
             if (syiro.data.Read(component["id"] + "->" + "HTMLElement") !== false) {
@@ -691,7 +724,7 @@ var syiro;
             }
             return componentElement;
         }
-        _component.Fetch = Fetch;
+        component_1.Fetch = Fetch;
         function FetchComponentObject() {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -739,7 +772,7 @@ var syiro;
                 return false;
             }
         }
-        _component.FetchComponentObject = FetchComponentObject;
+        component_1.FetchComponentObject = FetchComponentObject;
         function FetchDimensionsAndPosition(component) {
             var dimensionsAndPosition = {};
             var componentElement;
@@ -755,12 +788,12 @@ var syiro;
             dimensionsAndPosition["width"] = componentElement.offsetWidth;
             return dimensionsAndPosition;
         }
-        _component.FetchDimensionsAndPosition = FetchDimensionsAndPosition;
+        component_1.FetchDimensionsAndPosition = FetchDimensionsAndPosition;
         function FetchLinkedListComponentObject(component) {
             var listSelector = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]';
             return syiro.component.FetchComponentObject(document.querySelector(listSelector));
         }
-        _component.FetchLinkedListComponentObject = FetchLinkedListComponentObject;
+        component_1.FetchLinkedListComponentObject = FetchLinkedListComponentObject;
         function IsComponentObject(variable) {
             var isComponentObject = false;
             if ((typeof variable["id"] !== "undefined") && (typeof variable["type"] !== "undefined") && (typeof variable.nodeType == "undefined")) {
@@ -768,14 +801,14 @@ var syiro;
             }
             return isComponentObject;
         }
-        _component.IsComponentObject = IsComponentObject;
-        _component.Scale = syiro.render.Scale;
+        component_1.IsComponentObject = IsComponentObject;
+        component_1.Scale = syiro.render.Scale;
         function Update(componentId, componentElement) {
             if (syiro.data.Read(componentId + "->HTMLElement") !== false) {
                 syiro.data.Write(componentId + "->HTMLElement", componentElement);
             }
         }
-        _component.Update = Update;
+        component_1.Update = Update;
         function Add(append, parentComponent, childComponent) {
             var parentElement = syiro.component.Fetch(parentComponent);
             var childComponentId;
@@ -828,7 +861,7 @@ var syiro;
             syiro.component.Update(parentComponent["id"], parentElement);
             return allowAdding;
         }
-        _component.Add = Add;
+        component_1.Add = Add;
         function Remove(componentsToRemove) {
             var componentList;
             if ((syiro.component.IsComponentObject(componentsToRemove)) || ((typeof componentsToRemove == "object") && (typeof componentsToRemove.length == "undefined"))) {
@@ -855,9 +888,14 @@ var syiro;
                 }
             }
         }
-        _component.Remove = Remove;
+        component_1.Remove = Remove;
     })(component = syiro.component || (syiro.component = {}));
 })(syiro || (syiro = {}));
+/*
+    This is the module for animation in Syiro
+*/
+/// <reference path="component.ts" />
+/// <reference path="interfaces.ts" />
 var syiro;
 (function (syiro) {
     var animation;
@@ -907,6 +945,11 @@ var syiro;
         animation.FadeOut = FadeOut;
     })(animation = syiro.animation || (syiro.animation = {}));
 })(syiro || (syiro = {}));
+/*
+ This is the module for information and functionality Syiro provides regarding the device using Syiro.
+*/
+/// <reference path="events.ts" />
+/// <reference path="interfaces.ts" />
 var syiro;
 (function (syiro) {
     var device;
@@ -926,6 +969,7 @@ var syiro;
         device.orientation;
         device.OrientationObject = screen;
         function Detect() {
+            // #region Do Not Track
             if (typeof navigator.doNotTrack !== "undefined") {
                 syiro.device.DoNotTrack = Boolean(navigator.doNotTrack);
             }
@@ -1080,6 +1124,11 @@ var syiro;
         device.FetchScreenOrientation = FetchScreenOrientation;
     })(device = syiro.device || (syiro.device = {}));
 })(syiro || (syiro = {}));
+/*
+ This is the module for Syiro Header component.
+ */
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
 var syiro;
 (function (syiro) {
     var header;
@@ -1145,6 +1194,11 @@ var syiro;
         header.RemoveLogo = RemoveLogo;
     })(header = syiro.header || (syiro.header = {}));
 })(syiro || (syiro = {}));
+/*
+ This is the module for Syiro Header component.
+*/
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
 var syiro;
 (function (syiro) {
     var footer;
@@ -1238,6 +1292,11 @@ var syiro;
         footer.RemoveLink = RemoveLink;
     })(footer = syiro.footer || (syiro.footer = {}));
 })(syiro || (syiro = {}));
+/*
+ This is the module for the Syiro Button, Buttongroup, and Toggle Button components.
+ */
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
 var syiro;
 (function (syiro) {
     var button;
@@ -1326,7 +1385,9 @@ var syiro;
                         }
                         var buttonElement = syiro.component.Fetch(buttonItem);
                         componentElement.appendChild(buttonElement);
+                        syiro.data.Delete(buttonItem["id"] + "->HTMLElement");
                     }
+                    componentElement = syiro.buttongroup.CalculateInnerButtonWidth(componentElement);
                     if ((typeof properties["active"] == "number") && (properties["active"] <= properties["items"].length)) {
                         var defaultActiveButton = componentElement.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["active"] + ')');
                         var activeButtonComponent = syiro.component.FetchComponentObject(defaultActiveButton);
@@ -1339,6 +1400,39 @@ var syiro;
             }
         }
         buttongroup.Generate = Generate;
+        function CalculateInnerButtonWidth(component) {
+            var componentElement;
+            if (syiro.component.IsComponentObject(component)) {
+                if (component["type"] == "buttongroup") {
+                    componentElement = syiro.component.Fetch(component);
+                }
+            }
+            else if (typeof component.nodeType !== "undefined") {
+                componentElement = component;
+            }
+            if ((typeof componentElement !== "undefined") && (typeof componentElement.nodeType !== "undefined")) {
+                var innerButtonElements = componentElement.querySelectorAll('div[data-syiro-component="button"]');
+                var hasOddNumberOfButtons = false;
+                var middleButtonNumber = 0;
+                if (parseInt((innerButtonElements.length / 2).toFixed()) !== (innerButtonElements.length / 2)) {
+                    hasOddNumberOfButtons = true;
+                    middleButtonNumber = Math.round(innerButtonElements.length / 2);
+                }
+                for (var innerButtonElementsIndex = 0; innerButtonElementsIndex < innerButtonElements.length; innerButtonElementsIndex++) {
+                    var buttonElement = innerButtonElements[innerButtonElementsIndex];
+                    var widthValue = "calc(100% / " + innerButtonElements.length + ") !important";
+                    if (hasOddNumberOfButtons && (innerButtonElementsIndex == middleButtonNumber)) {
+                        widthValue = "calc(100% / " + innerButtonElements.length + " - 2px) !important";
+                    }
+                    else if (innerButtonElementsIndex == (innerButtonElements.length - 1)) {
+                        widthValue = "calc(100% / " + innerButtonElements.length + " - " + (innerButtonElements.length - 1) + "px) !important";
+                    }
+                    syiro.component.CSS(buttonElement, "width", widthValue);
+                }
+                return componentElement;
+            }
+        }
+        buttongroup.CalculateInnerButtonWidth = CalculateInnerButtonWidth;
         function Toggle(buttonComponent) {
             var buttonComponent = arguments[0];
             var buttonElement = syiro.component.Fetch(buttonComponent);
@@ -1352,6 +1446,11 @@ var syiro;
         buttongroup.Toggle = Toggle;
     })(buttongroup = syiro.buttongroup || (syiro.buttongroup = {}));
 })(syiro || (syiro = {}));
+/*
+ This is the module for Syiro List component and it's sub-component, List Item
+ */
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
 var syiro;
 (function (syiro) {
     var list;
@@ -1486,6 +1585,12 @@ var syiro;
         listitem.SetLabel = SetLabel;
     })(listitem = syiro.listitem || (syiro.listitem = {}));
 })(syiro || (syiro = {}));
+/*
+ This is the module for Syiro Dropdown component.
+ */
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
+/// <reference path="list.ts" />
 var syiro;
 (function (syiro) {
     var dropdown;
@@ -1589,6 +1694,9 @@ var syiro;
         dropdown.RemoveItem = RemoveItem;
     })(dropdown = syiro.dropdown || (syiro.dropdown = {}));
 })(syiro || (syiro = {}));
+/*
+    This is a module for Syiro utilities that are commonly used throughout Syiro's core code and may be useful to others.
+*/
 var syiro;
 (function (syiro) {
     var utilities;
@@ -1622,6 +1730,17 @@ var syiro;
         utilities.SecondsToTimeFormat = SecondsToTimeFormat;
     })(utilities = syiro.utilities || (syiro.utilities = {}));
 })(syiro || (syiro = {}));
+/*
+    This is a file containing the modules for the Syiro Audio Player and Video Player, as well as shared player functionality.
+    The Audio Player is exposed via syiro.audioplayer.
+    The Video Player is exposed via syiro.videoplayer.
+    The shared Player functionality is exposed via syiro.player.
+*/
+/// <reference path="component.ts" />
+/// <reference path="events.ts" />
+/// <reference path="generator.ts" />
+/// <reference path="interfaces.ts" />
+/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var player;
@@ -1633,6 +1752,7 @@ var syiro;
                 var playerControlArea = componentElement.querySelector('div[data-syiro-component="player-control"]');
                 var playerControlComponent = syiro.component.FetchComponentObject(playerControlArea);
                 syiro.events.Add("durationchange", innerContentElement, function () {
+                    // #region Player Component & Element Defining
                     var playerElement = arguments[0];
                     var playerComponentElement = playerElement.parentElement;
                     var playerComponent = syiro.component.FetchComponentObject(playerComponentElement);
@@ -1649,6 +1769,7 @@ var syiro;
                     }
                 });
                 syiro.events.Add("timeupdate", innerContentElement, function () {
+                    // #region Player Component & Element Defining
                     var playerElement = arguments[0];
                     var playerComponentElement = playerElement.parentElement;
                     var playerComponent = syiro.component.FetchComponentObject(playerComponentElement);
@@ -1667,6 +1788,7 @@ var syiro;
                     }
                 });
                 syiro.events.Add("ended", innerContentElement, function () {
+                    // #region Player Component & Element Defining
                     var playerElement = arguments[0];
                     var playerComponentElement = playerElement.parentElement;
                     var playerComponent = syiro.component.FetchComponentObject(playerComponentElement);
@@ -2356,6 +2478,11 @@ var syiro;
         videoplayer.Generate = Generate;
     })(videoplayer = syiro.videoplayer || (syiro.videoplayer = {}));
 })(syiro || (syiro = {}));
+/*
+ This is the module for Syiro Searchbox component.
+*/
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
 var syiro;
 (function (syiro) {
     var searchbox;
@@ -2476,6 +2603,24 @@ var syiro;
         searchbox.SetText = SetText;
     })(searchbox = syiro.searchbox || (syiro.searchbox = {}));
 })(syiro || (syiro = {}));
+/*
+    This is the aggregate of all the Syiro modules into a unified module
+*/
+/// <reference path="animation.ts" />
+/// <reference path="component.ts" />
+/// <reference path="data.ts" />
+/// <reference path="device.ts" />
+/// <reference path="events.ts" />
+/// <reference path="generator.ts" />
+/// <reference path="header.ts" />
+/// <reference path="footer.ts" />
+/// <reference path="button.ts" />
+/// <reference path="dropdown.ts" />
+/// <reference path="list.ts" />
+/// <reference path="players.ts" />
+/// <reference path="render.ts" />
+/// <reference path="searchbox.ts" />
+/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     syiro.backgroundColor;

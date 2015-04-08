@@ -130,7 +130,10 @@ module syiro.buttongroup {
 
 					var buttonElement : Element = syiro.component.Fetch(buttonItem); // Define buttonElement as the fetched Button Element of the Button Component
 					componentElement.appendChild(buttonElement); // Append the buttonElement
+					syiro.data.Delete(buttonItem["id"] + "->HTMLElement"); // Delete the Button HTMLElement from storage to eliminate unnecessary calls with the MutationObserver
 				}
+
+				componentElement = syiro.buttongroup.CalculateInnerButtonWidth(componentElement); // Update componentElement with the inner Button width calculations
 
 				if ((typeof properties["active"] == "number") && (properties["active"]  <= properties["items"].length)){ // If the active Number is provided and it is less than or equal to the max amount of buttons in this Buttongroup
 					var defaultActiveButton = componentElement.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["active"] + ')');
@@ -146,6 +149,48 @@ module syiro.buttongroup {
 	}
 
 	// #endregion
+
+	// #region Buttongroup - Inner Button Width Calculation
+
+	export function CalculateInnerButtonWidth(component : any){
+		var componentElement : HTMLElement; // Define componentElement as the Element of the Component Object and/or is the component passed
+
+		if (syiro.component.IsComponentObject(component)){ // If this is a Component Object
+			if (component["type"] == "buttongroup"){ // If this is a Buttongroup Component
+				componentElement = syiro.component.Fetch(component); // Fetch the Component Element
+			}
+		}
+		else if (typeof component.nodeType !== "undefined"){ // If this is an Element (has a nodeType)
+			componentElement = component; // Define componentElement as the component provided
+		}
+
+		if ((typeof componentElement !== "undefined") && (typeof componentElement.nodeType !== "undefined")){ // If componentElement is defined as an actual Element
+			var innerButtonElements = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all the inner Buttons
+			var hasOddNumberOfButtons : boolean = false; // Define hasOddNumberOfButtons as a boolean defaulting to false
+			var middleButtonNumber : number = 0; // Define middleButtonNumber as the INT-th position in innerButtonElements to declare as the middle number (if there is one) - Just default to 0
+
+			if (parseInt((innerButtonElements.length / 2).toFixed()) !== (innerButtonElements.length / 2)){ // If the divided lengths are not equal (one using toFixed() to remove floating points)
+				hasOddNumberOfButtons = true; // Odd number
+				middleButtonNumber = Math.round(innerButtonElements.length / 2); // Define middleButtonNumber as the rounded-up int of innerButtonElements.length / 2 (ex. 5 / 2 = 2.5 -> 3)
+			}
+
+			for (var innerButtonElementsIndex = 0; innerButtonElementsIndex < innerButtonElements.length; innerButtonElementsIndex++){ // For each button
+				var buttonElement = innerButtonElements[innerButtonElementsIndex];
+				var widthValue : string = "calc(100% / " + innerButtonElements.length + ") !important"; // Define widthValue as a string (since we'll be apply it via CSS and letting CSS dynamically calc width). Default to 100% / num of button Elements
+
+				if (hasOddNumberOfButtons && (innerButtonElementsIndex == middleButtonNumber)){ // If this is the middle button Element
+					widthValue = "calc(100% / " + innerButtonElements.length + " - 2px) !important"; // Define widthValue as 100% / 2 minus 2px (bordering)
+				}
+				else if (innerButtonElementsIndex == (innerButtonElements.length - 1)){ // If this is the last button Element
+					widthValue = "calc(100% / " + innerButtonElements.length + " - " + (innerButtonElements.length - 1) + "px) !important"; // Define widthValue as 100% / 2 minus N - 1px (for each button aside from the last, account for the bordering)
+				}
+
+				syiro.component.CSS(buttonElement, "width", widthValue); // Set the width to be 100% / number of button Elements
+			}
+
+			return componentElement; // Return the modified Component Element
+		}
+	}
 
 	// #region Buttongroup Active Button Toggling
 

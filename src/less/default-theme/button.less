@@ -48,7 +48,7 @@ div[data-syiro-component="button"]{ // Syiro Button Component
 div[data-syiro-component="buttongroup"]{
 		float: left;
 		height: 40px;
-		min-width: 250px; // A minimum of two buttons are required for a Button Group
+		min-width: 300px;
 		background-color: darken(@syiroBackground, 5%); // Set background color to @syiroBackground darkened by 5%
 		border-radius: 20px; // Set border-radius to 20px so we have a circular border radius on the sides
 		-webkit-border-radius: 20px; // Set webkit border-radius
@@ -59,6 +59,7 @@ div[data-syiro-component="buttongroup"]{
 
 		& > div[data-syiro-component="button"][data-syiro-component-type="basic"]{
 			float: left;
+			min-width: 0; // No minimum width
 			border-radius: 0; // No border radius
 			-webkit-border-radius: 0;
 			margin: 0; // No margin

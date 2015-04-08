@@ -225,7 +225,7 @@ func main(){
                     commandArgs = append(commandArgs, "build src/go/*")
                 } else if contentType == "less" { // If the contentType is less
                     commandUtil = "lessc" // Use lessc (less compiler)
-                    commandArgs = append(commandArgs, "--strict-math=on", "--no-js", "--no-color", "--no-ie-compat", "--clean-css")
+                    commandArgs = append(commandArgs, "--glob", "--strict-math=on", "--no-js", "--no-color", "--no-ie-compat", "--clean-css")
                     commandArgs = append(commandArgs, "src/less/" + lowercaseProjectName + ".less")
                     commandArgs = append(commandArgs, "build/" + lowercaseProjectName + ".css")
                 } else if contentType == "typescript" { // If the contentType is typescript

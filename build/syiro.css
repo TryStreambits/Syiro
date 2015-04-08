@@ -38,25 +38,6 @@ body {
 div[data-syiro-component="page"] {
   position: static;
 }
-*[data-syiro-component-disabled] {
-  opacity: 0.5;
-}
-header[data-syiro-component="header"] a,
-footer[data-syiro-component="footer"] a {
-  float: left;
-  height: 80px;
-  width: auto;
-  color: #000000;
-  line-height: 80px;
-  text-decoration: none;
-  padding: 0 0 0 30px;
-}
-header[data-syiro-component="header"][data-syiro-component="header"] a,
-footer[data-syiro-component="footer"][data-syiro-component="header"] a {
-  min-width: 200px;
-  text-align: center;
-  padding: 0 !important;
-}
 .fade-in-animation {
   transform: opacity, visibility;
   -webkit-transform: opacity, visibility;
@@ -710,4 +691,23 @@ div[data-syiro-component="searchbox"]:after {
   margin: -58px 5% 0 0;
   position: relative;
   z-index: 2;
+}
+*[data-syiro-component-disabled] {
+  opacity: 0.5;
+}
+header[data-syiro-component="header"] a,
+footer[data-syiro-component="footer"] a {
+  float: left;
+  height: 80px;
+  width: auto;
+  color: #000000;
+  line-height: 80px;
+  text-decoration: none;
+  padding: 0 0 0 30px;
+}
+header[data-syiro-component="header"][data-syiro-component="header"] a,
+footer[data-syiro-component="footer"][data-syiro-component="header"] a {
+  min-width: 200px;
+  text-align: center;
+  padding: 0 !important;
 }

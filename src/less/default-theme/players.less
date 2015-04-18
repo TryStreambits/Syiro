@@ -65,9 +65,13 @@ div[data-syiro-component="player-control"]{
             float: right; // Float to the right of the Player Control
         }
 
-        &[active]:not([data-syiro-minor-component="player-button-play"]){ // If the button is active and it is not the play button
+        &[active]:not([data-syiro-minor-component="player-button-play"]):after{ // If the button is active and it is not the play button
             color: @syiroPlayerControlColor !important; // Set the text color to the syiroPlayerControlColor
             background-color: contrast(@syiroPlayerControlColor) !important; // Set the background to the contrast of the syiroPlayerControlColor
+        }
+
+        &:after{ // Inner Icon
+            width: 100%; // Set width to 100%
         }
 
         &[data-syiro-minor-component="player-button-fullscreen"]{ // Fullscreen Button
@@ -223,7 +227,7 @@ div[data-syiro-minor-component="player-menu"]{
 div[data-syiro-component="audio-player"]{
     float: left;
     height: auto;
-    background-color: @syiroBackground; // Set a default background color in the event art is not added.
+    background-color: @syiroPlayerControlColor; // Set a default background color in the event art is not added.
 
     & > audio {
         display: hidden; // Hide the audio player
@@ -286,7 +290,7 @@ div[data-syiro-component="audio-player"]{
         // #region Player Controls
 
         & > div[data-syiro-component="player-control"]{
-            background-color: fade(contrast(@syiroPlayerControlColor), 75%); // Set background-color to transparent
+            background-color: fade(@syiroPlayerControlColor, 75%); // Set background-color to transparent
 
             &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Player Control
                 margin-top: 100px; // 100px top margin (since 150px - 50px is 100)
@@ -323,7 +327,7 @@ div[data-syiro-component="audio-player"]{
         // #endregion
 
         & > div[data-syiro-component="button"]:after{ // Inner Button Content
-            color: @syiroPlayerControlColor;
+            color: contrast(@syiroPlayerControlColor);
         }
 
         & > section { // Audio Information
@@ -334,7 +338,7 @@ div[data-syiro-component="audio-player"]{
 
             & > b,label {
                 float: left;
-                color: @syiroPlayerControlColor; // Make sure the text contrasts the player control color
+                color: contrast(@syiroPlayerControlColor); // Make sure the text contrasts the player control color
                 width: 100%; // Fill up entire "row"
             }
 
@@ -354,10 +358,10 @@ div[data-syiro-component="audio-player"]{
 	// #region Audio Player Menu
 
 	& > div[data-syiro-minor-component="player-menu"]{
-		background-color: fade(contrast(@syiroPlayerControlColor), 75%);
+		background-color: fade(@syiroPlayerControlColor, 75%);
 
         & > label { // "Menu" label
-            color: @syiroPlayerControlColor;
+            color: contrast(@syiroPlayerControlColor);
         }
 	}
 }

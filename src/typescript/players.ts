@@ -96,7 +96,18 @@ module syiro.player {
                                 playerInputRange.value = roundedDownTime; // Set the range input to roundedDownTime
 
                                 var priorInputSpaceWidth : number = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
-                                syiro.component.CSS(playerInputRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)");
+
+                                var updatedGradient : string = "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, ";
+
+                                if (playerComponent["type"] == "audio-player"){ // If this is an Audio Player's Player Range
+                                    updatedGradient += "transparent"; // Set to transparent background
+                                }
+                                else{ // IF this is a Video Player's Player Range
+                                    updatedGradient += "white"; // Set to white background
+                                }
+
+                                updatedGradient += " 0px)"; // Ending of linear-gradient content
+                                syiro.component.CSS(playerInputRange, "background", updatedGradient);
                             }
                         }
                     }
@@ -359,6 +370,12 @@ module syiro.player {
                 syiro.player.CheckIfStreamable(component); // Check if the content is streamable
 
             // #endregion
+
+            // #region Audio Player Specific Code
+
+            if (component["type"] == "audio-player"){ // If this is an Audio Player
+                syiro.audioplayer.CenterInformation(component); // Center the potential audio information
+            }
         }
     }
 
@@ -395,14 +412,20 @@ module syiro.player {
         if (isStreamable == true){ // If the content IS streamable
             syiro.data.Write(component["id"] + "->IsStreaming", true); // Declare that we are streaming by recording it in the Syiro Data System
             playerControlElement.setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
-            playerControlElement.querySelector("time").setAttribute("data-syiro-component-live", ""); // Use "Live" View of Time Label
-            playerControlElement.querySelector("time").textContent = "Live"; // Set the time label to "Live"
+
+            if (playerControlElement.querySelector("time") !== null){ // If there is a time Element
+                playerControlElement.querySelector("time").setAttribute("data-syiro-component-live", ""); // Use "Live" View of Time Label
+                playerControlElement.querySelector("time").textContent = "Live"; // Set the time label to "Live"
+            }
         }
         else { // If the content is NOT streamable
             syiro.data.Write(component["id"] + "->IsStreaming", false); // Declare that we are NOT streaming by recording it in the Syiro Data System
             playerControlElement.removeAttribute("data-syiro-component-streamstyling"); // Remove Stream Styling if it exists in the Player Control
-            playerControlElement.querySelector("time").removeAttribute("data-syiro-component-live"); // Remove the "Live" View of Time Label
-            playerControlElement.querySelector("time").textContent = "00:00"; // Set the time label to "00:00"
+
+            if (playerControlElement.querySelector("time") !== null){ // If there is a time Element
+                playerControlElement.querySelector("time").removeAttribute("data-syiro-component-live"); // Remove the "Live" View of Time Label
+                playerControlElement.querySelector("time").textContent = "00:00"; // Set the time label to "00:00"
+            }
         }
 
         // #endregion
@@ -812,13 +835,24 @@ module syiro.playercontrol {
         var componentElement = syiro.generator.ElementCreator(componentId, "player-control"); // Generate the basic playerControl container
 
         var playButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-play" } ); // Create a play button
-
         var inputRange : HTMLElement = syiro.generator.ElementCreator("input", { "type" : "range", "value" : "0"} ); // Create an input range
-        var timeStamp : HTMLElement = syiro.generator.ElementCreator("time", { "content" : "00:00 / 00:00"} ); // Create a timestamp time element
 
         componentElement.appendChild(inputRange); // Append the input range
         componentElement.appendChild(syiro.component.Fetch(playButton)); // Append the play button
-        componentElement.appendChild(timeStamp); // Append the timestamp time element
+
+        if (typeof properties["generate-content-info"] !== "undefined"){ // If we are adding content (for Audio Player)
+            var infoSection : HTMLElement = document.createElement("section"); // Generate a section Element
+            infoSection.appendChild(syiro.generator.ElementCreator("b", { "content" : properties["title"]})); // Create the Audio b tag and append it to the infoSection section
+            infoSection.appendChild(syiro.generator.ElementCreator("label", { "content" : properties["artist"]})); // Create the Artist label and append it to the infoSection section
+            componentElement.appendChild(infoSection); // Append the info section
+        }
+        else{ // If we are not generating content info
+            if (properties["is-video-player"]){ // If we are generated a Player Control for a Video Player
+                var timeStamp : HTMLElement = syiro.generator.ElementCreator("time", { "content" : "00:00 / 00:00"} ); // Create a timestamp time element
+                componentElement.appendChild(timeStamp); // Append the timestamp time element
+            }
+        }
+
 
         // #region Player Menu Element Creation (If Applicable)
 
@@ -831,7 +865,7 @@ module syiro.playercontrol {
 
         // #endregion
 
-        // #region Video Player - Fullscreen Button Adding
+        // #region Video Player - Additional Functionality Adding
 
         if (typeof properties["is-video-player"] !== "undefined"){ // If the properties passed has "is-video-player"
             var fullscreenButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-fullscreen"} ); // Create a fullscreen button
@@ -857,33 +891,35 @@ module syiro.playercontrol {
         var playerControlElement : HTMLElement = syiro.component.Fetch(component); // Get the Player Control's Element
         var playerTimeElement = playerControlElement.querySelector("time"); // Get the time Element
 
-        // #region Seconds Parsing to String
+        if (playerTimeElement !== null){ // If the time Element exists
+            // #region Seconds Parsing to String
 
-        var parsedSecondsToString : string = ""; // Define parsedSecondsToString as our converted seconds to Object then concatenated string
+            var parsedSecondsToString : string = ""; // Define parsedSecondsToString as our converted seconds to Object then concatenated string
 
-        if (typeof value == "number"){ // If we passed a number
-            var timeFormatObject = syiro.utilities.SecondsToTimeFormat(value); // Get the time format (rounded down value)
+            if (typeof value == "number"){ // If we passed a number
+                var timeFormatObject = syiro.utilities.SecondsToTimeFormat(value); // Get the time format (rounded down value)
 
-            for (var timeObjectKey in timeFormatObject){ // For each key in the timeObject
-                var timeObjectValue = timeFormatObject[timeObjectKey]; // Set timeObjectValue as the value based on key
+                for (var timeObjectKey in timeFormatObject){ // For each key in the timeObject
+                    var timeObjectValue = timeFormatObject[timeObjectKey]; // Set timeObjectValue as the value based on key
 
-                if (parsedSecondsToString.length !== 0){ // If there is already content in parsedSecondsToString
-                    parsedSecondsToString = parsedSecondsToString + ":" + timeObjectValue; // Append :timeObjectValue
-                }
-                else{
-                    parsedSecondsToString = timeObjectValue; // Set parsedSecondsToString as value
+                    if (parsedSecondsToString.length !== 0){ // If there is already content in parsedSecondsToString
+                        parsedSecondsToString = parsedSecondsToString + ":" + timeObjectValue; // Append :timeObjectValue
+                    }
+                    else{
+                        parsedSecondsToString = timeObjectValue; // Set parsedSecondsToString as value
+                    }
                 }
             }
-        }
-        else{ // If we did not pass a number (so a string, like "Unknown" or "Streaming")
-            parsedSecondsToString = value; // Simply set the parsedSecondsToString as the value passed
-        }
+            else{ // If we did not pass a number (so a string, like "Unknown" or "Streaming")
+                parsedSecondsToString = value; // Simply set the parsedSecondsToString as the value passed
+            }
 
-        // #endregion
+            // #endregion
 
-        var playerTimeElementParts = playerTimeElement.textContent.split(" / "); // Split time textContent based on " / "
-        playerTimeElementParts[timePart] = parsedSecondsToString; // Set the value of the part specified
-        playerTimeElement.textContent = playerTimeElementParts[0] + " / " + playerTimeElementParts[1];
+            var playerTimeElementParts = playerTimeElement.textContent.split(" / "); // Split time textContent based on " / "
+            playerTimeElementParts[timePart] = parsedSecondsToString; // Set the value of the part specified
+            playerTimeElement.textContent = playerTimeElementParts[0] + " / " + playerTimeElementParts[1];
+        }
     }
 
     // #endregion
@@ -956,25 +992,26 @@ module syiro.audioplayer {
 
             componentElement.appendChild(audioPlayer); // Append the audio player
 
-            // #region Audio Player Information Creation
+            // #region Audio Player Album Art
 
-            if ((properties["art"] !== undefined) && (properties["title"] !== undefined)){ // If the properties has cover art and the audio title defined
-                var playerInformation : HTMLElement = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-information" }); // Create the player information
-                playerInformation.appendChild(syiro.generator.ElementCreator("img", { "src" : properties["art"]})); // Create the covert art and append the cover art to the playerInformation
+            if (typeof properties["art"] !== "undefined"){
+                syiro.component.CSS(componentElement, "background-image", 'url("' + properties["art"] + '")'); // Set it as the background image of the audio player
+            }
+            else{ // If art has not been defined
+                componentElement.setAttribute("data-syiro-audio-player", "mini"); // Set to "mini" player
+                delete properties["menu"]; // Disable a menu option
+            }
 
-                var playerTextualInformation : HTMLElement = syiro.generator.ElementCreator("section"); // Create a section to hold the textual information like audio title
-                playerTextualInformation.appendChild(syiro.generator.ElementCreator("b", { "content" : properties["title"]})); // Create the Audio Title and append it to the playerTextualInformation section
+            // #endregion
 
-                if (properties["artist"] !== undefined){ // If the artist is NOT undefined
-                    playerTextualInformation.appendChild(syiro.generator.ElementCreator("label", { "content" : properties["artist"] })); // Create a label with the artist info and append it to the playerTextualInformation section
-                }
+            // #region Audio Player - Content Information Filtering
 
-                if (properties["album"] !== undefined){ // If the album is NOT undefined
-                    playerTextualInformation.appendChild(syiro.generator.ElementCreator("label", { "content" : properties["album"] })); // Create a label with the album info and append it to the playerTextualInformation section
-                }
-
-                playerInformation.appendChild(playerTextualInformation); // Append the textual information section to the parent Player Information area
-                componentElement.appendChild(playerInformation); // Append the player information details to the component Element
+             if ((typeof properties["title"] !== "undefined") && (typeof properties["artist"] !== "undefined")){ // If the properties has the artist information and audio file title defined
+                properties["generate-content-info"] = true; // Set "generate-info" to true since we will pass that to the playercontrol generator
+            }
+            else { // If it has neither or one
+                delete properties["title"]; // Delete title from properties (if it exists)
+                delete properties["artist"]; // Delete artist from properties (if it exists)
             }
 
             // #endregion
@@ -1019,7 +1056,7 @@ module syiro.audioplayer {
                     "ExternalLibrary" : usingExternalLibrary, // Define whether we are using an external library with the player or not
                     "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
                     "scaling" : { // Create a scaling details Object
-                        "initialDimensions" : [160, properties["width"]], // Set the initialDimensions to 160px height and width as properties[width]
+                        "initialDimensions" : [150, properties["width"]], // Set the initialDimensions to 160px height and width as properties[width]
                         "ratio" : [0,0], // Do not scale (unless forced)
                         "children" : { // Children that should scale with the Audio Player
                             'div[data-syiro-component="player-control"]' : { // Player Control should scale
@@ -1038,6 +1075,21 @@ module syiro.audioplayer {
             return { "error" : "no sources defined" }; // Return an error Object
         }
 
+    }
+
+    // #endregion
+
+    // #region Audio Information Center
+
+    export function CenterInformation(component : Object){
+        var componentElement : Element = syiro.component.Fetch(component); // Fetch the Element
+        var playerControlElement : Element = componentElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control Element
+        var audioInformation : Element = playerControlElement.querySelector("section"); // Audio Information section (if it exists)
+
+        if (audioInformation !== null){ // If the audioInformation is a section within the Player Control
+            var audioInformationWidth : number = ((componentElement.clientWidth / 2) - (audioInformation.clientWidth / 2) - 40); // Set audioInformationWidth to half width of Audio Player minus half width of audio Information, offset by -40
+            syiro.component.CSS(audioInformation, "margin-left", audioInformationWidth.toString() + "px"); // Set the margin-left of the audioInformationWidth
+        }
     }
 
     // #endregion
@@ -1070,7 +1122,7 @@ module syiro.videoplayer {
 
                 // #region Video Art Poster Creation
 
-                if (properties["art"] !== undefined){ // If art has been defined
+                if (typeof properties["art"] !== "undefined"){ // If art has been defined
                     var posterImageElement : HTMLElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component" : "video-poster", "src" : properties["art"] }); // Create an img Element with the src set to the artwork
                     componentElement.appendChild(posterImageElement); // Append to the Video Player container
                 }

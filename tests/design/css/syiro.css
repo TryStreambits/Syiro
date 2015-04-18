@@ -344,7 +344,6 @@ div[data-syiro-component="list"][data-syiro-component-owner^="searchbox"] > div[
 div[data-syiro-component="player-control"] {
   float: left;
   width: 100%;
-  background-color: #333333;
 }
 div[data-syiro-component="player-control"][data-syiro-component-streamstyling] {
   height: 50px !important;
@@ -389,7 +388,7 @@ div[data-syiro-component="player-control"] > div[data-syiro-component="button"][
   content: "\f101";
   display: inline-block;
   font-family: "Syiro";
-  font-size: 16px;
+  font-size: 14px;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -403,7 +402,7 @@ div[data-syiro-component="player-control"] > div[data-syiro-component="button"][
   content: "\f102";
   display: inline-block;
   font-family: "Syiro";
-  font-size: 16px;
+  font-size: 14px;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -414,7 +413,7 @@ div[data-syiro-component="player-control"] > div[data-syiro-component="button"][
   content: "\f104";
   display: inline-block;
   font-family: "Syiro";
-  font-size: 16px;
+  font-size: 14px;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -425,7 +424,7 @@ div[data-syiro-component="player-control"] > div[data-syiro-component="button"][
   content: "\f103";
   display: inline-block;
   font-family: "Syiro";
-  font-size: 16px;
+  font-size: 14px;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -436,48 +435,12 @@ div[data-syiro-component="player-control"] > div[data-syiro-component="button"][
   content: "\f106";
   display: inline-block;
   font-family: "Syiro";
-  font-size: 16px;
+  font-size: 14px;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
   text-decoration: inherit;
   text-transform: none;
-}
-div[data-syiro-component="player-control"] > input[type="range"] {
-  -moz-appearance: none !important;
-  -webkit-appearance: none !important;
-  float: left;
-  height: 10px !important;
-  width: 100% !important;
-  background-color: #fafafa;
-  border: 0;
-  outline: 0;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-div[data-syiro-component="player-control"] > input[type="range"]::-moz-range-track {
-  -moz-appearance: none !important;
-  -webkit-appearance: none !important;
-  float: left;
-  height: 10px !important;
-  width: 100% !important;
-  background-color: #fafafa;
-  border: 0;
-  outline: 0;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-div[data-syiro-component="player-control"] > input[type="range"]::-ms-track {
-  -moz-appearance: none !important;
-  -webkit-appearance: none !important;
-  float: left;
-  height: 10px !important;
-  width: 100% !important;
-  background-color: #fafafa;
-  border: 0;
-  outline: 0;
-  margin: 0 !important;
-  padding: 0 !important;
 }
 div[data-syiro-component="player-control"] > input[type="range"]::-moz-range-thumb {
   -moz-appearance: none !important;
@@ -570,48 +533,111 @@ div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"]
 div[data-syiro-component="audio-player"] {
   float: left;
   height: auto;
-  min-height: 50px;
-  max-height: 160px;
   background-color: #fafafa;
 }
 div[data-syiro-component="audio-player"] > audio {
   display: hidden;
 }
-div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"] {
+div[data-syiro-component="audio-player"][data-syiro-audio-player="mini"] {
+  min-height: 50px;
+  max-height: 60px;
+}
+div[data-syiro-component="audio-player"][data-syiro-audio-player="mini"] > div[data-syiro-minor-component="player-menu"] {
+  display: none;
+}
+div[data-syiro-component="audio-player"][data-syiro-audio-player="mini"] > div[data-syiro-component="player-control"] {
+  margin-top: 0;
+  background-color: transparent;
+}
+div[data-syiro-component="audio-player"]:not([data-syiro-audio-player="mini"]) {
+  height: 150px;
+  background-position-y: 33%;
+  background-size: 100% auto;
+}
+div[data-syiro-component="audio-player"]:not([data-syiro-audio-player="mini"]) > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"] {
   width: 40px;
   margin-left: 10px;
 }
-div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"] > img {
+div[data-syiro-component="audio-player"]:not([data-syiro-audio-player="mini"]) > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"] > img {
   height: 32px !important;
   width: 32px !important;
   margin: 4px 0 0 0;
 }
-div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"] > label {
+div[data-syiro-component="audio-player"]:not([data-syiro-audio-player="mini"]) > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"] > label {
   display: none;
 }
-div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-information"] > img {
-  float: left;
-  height: 100px;
-  width: 100px;
+div[data-syiro-component="audio-player"]:not([data-syiro-audio-player="mini"]) > div[data-syiro-component="player-control"] {
+  background-color: rgba(255, 255, 255, 0.75);
 }
-div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-information"] > section {
-  float: left;
-  height: 100px;
+div[data-syiro-component="audio-player"]:not([data-syiro-audio-player="mini"]) > div[data-syiro-component="player-control"][data-syiro-component-streamstyling] {
+  margin-top: 100px;
 }
-div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-information"] > section > b,
-div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-information"] > section label {
+div[data-syiro-component="audio-player"]:not([data-syiro-audio-player="mini"]) > div[data-syiro-component="player-control"]:not([data-syiro-component-streamstyling]) {
+  margin-top: 90px;
+}
+div[data-syiro-component="audio-player"] > div[data-syiro-component="player-control"] > input {
+  -moz-appearance: none !important;
+  -webkit-appearance: none !important;
   float: left;
-  height: 28px;
+  height: 10px !important;
+  width: 100% !important;
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+div[data-syiro-component="audio-player"] > div[data-syiro-component="player-control"] > input::-moz-range-track {
+  -moz-appearance: none !important;
+  -webkit-appearance: none !important;
+  float: left;
+  height: 10px !important;
+  width: 100% !important;
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+div[data-syiro-component="audio-player"] > div[data-syiro-component="player-control"] > input::-ms-track {
+  -moz-appearance: none !important;
+  -webkit-appearance: none !important;
+  float: left;
+  height: 10px !important;
+  width: 100% !important;
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+div[data-syiro-component="audio-player"] > div[data-syiro-component="player-control"] > div[data-syiro-component="button"]:after {
+  color: #333333;
+}
+div[data-syiro-component="audio-player"] > div[data-syiro-component="player-control"] > section {
+  float: left;
+  height: 40px;
+  text-align: center;
+  margin-top: 5px;
+}
+div[data-syiro-component="audio-player"] > div[data-syiro-component="player-control"] > section > b,
+div[data-syiro-component="audio-player"] > div[data-syiro-component="player-control"] > section label {
+  float: left;
+  color: #333333;
   width: 100%;
 }
-div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-information"] > section > b {
-  color: #0099ff;
+div[data-syiro-component="audio-player"] > div[data-syiro-component="player-control"] > section > b {
   font-size: 16px;
   font-weight: normal;
 }
-div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-information"] > section > label {
-  color: #000000;
+div[data-syiro-component="audio-player"] > div[data-syiro-component="player-control"] > section > label {
   font-size: 14px;
+}
+div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-menu"] {
+  background-color: rgba(255, 255, 255, 0.75);
+}
+div[data-syiro-component="audio-player"] > div[data-syiro-minor-component="player-menu"] > label {
+  color: #333333;
 }
 div[data-syiro-component="video-player"] {
   float: left;
@@ -646,6 +672,7 @@ div[data-syiro-component="video-player"] > video:focus {
   outline: 0;
 }
 div[data-syiro-component="video-player"] > div[data-syiro-component="player-control"] {
+  background-color: #333333;
   position: relative;
   z-index: 6;
 }
@@ -654,6 +681,42 @@ div[data-syiro-component="video-player"] > div[data-syiro-component="player-cont
 }
 div[data-syiro-component="video-player"] > div[data-syiro-component="player-control"]:not([data-syiro-component-streamstyling]) {
   bottom: 60px;
+}
+div[data-syiro-component="video-player"] > div[data-syiro-component="player-control"] > input {
+  -moz-appearance: none !important;
+  -webkit-appearance: none !important;
+  float: left;
+  height: 10px !important;
+  width: 100% !important;
+  background-color: #333333;
+  border: 0;
+  outline: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+div[data-syiro-component="video-player"] > div[data-syiro-component="player-control"] > input::-moz-range-track {
+  -moz-appearance: none !important;
+  -webkit-appearance: none !important;
+  float: left;
+  height: 10px !important;
+  width: 100% !important;
+  background-color: #333333;
+  border: 0;
+  outline: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+div[data-syiro-component="video-player"] > div[data-syiro-component="player-control"] > input::-ms-track {
+  -moz-appearance: none !important;
+  -webkit-appearance: none !important;
+  float: left;
+  height: 10px !important;
+  width: 100% !important;
+  background-color: #333333;
+  border: 0;
+  outline: 0;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 div[data-syiro-component="searchbox"] {
   float: left;

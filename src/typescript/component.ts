@@ -42,7 +42,7 @@ module syiro.component {
 				for (var styleKey in currentElementStylingArray){ // For each CSS property / value in the styling
 					var cssPropertyValue = currentElementStylingArray[styleKey]; // Define cssPropertyValue as this index in currentElementStylingArray
 					if (cssPropertyValue !== ""){ // If the array item value is not empty
-						var propertyValueArray = cssPropertyValue.split(":"); // Split the propery / value based on the colon to an array
+						var propertyValueArray = cssPropertyValue.split(": "); // Split the propery / value based on the colon to an array
 						elementStylingObject[propertyValueArray[0].trim()] = propertyValueArray[1].trim(); // Cleanup the whitespace in the property and value,add it as a key/val in the elementStylingObject
 					}
 				}

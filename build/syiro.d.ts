@@ -184,6 +184,7 @@ declare module syiro.playercontrol {
 }
 declare module syiro.audioplayer {
     function Generate(properties: Object): Object;
+    function CenterInformation(component: Object): void;
 }
 declare module syiro.videoplayer {
     function Generate(properties: Object): Object;

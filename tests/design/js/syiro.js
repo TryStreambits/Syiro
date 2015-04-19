@@ -230,7 +230,7 @@ var syiro;
                         }
                     });
                 }
-                else if ((typeof component.parentElement !== "undefined") && (component.parentElement.getAttribute("data-syiro-component") == "searchbox")) {
+                else if ((typeof component.nodeType !== "undefined") && (component.nodeName !== "#document") && (component.parentElement.getAttribute("data-syiro-component") == "searchbox")) {
                     passableValue = componentElement.value;
                 }
                 else {

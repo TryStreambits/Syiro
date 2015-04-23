@@ -1,0 +1,172 @@
+@import (reference) "../core.less"; // Import Core as a reference
+
+// #region Navbar Component
+
+div[data-syiro-component="navbar"]{
+
+    // #region Shared Between "Top" Navbar and "Bottom" Navbar
+
+    float: left;
+    height: 80px;
+    width: 100%;
+    color: contrast(darken(@syiroBackground, 2.5%));
+    font-size: 16px;
+    line-height: 80px;
+    background-color: darken(@syiroBackground, 2.5%);
+
+    // #region Link Styling
+
+    & > a {
+        float: left; // Float left
+        height: 80px; // Default height of 80px
+        width: auto; // Automatic width
+        color: contrast(darken(@syiroBackground, 2.5%)); // Have the text color contrast the darkened syiroBackground
+        line-height: 80px; // Default height of 80px
+        text-decoration: none; // No decoration
+        padding: 0 0 0 30px; // Padding of 30px on the left
+    }
+
+    // #endregion
+
+    // #region Fixed Position
+
+    &[data-syiro-position="fixed"]{
+        left: 0;
+        right: 0;
+        position: fixed;
+        z-index: 9999;
+    }
+
+    // #endregion
+
+    // #endregion
+
+    // #region Top Navbar Component
+
+    &[data-syiro-component-type="top"]{
+        & > img[data-syiro-minor-component="logo"]{ // Logo component within header
+            float: left;
+            height: 60px; // Default to 60px for logo height
+            width: auto;
+            margin: 10px 10px 10px 20px;
+            border: 0;
+        }
+
+          // #region Header Dropdown Modifications
+
+        & > div[data-syiro-component="dropdown"]{
+            margin-top: 0 !important; /* Force the list to be vertically aligned */
+        }
+
+          // #endregion
+
+        // #region Header Searchbox Modifications
+
+        & > div[data-syiro-component="searchbox"]{
+            float: right !important; // Force the component to float to the right
+            margin-top: 20px; // Center the searchbox in the Header
+            margin-right: 20px; // Have some padding to the right of the Searchbox
+        }
+
+        // #endregion
+
+        // #region Fixed Positioning
+
+        &[data-syiro-position="fixed"]{
+            top : 0;
+        }
+
+        // #endregion
+
+        // #region Link Styling
+
+        & > a{
+            min-width: 200px;
+            text-align: center; // Center the text
+            padding: 0 !important; // No padding
+        }
+
+        // #endregion
+    }
+
+    // #endregion
+
+    // #region Bottom Navbar
+
+    &[data-syiro-component-type="bottom"]{
+    	& > label { // Syiro Footer Component - Footer Text
+    		float: left;
+    		margin-left: 20px;
+    	}
+
+        // #region Fixed Positioning
+
+        &[data-syiro-position="fixed"]{
+            bottom : 0;
+        }
+
+        // #endregion
+    }
+
+    // #endregion
+
+    // #region Scaling
+
+    // #region For resolutions with a max of 1280 in width
+
+    @media (max-width: 1280px){
+        &{
+            height: 60px; // Change the height of the link to match what the Navbar Component height would be
+            line-height: 60px; // Change the line-height as well
+
+            & > img[data-syiro-minor-component="logo"]{ /* Top Navbar Logo Component */
+                height: 40px; // As a result of a smaller resolution, have a shorter logo
+            }
+
+            // #region Top Navbar Dropdown Modifications
+
+            & > div[data-syiro-component="dropdown"]{
+                height: 60px !important; // Match height with the Top Navbar component
+                line-height: 60px !important; // Match line height with Top Navbar
+            }
+
+            // #endregion
+
+            // #region Top Navbar Searchbox Modifications
+
+            & > input[data-syiro-component="searchbox"]{
+                margin-top: 10px; // Center the searchbox in the Top Navbar
+            }
+
+            // #endregion
+
+            // #region Inner Links
+
+            & > a {
+                height: 60px; // Change the height of the link to match what the Navbar height would be
+                line-height: 60px; // Change the line-height as well
+            }
+
+            // #endregion
+        }
+    }
+
+    // #region For resolutions higher than 1280 in width
+
+    @media (min-width: 1281px){
+        // #region Top Navbar Dropdown Modifications
+
+        & > div[data-syiro-component="dropdown"]{
+            height: 80px !important; // Match height with Top Navbar component
+            line-height: 80px !important; // Match height with Top Navbar component
+        }
+
+        // #endregion
+    }
+
+    // #endregion
+
+    // #endregion
+}
+
+// #endregion

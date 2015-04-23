@@ -276,7 +276,7 @@ func main(){
                             uglifyJsArgs := []string{} // Define uglifyJsArgs as an empty slice of strings
                             uglifyJsArgs = append(uglifyJsArgs, "build/" + lowercaseProjectName + ".js") // Add the source of what we'll minify
                             uglifyJsArgs = append(uglifyJsArgs, "--mangle --screw-ie8") // Have it mangle internal function variable names and not worry about IE8 compat
-                            uglifyJsArgs = append(uglifyJsArgs, "--compress --compress sequences,conditionals,comparisons,evaluate,booleans,loops,join_vars,hoist_funs,if_return,drop_console,properties,unsafe") // Set a long list of things to modify in the source
+                            uglifyJsArgs = append(uglifyJsArgs, "--compress sequences,conditionals,comparisons,evaluate,booleans,loops,join_vars,hoist_funs,if_return,drop_console,properties,unsafe") // Set a long list of things to modify in the source
 
                             uglifyJsOutput := execCommand("uglifyjs", uglifyJsArgs) // Run uglifyjs and store the output in uglifyJsOutput
 

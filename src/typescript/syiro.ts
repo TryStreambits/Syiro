@@ -7,8 +7,7 @@
 /// <reference path="device.ts" />
 /// <reference path="events.ts" />
 /// <reference path="generator.ts" />
-/// <reference path="header.ts" />
-/// <reference path="footer.ts" />
+/// <reference path="navbar.ts" />
 /// <reference path="button.ts" />
 /// <reference path="dropdown.ts" />
 /// <reference path="list.ts" />
@@ -122,7 +121,7 @@ module syiro {
 									var addedNode : any = mutation.addedNodes[i]; // Get the Node
 
 									function NodeParser(passedNode : any){ // Function that parses a Node (type any rather than Node since lib.ts doesn't seem to make not that attribute func are usable on Nodes)
-										if (passedNode.localName !== null){ // If the addedNode has a localName, such as "header" instead of null
+										if (passedNode.localName !== null){ // If the addedNode has a localName  instead of null
 											if (passedNode.hasAttribute("data-syiro-component")){ // If the element is a Syiro component
 												var componentObject = syiro.component.FetchComponentObject(passedNode); // Fetch the (potential) Component Object of the passedNode
 

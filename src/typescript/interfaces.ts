@@ -6,7 +6,7 @@ var WebKitMutationObserver : any;
 
 interface Object { // As ComponentObject is inherently an Object, extend the Object interface / type
 	id ?: string; // Unique Component ID. Marked as Optional since it only applies for returned Component Objects, syiro.data.storage stores the key / val differently.
-	type : string; // Component Type (ex. header)
+	type : string; // Component Type (ex. navbar)
 	link : string; // Used for Link Properties in the Footer
 	title : string; // Used for Link Properties in the Footer
 	listeners ?: Array<string>; // Define listeners as an array of strings

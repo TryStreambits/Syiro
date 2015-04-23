@@ -1,32 +1,5 @@
 @import (reference) "../core.less"; // Import Core as a reference
 
 footer[data-syiro-component="footer"]{ // Syiro Footer Component
-	float: left;
-	height: 80px;
-	width: 100%;
-	color: contrast(darken(@syiroBackground, 2.5%));
-	font-size: 16px;
-	line-height: 80px;
-	background-color: darken(@syiroBackground, 2.5%);
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
 
-	& > label { // Syiro Footer Component - Footer Text
-		float: left;
-		margin-left: 20px;
-	}
-
-	@media (max-width: 1280px){ /* For resolutions with a max of 1280 in width */
-		&{
-			height: 60px; // Change the height of the link to match what the header and footer height would be
-			line-height: 60px; // Change the line-height as well
-
-			& > a { // Inner Links
-				height: 60px; // Change the height of the link to match what the header and footer height would be
-				line-height: 60px; // Change the line-height as well
-			}
-		}
-	}
 }

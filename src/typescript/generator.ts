@@ -42,10 +42,7 @@ module syiro.generator {
             var componentType : string = args[1]; // Set componentType as the second argument passed
             attributes = args[2]; // Set attributes equal to the third argument passed
 
-            if ((componentType == "header") || (componentType == "footer")){ // If the componentType is a header or a footer
-                generatedElement = document.createElement(componentType); // Create an Element of the tag of "header" or "footer", since they are valid HTML5 tags
-            }
-            else if (componentType == "searchbox"){ // If we are creating a searchbox
+            if (componentType == "searchbox"){ // If we are creating a searchbox
                 generatedElement = document.createElement("input"); // Use the HTML input tag
                 generatedElement.setAttribute("type", "text"); // Set the searchbox input type to text
             }
@@ -54,7 +51,7 @@ module syiro.generator {
             }
 
             generatedElement.setAttribute("data-syiro-component-id", componentId); // Set the Syiro Component ID to the componentID passed
-            generatedElement.setAttribute("data-syiro-component", componentType); // Set the Syiro Component to the type specified (ex. header)
+            generatedElement.setAttribute("data-syiro-component", componentType); // Set the Syiro Component to the type specified (ex. Navbar)
         }
         else{ // If we're not creating a Syiro Component
             attributes = args[1]; // Set attributes equal to the second argument passed

@@ -123,7 +123,7 @@ module syiro.component {
 
 		if (arguments.length == 1){ // If only one argument is defined
 			if (typeof arguments[0] == "string"){ // If the first argument defined is a string (selector)
-				componentElement = document.querySelector(arguments[1]); // Define componentElement as the returned Element from querySelector
+				componentElement = document.querySelector(arguments[0]); // Define componentElement as the returned Element from querySelector
 			}
 			else{ // If the first argument is not a string
 				componentElement = arguments[0]; // Define componentElement as the first argument
@@ -246,7 +246,7 @@ module syiro.component {
 		if (syiro.component.IsComponentObject(childComponent)){ // If the childComponent is an Syiro Component Object
 			childComponentId = childComponent["id"]; // Get the component's ID
 
-			if (parentComponent["type"] == "header" && ((childComponent["type"] == "dropdown") || (childComponent["type"] == "searchbox"))){ // If the parentComponent is a header and childComponent is either a dropdown or a searchbar
+			if (parentComponent["type"] == "navbar" && (syiro.data.Read(parentComponent["id"] + "->Position") == "top") && ((childComponent["type"] == "dropdown") || (childComponent["type"] == "searchbox"))){ // If the parentComponent is a top Navbar and childComponent is either a dropdown or a searchbar
 				childElement = syiro.component.Fetch(childComponent); // Get the HTMLElement of the childComponent
 				allowAdding = true; // Allow adding the childComponent
 			}
@@ -329,6 +329,10 @@ module syiro.component {
 
 			if (syiro.data.Read(individualComponentObject["id"]) !== false){ // It there is data regarding individualComponentObject in syiro.data.storage
 				syiro.data.Delete(individualComponentObject["id"]); // Delete the Component's data
+			}
+
+			if (parentElement.hasAttribute("data-syiro-component-id")){ // If the parentElement has a Component Id
+				syiro.component.Update(parentElement.getAttribute("data-syiro-component-id"), parentElement); // Update this "parentElement" Component if necessary
 			}
 		}
 	}

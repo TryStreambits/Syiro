@@ -112,16 +112,25 @@ declare module syiro.device {
     function FetchScreenDetails(): void;
     function FetchScreenOrientation(): string;
 }
+declare module syiro.navbar {
+    function Generate(properties: Object): Object;
+    function AddLink(append: boolean, component: Object, elementOrProperties: any): boolean;
+    function RemoveLink(component: Object, elementOrProperties: any): boolean;
+    function SetLogo(component: Object, image: string): boolean;
+    function RemoveLogo(component: Object): boolean;
+    function SetLabel(component: Object, labelText: string): boolean;
+    function RemoveLabel(component: Object): boolean;
+}
 declare module syiro.header {
     function Generate(properties: Object): Object;
-    function SetLogo(component: Object, image: string): void;
-    function RemoveLogo(component: Object): void;
+    var SetLogo: typeof navbar.SetLogo;
+    var RemoveLogo: typeof navbar.RemoveLogo;
 }
 declare module syiro.footer {
     function Generate(properties: Object): Object;
-    function SetLabel(component: Object, labelText: string): boolean;
-    function AddLink(append: boolean, component: Object, elementOrProperties: any): boolean;
-    function RemoveLink(component: Object, elementOrProperties: any): boolean;
+    var SetLabel: typeof navbar.SetLabel;
+    var AddLink: typeof navbar.AddLink;
+    var RemoveLink: typeof navbar.RemoveLink;
 }
 declare module syiro.button {
     function Generate(properties: Object): Object;

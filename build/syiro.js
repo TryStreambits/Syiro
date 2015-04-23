@@ -107,10 +107,7 @@ var syiro;
                 var componentId = args[0];
                 var componentType = args[1];
                 attributes = args[2];
-                if ((componentType == "header") || (componentType == "footer")) {
-                    generatedElement = document.createElement(componentType);
-                }
-                else if (componentType == "searchbox") {
+                if (componentType == "searchbox") {
                     generatedElement = document.createElement("input");
                     generatedElement.setAttribute("type", "text");
                 }
@@ -734,7 +731,7 @@ var syiro;
             var previouslyDefined = false;
             if (arguments.length == 1) {
                 if (typeof arguments[0] == "string") {
-                    componentElement = document.querySelector(arguments[1]);
+                    componentElement = document.querySelector(arguments[0]);
                 }
                 else {
                     componentElement = arguments[0];
@@ -817,7 +814,7 @@ var syiro;
             var allowAdding = false;
             if (syiro.component.IsComponentObject(childComponent)) {
                 childComponentId = childComponent["id"];
-                if (parentComponent["type"] == "header" && ((childComponent["type"] == "dropdown") || (childComponent["type"] == "searchbox"))) {
+                if (parentComponent["type"] == "navbar" && (syiro.data.Read(parentComponent["id"] + "->Position") == "top") && ((childComponent["type"] == "dropdown") || (childComponent["type"] == "searchbox"))) {
                     childElement = syiro.component.Fetch(childComponent);
                     allowAdding = true;
                 }
@@ -885,6 +882,9 @@ var syiro;
                 parentElement.removeChild(individualComponentElement);
                 if (syiro.data.Read(individualComponentObject["id"]) !== false) {
                     syiro.data.Delete(individualComponentObject["id"]);
+                }
+                if (parentElement.hasAttribute("data-syiro-component-id")) {
+                    syiro.component.Update(parentElement.getAttribute("data-syiro-component-id"), parentElement);
                 }
             }
         }
@@ -1125,17 +1125,24 @@ var syiro;
     })(device = syiro.device || (syiro.device = {}));
 })(syiro || (syiro = {}));
 /*
- This is the module for Syiro Header component.
- */
+    This is the module for Syiro Navbar component (previously referred to as Header and Footer Components).
+*/
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
 var syiro;
 (function (syiro) {
-    var header;
-    (function (header) {
+    var navbar;
+    (function (navbar) {
         function Generate(properties) {
-            var componentId = syiro.generator.IdGen("header");
-            var componentElement = syiro.generator.ElementCreator(componentId, "header", { "role": "navigation" });
+            var navbarType;
+            if ((typeof properties["position"] !== "string") || ((properties["position"] !== "top") && (properties["position"] !== "bottom"))) {
+                navbarType = "top";
+            }
+            else {
+                navbarType = properties["position"];
+            }
+            var componentId = syiro.generator.IdGen("navbar");
+            var componentElement = syiro.generator.ElementCreator(componentId, "navbar", { "role": "navigation", "data-syiro-component-type": navbarType });
             for (var propertyKey in properties) {
                 if (propertyKey == "items") {
                     for (var individualItemIndex in properties["items"]) {
@@ -1151,145 +1158,161 @@ var syiro;
                             });
                             componentElement.appendChild(generatedElement);
                         }
-                        else {
-                            if (syiro.component.IsComponentObject(individualItem)) {
-                                componentElement.appendChild(syiro.component.Fetch(individualItem));
-                            }
+                        else if ((syiro.component.IsComponentObject(individualItem)) && (navbarType == "top")) {
+                            componentElement.appendChild(syiro.component.Fetch(individualItem));
                         }
                     }
                 }
-                else if (propertyKey == "logo") {
-                    var generatedElement = syiro.generator.ElementCreator("img", {
-                        "data-syiro-minor-component": "logo",
-                        "src": properties["logo"]
-                    });
+                else if ((propertyKey == "logo") && (navbarType == "top")) {
+                    var generatedElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component": "logo", "src": properties["logo"] });
                     componentElement.appendChild(generatedElement);
                 }
-            }
-            syiro.data.Write(componentId + "->HTMLElement", componentElement);
-            return { "id": componentId, "type": "header" };
-        }
-        header.Generate = Generate;
-        function SetLogo(component, image) {
-            var headerElement = syiro.component.Fetch(component);
-            var imageElement = headerElement.querySelector('img[data-syiro-minor-component="logo"]');
-            if (imageElement == null) {
-                imageElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component": "logo", "src": image });
-                headerElement.insertBefore(imageElement, headerElement.firstChild);
-            }
-            else {
-                imageElement.setAttribute("src", image);
-            }
-            syiro.component.Update(component["id"], headerElement);
-        }
-        header.SetLogo = SetLogo;
-        function RemoveLogo(component) {
-            var headerElement = syiro.component.Fetch(component);
-            var imageElement = headerElement.querySelector('img[data-syiro-minor-component="logo"]');
-            if (imageElement !== null) {
-                syiro.component.Remove(imageElement);
-                syiro.component.Update(component["id"], headerElement);
-            }
-        }
-        header.RemoveLogo = RemoveLogo;
-    })(header = syiro.header || (syiro.header = {}));
-})(syiro || (syiro = {}));
-/*
- This is the module for Syiro Header component.
-*/
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-var syiro;
-(function (syiro) {
-    var footer;
-    (function (footer) {
-        function Generate(properties) {
-            var componentId = syiro.generator.IdGen("footer");
-            var componentElement = syiro.generator.ElementCreator(componentId, "footer");
-            if (typeof properties["items"] !== "undefined") {
-                for (var individualItem in properties["items"]) {
-                    var individualItem = properties["items"][individualItem];
-                    if (syiro.component.IsComponentObject(individualItem) == false) {
-                        var generatedElement;
-                        if (typeof individualItem.nodeType == "undefined") {
-                            generatedElement = syiro.generator.ElementCreator("a", {
-                                "href": individualItem["href"],
-                                "title": individualItem["title"],
-                                "content": individualItem["title"]
-                            });
-                        }
-                        else {
-                            generatedElement = individualItem;
-                        }
-                        componentElement.appendChild(generatedElement);
+                else if ((propertyKey == "content") && (navbarType == "bottom")) {
+                    var labelContent = "";
+                    if (typeof properties["content"] !== "undefined") {
+                        labelContent = properties["content"];
                     }
+                    else {
+                        labelContent = properties["label"];
+                    }
+                    var generatedElement = syiro.generator.ElementCreator("label", { "content": labelContent });
+                    componentElement.insertBefore(generatedElement, componentElement.firstChild);
                 }
             }
-            if (typeof properties["content"] !== "undefined") {
-                var generatedElement = syiro.generator.ElementCreator("label", { "content": properties["content"] });
-                componentElement.insertBefore(generatedElement, componentElement.firstChild);
+            if ((typeof properties["fixed"] == "boolean") && (properties["fixed"] == true)) {
+                componentElement.setAttribute("data-syiro-position", "fixed");
             }
+            syiro.data.Write(componentId + "->Position", navbarType);
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
-            return { "id": componentId, "type": "footer" };
+            return { "id": componentId, "type": "navbar" };
         }
-        footer.Generate = Generate;
-        function SetLabel(component, labelText) {
-            if ((typeof component !== "undefined") && (typeof labelText !== "undefined")) {
-                var parentElement = syiro.component.Fetch(component);
-                var labelComponent = parentElement.querySelector("pre");
-                if (labelComponent == null) {
-                    labelComponent = syiro.generator.ElementCreator("pre", { "content": labelText });
-                    parentElement.insertBefore(labelComponent, parentElement.firstChild);
+        navbar.Generate = Generate;
+        function AddLink(append, component, elementOrProperties) {
+            var componentAddingSucceeded = false;
+            if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (typeof elementOrProperties !== "undefined")) {
+                var generatedElement;
+                if (typeof elementOrProperties.nodeType == "undefined") {
+                    generatedElement = syiro.generator.ElementCreator("a", {
+                        "href": elementOrProperties["href"],
+                        "title": elementOrProperties["title"],
+                        "content": elementOrProperties["title"]
+                    });
+                }
+                else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")) {
+                    generatedElement = elementOrProperties;
+                }
+                if (typeof generatedElement !== "undefined") {
+                    componentAddingSucceeded = true;
+                    syiro.component.Add(append, component, generatedElement);
+                }
+            }
+            return componentAddingSucceeded;
+        }
+        navbar.AddLink = AddLink;
+        function RemoveLink(component, elementOrProperties) {
+            var componentRemovingSucceed = false;
+            if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (typeof elementOrProperties !== "undefined")) {
+                var navbarElement = syiro.component.Fetch(component);
+                var potentialLinkElement;
+                if (typeof elementOrProperties.nodeType == "undefined") {
+                    potentialLinkElement = navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"][title="' + elementOrProperties["title"] + '"]');
+                }
+                else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")) {
+                    potentialLinkElement = elementOrProperties;
+                }
+                if (typeof potentialLinkElement !== "undefined") {
+                    componentRemovingSucceed = true;
+                    syiro.component.Remove(potentialLinkElement);
+                }
+            }
+            return componentRemovingSucceed;
+        }
+        navbar.RemoveLink = RemoveLink;
+        function SetLogo(component, image) {
+            if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "top")) {
+                var navbarElement = syiro.component.Fetch(component);
+                var imageElement = navbarElement.querySelector('img[data-syiro-minor-component="logo"]');
+                if (image.trim().length !== 0) {
+                    if (imageElement == null) {
+                        imageElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component": "logo", "src": image });
+                        navbarElement.insertBefore(imageElement, navbarElement.firstChild);
+                    }
+                    else {
+                        imageElement.setAttribute("src", image);
+                    }
+                    syiro.component.Update(component["id"], navbarElement);
                 }
                 else {
-                    labelComponent.textContent = labelText;
+                    syiro.component.Remove(imageElement);
                 }
-                syiro.component.Update(component["id"], parentElement);
                 return true;
             }
             else {
                 return false;
             }
         }
-        footer.SetLabel = SetLabel;
-        function AddLink(append, component, elementOrProperties) {
-            var componentAddingSucceeded = false;
-            var generatedElement;
-            if (typeof elementOrProperties.nodeType == "undefined") {
-                generatedElement = syiro.generator.ElementCreator("a", {
-                    "href": elementOrProperties["href"],
-                    "title": elementOrProperties["title"],
-                    "content": elementOrProperties["title"]
-                });
-            }
-            else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")) {
-                generatedElement = elementOrProperties;
-            }
-            if (typeof generatedElement !== "undefined") {
-                componentAddingSucceeded = true;
-                syiro.component.Add(append, component, generatedElement);
-            }
-            return componentAddingSucceeded;
+        navbar.SetLogo = SetLogo;
+        function RemoveLogo(component) {
+            return syiro.navbar.SetLogo(component, "");
         }
-        footer.AddLink = AddLink;
-        function RemoveLink(component, elementOrProperties) {
-            var componentRemovingSucceed = false;
-            var footerElement = syiro.component.Fetch(component);
-            var potentialLinkElement;
-            if (typeof elementOrProperties.nodeType == "undefined") {
-                potentialLinkElement = footerElement.querySelector('a[href="' + elementOrProperties["link"] + '"][title="' + elementOrProperties["title"] + '"]');
+        navbar.RemoveLogo = RemoveLogo;
+        function SetLabel(component, labelText) {
+            if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "bottom")) {
+                var navbarElement = syiro.component.Fetch(component);
+                var labelComponent = navbarElement.querySelector("label");
+                if (labelText.trim().length !== 0) {
+                    if (labelComponent == null) {
+                        labelComponent = syiro.generator.ElementCreator("label", { "content": labelText });
+                        navbarElement.insertBefore(labelComponent, navbarElement.firstChild);
+                    }
+                    else {
+                        labelComponent.textContent = labelText;
+                    }
+                    syiro.component.Update(component["id"], navbarElement);
+                }
+                else {
+                    if (labelComponent !== null) {
+                        syiro.component.Remove(labelComponent);
+                    }
+                }
+                return true;
             }
-            else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")) {
-                potentialLinkElement = elementOrProperties;
+            else {
+                return false;
             }
-            if (typeof potentialLinkElement !== "undefined") {
-                componentRemovingSucceed = true;
-                footerElement.removeChild(potentialLinkElement);
-                syiro.component.Update(component["id"], footerElement);
-            }
-            return componentRemovingSucceed;
         }
-        footer.RemoveLink = RemoveLink;
+        navbar.SetLabel = SetLabel;
+        function RemoveLabel(component) {
+            return syiro.navbar.SetLabel(component, "");
+        }
+        navbar.RemoveLabel = RemoveLabel;
+    })(navbar = syiro.navbar || (syiro.navbar = {}));
+})(syiro || (syiro = {}));
+var syiro;
+(function (syiro) {
+    var header;
+    (function (header) {
+        function Generate(properties) {
+            properties["position"] = "top";
+            return syiro.navbar.Generate(properties);
+        }
+        header.Generate = Generate;
+        header.SetLogo = syiro.navbar.SetLogo;
+        header.RemoveLogo = syiro.navbar.RemoveLogo;
+    })(header = syiro.header || (syiro.header = {}));
+})(syiro || (syiro = {}));
+var syiro;
+(function (syiro) {
+    var footer;
+    (function (footer) {
+        function Generate(properties) {
+            properties["position"] = "bottom";
+            return syiro.navbar.Generate(properties);
+        }
+        footer.Generate = Generate;
+        footer.SetLabel = syiro.navbar.SetLabel;
+        footer.AddLink = syiro.navbar.AddLink;
+        footer.RemoveLink = syiro.navbar.RemoveLink;
     })(footer = syiro.footer || (syiro.footer = {}));
 })(syiro || (syiro = {}));
 /*
@@ -2653,8 +2676,7 @@ var syiro;
 /// <reference path="device.ts" />
 /// <reference path="events.ts" />
 /// <reference path="generator.ts" />
-/// <reference path="header.ts" />
-/// <reference path="footer.ts" />
+/// <reference path="navbar.ts" />
 /// <reference path="button.ts" />
 /// <reference path="dropdown.ts" />
 /// <reference path="list.ts" />

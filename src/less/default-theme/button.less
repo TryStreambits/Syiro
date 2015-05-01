@@ -6,21 +6,21 @@ div[data-syiro-component="button"]{ // Syiro Button Component
 	float: left;
 	margin: 5px;
 
-	&[data-syiro-component-type="basic"]{ // Syiro "Basic" Button Component
+	// #region "Basic" Button Component
+
+	&[data-syiro-component-type="basic"]{
 		height: 40px;
 		min-width: 125px;
-		color: contrast(@syiroPrimaryColor);
-		font-size: 14px;
-		text-align: center;
-		text-decoration: none;
 		line-height: 40px;
-		background-color: @syiroPrimaryColor;
-		cursor: default; // Force "arrow" cursor
 		border-radius: 3px;
 		-webkit-border-radius: 3px;
 	}
 
-	&[data-syiro-component-type="toggle"]{ // Syiro "Toggle" Button Component
+	// #endregion
+
+	// #region "Toggle" Button Component
+
+	&[data-syiro-component-type="toggle"]{
 		height: 32px; // Make it smaller than the typical button
 		width: 75px; // Fixed width
 		background-color: darken(@syiroBackground, 5%);
@@ -37,8 +37,9 @@ div[data-syiro-component="button"]{ // Syiro Button Component
 		&[active]{ // Syiro "Toggle" Button - Status Set to True
 			background-color: @syiroPrimaryColor !important;
 		}
-
 	}
+
+	// #endregion
 }
 
 // #endregion
@@ -90,3 +91,5 @@ div[data-syiro-component="buttongroup"]{
 
 		// #enderegion
 }
+
+// #endregion

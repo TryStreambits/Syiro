@@ -12,13 +12,14 @@ div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
 	& > input{ // Syiro Searchbox (Input Element) Component
 		float: left;
 		height: 38px;
-		width: 100%;
+		width: inherit; // Inherit from parent
 		line-height: 38px;
 		text-indent: 10px;
 		background-color: transparent;
 		border: 0; // No border
 		padding: 0; // No padding
 		outline: 0;
+		position: fixed; // Fixed position within Searchbox Component
 
 		&:focus{  // When the Searchbox is in focus
 			outline-offset: 0; // Disable any offsetting of the outline
@@ -28,8 +29,6 @@ div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
 	&:after {
 		float: right;
 		.icon("search"); // Use the search icon at 16px
-		margin: -58px 5% 0 0;
-		position: relative;
-		z-index: 2;
+		margin: 10px  5% 0 0;
 	}
 }

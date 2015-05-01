@@ -1,0 +1,88 @@
+@import (reference) "../core.less"; // Import Core as a reference
+
+// This is the core LESS of the Navbar Component.
+
+div[data-syiro-component="navbar"]{
+
+    // #region Shared Between "Top" Navbar and "Bottom" Navbar
+
+    float: left;
+    width: 100%;
+    font-size: 16px;
+    box-shadow: 0 0 2px 0 @syiroSecondaryColor;
+
+    // #region Link Styling
+
+    & > a {
+        float: left; // Float left
+        height: inherit; // Inherit from parent navbar
+        width: auto; // Automatic width
+        line-height: inherit; // Inherit from parent navbar
+        text-decoration: none; // No decoration
+        padding: 0 0 0 30px; // Padding of 30px on the left
+    }
+
+    // #endregion
+
+    // #region Fixed Position
+
+    &[data-syiro-position="fixed"]{
+        left: 0;
+        right: 0;
+        position: fixed;
+        z-index: 9999;
+    }
+
+    // #endregion
+
+    // #endregion
+
+    // #region Top Navbar Component
+
+    &[data-syiro-component-type="top"]{
+
+        // #region Header Dropdown Modifications
+
+      & > div[data-syiro-component="dropdown"]{
+          height: inherit;
+          line-height: inherit;
+          margin-top: 0 !important; /* Force the list to be vertically aligned */
+      }
+
+        // #endregion
+
+        // #region Fixed Positioning
+
+        &[data-syiro-position="fixed"]{
+            top : 0;
+        }
+
+        // #endregion
+    }
+
+    // #endregion
+
+    // #region Bottom Navbar
+
+    &[data-syiro-component-type="bottom"]{
+
+        // #region Footer Component - Footer Text
+
+    	& > label {
+    		float: left;
+    		margin-left: 20px;
+    	}
+
+        // #endregion
+
+        // #region Fixed Positioning
+
+        &[data-syiro-position="fixed"]{
+            bottom : 0;
+        }
+
+        // #endregion
+    }
+
+    // #endregion
+}

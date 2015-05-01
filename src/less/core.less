@@ -27,6 +27,39 @@
 @syiroSecondaryColor: #333333;
 @syiroPlayerControlColor : @syiroSecondaryColor; // Variable for customizing the Syiro Audio & Video Player Controls. Default: @syiroSecondaryColor
 
+// #region General Component Styling
+
+*[data-syiro-component] { // Is a Syiro Component
+	// Disable user selection
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+
+	// #region Disabled UI Design
+
+	&[data-syiro-component-disabled]{
+		filter: saturate(50%); // Desaturate by 50%
+		-webkit-filter: saturate(50%);
+		opacity: 0.5; // Set the opacity / darken the Element
+	}
+
+	// #endregion
+
+	// #region Multi-component font utilization
+
+	&, &[data-syiro-component] > input {
+		font-family: 'Fira Sans', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
+		font-smoothing: antialiased; // Ensure font-smoothing
+		-moz-osx-font-smoothing: grayscale;
+		-webkit-font-smoothing: antialiased;
+		text-rendering: optimizeLegibility;
+	}
+
+	// #endregion
+}
+
+// #endregion
+
 // #region Internal CSS-to-TypeScript Styling Element
 
 div[data-syiro-component="internalColorContainer"]{
@@ -38,34 +71,13 @@ div[data-syiro-component="internalColorContainer"]{
 
 // #endregion
 
-// #region Multi-component font utilization
-
-*[data-syiro-component], *[data-syiro-component] > input { // Have all components utilize a uniform font
-	font-family: 'Fira Sans', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
-	font-smoothing: antialiased; // Ensure font-smoothing
-	-moz-osx-font-smoothing: grayscale;
-	-webkit-font-smoothing: antialiased;
-	text-rendering: optimizeLegibility;
-}
-
-// #endregion
-
-// #region Text Highlighting  Disabling
-
-*[data-syiro-component]{
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-webkit-user-select: none;
-}
-
-// #endregion
-
 // #region Page Component
 
 body {
 	image-rendering: optimizequality !important; // Optimize for quality in all images in the page
 	margin: 0;
 	overflow-x: hidden;
+	scroll-behavior: smooth; // Enable smooth scrolling
 }
 
 div[data-syiro-component="page"]{

@@ -1,0 +1,36 @@
+@import (reference) "../core.less"; // Import Core as a reference
+@import (reference) "../icons.less"; // Import Icons as a reference
+
+// This is the core LESS of the Dropdown Component.
+
+div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
+    float: left;
+    text-indent: 10px;
+    cursor: default; // Default to "arrow" cursor
+
+    &:empty { // If the Dropdown is icon-only
+		background-position: center center; // Have the Dropdown icon be centered
+		background-size: 40px auto; // Set the background-size to the minimum 40px size
+		min-width: 40px; // Minimum width of 40px
+	}
+
+    &::selection{ // If the dropdown is double-clicked, that acts as a text selection
+        background-color: transparent; // Mask that the text was selected by making the background-color transparent.
+    }
+
+    &:not(:empty) { // If the Dropdown has children
+        & > img{ // Syiro Dropdown Label Image (Optional)
+            float: left;
+        }
+
+        &:after {
+            float: right;
+            .icon("dropdown"); // Use the dropdown icon
+            margin-right: 10px;
+        }
+    }
+
+    & > label{ // Syiro Dropdown Label
+        float: left;
+    }
+}

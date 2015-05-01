@@ -1,0 +1,22 @@
+@import (reference) "../core.less"; // Import Core as a reference
+
+// This is the core LESS of the Button & Toggle Button Components.
+
+div[data-syiro-component="button"]{
+    float: left;
+	margin: 5px;
+
+    // #region "Basic" Button Component
+
+    &[data-syiro-component-type="basic"]{
+		color: contrast(@syiroPrimaryColor);
+		font-size: 14px;
+		text-align: center;
+		text-decoration: none;
+		background-color: @syiroPrimaryColor;
+		cursor: default; // Force "arrow" cursor
+    }
+
+    // #endregion
+
+}

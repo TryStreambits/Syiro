@@ -1,67 +1,39 @@
-@import (reference) "animations.less"; // Import Animations as a reference
 @import (reference) "../core.less"; // Import Core as a reference
 @import (reference) "../icons.less"; // Import Icons as a reference
 
+// #region Dropdown
+
 div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
-	float: left;
-	height: auto;
-	min-height: 40px; // Minimum height of 40px
+	height: 40px;
 	font-size: 16px;
-	text-indent: 10px;
 	line-height: 40px;
-	cursor: default; // Default to "arrow" cursor
-
-	&:after {
-		float: right;
-		.icon("dropdown"); // Use the dropdown icon
-	}
-
 
 	&:not([active]){ // IF the Dropdown is NOT "active"
 		color: contrast(darken(@syiroBackground, 2.5%));
 		background-color: darken(@syiroBackground, 2.5%);
 
 		&:after {
-			float: right;
 			color: @syiroPrimaryColor;
-			.icon("dropdown"); // Use the dropdown icon
-			margin-right: 10px;
 		}
 	}
 
 	&[active]{ // If the Dropdown is "active", change the Dropdown Label
 		color: contrast(@syiroPrimaryColor);
 		background-color: @syiroPrimaryColor; // Ensure the active Dropdown is differentiated from the other Dropdowns
-
-		&:after {
-			float: right;
-			.icon("dropdown"); // Use the dropdown icon
-			margin-right: 10px;
-		}
 	}
 
 	&:not(:empty) { // If the Dropdown has children
 		min-width: 200px;
 
 		& > img{ // Syiro Dropdown Label Image (Optional)
-			float: left;
 			height: 40px;
 			width: 40px;
 		}
 	}
 
-	&:empty { // If the Dropdown is icon-only
-		background-position: center center; // Have the Dropdown icon be centered
-		background-size: 40px auto; // Set the background-size to the minimum 40px size
-		min-width: 40px; // Minimum width of 40px
-	}
-
-	&::selection{ // If the dropdown is double-clicked, that acts as a text selection
-		background-color: transparent; // Mask that the text was selected by making the background-color transparent.
-	}
-
 	& > label{ // Syiro Dropdown Label
-		float: left;
 		height: 40px;
 	}
 }
+
+// #endregion

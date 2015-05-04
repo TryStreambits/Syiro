@@ -1,40 +1,31 @@
 @import (reference) "../core.less"; // Import Core as a reference
 
 div[data-syiro-component="list"]{ // Syiro List Component
-	float: left;
-	height: auto;
 	min-height: 40px;
-	width: auto;
 	overflow: hidden; // Hide overflow
 
 	& > div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Syiro List Item Component (Only applies if the List Item does not have the attribute nonstrict-formatting)
-		float: left;
-		display: block;
 		height: 40px;
-		width: 100%;
-		color: contrast(@syiroBackground); // Set the text color to contrast the background color of the List
 		font-size: 14px !important;
 		line-height: 40px;
 		text-indent: 10px;
-		overflow: hidden;
 
-		& > img { // Syiro List Item - Image
-			float: left;
+		// #region Image
+
+        & > img {
 			height: 40px;
 			width: 40px;
-			margin-right: 10px;
 		}
 
-		& > a{ // Syiro List Item - Links
-			width: 100%; // Only allow the link to be in this particular List Item component (disallow secondary controls)
+		// #endregion
+
+		// #region Link
+
+		& > a{
 			color: @syiroPrimaryColor !important; // Force link color (primary color)
-			font-weight: normal;
-			text-decoration: none; // No text decoration
 		}
 
-		& > div[data-syiro-component="button"]{ // Secondary control within List Item component
-			float: right !important; // Float the component to the right
-		}
+		// #endregion
 	}
 
 	&[data-syiro-component-owner^="dropdown"],&[data-syiro-component-owner^="searchbox"]{ // If the owner of the List is a Dropdown or a Searchbox
@@ -45,6 +36,7 @@ div[data-syiro-component="list"]{ // Syiro List Component
 		visibility: hidden; // Hide (not using display: block) so getBoundingClientRect properly calculates dimensions
 
 		// Modifier for toggle buttons that do not have a TRUE status within list items in a Dropdown's List
+		
 		& > div[data-syiro-component="list-item"] > div[data-syiro-component="button"][data-syiro-component-type="toggle"]:not([data-syiro-component-status="toggle"]){
 			border: 1px solid darken(@syiroBackground, 20%); // Allow easy differentiation between list-item background and toggle button
 		}

@@ -1,0 +1,59 @@
+@import (reference) "../core.less"; // Import Core as a reference
+
+// This is the Material Design LESS of the Navbar Component
+
+div[data-syiro-component="navbar"]{
+
+    // #region Shared Between "Top" Navbar and "Bottom" Navbar
+
+    height: 64px;
+    color: contrast(@syiroPrimaryColor);
+    font-size: 16px;
+    line-height: 64px;
+    background-color: @syiroPrimaryColor;
+
+    // #endregion
+
+    // #region Top Navbar Component
+
+    &[data-syiro-component-type="top"]{
+        & > img[data-syiro-minor-component="logo"]{ // Logo component within header
+            display: none; // Do not display header logo
+        }
+
+        // #region Header Searchbox Modifications
+
+        & > div[data-syiro-component="searchbox"]{
+            display: none; // Do not display searchbox
+        }
+
+        // #endregion
+    }
+
+    // #endregion
+
+    // #region Bottom Navbar Component
+
+    &[data-syiro-component-type="bottom"]{
+        left: 0;
+        right: 0;
+        bottom: 0;
+        position: fixed;
+        z-index: 9999;
+    }
+    
+    // #endregion
+
+    // #region Scaling
+
+    // #region For resolutions with a max of 1280 in width
+
+    @media (max-width: 1280px){
+        height: 56px; // Change the height of the Navbar
+        line-height: 56px; // Change the line-height as well
+    }
+
+    // #endregion
+
+    // #endregion
+}

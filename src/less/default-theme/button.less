@@ -4,16 +4,14 @@
 
 div[data-syiro-component="button"]{ // Syiro Button Component
 	float: left;
-	margin: 5px;
 
 	// #region "Basic" Button Component
 
 	&[data-syiro-component-type="basic"]{
 		height: 40px;
-		min-width: 125px;
+		min-width: 115px;
 		line-height: 40px;
-		border-radius: 3px;
-		-webkit-border-radius: 3px;
+		margin: 5px;
 	}
 
 	// #endregion
@@ -21,75 +19,37 @@ div[data-syiro-component="button"]{ // Syiro Button Component
 	// #region "Toggle" Button Component
 
 	&[data-syiro-component-type="toggle"]{
-		height: 32px; // Make it smaller than the typical button
-		width: 75px; // Fixed width
-		background-color: darken(@syiroBackground, 5%);
-		border-radius: 32px; // Make sure the Toggle has a rounded edge
+		height: 24px; // Make it smaller than the typical button
+		width: 60px; // Fixed width (2x height + 1/2 height)
+		margin: 4px;
+		border-radius: 12px; // Make sure the Toggle has a rounded edge
 
 		& > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
-			float: left;
-			height: 32px;
-			width: 32px;
-			background-color: contrast(@syiroBackground); // Ensure the Button Toggle contrasts the background of the Toggle Button
-			border-radius: 32px; // Make the buttonToggle circular
+			height: 28px;
+			width: 28px;
+			background-color: @syiroBackground;
+			border: 1px solid darken(@syiroBackground, 20%);
+			margin-top: -3px;
 		}
 
-		&[active]{ // Syiro "Toggle" Button - Status Set to True
-			background-color: @syiroPrimaryColor !important;
+		// #region False Status
+
+		&:not([active]){
+			background-color: darken(@syiroBackground, 5%);
 		}
+
+		// #endregion
+
+		// #region True Staus
+
+		&[active]{ // Syiro "Toggle" Button - Status Set to True
+			background-color: @syiroPrimaryColor;
+		}
+
+		// #endregion
 	}
 
 	// #endregion
-}
-
-// #endregion
-
-// #region Buttongroup Component
-
-div[data-syiro-component="buttongroup"]{
-		float: left;
-		height: 40px;
-		min-width: 300px;
-		background-color: darken(@syiroBackground, 5%); // Set background color to @syiroBackground darkened by 5%
-		border-radius: 20px; // Set border-radius to 20px so we have a circular border radius on the sides
-		-webkit-border-radius: 20px; // Set webkit border-radius
-		border: 1px solid darken(@syiroBackground, 10%); // Have a slight border around the buttongroup
-		margin: 5px;
-
-		// #region Inner Button
-
-		& > div[data-syiro-component="button"][data-syiro-component-type="basic"]{
-			float: left;
-			min-width: 0; // No minimum width
-			border-radius: 0; // No border radius
-			-webkit-border-radius: 0;
-			margin: 0; // No margin
-
-			&:first-of-type { // First Button in Button Group
-				border-radius: 20px 0 0 20px; // Set border-radius to be 20px on top and button left
-				-webkit-border-radius: 20px 0 0 20px;
-			}
-
-			&:not(:last-of-type){ // Not the last button
-				border-right: 1px solid lighten(contrast(@syiroBackground), 87.5%); // Set the border-radius to the contrasted color of the Syiro Background Color but lighten by 87.5%
-			}
-
-			&:last-of-type { // Last Button in Button Group
-				border-radius: 0 20px 20px 0; // Set border-radius to be 20px on top and bottom right
-				-webkit-border-radius: 0 20px 20px 0;
-			}
-
-			&:not([active]){ // If the button is NOT active
-				color: contrast(darken(@syiroBackground, 5%)); // Ensure the text color contrasts the Buttongroup background color
-				background-color: transparent; // Override default background styling
-			}
-
-			&[active]{ // If this button is active
-				background-color: @syiroPrimaryColor; // Set background-color of button to Syiro Primary Color to indicate it is the active button
-			}
-		}
-
-		// #enderegion
 }
 
 // #endregion

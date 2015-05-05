@@ -15,6 +15,7 @@ div[data-syiro-component="list"]{ // Syiro List Component
         & > img {
 			height: 40px;
 			width: 40px;
+			margin-right: 10px;
 		}
 
 		// #endregion
@@ -29,16 +30,10 @@ div[data-syiro-component="list"]{ // Syiro List Component
 	}
 
 	&[data-syiro-component-owner^="dropdown"],&[data-syiro-component-owner^="searchbox"]{ // If the owner of the List is a Dropdown or a Searchbox
-		background-color: darken(@syiroBackground, 2.5); // Set background to slightly darkened form of @syiroBackground
-		border-top: 2px solid darken(@syiroBackground, 20%);
-		position: fixed; // Fixed position
-		z-index: 10; // Ensure it floats above other content
-		visibility: hidden; // Hide (not using display: block) so getBoundingClientRect properly calculates dimensions
-
 		// Modifier for toggle buttons that do not have a TRUE status within list items in a Dropdown's List
-		
-		& > div[data-syiro-component="list-item"] > div[data-syiro-component="button"][data-syiro-component-type="toggle"]:not([data-syiro-component-status="toggle"]){
-			border: 1px solid darken(@syiroBackground, 20%); // Allow easy differentiation between list-item background and toggle button
-		}
+
+        & > div[data-syiro-component="list-item"] > div[data-syiro-component="button"][data-syiro-component-type="toggle"]:not([data-syiro-component-status="toggle"]){
+            border: 1px solid darken(@syiroBackground, 20%); // Allow easy differentiation between list-item background and toggle button
+        }
 	}
 }

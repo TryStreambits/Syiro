@@ -19,8 +19,7 @@ div[data-syiro-component="list"]{
 
         & > img {
             float: left;
-            border-radius: 20px;
-            margin-right: 10px;
+            border-radius: 50%; // Ensure icon is circular
         }
 
         // #endregion
@@ -46,4 +45,12 @@ div[data-syiro-component="list"]{
     }
 
     // #endregion
+
+    &[data-syiro-component-owner^="dropdown"],&[data-syiro-component-owner^="searchbox"]{ // If the owner of the List is a Dropdown or a Searchbox
+        background-color: darken(@syiroBackground, 2.5); // Set background to slightly darkened form of @syiroBackground
+        border-top: 2px solid darken(@syiroBackground, 20%);
+        position: fixed; // Fixed position
+        z-index: 10; // Ensure it floats above other content
+        visibility: hidden; // Hide (not using display: block) so getBoundingClientRect properly calculates dimensions
+    }
 }

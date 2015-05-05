@@ -1,6 +1,6 @@
 @import (reference) "../core.less"; // Import Core as a reference
 
-// #region Navbar Component
+// This is the Default theme LESS of the List and List Item Components.
 
 div[data-syiro-component="navbar"]{
 
@@ -11,14 +11,6 @@ div[data-syiro-component="navbar"]{
     font-size: 16px;
     line-height: 80px;
     background-color: darken(@syiroBackground, 2.5%);
-
-    // #endregion
-
-    // #region Link Styling
-
-    & > a {
-        color: contrast(darken(@syiroBackground, 2.5%)); // Have the text color contrast the darkened syiroBackground
-    }
 
     // #endregion
 
@@ -59,7 +51,7 @@ div[data-syiro-component="navbar"]{
     // #region For resolutions with a max of 1280 in width
 
     @media (max-width: 1280px){
-        height: 60px; // Change the height of the link to match what the Navbar Component height would be
+        height: 60px; // Change the height
         line-height: 60px; // Change the line-height as well
 
         // #region Top Navbar Searchbox Modifications

@@ -13,10 +13,73 @@ div[data-syiro-component="button"]{
 		font-size: 14px;
 		text-align: center;
 		text-decoration: none;
+        border-radius: 3px;
 		background-color: @syiroPrimaryColor;
+        padding: 0 5px; // 5px on left and right
 		cursor: default; // Force "arrow" cursor
     }
 
     // #endregion
 
+    // #region "Toggle" Button Component
+
+    &[data-syiro-component-type="toggle"]{
+        & > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
+            float: left;
+            border-radius: 50%;  // Make the buttonToggle circular
+        }
+    }
+
+    // #endregion
+
 }
+
+// #region Buttongroup Component
+
+div[data-syiro-component="buttongroup"]{
+		float: left;
+		min-width: 300px;
+		background-color: darken(@syiroBackground, 5%); // Set background color to @syiroBackground darkened by 5%
+		border-radius: 20px; // Set border-radius to 20px so we have a circular border radius on the sides
+		-webkit-border-radius: 20px; // Set webkit border-radius
+		border: 1px solid darken(@syiroBackground, 10%); // Have a slight border around the buttongroup
+		margin: 5px;
+
+		// #region Inner Button
+
+		& > div[data-syiro-component="button"][data-syiro-component-type="basic"]{
+			float: left;
+			min-width: 0; // No minimum width
+			border-radius: 0; // No border radius
+			-webkit-border-radius: 0;
+			margin: 0; // No margin
+            padding: 0; // No padding
+
+			&:first-of-type { // First Button in Button Group
+				border-radius: 20px 0 0 20px; // Set border-radius to be 20px on top and button left
+				-webkit-border-radius: 20px 0 0 20px;
+			}
+
+			&:not(:last-of-type){ // Not the last button
+				border-right: 1px solid lighten(contrast(@syiroBackground), 87.5%); // Set the border-radius to the contrasted color of the Syiro Background Color but lighten by 87.5%
+			}
+
+			&:last-of-type { // Last Button in Button Group
+				border-radius: 0 20px 20px 0; // Set border-radius to be 20px on top and bottom right
+				-webkit-border-radius: 0 20px 20px 0;
+			}
+
+			&:not([active]){ // If the button is NOT active
+				color: contrast(darken(@syiroBackground, 5%)); // Ensure the text color contrasts the Buttongroup background color
+				background-color: transparent; // Override default background styling
+			}
+
+			&[active]{ // If this button is active
+				background-color: @syiroPrimaryColor; // Set background-color of button to Syiro Primary Color to indicate it is the active button
+			}
+		}
+
+		// #enderegion
+}
+
+// #endregion

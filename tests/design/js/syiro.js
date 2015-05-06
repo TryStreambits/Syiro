@@ -2425,14 +2425,7 @@ var syiro;
                     "HTMLElement": componentElement,
                     "scaling": {
                         "initialDimensions": [150, properties["width"]],
-                        "ratio": [0, 0],
-                        "children": {
-                            'div[data-syiro-component="player-control"]': {
-                                "scaling": {
-                                    "fill": [0, 1]
-                                }
-                            }
-                        }
+                        "ratio": [0, 0]
                     }
                 });
                 return { "id": componentId, "type": "audio-player" };
@@ -2490,18 +2483,6 @@ var syiro;
                     if ((typeof properties["ForceLiveUX"] !== "undefined") && (properties["ForceLiveUX"] == true)) {
                         syiroComponentData["ForceLiveUX"] = true;
                     }
-                    syiroComponentData["scaling"]["children"] = {
-                        'img[data-syiro-minor-component="video-poster"]': {
-                            "scaling": {
-                                "fill": [1, 1]
-                            }
-                        },
-                        'div[data-syiro-component="player-control"]': {
-                            "scaling": {
-                                "fill": [0, 1]
-                            }
-                        }
-                    };
                 }
                 else {
                     syiroComponentData["NoUX"] = true;

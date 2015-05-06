@@ -1056,15 +1056,8 @@ module syiro.audioplayer {
                     "ExternalLibrary" : usingExternalLibrary, // Define whether we are using an external library with the player or not
                     "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
                     "scaling" : { // Create a scaling details Object
-                        "initialDimensions" : [150, properties["width"]], // Set the initialDimensions to 160px height and width as properties[width]
-                        "ratio" : [0,0], // Do not scale (unless forced)
-                        "children" : { // Children that should scale with the Audio Player
-                            'div[data-syiro-component="player-control"]' : { // Player Control should scale
-                                "scaling" : { // Player Control scaling details Object
-                                    "fill" : [0, 1] // Fill of 0 (maintain height) with 1.0 fill as width (100% of parent Audio Player)
-                                }
-                            }
-                        }
+                        "initialDimensions" : [150, properties["width"]], // Set the initialDimensions to 150px height and width as properties[width]
+                        "ratio" : [0,0] // Do not scale (unless forced)
                     }
                 }
             );
@@ -1160,23 +1153,6 @@ module syiro.videoplayer {
                 if ((typeof properties["ForceLiveUX"] !== "undefined") && (properties["ForceLiveUX"] == true)){ // If Force Live UX is defined as true
                     syiroComponentData["ForceLiveUX"] = true; // Define the syiroComponentData ForceLiveUX as true
                 }
-
-                // #endregion
-
-                // #region Scaling Properties
-
-                syiroComponentData["scaling"]["children"] = { // Add scaling->children data
-                    'img[data-syiro-minor-component="video-poster"]' : { // Video Poster should scale
-                        "scaling" : {  // Video Poster scaling details Object
-                            "fill" : [1,1]// Match the dimensions of the parent
-                        }
-                    },
-                    'div[data-syiro-component="player-control"]' : { // Player Control should scale
-                        "scaling" : { // Player Control scaling details Object
-                            "fill" : [0,1] // Fills of 0 (maintain height) with 1.0 fill as width (100% of parent Video Player)
-                        }
-                    }
-                };
 
                 // #endregion
             }

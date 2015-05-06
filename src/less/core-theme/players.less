@@ -22,7 +22,7 @@
 
 div[data-syiro-component="player-control"]{
     float: left;
-    width: 100%; // Scales to width of video player if necessary
+    width: inherit; // Scales to width of video player
 
     &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Player Control
         height: 50px !important; // Set height to 50px
@@ -203,7 +203,7 @@ div[data-syiro-minor-component="player-menu"]{
         float: left;
         height: 50px;
         width: 100%;
-        font-size: 22px;
+        font-size: 18px;
         text-indent: 10px;
         line-height: 50px;
     }
@@ -212,10 +212,9 @@ div[data-syiro-minor-component="player-menu"]{
         float: left;
         height: auto;
         width: 90%;
-        font-size: 18px !important;
 
         & > div[data-syiro-component="list-item"] {
-            color: contrast(@syiroPlayerControlColor) !important; // Set the color to the contrasting color of the syiroPlayerControlColor
+            color: inherit; // Inherit from parent Player Menu
             cursor: pointer; // Make it obvious that the items are interactable
             margin-bottom: 5px; // Ensure there is enough space between List Items
         }
@@ -350,16 +349,6 @@ div[data-syiro-component="audio-player"]{
     }
 
     // #endregion
-
-	// #region Audio Player Menu
-
-	& > div[data-syiro-minor-component="player-menu"]{
-		background-color: fade(@syiroPlayerControlColor, 75%);
-
-        & > label { // "Menu" label
-            color: contrast(@syiroPlayerControlColor);
-        }
-	}
 }
 
 // #endregion
@@ -386,6 +375,8 @@ div[data-syiro-component="video-player"]{
 
     & > img[data-syiro-minor-component="video-poster"]{ // Video Poster
         float: left;
+        height: inherit; // Inherit from parent Video Player container
+        width: inherit; // Inherit from parent Video Player container
         margin: 0;
         padding: 0;
         position: absolute;
@@ -395,8 +386,8 @@ div[data-syiro-component="video-player"]{
 
     & > video { // Inner video
         float: left;
-        height: 100%; // 100% height of the Player Component
-        width: 100%; // 100% width of Player Component
+        height: inherit; // Inherit from parent Video Player container
+        width: inherit; // Inherit from parent Video Player container
         background-color: black; // Set background color of video to black in the event it doesn't have the proper aspect ratio, to make any letterboxing less jarring
 
         &:focus { // When the video is focused, typically on right-click, disable the border / outline

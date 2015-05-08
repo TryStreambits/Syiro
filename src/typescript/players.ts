@@ -97,7 +97,7 @@ module syiro.player {
 
                                 var priorInputSpaceWidth : number = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
 
-                                var updatedGradient : string = "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, ";
+                                var updatedGradient : string = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth +2) + "px, ";
 
                                 if (playerComponent["type"] == "audio-player"){ // If this is an Audio Player's Player Range
                                     updatedGradient += "transparent"; // Set to transparent background
@@ -190,7 +190,6 @@ module syiro.player {
                 syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, // Add mouseup / touchup listeners to the innerContentElement
                     function(){
                         var innerContentElement : Element = arguments[0]; // Get the innerContentElement passed as argument 0
-                        var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
 
                         if (syiro.device.SupportsTouch !== true){ // If it was not touch that triggered the event
                             var playerComponent = syiro.component.FetchComponentObject(innerContentElement.parentElement); // Fetch the Component Object of the innerContentElement's parentElement
@@ -289,7 +288,7 @@ module syiro.player {
                             syiro.player.SetVolume(playerComponent, (valueNum / 100)); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
                         }
 
-                        var priorInputSpaceWidth : number = Math.round((valueNum / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
+                        var priorInputSpaceWidth : number = (valueNum / Number(playerRange.max)) * playerRange.clientWidth; // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
                         syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)");
                     }
                 );
@@ -605,22 +604,24 @@ module syiro.player {
 
             var sourceTagAttributes = { "src" : source}; // Create an initial source tag attributes Object that we'll pass to ElementCreator
 
-            if (source.substr(-1) !== ";"){ // If the source does not end with a semi-colon, common to prevent Shoutcast browser detection
-                var streamingProtocol : string = source.substr(0, source.indexOf(":")); // Get the streaming protocol (rtsp, rtmp, hls) by creating a substring, starting at 0 and ended at the protocol end mark (://)
+            if (type == "video"){ // If we are dealing with video
+                if (source.substr(-1) !== ";"){ // If the source does not end with a semi-colon, common to prevent Shoutcast browser detection
+                    var streamingProtocol : string = source.substr(0, source.indexOf(":")); // Get the streaming protocol (rtsp, rtmp, hls) by creating a substring, starting at 0 and ended at the protocol end mark (://)
 
-                if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")){ // If we are working strictly with a streaming protocol and not normal HTTP (or HLS)
-                    sourceTagAttributes["type"] = streamingProtocol + "/" + sourceExtension; // Define the type as streaming protocol + sourceExtension, like rtmp/mp4
-                }
-                else{ // If we are not dealing with a streaming protocol (or are but in the form of HLS)
-                    if (sourceExtension == "m3u8"){ // If we are dealing with a playlist m3u8 (live streaming)
-                        sourceTagAttributes["type"] = "application/x-mpegurl"; // Set the type to a valid mpegurl type which is accepted by Android, iOS, etc.
+                    if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")){ // If we are working strictly with a streaming protocol and not normal HTTP (or HLS)
+                        sourceTagAttributes["type"] = streamingProtocol + "/" + sourceExtension; // Define the type as streaming protocol + sourceExtension, like rtmp/mp4
                     }
-                    else{
-                        if (sourceExtension == "mov"){ // IF the source extension is MOV
-                            sourceExtension = "quicktime"; // Change sourceExtension to quicktime to enable easier type setting
+                    else{ // If we are not dealing with a streaming protocol (or are but in the form of HLS)
+                        if (sourceExtension == "m3u8"){ // If we are dealing with a playlist m3u8 (live streaming)
+                            sourceTagAttributes["type"] = "application/x-mpegurl"; // Set the type to a valid mpegurl type which is accepted by Android, iOS, etc.
                         }
+                        else{
+                            if (sourceExtension == "mov"){ // IF the source extension is MOV
+                                sourceExtension = "quicktime"; // Change sourceExtension to quicktime to enable easier type setting
+                            }
 
-                        sourceTagAttributes["type"] = type + "/" + sourceExtension; // Append sourceExtension to the type
+                            sourceTagAttributes["type"] = type + "/" + sourceExtension; // Append sourceExtension to the type
+                        }
                     }
                 }
             }

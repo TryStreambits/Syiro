@@ -16,6 +16,8 @@ interface Document {
     mozCancelFullScreen: Function;
     webkitExitFullscreen: Function;
     SyiroFullscreenElement: Element;
+    ontouchstart: any;
+    ontouchend: any;
 }
 interface Element {
     requestFullscreen: Function;

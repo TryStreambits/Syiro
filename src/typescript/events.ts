@@ -10,8 +10,7 @@
 module syiro.events {
 
     export var eventStrings : Object = { // Set syiro.component.listenerStrings as an Object containing commonly used event lister combinations
-        "down" : ["mousedown", "touchstart"],
-        "up" : ["mouseup", "touchend"],
+        "down" : [], "up" : [],
         "fullscreenchange" : ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"],
         "orientationchange" : ["orientationchange", "mozorientationchange", "msorientationchange"]
     };
@@ -146,7 +145,7 @@ module syiro.events {
                 if (component["type"] !== "searchbox"){ // If we are adding listeners to a Component that is NOT a Searchbox (which uses a unique listener)
                     listeners = syiro.events.eventStrings["up"]; // Use click / touch related events
 
-                    if (component["type"] == "button"){ // If we are adding listeners to a Button Component specifically
+                    if ((component["type"] == "button") && (listeners.indexOf("keyup") == -1)){ // If we are adding listeners to a Button Component specifically and keyup hasn't been added yet
                         listeners.push("keyup"); // Add keyup as an event listener for accessibility reasons
                     }
                 }

@@ -5,13 +5,17 @@
 
 div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
     float: left;
-    text-indent: 10px;
     cursor: default; // Default to "arrow" cursor
 
     &:empty { // If the Dropdown is icon-only
-		background-position: center center; // Have the Dropdown icon be centered
-		background-size: 40px auto; // Set the background-size to the minimum 40px size
 		min-width: 40px; // Minimum width of 40px
+
+        &:after {
+            float: left;
+            width: 100%;
+            .icon("menu"); // Use the menu icon
+            text-align: center;
+        }
 	}
 
     &::selection{ // If the dropdown is double-clicked, that acts as a text selection
@@ -20,6 +24,7 @@ div[data-syiro-component="dropdown"]{ // Syiro Dropdown Component
 
     &:not(:empty) { // If the Dropdown has children
         min-width: 175px;
+        text-indent: 10px;
 
         & > img{ // Syiro Dropdown Label Image (Optional)
             float: left;

@@ -62,7 +62,6 @@
 			else{
 				generatedDropdownObject = syiro.dropdown.Generate(
 					{
-						"icon" : "css/img/menu.png", // Icon only Dropdown
 						"position" : { "vertical" : "below", "horizontal" : "right"}, // Different positioning
 						"items" : [	{ "label" : "Test Item" }, { "label" : "Second Test Item" }	]
 					}
@@ -100,7 +99,8 @@
 						"art" : "https://c2.staticflickr.com/6/5134/5518988345_9df9892bb2_b.jpg",
 						"title" : "Example OGG File",
 						"artist" : "JesseW",
-						"menu" : audioMenuDialogList
+						"menu" : audioMenuDialogList,
+						"UsingExternalLibrary" : true
 					}
 			);
 
@@ -143,15 +143,26 @@
 
 			var videoPlayerContainer = syiro.generator.ElementCreator("div");
 			syiroPage.appendChild(videoPlayerContainer);
-			syiro.CSS(videoPlayerContainer, "height", "400px");
-			syiro.CSS(videoPlayerContainer, "width", (400 * 1.77).toString() + "px");
+
+			if (syiro.device.IsSubHD !== true){
+				syiro.CSS(videoPlayerContainer, "height", "400px");
+				syiro.CSS(videoPlayerContainer, "width", (400 * 1.77).toString() + "px");
+			}
+			else {
+				syiro.CSS(generatedAudioPlayer, "width", (screen.width - 50).toString() + "px");
+				syiro.audioplayer.CenterInformation(generatedAudioPlayer);
+
+				syiro.CSS(videoPlayerContainer, "height", (screen.width * 0.5625).toString() + "px");
+				syiro.CSS(videoPlayerContainer, "width", (screen.width - 10).toString() + "px");
+			}
+
 			videoPlayerContainer.appendChild(syiro.Fetch(generatedVideoPlayer));
 
-			syiro.AddListeners(generatedButton, // Listen to the generatedButton
+			syiro.events.Add(generatedButton, // Listen to the generatedButton
 				function(x){
 					var componentObject = arguments[0];
 					var event = arguments[1];
-					var screenInfoElement = syiro.generator.ElementCreator("section", { "content" : syiro.device.Orientation });
+					var screenInfoElement = syiro.generator.ElementCreator("section", { "content" : syiro.events.eventStrings["up"].toString() });
 					document.querySelector('div[data-syiro-component="page"]').insertBefore(screenInfoElement, document.querySelector('div[data-syiro-component="page"]').firstChild);
 				}
 			);

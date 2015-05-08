@@ -280,7 +280,7 @@ func main(){
 
                             uglifyJsOutput := execCommand("uglifyjs", uglifyJsArgs) // Run uglifyjs and store the output in uglifyJsOutput
 
-                            WriteOrUpdateFile("build/" + lowercaseProjectName + ".min.js", []byte(uglifyJsOutput)) // Write or update the minified JS file content to build/
+                            WriteOrUpdateFile("build/" + lowercaseProjectName + ".min.js", []byte(uglifyJsOutput)) // Write or update the minified JS file content to build/syiro.min.js
                             WriteOrUpdateFile("tests/design/js/" + lowercaseProjectName + ".min.js", []byte(uglifyJsOutput)) // Write or update the minified JS content to tests
                             execCommand("zopfli", []string{"build/" + lowercaseProjectName + ".min.js"}) // Have zopfli run and gzip the contents
                         } else{ // If tsc did report errors

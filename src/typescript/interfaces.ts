@@ -24,6 +24,9 @@ interface Document {
 	webkitExitFullscreen : Function;
 
 	SyiroFullscreenElement : Element;
+
+	ontouchstart : any;
+	ontouchend : any;
 }
 
 interface Element { // Implementation of valid spec not found in lib.d.ts

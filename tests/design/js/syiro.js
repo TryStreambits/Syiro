@@ -166,8 +166,7 @@ var syiro;
     var events;
     (function (events) {
         events.eventStrings = {
-            "down": ["mousedown", "touchstart"],
-            "up": ["mouseup", "touchend"],
+            "down": [], "up": [],
             "fullscreenchange": ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"],
             "orientationchange": ["orientationchange", "mozorientationchange", "msorientationchange"]
         };
@@ -265,7 +264,7 @@ var syiro;
                     listenerCallback = args[1];
                     if (component["type"] !== "searchbox") {
                         listeners = syiro.events.eventStrings["up"];
-                        if (component["type"] == "button") {
+                        if ((component["type"] == "button") && (listeners.indexOf("keyup") == -1)) {
                             listeners.push("keyup");
                         }
                     }
@@ -999,18 +998,15 @@ var syiro;
             }
             syiro.device.FetchOperatingSystem();
             var eventsToRemove;
-            if (((typeof navigator.maxTouchPoints !== "undefined") && (navigator.maxTouchPoints > 0)) || ((navigator.userAgent.indexOf("iPhone") !== -1) || (navigator.userAgent.indexOf("iPad") !== -1))) {
+            if ((syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Windows")) {
                 syiro.device.SupportsTouch = true;
-                eventsToRemove = ["mousedown", "mouseup"];
+                syiro.events.eventStrings["down"] = ["touchstart"];
+                syiro.events.eventStrings["up"] = ["mouseup"];
             }
             else {
-                if ((syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "Macintosh") && (syiro.device.OperatingSystem == "Windows")) {
-                    syiro.device.SupportsTouch = true;
-                }
-                eventsToRemove = ["touchstart", "touchend"];
+                syiro.events.eventStrings["down"] = ["mousedown"];
+                syiro.events.eventStrings["up"] = ["mouseup"];
             }
-            syiro.events.eventStrings["down"].splice(syiro.events.eventStrings["down"].indexOf(eventsToRemove[0]), 1);
-            syiro.events.eventStrings["up"].splice(syiro.events.eventStrings["up"].indexOf(eventsToRemove[1]), 1);
             syiro.device.FetchScreenDetails();
             syiro.device.Orientation = syiro.device.FetchScreenOrientation();
             syiro.device.orientation = syiro.device.Orientation;
@@ -1024,6 +1020,10 @@ var syiro;
                     for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++) {
                         var thisPlayer = allPlayers[allPlayersIndex];
                         syiro.component.Scale(syiro.component.FetchComponentObject(thisPlayer));
+                        if (thisPlayer.getAttribute("data-syiro-component") == "audioplayer") {
+                            var audioPlayerComponent = syiro.component.FetchComponentObject(thisPlayer);
+                            syiro.audioplayer.CenterInformation(audioPlayerComponent);
+                        }
                     }
                     if (arguments[0] == "interval") {
                         var orientationChangeViaIntervalHanders = syiro.data.Read("screen->handlers->orientationchange-viainterval");
@@ -1063,15 +1063,15 @@ var syiro;
             }
             else if ((navigator.userAgent.indexOf("Linux") !== -1) && (navigator.userAgent.indexOf("Android") == -1)) {
                 syiro.device.OperatingSystem = "Linux";
+                if (navigator.userAgent.indexOf("Sailfish") !== -1) {
+                    syiro.device.OperatingSystem = "Sailfish";
+                }
+                else if ((navigator.userAgent.indexOf("Ubuntu") !== -1) && ((navigator.userAgent.indexOf("Mobile") !== -1) || (navigator.userAgent.indexOf("Tablet") !== -1))) {
+                    syiro.device.OperatingSystem = "Ubuntu Touch";
+                }
             }
             else if (navigator.userAgent.indexOf("Macintosh") !== -1) {
                 syiro.device.OperatingSystem = "OS X";
-            }
-            else if (navigator.userAgent.indexOf("Sailfish") !== -1) {
-                syiro.device.OperatingSystem = "Sailfish";
-            }
-            else if ((navigator.userAgent.indexOf("Ubuntu") !== -1) && ((navigator.userAgent.indexOf("Mobile") !== -1) || (navigator.userAgent.indexOf("Tablet") !== -1))) {
-                syiro.device.OperatingSystem = "Ubuntu Touch";
             }
             else if (navigator.userAgent.indexOf("Windows Phone") !== -1) {
                 syiro.device.OperatingSystem = "Windows Phone";
@@ -1810,7 +1810,7 @@ var syiro;
                             var roundedDownTime = Math.floor(currentTime);
                             playerInputRange.value = roundedDownTime;
                             var priorInputSpaceWidth = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth);
-                            var updatedGradient = "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, ";
+                            var updatedGradient = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth + 2) + "px, ";
                             if (playerComponent["type"] == "audio-player") {
                                 updatedGradient += "transparent";
                             }
@@ -1854,7 +1854,6 @@ var syiro;
                     }
                     syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, function () {
                         var innerContentElement = arguments[0];
-                        var e = arguments[1];
                         if (syiro.device.SupportsTouch !== true) {
                             var playerComponent = syiro.component.FetchComponentObject(innerContentElement.parentElement);
                             syiro.player.PlayOrPause(playerComponent);
@@ -1903,7 +1902,7 @@ var syiro;
                     else {
                         syiro.player.SetVolume(playerComponent, (valueNum / 100));
                     }
-                    var priorInputSpaceWidth = Math.round((valueNum / Number(playerRange.max)) * playerRange.clientWidth);
+                    var priorInputSpaceWidth = (valueNum / Number(playerRange.max)) * playerRange.clientWidth;
                     syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)");
                 });
                 var volumeButtonElement = playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]');
@@ -2113,20 +2112,22 @@ var syiro;
                 var source = sourcesList[sourceKey];
                 var sourceExtension = source.substr(source.lastIndexOf(".")).replace(".", "");
                 var sourceTagAttributes = { "src": source };
-                if (source.substr(-1) !== ";") {
-                    var streamingProtocol = source.substr(0, source.indexOf(":"));
-                    if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")) {
-                        sourceTagAttributes["type"] = streamingProtocol + "/" + sourceExtension;
-                    }
-                    else {
-                        if (sourceExtension == "m3u8") {
-                            sourceTagAttributes["type"] = "application/x-mpegurl";
+                if (type == "video") {
+                    if (source.substr(-1) !== ";") {
+                        var streamingProtocol = source.substr(0, source.indexOf(":"));
+                        if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")) {
+                            sourceTagAttributes["type"] = streamingProtocol + "/" + sourceExtension;
                         }
                         else {
-                            if (sourceExtension == "mov") {
-                                sourceExtension = "quicktime";
+                            if (sourceExtension == "m3u8") {
+                                sourceTagAttributes["type"] = "application/x-mpegurl";
                             }
-                            sourceTagAttributes["type"] = type + "/" + sourceExtension;
+                            else {
+                                if (sourceExtension == "mov") {
+                                    sourceExtension = "quicktime";
+                                }
+                                sourceTagAttributes["type"] = type + "/" + sourceExtension;
+                            }
                         }
                     }
                 }

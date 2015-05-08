@@ -104,20 +104,15 @@ module syiro.device {
 
         var eventsToRemove : Array<string>; // Define eventsToRemove as an array of strings to remove from eventStrings
 
-        if (((typeof navigator.maxTouchPoints !== "undefined") && (navigator.maxTouchPoints > 0)) || ((navigator.userAgent.indexOf("iPhone") !== -1) || (navigator.userAgent.indexOf("iPad") !== -1))){ // If the device supports ontouchend event or supports touch points
+        if ((syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Windows")){ // If we are not on a desktop operating system
             syiro.device.SupportsTouch = true; // Set syiro.device.SupportsTouch to true
-            eventsToRemove = ["mousedown", "mouseup"]; // Set eventsToRemove as an array of mouse-oriented event strings to remove
+            syiro.events.eventStrings["down"] = ["touchstart"]; // Set down events to touchstart
+            syiro.events.eventStrings["up"]= ["mouseup"]; // Set up events to mouseup
         }
-        else{ // If touch is not supported on this device
-            if ((syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "Macintosh") && (syiro.device.OperatingSystem == "Windows")){ // If this is not a desktop operating system
-                syiro.device.SupportsTouch = true; // Set syiro.device.SupportsTouch to true
-            }
-
-            eventsToRemove = ["touchstart", "touchend"]; // Set eventsToRemove as an array of touch-oriented event strings to remove
+        else { // If we are on a desktop operating system
+            syiro.events.eventStrings["down"] = ["mousedown"]; // Set down events to mousedown
+            syiro.events.eventStrings["up"]= ["mouseup"]; // Set up events to mouseup
         }
-
-        syiro.events.eventStrings["down"].splice(syiro.events.eventStrings["down"].indexOf(eventsToRemove[0]), 1); // Remove either mousedown or touchstart
-        syiro.events.eventStrings["up"].splice(syiro.events.eventStrings["up"].indexOf(eventsToRemove[1]), 1); // Remove either mouseup or touchend
 
         // #endregion
 
@@ -140,6 +135,11 @@ module syiro.device {
                 for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++){ // For each Player
                     var thisPlayer : any = allPlayers[allPlayersIndex]; // Define thisPlayer as the index of allPlayers
                     syiro.component.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
+
+                    if (thisPlayer.getAttribute("data-syiro-component") == "audioplayer"){ // If it is an audio player
+                        var audioPlayerComponent : Object = syiro.component.FetchComponentObject(thisPlayer);
+                        syiro.audioplayer.CenterInformation(audioPlayerComponent); // Recenter the Audio Player Component information
+                    }
                 }
 
                 if (arguments[0] == "interval"){ // If we are calling orientationChangeHandler via window.setInterval, call all the other [vendor]orientationchange handlers
@@ -189,15 +189,16 @@ module syiro.device {
         }
         else if ((navigator.userAgent.indexOf("Linux") !== -1) && (navigator.userAgent.indexOf("Android") == -1)){ // If the userAgent is set to claim the device is Linux (but not Android)
             syiro.device.OperatingSystem = "Linux"; // Set device to Linux
+
+            if (navigator.userAgent.indexOf("Sailfish") !== -1){ // If the userAgent is set to claim the device is a Sailfish OS device
+                syiro.device.OperatingSystem = "Sailfish"; // Set device to Sailfish OS
+            }
+            else if ((navigator.userAgent.indexOf("Ubuntu") !== -1) && ((navigator.userAgent.indexOf("Mobile") !== -1) || (navigator.userAgent.indexOf("Tablet") !== -1))){ // IF the userAgent is claiming the device is running Ubuntu Touch
+                syiro.device.OperatingSystem = "Ubuntu Touch"; // Set device to Ubuntu Touch
+            }
         }
         else if (navigator.userAgent.indexOf("Macintosh") !== -1){ // If the userAgent is set to claim the device is a Macintosh
             syiro.device.OperatingSystem = "OS X"; // Set device to OS X
-        }
-        else if (navigator.userAgent.indexOf("Sailfish") !== -1){ // If the userAgent is set to claim the device is a Sailfish OS device
-            syiro.device.OperatingSystem = "Sailfish"; // Set device to Sailfish OS
-        }
-        else if ((navigator.userAgent.indexOf("Ubuntu") !== -1) && ((navigator.userAgent.indexOf("Mobile") !== -1) || (navigator.userAgent.indexOf("Tablet") !== -1))){ // IF the userAgent is claiming the device is running Ubuntu Touch
-            syiro.device.OperatingSystem = "Ubuntu Touch"; // Set device to Ubuntu Touch
         }
         else if (navigator.userAgent.indexOf("Windows Phone") !== -1){ // If the userAgent is set to claim the device is a Windows Phone
             syiro.device.OperatingSystem = "Windows Phone"; // Set device to Windows Phone

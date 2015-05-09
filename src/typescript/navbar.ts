@@ -32,10 +32,6 @@ module syiro.navbar {
                 for (var individualItemIndex in properties["items"]){ // For each individualItem in navigationItems Object array
                     var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as this particular item in the properties["items"]
 
-                    if (typeof individualItem["component"] !== "undefined"){ // If we are adding a Component (defining the Component object using the "component" key in individual items is a backwards-compatibility check)
-                        individualItem = individualItem["component"]; // Redefine individualItem as the individualItem component key/val
-                    }
-
                     if (syiro.component.IsComponentObject(individualItem) == false){ // If we are adding a link
                         var generatedElement : HTMLElement = syiro.generator.ElementCreator("a", // Generate a generic link element
                             {

@@ -26,7 +26,6 @@ module syiro.device {
     export var IsHD : boolean; // Define IsHD as a boolean if the device is HD (720p) or greater than 720p.
     export var IsFullHDOrAbove : boolean; // Define IsFullHDOrAbove as a boolean if the device is Full HD (1080p) or above.
     export var Orientation : string; // Define Orientation as the correct device orientation
-    export var orientation : string; // Define orientation as the backwards compatibility variable for Orientation
     export var OrientationObject : any = screen; // Define orientationObject as the proper Object to listen to orientation change events on. During detection, this CAN change to screen.orientation.
 
     // #endregion
@@ -118,7 +117,6 @@ module syiro.device {
 
         syiro.device.FetchScreenDetails(); // Do an initial fetch of the screen details
         syiro.device.Orientation = syiro.device.FetchScreenOrientation(); // Do an initial fetch of the screen orientation
-        syiro.device.orientation = syiro.device.Orientation; // Set orientation to Orientation value for backwards compatibility
         syiro.events.Add("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing for updating the screen details
 
         // #region Orientation Listening and Determinination Support
@@ -128,13 +126,12 @@ module syiro.device {
 
             if (currentOrientation !== syiro.device.Orientation){ // If currentOrientation does not match the syiro.device.Orientation stored already
                 syiro.device.Orientation = currentOrientation; // Update Orientation value for syiro.device.Orientation
-                syiro.device.orientation = currentOrientation; // Update backwards compatibility variable with the currentOrientation
 
                 var allPlayers : NodeList = document.querySelectorAll('div[data-syiro-component$="player"]'); // Get all Audio Players and Video Players
 
                 for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++){ // For each Player
                     var thisPlayer : any = allPlayers[allPlayersIndex]; // Define thisPlayer as the index of allPlayers
-                    syiro.component.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
+                    syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
 
                     if (thisPlayer.getAttribute("data-syiro-component") == "audioplayer"){ // If it is an audio player
                         var audioPlayerComponent : Object = syiro.component.FetchComponentObject(thisPlayer);

@@ -8,14 +8,6 @@
 /// <reference path="render.ts" />
 
 module syiro.component {
-	export var componentData : Object = syiro.data.storage; // componentData is a backwards-compatibility variable that points to syiro.data.storage
-
-	// #region Meta function for defining existing Syiro components or Elements as Components
-
-	export var Define : Function = syiro.component.FetchComponentObject;
-
-	// #endregion
-
 	// #region Component CSS Fetcher / Modifier
 
 	export function CSS(component : any, property : string, newValue ?: (string | boolean)){
@@ -215,8 +207,6 @@ module syiro.component {
 	}
 
 	// #endregion
-
-	export var Scale = syiro.render.Scale; // Define Scale as a backwards compatibility call to syiro.render.Scale
 
 	// #region Update Stored Component's HTMLElement, but only if it exists in the first place.
 

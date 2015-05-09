@@ -626,7 +626,7 @@ var syiro;
                 var componentChildren = syiro.data.Read(component["id"] + "->scaling->children");
                 for (var childComponentIndex = 0; childComponentIndex < componentChildren.length; childComponentIndex++) {
                     var childComponentObject = componentChildren[childComponentIndex];
-                    syiro.component.Scale(childComponentObject);
+                    syiro.render.Scale(childComponentObject);
                 }
             }
         }
@@ -644,8 +644,6 @@ var syiro;
 (function (syiro) {
     var component;
     (function (component_1) {
-        component_1.componentData = syiro.data.storage;
-        component_1.Define = syiro.component.FetchComponentObject;
         function CSS(component, property, newValue) {
             var modifiableElement;
             var returnedValue;
@@ -798,7 +796,6 @@ var syiro;
             return isComponentObject;
         }
         component_1.IsComponentObject = IsComponentObject;
-        component_1.Scale = syiro.render.Scale;
         function Update(componentId, componentElement) {
             if (syiro.data.Read(componentId + "->HTMLElement") !== false) {
                 syiro.data.Write(componentId + "->HTMLElement", componentElement);
@@ -965,7 +962,6 @@ var syiro;
         device.IsHD;
         device.IsFullHDOrAbove;
         device.Orientation;
-        device.orientation;
         device.OrientationObject = screen;
         function Detect() {
             // #region Do Not Track
@@ -1009,17 +1005,15 @@ var syiro;
             }
             syiro.device.FetchScreenDetails();
             syiro.device.Orientation = syiro.device.FetchScreenOrientation();
-            syiro.device.orientation = syiro.device.Orientation;
             syiro.events.Add("resize", window, syiro.device.FetchScreenDetails);
             var orientationChangeHandler = function () {
                 var currentOrientation = syiro.device.FetchScreenOrientation();
                 if (currentOrientation !== syiro.device.Orientation) {
                     syiro.device.Orientation = currentOrientation;
-                    syiro.device.orientation = currentOrientation;
                     var allPlayers = document.querySelectorAll('div[data-syiro-component$="player"]');
                     for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++) {
                         var thisPlayer = allPlayers[allPlayersIndex];
-                        syiro.component.Scale(syiro.component.FetchComponentObject(thisPlayer));
+                        syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer));
                         if (thisPlayer.getAttribute("data-syiro-component") == "audioplayer") {
                             var audioPlayerComponent = syiro.component.FetchComponentObject(thisPlayer);
                             syiro.audioplayer.CenterInformation(audioPlayerComponent);
@@ -1147,9 +1141,6 @@ var syiro;
                 if (propertyKey == "items") {
                     for (var individualItemIndex in properties["items"]) {
                         var individualItem = properties["items"][individualItemIndex];
-                        if (typeof individualItem["component"] !== "undefined") {
-                            individualItem = individualItem["component"];
-                        }
                         if (syiro.component.IsComponentObject(individualItem) == false) {
                             var generatedElement = syiro.generator.ElementCreator("a", {
                                 "href": individualItem["link"],
@@ -2272,7 +2263,6 @@ var syiro;
             }
         }
         player.ToggleMenuDialog = ToggleMenuDialog;
-        player.ToggleShareDialog = ToggleMenuDialog;
     })(player = syiro.player || (syiro.player = {}));
 })(syiro || (syiro = {}));
 var syiro;
@@ -2700,7 +2690,7 @@ var syiro;
             else {
                 fullscreenVideoPlayerElement = document.SyiroFullscreenElement;
             }
-            syiro.component.Scale(syiro.component.FetchComponentObject(fullscreenVideoPlayerElement));
+            syiro.render.Scale(syiro.component.FetchComponentObject(fullscreenVideoPlayerElement));
         });
         var documentHeadSection = document.querySelector("head");
         if (documentHeadSection == null) {
@@ -2716,11 +2706,11 @@ var syiro;
             documentHeadSection.appendChild(viewportMetaTag);
         }
         var syiroInternalColorContainer = syiro.generator.ElementCreator("div", { "data-syiro-component": "internalColorContainer" });
-        document.querySelector("body").appendChild(syiroInternalColorContainer);
+        document.body.appendChild(syiroInternalColorContainer);
         syiro.backgroundColor = window.getComputedStyle(syiroInternalColorContainer).backgroundColor;
         syiro.primaryColor = window.getComputedStyle(syiroInternalColorContainer).color;
         syiro.secondaryColor = window.getComputedStyle(syiroInternalColorContainer).borderColor;
-        syiroInternalColorContainer.parentElement.removeChild(syiroInternalColorContainer);
+        document.body.removeChild(syiroInternalColorContainer);
         if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")) {
             if (typeof WebKitMutationObserver !== "undefined") {
                 MutationObserver = WebKitMutationObserver;
@@ -2746,7 +2736,7 @@ var syiro;
                                         }
                                         else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")) {
                                             syiro.player.Init(componentObject);
-                                            syiro.component.Scale(componentObject);
+                                            syiro.render.Scale(componentObject);
                                         }
                                         else if (componentObject["type"] == "searchbox") {
                                             if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false) {
@@ -2789,7 +2779,6 @@ var syiro;
         }
     }
     syiro.Init = Init;
-    syiro.Define = syiro.component.FetchComponentObject;
     syiro.CSS = syiro.component.CSS;
     syiro.Fetch = syiro.component.Fetch;
     syiro.FetchComponentObject = syiro.component.FetchComponentObject;
@@ -2799,24 +2788,4 @@ var syiro;
     syiro.Add = syiro.component.Add;
     syiro.Remove = syiro.component.Remove;
     syiro.Position = syiro.render.Position;
-    syiro.AddListeners = syiro.events.Add;
-    syiro.RemoveListeners = syiro.events.Remove;
-    function Animate() {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
-        }
-        var animationProperties;
-        if ((arguments.length == 2) && (typeof arguments[1] == "object")) {
-            animationProperties = arguments[1];
-        }
-        else {
-            animationProperties["animation"] = arguments[1];
-            if (arguments.length == 3) {
-                animationProperties["function"] = arguments[2];
-            }
-        }
-        syiro.animation.Animate(syiro.component, animationProperties);
-    }
-    syiro.Animate = Animate;
 })(syiro || (syiro = {}));

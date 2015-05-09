@@ -818,8 +818,6 @@ module syiro.player {
         }
     }
 
-    export var ToggleShareDialog : Function = ToggleMenuDialog; // Define ToggleShareDialog as a meta-function of ToggleMenuDialog for backwards compatibility
-
     // #endregion
 }
 

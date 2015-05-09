@@ -69,7 +69,7 @@ module syiro {
 					fullscreenVideoPlayerElement = document.SyiroFullscreenElement; // Fetch the SyiroFullscreenElement that we assigned during the initial fullscreenchange and set that as fullscreenVideoPlayerElement
 				}
 
-				syiro.component.Scale(syiro.component.FetchComponentObject(fullscreenVideoPlayerElement));
+				syiro.render.Scale(syiro.component.FetchComponentObject(fullscreenVideoPlayerElement));
 			}
 		);
 
@@ -99,11 +99,11 @@ module syiro {
 		// #region Syiro CSS-To-TypeScript Color Variable Setup
 
 		var syiroInternalColorContainer : Element = syiro.generator.ElementCreator("div", { "data-syiro-component" : "internalColorContainer"});
-		document.querySelector("body").appendChild(syiroInternalColorContainer);
+		document.body.appendChild(syiroInternalColorContainer);
 		syiro.backgroundColor = window.getComputedStyle(syiroInternalColorContainer).backgroundColor; // Get the backgroundColor defined in CSS and set it to syiro.backgroundColor
 		syiro.primaryColor = window.getComputedStyle(syiroInternalColorContainer).color; // Get the primaryColor defined in CSS as color key/val and set it to syiro.primaryColor
 		syiro.secondaryColor = window.getComputedStyle(syiroInternalColorContainer).borderColor; // Get the secondaryColor defined in CSS as border-color key/val and set it to syiro.secondaryColor
-		syiroInternalColorContainer.parentElement.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
+		document.body.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
 
 		// #region Watch DOM For Components
 
@@ -138,7 +138,7 @@ module syiro {
 												}
 												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
 													syiro.player.Init(componentObject); // Initialize the Audio or Video Player
-													syiro.component.Scale(componentObject); // Scale the Audio Player or Video Player
+													syiro.render.Scale(componentObject); // Scale the Audio Player or Video Player
 												}
 												else if (componentObject["type"] == "searchbox"){ // If the Component is a Searchbox
 													if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
@@ -196,7 +196,6 @@ module syiro {
 
 	// #region Meta Functions
 
-	export var Define = syiro.component.FetchComponentObject; // Meta-function for defining Syiro components (which is actually a meta-function of FetchComponentObject)
 	export var CSS = syiro.component.CSS; // Meta-function for modifying Syiro Component CSS styling
 
 	export var Fetch = syiro.component.Fetch; // Meta-function for fetching Syiro component HTMLElements
@@ -209,31 +208,7 @@ module syiro {
 	export var Add = syiro.component.Add; // Meta-function for adding Syiro components to each other
 	export var Remove = syiro.component.Remove; // Meta-function for removing Syiro components
 
-	export var Position = syiro.render.Position; // Meta function for setting the position of a Syiro Componetn
-
-	export var AddListeners = syiro.events.Add; // Meta-function for adding event listeners to Syiro Components
-	export var RemoveListeners = syiro.events.Remove; // Meta-function for removing event listeners to Syiro Components
-
-	// #endregion
-
-	// #region Meta-function / API Compatibility for syiro.Animate()
-
-		export function Animate( ...args : any[]) {
-			var animationProperties : Object; // Define animationProperties as the properties that are provided or are created from backwards compatibility
-
-			if ((arguments.length == 2) && (typeof arguments[1] == "object")){ // If two arguments were defined and the second one is an Object (so current allowed Animate variables)
-				animationProperties = arguments[1]; // Define animationProperties as the second argument provided
-			}
-			else{ // If there are two arguments defined and the second is NOT the animation properties OR there are three arguments defined
-				animationProperties["animation"] = arguments[1]; // Define animationProperties "animation" as the second argument passed
-
-				if (arguments.length == 3){ // If three arguments were defined
-					animationProperties["function"] = arguments[2]; // Define animationProperties "function" as the third argument passed
-				}
-			}
-
-			syiro.animation.Animate(component, animationProperties); // Call Animate() with the animationProperties defined or "created"
-		}
+	export var Position = syiro.render.Position; // Meta function for setting the position of a Syiro Component
 
 	// #endregion
 

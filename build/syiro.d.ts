@@ -76,15 +76,12 @@ declare module syiro.render {
     function Scale(component: Object, data?: Object): void;
 }
 declare module syiro.component {
-    var componentData: Object;
-    var Define: Function;
     function CSS(component: any, property: string, newValue?: (string | boolean)): any;
     function Fetch(component: Object): any;
     function FetchComponentObject(...args: any[]): Object;
     function FetchDimensionsAndPosition(component: any): Object;
     function FetchLinkedListComponentObject(component: any): Object;
     function IsComponentObject(variable: any): boolean;
-    var Scale: typeof render.Scale;
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): void;
@@ -107,7 +104,6 @@ declare module syiro.device {
     var IsHD: boolean;
     var IsFullHDOrAbove: boolean;
     var Orientation: string;
-    var orientation: string;
     var OrientationObject: any;
     function Detect(): void;
     function FetchOperatingSystem(): string;
@@ -186,7 +182,6 @@ declare module syiro.player {
     function SetVolume(component: Object, volume: number): void;
     function ToggleFullscreen(...args: any[]): void;
     function ToggleMenuDialog(component: Object): void;
-    var ToggleShareDialog: Function;
 }
 declare module syiro.playercontrol {
     function Generate(properties: Object): Object;
@@ -210,7 +205,6 @@ declare module syiro {
     var primaryColor: string;
     var secondaryColor: string;
     function Init(): void;
-    var Define: typeof component.FetchComponentObject;
     var CSS: typeof component.CSS;
     var Fetch: typeof component.Fetch;
     var FetchComponentObject: typeof component.FetchComponentObject;
@@ -220,7 +214,4 @@ declare module syiro {
     var Add: typeof component.Add;
     var Remove: typeof component.Remove;
     var Position: typeof render.Position;
-    var AddListeners: typeof events.Add;
-    var RemoveListeners: typeof events.Remove;
-    function Animate(...args: any[]): void;
 }

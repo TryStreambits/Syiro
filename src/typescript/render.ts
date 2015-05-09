@@ -298,7 +298,7 @@ module syiro.render {
 
             for (var childComponentIndex = 0; childComponentIndex < componentChildren.length; childComponentIndex++){ // For each childComponent in the Children scaling Object
                 var childComponentObject : Object = componentChildren[childComponentIndex]; // Define childComponentObject as the index of the Object from key / val children
-                syiro.component.Scale(childComponentObject); // Scale the child Component
+                syiro.render.Scale(childComponentObject); // Scale the child Component
             }
         }
 

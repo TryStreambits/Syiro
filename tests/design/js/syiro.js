@@ -304,6 +304,9 @@ var syiro;
                             allowListening = false;
                         }
                     }
+                    else if (component["type"] == "searchbox") {
+                        componentElement = componentElement.querySelector("input");
+                    }
                 }
                 else {
                     var componentType = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase();

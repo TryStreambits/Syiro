@@ -174,6 +174,9 @@ module syiro.events {
                         allowListening = false; // Set allowListening to false. We shouldn't allow the entire List Item to listen to the same events as the inner control.
                     }
                 }
+                else if (component["type"] == "searchbox"){ // If this Component is a Searchbox
+                    componentElement = componentElement.querySelector("input"); // Redefine componentElement as the inner input
+                }
             }
             else{ // If the Component provided is not a Syiro Component Object
                 var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.

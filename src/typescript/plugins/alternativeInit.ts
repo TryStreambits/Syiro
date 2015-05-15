@@ -10,20 +10,18 @@ module syiro.plugin.alternativeInit {
     // #region Initialization Function
 
     export function Init(){
-        syiro.device.Detect(); // Detect / fetch device information
-
         // Use an ol' fashion "timer"
 
         (function mutationTimer(){
-            window.setTimeout( // Set interval to 5000 (5 seconds) with a timeout, forcing the execution to happen within 3 seconds
+            window.setTimeout( // Set interval to 3000 (3 seconds) with a timeout
                 function(){ // Call this function
                     for (var componentId in syiro.data.storage){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
-                        var potentiallyExistingComponent = document.querySelector('*[data-syiro-component-id="' + componentId + '"]');
 
                         if (potentiallyExistingComponent !== null){ // If the component exists in the DOM
-                            var componentObject = syiro.component.FetchComponentObject(potentiallyExistingComponent);
+                            var componentObject = { "id" : componentId, "type" : (componentId.replace(/[0-9]/g, '')) }; // "Generate" a Component Object by adding the id and create a type by removing the numbers from the id
 
                             if (componentObject["type"] == "buttongroup"){ // If the component is a Buttongroup
+                                var potentiallyExistingComponent = document.querySelector('div[data-syiro-component-id="' + componentId + '"]');
                                 var innerButtons = potentiallyExistingComponent.querySelectorAll('div[data-syiro-component="button"]'); // Get all the Button Components inside this Buttongroup
 
                                 for (var innerButtonIndex = 0; innerButtonIndex < innerButtons.length; innerButtonIndex++){ // For each Button
@@ -40,8 +38,8 @@ module syiro.plugin.alternativeInit {
                             }
                             else if (componentObject["type"] == "searchbox"){ // If the Component is a Searchbox
                                 if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
-                                    syiro.events.Add("keyup", potentiallyExistingComponent.querySelector("input"), syiro.searchbox.Suggestions); // Add  an event with the Suggestions function to the Searchbox to listen on keyup value
-                                    syiro.events.Add("blur", potentiallyExistingComponent.querySelector("input"), // Add an event to the Searchbox to listen to when it loses focus
+                                    syiro.events.Add("keyup", componentObject, syiro.searchbox.Suggestions); // Add  an event with the Suggestions function to the Searchbox to listen on keyup value
+                                    syiro.events.Add("blur", componentObject, // Add an event to the Searchbox to listen to when it loses focus
                                         function(){
                                             var searchboxObject : Object = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox
                                             var searchboxLinkedList : Object = syiro.component.FetchLinkedListComponentObject(searchboxObject); // Define searchboxLinkedList as the fetched Linked List Component
@@ -57,7 +55,7 @@ module syiro.plugin.alternativeInit {
 
                     mutationTimer();
                 },
-                5000
+                3000
             )
         })();
     }

@@ -4,6 +4,7 @@
 
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
+/// <reference path="utilities.ts" />
 
 // #region Syiro Searchbox Component
 
@@ -16,7 +17,7 @@ module syiro.searchbox {
 		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
 		var componentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored via syiro.data
 
-		var searchboxContainerData : Object = { "data-syiro-component" : "searchbox" }; // Define searchboxContainerData to contain properties we should apply to the Searchbox
+		var searchboxContainerData : Object = { "data-syiro-component" : "searchbox", "data-syiro-component-id" : componentId }; // Define searchboxContainerData to contain properties we should apply to the Searchbox
 
 		if (properties == undefined){ // If no properties were passed during the Generate call
 			properties = {}; // Set as an empty Object
@@ -26,7 +27,7 @@ module syiro.searchbox {
 			properties["content"] = "Search here..."; // Default to "Search here..." message
 		}
 
-		var inputElement : HTMLElement = syiro.generator.ElementCreator("input", { "aria-autocomplete" : "list", "role" : "textbox", "placeholder" : properties["content"] }); // Searchbox Inner Input Generation
+		var inputElement : HTMLElement = syiro.utilities.ElementCreator("input", { "aria-autocomplete" : "list", "role" : "textbox", "placeholder" : properties["content"] }); // Searchbox Inner Input Generation
 		searchboxContainerData["content"] = inputElement; // Define the inner content of the Searchbox Container to the input Element
 
 		if ((typeof properties["suggestions"] !== "undefined") && (properties["suggestions"] == true)){ // If suggestions is enabled
@@ -65,7 +66,7 @@ module syiro.searchbox {
 			}
 		}
 
-		componentElement = syiro.generator.ElementCreator(componentId, "div", searchboxContainerData); // Generate the Searchbox Container with the inner input as content
+		componentElement = syiro.utilities.ElementCreator("div", searchboxContainerData); // Generate the Searchbox Container with the inner input as content
 		componentData["HTMLElement"] = componentElement; // Define the HTMLElement of the Searchbox as the componentElement
 		syiro.data.Write(componentId, componentData); // Add the searchboxComponentData to the syiro.data.storage for this Searchbox Component
 

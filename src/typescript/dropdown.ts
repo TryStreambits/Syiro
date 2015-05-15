@@ -5,6 +5,7 @@
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
 /// <reference path="list.ts" />
+/// <reference path="utilities.ts" />
 
 module syiro.dropdown {
 
@@ -19,17 +20,17 @@ module syiro.dropdown {
 	export function Generate(properties : Object) : Object { // Generate a Dropdown Component and return a Component Object
 		if ((typeof properties["items"] !== "undefined") || (typeof properties["list"] !== "undefined")){ // If the necessary List or List Item(s) Object(s) are provided
 			var componentId : string = syiro.generator.IdGen("dropdown"); // Generate a component Id
-			var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "dropdown", { "aria-readonly" : "true", "role" : "combobox" }); // Generate a Dropdown Element with the aria-readonly set to true and role of combobox (for ARIA)
+			var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "dropdown", "data-syiro-component-id" : componentId,  "aria-readonly" : "true", "role" : "combobox" }); // Generate a Dropdown Element with the aria-readonly set to true and role of combobox (for ARIA)
 
 			// #region Dropdown Creation
 
 			if (properties["image"] !== undefined){ // If an image (like an avatar) is defined in the labelProperties
-				var primaryImage : HTMLElement = syiro.generator.ElementCreator("img", { "src" : properties["image"] }); // Create an img Element with the image source
+				var primaryImage : HTMLElement = syiro.utilities.ElementCreator("img", { "src" : properties["image"] }); // Create an img Element with the image source
 				componentElement.appendChild(primaryImage); // Append the primary image
 			}
 
 			if (properties["label"] !== undefined){ // If content is defined in the labelProperties
-				var dropdownLabelText : HTMLElement = syiro.generator.ElementCreator("label", { "content" : properties["label"] }); // Create a label for the Dropdown content
+				var dropdownLabelText : HTMLElement = syiro.utilities.ElementCreator("label", { "content" : properties["label"] }); // Create a label for the Dropdown content
 				componentElement.appendChild(dropdownLabelText); // Append the label to the Dropdown
 			}
 
@@ -142,7 +143,7 @@ module syiro.dropdown {
 
 		if (content !== false){ // If the content is not set to FALSE
 			if (dropdownLabelImage == null){ // If the image element does not exist
-				dropdownLabelImage = syiro.generator.ElementCreator("img"); // Create an image
+				dropdownLabelImage = document.createElement("img"); // Create an image
 				dropdownElement.insertBefore(dropdownLabelImage, dropdownElement.firstChild); // Prepend the img in the Dropdown
 			}
 

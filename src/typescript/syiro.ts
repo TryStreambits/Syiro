@@ -85,12 +85,12 @@ module syiro {
 		}
 
 		if (documentHeadSection.querySelector('meta[http-equiv="X-UA-Compatible"]') == null){ // If the IE compat meta doesn't exist
-			var compatMetaTag : HTMLElement = syiro.generator.ElementCreator("meta", { "http-equiv" : "X-UA-Compatible", "content-attr" : "IE=edge"} ); // Create a meta tag, setting X-UA-Compatible to be IE edge
+			var compatMetaTag : HTMLElement = syiro.utilities.ElementCreator("meta", { "http-equiv" : "X-UA-Compatible", "content-attr" : "IE=edge"} ); // Create a meta tag, setting X-UA-Compatible to be IE edge
 			documentHeadSection.appendChild(compatMetaTag); // Append the meta tag
 		}
 
 		if (documentHeadSection.querySelector('meta[name="viewport"]') == null){ // If the viewportMetaTag does NOT exist
-			var viewportMetaTag : HTMLElement = syiro.generator.ElementCreator("meta", { "name" : "viewport", "content-attr" : "width=device-width, initial-scale=1,user-scalable=no"} ); // Create a meta tag, setting attributes to enable scaling and disable zooming
+			var viewportMetaTag : HTMLElement = syiro.utilities.ElementCreator("meta", { "name" : "viewport", "content-attr" : "width=device-width, initial-scale=1,user-scalable=no"} ); // Create a meta tag, setting attributes to enable scaling and disable zooming
 			documentHeadSection.appendChild(viewportMetaTag); // Append the meta tag
 		}
 
@@ -98,7 +98,7 @@ module syiro {
 
 		// #region Syiro CSS-To-TypeScript Color Variable Setup
 
-		var syiroInternalColorContainer : Element = syiro.generator.ElementCreator("div", { "data-syiro-component" : "internalColorContainer"});
+		var syiroInternalColorContainer : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "internalColorContainer"});
 		document.body.appendChild(syiroInternalColorContainer);
 		syiro.backgroundColor = window.getComputedStyle(syiroInternalColorContainer).backgroundColor; // Get the backgroundColor defined in CSS and set it to syiro.backgroundColor
 		syiro.primaryColor = window.getComputedStyle(syiroInternalColorContainer).color; // Get the primaryColor defined in CSS as color key/val and set it to syiro.primaryColor

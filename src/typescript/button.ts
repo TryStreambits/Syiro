@@ -4,6 +4,7 @@
 
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
+/// <reference path="utilities.ts" />
 
 // #region Syiro Button and Toggle Button Functionality
 
@@ -23,6 +24,7 @@ module syiro.button {
 
 		var componentData : Object = {
 			"data-syiro-component" : "button", // Set data-syiro-component to Button
+			"data-syiro-component-id" : componentId,
 			"data-syiro-component-type" : properties["type"], // Be more granular with exactly what type of Button this is
 			"role" : "button" // Define the ARIA role as button
 		};
@@ -46,12 +48,12 @@ module syiro.button {
 				delete properties["default"]; // Remove the "content" key
 			}
 
-			componentData["content"] = syiro.generator.ElementCreator("div", buttonToggleAttributes); // Set the componentData content to the Button Toggle we generate
+			componentData["content"] = syiro.utilities.ElementCreator("div", buttonToggleAttributes); // Set the componentData content to the Button Toggle we generate
 		}
 
 		delete properties["type"]; // Remove the "type" key
 
-		componentElement = syiro.generator.ElementCreator(componentId, "div", componentData); // Generate the Component Element with the componentData provided
+		componentElement = syiro.utilities.ElementCreator("div", componentData); // Generate the Component Element with the componentData provided
 
 		for (var propertyKey in properties){ // Recursive go through any other attributes that needs to be set.
 			componentElement.setAttribute(propertyKey, properties[propertyKey]); // Treat it like an attribute
@@ -119,7 +121,7 @@ module syiro.buttongroup {
 		if (typeof properties["items"] !== "undefined"){ // If items is defined
 			if (properties["items"].length >= 2){ // If the length of items is equal to or greater than 2
 				var componentId : string = syiro.generator.IdGen("buttongroup"); // Generate a component Id
-				var componentElement : HTMLElement = syiro.generator.ElementCreator("div", { "data-syiro-component" : "buttongroup", "data-syiro-component-id" : componentId } );
+				var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "buttongroup", "data-syiro-component-id" : componentId } );
 
 				for (var buttonItemIndex in properties["items"]){
 					var buttonItem : Object = properties["items"][buttonItemIndex];

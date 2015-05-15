@@ -251,7 +251,7 @@ module syiro.component {
 				}
 			}
 			else if (typeof childComponent["link"] !== "undefined"){ // If a component "link" key is defined, meaning it is a link
-				childElement = syiro.generator.ElementCreator("a", // Create a link element
+				childElement = syiro.utilities.ElementCreator("a", // Create a link element
 					{
 						"title" : childComponent["title"], // Set the title as the one specified in the component object
 						"href" : childComponent["link"], // Add the link as href

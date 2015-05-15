@@ -539,7 +539,7 @@ module syiro.player {
             }
         }
         else{ // If the content can not be played
-            var codecErrorElement = syiro.generator.ElementCreator("div", // Create a div to add to the player stating there is a codec error
+            var codecErrorElement = syiro.utilities.ElementCreator("div", // Create a div to add to the player stating there is a codec error
                 {
                     "data-syiro-minor-component" : "player-error",
                     "content" : "This " + component["type"].replace("-player", "") + " is not capable of being played on this browser or device. Please try a different device or browser."
@@ -626,7 +626,7 @@ module syiro.player {
                 }
             }
 
-            var sourceTag = syiro.generator.ElementCreator("source", sourceTagAttributes); // Create a source tag with the attributes we've applied
+            var sourceTag = syiro.utilities.ElementCreator("source", sourceTagAttributes); // Create a source tag with the attributes we've applied
 
             arrayOfSourceElements.push(sourceTag); // Push this source tag
         }
@@ -831,23 +831,23 @@ module syiro.playercontrol {
 
     export function Generate(properties : Object) : Object {
         var componentId : string = syiro.generator.IdGen("player-control"); // Generate an ID for the Player Control
-        var componentElement = syiro.generator.ElementCreator(componentId, "player-control"); // Generate the basic playerControl container
+        var componentElement = syiro.utilities.ElementCreator("div",  { "data-syiro-component" : "player-control", "data-syiro-component-id" : componentId }); // Generate the basic playerControl container
 
         var playButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-play" } ); // Create a play button
-        var inputRange : HTMLElement = syiro.generator.ElementCreator("input", { "type" : "range", "value" : "0"} ); // Create an input range
+        var inputRange : HTMLElement = syiro.utilities.ElementCreator("input", { "type" : "range", "value" : "0"} ); // Create an input range
 
         componentElement.appendChild(inputRange); // Append the input range
         componentElement.appendChild(syiro.component.Fetch(playButton)); // Append the play button
 
         if (typeof properties["generate-content-info"] !== "undefined"){ // If we are adding content (for Audio Player)
             var infoSection : HTMLElement = document.createElement("section"); // Generate a section Element
-            infoSection.appendChild(syiro.generator.ElementCreator("b", { "content" : properties["title"]})); // Create the Audio b tag and append it to the infoSection section
-            infoSection.appendChild(syiro.generator.ElementCreator("label", { "content" : properties["artist"]})); // Create the Artist label and append it to the infoSection section
+            infoSection.appendChild(syiro.utilities.ElementCreator("b", { "content" : properties["title"]})); // Create the Audio b tag and append it to the infoSection section
+            infoSection.appendChild(syiro.utilities.ElementCreator("label", { "content" : properties["artist"]})); // Create the Artist label and append it to the infoSection section
             componentElement.appendChild(infoSection); // Append the info section
         }
         else{ // If we are not generating content info
             if (properties["is-video-player"]){ // If we are generated a Player Control for a Video Player
-                var timeStamp : HTMLElement = syiro.generator.ElementCreator("time", { "content" : "00:00 / 00:00"} ); // Create a timestamp time element
+                var timeStamp : HTMLElement = syiro.utilities.ElementCreator("time", { "content" : "00:00 / 00:00"} ); // Create a timestamp time element
                 componentElement.appendChild(timeStamp); // Append the timestamp time element
             }
         }
@@ -965,12 +965,7 @@ module syiro.audioplayer {
     export function Generate(properties : Object) : Object { // Generate a Audio Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the audio property is defined
             var componentId : string = syiro.generator.IdGen("audio-player"); // Generate a component Id
-            var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "audio-player", // Generate an Audio Player Element
-                {
-                    "id" : componentId, // Set the id (followed by name below) to act as a fragment ID for a page to jump to
-                    "name" : componentId,
-                }
-            );
+            var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "audio-player", "data-syiro-component-id" : componentId, "id" : componentId, "name" : componentId });
 
             if (typeof properties["share"] !== "undefined"){ // If the "share" menu attribute is still being used
                 properties["menu"] = properties["share"]; // Set "menu" attribute equal to "share" attribute
@@ -978,7 +973,7 @@ module syiro.audioplayer {
 
             // #region Audio Element and Source Creation
 
-            var audioPlayer : HTMLElement = syiro.generator.ElementCreator("audio", { "preload" : "metadata", "volume" : "0.5" }); // Generate an audio Element with only preloading metadata, setting volume to 50%
+            var audioPlayer : HTMLElement = syiro.utilities.ElementCreator("audio", { "preload" : "metadata", "volume" : "0.5" }); // Generate an audio Element with only preloading metadata, setting volume to 50%
             audioPlayer.autoplay = false; // Set autoplay of audio to false
 
             var arrayofSourceElements : Array<HTMLElement> = syiro.player.GenerateSources("audio", properties["sources"]); // Get an array of Source Elements
@@ -1028,8 +1023,8 @@ module syiro.audioplayer {
 
             if (properties["menu"] !== undefined){ // If the menu attribute is defined
                 if (properties["menu"]["type"] == "list"){ // If the component provided is a List
-                    var playerMenuDialog : Element = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
-                    playerMenuDialog.appendChild(syiro.generator.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
+                    var playerMenuDialog : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
+                    playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
                     playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
                     componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
                 }
@@ -1102,12 +1097,7 @@ module syiro.videoplayer {
             var syiroComponentData : Object = { "scaling" : {}}; // Define syiroComponentData as an Object to hold data we'll be writing to the Syiro Data System
             var syiroVideoElementProperties : Object = { "preload" : "metadata", "UIWebView" : "allowsInlineMediaPlayback"}; // Define syiroVideoElementProperties as a core set of properties we need for the Video Element
 
-            var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "video-player", // Generate an Video Player Element
-                {
-                    "id" : componentId, // Set the id (followed by name below) to act as a fragment ID for a page to jump to
-                    "name" : componentId
-                }
-            );
+            var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "video-player", "data-syiro-component-id" : componentId, "id" : componentId, "name" : componentId }); // Generate a Video Player
 
             if (navigator.userAgent.indexOf("iPhone") == -1) { // If the browser is NOT an iPhone, generate a proper Video Player Component
                 syiroVideoElementProperties["volume"] = "0.5"; // Set volume to 0.5
@@ -1115,7 +1105,7 @@ module syiro.videoplayer {
                 // #region Video Art Poster Creation
 
                 if (typeof properties["art"] !== "undefined"){ // If art has been defined
-                    var posterImageElement : HTMLElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component" : "video-poster", "src" : properties["art"] }); // Create an img Element with the src set to the artwork
+                    var posterImageElement : HTMLElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "video-poster", "src" : properties["art"] }); // Create an img Element with the src set to the artwork
                     componentElement.appendChild(posterImageElement); // Append to the Video Player container
                 }
 
@@ -1129,8 +1119,8 @@ module syiro.videoplayer {
 
                 if (properties["menu"] !== undefined){ // If the menu attribute is defined
                     if (properties["menu"]["type"] == "list"){ // If the component provided is a List
-                        var playerMenuDialog : Element = syiro.generator.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
-                        playerMenuDialog.appendChild(syiro.generator.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
+                        var playerMenuDialog : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
+                        playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
                         playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
                         componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
                     }
@@ -1167,7 +1157,7 @@ module syiro.videoplayer {
 
             // #region Video Element and Sources Creation
 
-            var videoPlayer : HTMLElement = syiro.generator.ElementCreator("video", syiroVideoElementProperties); // Create the video player with the defined properties
+            var videoPlayer : HTMLElement = syiro.utilities.ElementCreator("video", syiroVideoElementProperties); // Create the video player with the defined properties
 
             videoPlayer.autoplay = false; // Set autoplay of video to false
 

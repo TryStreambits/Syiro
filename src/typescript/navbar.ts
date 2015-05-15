@@ -4,6 +4,7 @@
 
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
+/// <reference path="utilities.ts" />
 
 // #region Navbar Component
 
@@ -25,7 +26,7 @@ module syiro.navbar {
         }
 
         var componentId : string = syiro.generator.IdGen("navbar"); // Generate a component Id using "navbar"
-		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "navbar", { "role" : "navigation", "data-syiro-component-type" : navbarType }); // Generate a div Element with the role of "navigation" (for ARIA) and data-syiro-component-type to navbarType
+		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "navbar", "data-syiro-component-id" : componentId, "role" : "navigation", "data-syiro-component-type" : navbarType }); // Generate a div Element with the role of "navigation" (for ARIA) and data-syiro-component-type to navbarType
 
         for (var propertyKey in properties){ // Recursive go through each propertyKey
             if (propertyKey == "items"){ // If we are adding items to the Header
@@ -33,7 +34,7 @@ module syiro.navbar {
                     var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as this particular item in the properties["items"]
 
                     if (syiro.component.IsComponentObject(individualItem) == false){ // If we are adding a link
-                        var generatedElement : HTMLElement = syiro.generator.ElementCreator("a", // Generate a generic link element
+                        var generatedElement : HTMLElement = syiro.utilities.ElementCreator("a", // Generate a generic link element
                             {
                                 "href" : individualItem["link"], // Set the href (link)
                                 "title" : individualItem["title"], // Set the title of the link to the one passed
@@ -49,7 +50,7 @@ module syiro.navbar {
                 }
             }
             else if ((propertyKey == "logo") && (navbarType == "top")){ // If we are adding a Logo to the top-positioned navbar (Header)
-				var generatedElement : HTMLElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : properties["logo"] }); // Generate an image with data-syiro-minor-component set to logo and src set to logo defined
+				var generatedElement : HTMLElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : properties["logo"] }); // Generate an image with data-syiro-minor-component set to logo and src set to logo defined
 				componentElement.appendChild(generatedElement); // Append the logo to the generatedElement
 			}
             else if ((propertyKey == "content") && (navbarType == "bottom")){ // If content or label prop are not undefined and the navbarType is botto (Footer)
@@ -62,7 +63,7 @@ module syiro.navbar {
                     labelContent = properties["label"]; // Assign label key/val to labelContent
                 }
 
-    			var generatedElement : HTMLElement = syiro.generator.ElementCreator("label", { "content" : labelContent }); // Generate a generic label element
+    			var generatedElement : HTMLElement = syiro.utilities.ElementCreator("label", { "content" : labelContent }); // Generate a generic label element
     			componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the navbar
     		}
         }
@@ -92,7 +93,7 @@ module syiro.navbar {
             var generatedElement : HTMLElement; // Define generatedElement as the element we will be appending
 
             if (typeof elementOrProperties.nodeType == "undefined"){ // If a nodeType is not defined, meaning it is not an element
-                generatedElement = syiro.generator.ElementCreator("a", // Generate a generic link element
+                generatedElement = syiro.utilities.ElementCreator("a", // Generate a generic link element
                     {
                         "href" : elementOrProperties["href"], // Set the href (link)
                         "title" : elementOrProperties["title"], // Also set title of the <a> tag to title provided
@@ -155,7 +156,7 @@ module syiro.navbar {
 
             if (image.trim().length !== 0){ // If image is defined
                 if (imageElement == null){ // If there is NOT already a logo in the top Navbar component
-                    imageElement = syiro.generator.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : image }); // Create an imageElement
+                    imageElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : image }); // Create an imageElement
                     navbarElement.insertBefore(imageElement, navbarElement.firstChild); // Prepend the logo component
                 }
                 else{ // If the image element is already defined
@@ -198,7 +199,7 @@ module syiro.navbar {
 
             if (labelText.trim().length !== 0){ // If the labelText is not an empty string
                 if (labelComponent == null){ // If the labelComponent does not exist
-                    labelComponent = syiro.generator.ElementCreator("label", { "content" : labelText }); // Create a label Element with the content set to labelText
+                    labelComponent = syiro.utilities.ElementCreator("label", { "content" : labelText }); // Create a label Element with the content set to labelText
                     navbarElement.insertBefore(labelComponent, navbarElement.firstChild); // Pre-emptively insert the empty label
                 }
                 else{ // If the labelComponent does exist

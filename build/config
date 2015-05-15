@@ -1,1 +1,18 @@
-{"ProjectName":"Syiro","ContentTypes":["less","typescript"], "UsesTests" : "yes"}
+{
+    "ProjectName": "Syiro",
+    "ContentTypes": [
+        "less",
+        "typescript"
+    ],
+    "less": [
+        {
+            "FileName": "syiro",
+            "ConfigFlags": "--modify-var=syiroTheme=\"default\""
+        },
+        {
+            "FileName": "syiro-material",
+            "ConfigFlags": "--modify-var=syiroTheme=\"material\""
+        }
+    ],
+    "UsesTests": "yes"
+}

@@ -4,6 +4,48 @@
 
 module syiro.utilities {
 
+    // #region Element Creator Function
+
+    export function ElementCreator(type : string, attributes : Object) { // Takes an optional componentId, componentType or the desired element tag name and attributes
+        if ((typeof type == "string") && (typeof attributes == "object")){
+            var generatedElement : HTMLElement = document.createElement(type); // Define componentElement as the generated HTMLElement based on the type supplied by argument 0
+
+            for (var attributeKey in attributes){ // For each attributeKey in attributes
+                var attributeValue = attributes[attributeKey]; // Get the attribute value based on key
+
+                if (attributeKey !== "content"){ // If the attributeKey is not content
+                    if (attributeKey == "content-attr"){ // If the attributeKey is "content-attr" (used in meta tag creation)
+                        attributeKey = "content"; // Set to content instead.
+                    }
+
+                    generatedElement.setAttribute(attributeKey, attributeValue); // Set the attribute
+                }
+                else{ // If the attributeKey IS "content"
+                    if (typeof attributeValue == "string"){ // If the attributeValue we passed is a string
+                        generatedElement.innerHTML = attributeValue.replace(/<*[^]script*>/g, ""); // Replace all <script> and </script> tags
+                    }
+                    else if (typeof attributeValue.nodeType !== "undefined"){ // If this is an Element
+                        if (attributeValue.tagName.toLowerCase() !== "script"){ // If we are not including a singular script tag
+                            var innerScriptElements = attributeValue.getElementsByTagName("script"); // Get all inner JavaScript tags
+
+                            if (innerScriptElements.length !== 0){ // If there are inner JavaScript tags
+                                for (var innerScriptElementIndex = 0; innerScriptElementIndex < innerScriptElements.length; innerScriptElementIndex++){ // For each inner JavaScript tag
+                                    var innerScriptElement = innerScriptElements[innerScriptElementIndex];
+                                    innerScriptElement.parentElement.removeChild(innerScriptElement); // Remove the script tag
+                                }
+                            }
+                        }
+                        generatedElement.appendChild(attributeValue); // Append the attributeValue
+                    }
+                }
+            }
+
+            return generatedElement; // Return the componentElement
+        }
+    }
+
+    // #endregion
+
     // #region Seconds to "Time" Object Format - This function is responsible for calculating hours, minutes, and seconds based on seconds provided, returning them in an Object
 
     export function SecondsToTimeFormat(seconds : number) : Object {

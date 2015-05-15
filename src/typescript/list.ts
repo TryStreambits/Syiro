@@ -4,6 +4,7 @@
 
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
+/// <reference path="utilities.ts" />
 
 // #region Syiro List Component
 
@@ -13,7 +14,7 @@ module syiro.list {
 
 	export function Generate(properties : Object) : Object { // Generate a List Component and return a Component Object
 		var componentId : string = syiro.generator.IdGen("list"); // Generate a component Id
-		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "list", { "aria-live" : "polite", "id" : componentId, "role" : "listbox" }); // Generate a List Element with an ID and listbox role for ARIA purposes
+		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list", "data-syiro-component-id" : componentId, "aria-live" : "polite", "id" : componentId, "role" : "listbox" }); // Generate a List Element with an ID and listbox role for ARIA purposes
 
 		if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)){ // If we are adding List Items
 			for (var individualItemIndex in properties["items"]){ // For each list item in navigationItems Object array
@@ -49,7 +50,7 @@ module syiro.listitem {
 
 	export function Generate(properties : Object) : Object { // Generate a ListItem Component and return a Component Object
 		var componentId : string = syiro.generator.IdGen("list-item"); // Generate a component Id
-		var componentElement : HTMLElement = syiro.generator.ElementCreator(componentId, "list-item", { "role" : "option" }); // Generate a List Item Element with the role as "option" for ARIA
+		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list-item", "data-syiro-component-id" : componentId, "role" : "option" }); // Generate a List Item Element with the role as "option" for ARIA
 
 		if (typeof properties["html"] == "undefined"){ // If we are not adding ANY HTML code to the List Item (therefore not needing nonstrict formatting)
 			for (var propertyKey in properties){ // Recursive go through each propertyKey
@@ -65,12 +66,12 @@ module syiro.listitem {
 				}
 				else if (propertyKey == "image"){ // If we are adding an image
 					if (properties["control"] == undefined){ // If we are not adding a control, then allow for adding an image
-						var imageComponent : HTMLElement = syiro.generator.ElementCreator("img", { "src" : properties["image"]} ); // Create an image with the source set the properties["image"]
+						var imageComponent : HTMLElement = syiro.utilities.ElementCreator("img", { "src" : properties["image"]} ); // Create an image with the source set the properties["image"]
 						componentElement.insertBefore(imageComponent, componentElement.firstChild); // Prepend the label to the List Item component
 					}
 				}
 				else if (propertyKey == "label"){ // If we are adding a label
-					var labelComponent : HTMLElement = syiro.generator.ElementCreator("label", { "content" : properties["label"] }); // Create a label within the "label" (labelception) to hold the defined text.
+					var labelComponent : HTMLElement = syiro.utilities.ElementCreator("label", { "content" : properties["label"] }); // Create a label within the "label" (labelception) to hold the defined text.
 
 					if (componentElement.querySelector("img") == null){ // If we have not added an image to the List Item
 						componentElement.insertBefore(labelComponent, componentElement.firstChild); // Prepend the label to the List Item component
@@ -142,7 +143,7 @@ module syiro.listitem {
 					syiro.component.Remove(listItemControl); // Remove this inner control
 				}
 
-				var generatedImage = syiro.generator.ElementCreator("img", { "src" : content } ); // Generate an img
+				var generatedImage = syiro.utilities.ElementCreator("img", { "src" : content } ); // Generate an img
 				listItemElement.insertBefore(generatedImage, listItemElement.firstChild); // Prepend the img tag
 
 				setImageSucceeded = true; // Set setImageSucceeded to true
@@ -176,7 +177,7 @@ module syiro.listitem {
 					listItemLabelElement = listItemElement.querySelector("label"); // Set listItemLabelElement as the queried label tag from listItemElement
 				}
 				else{
-					listItemLabelElement = syiro.generator.ElementCreator("label"); // Create a label and assign it to the listItemLabelElement
+					listItemLabelElement = document.createElement("label"); // Create a label and assign it to the listItemLabelElement
 					listItemElement.insertBefore(listItemLabelElement, listItemElement.firstChild); // Prepend the label
 				}
 

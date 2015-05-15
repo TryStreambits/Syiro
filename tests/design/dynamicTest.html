@@ -22,7 +22,7 @@
 			// #endregion
 
 			if (syiro.device.IsSubHD == false){ // If the device is NOT sub HD
-				var boldContentForListItem = syiro.generator.ElementCreator("b", {"content" : "List Item with any HTML!"});
+				var boldContentForListItem = syiro.utilities.ElementCreator("b", {"content" : "List Item with any HTML!"});
 				generatedDropdownObject = syiro.dropdown.Generate(
 						{
 							"label" : "Test Dropdown",
@@ -31,20 +31,7 @@
 						}
 				);
 
-				generatedHeader = syiro.header.Generate(
-					{
-						"items" : [
-							{
-								"link" : "http://stroblindustries.com",
-								"title" : "Example Link"
-							},
-							{
-								"type" : "dropdown",
-								"component" : generatedDropdownObject
-							}
-						]
-					}
-				);
+				generatedHeader = syiro.navbar.Generate({ "position" : "top", "items" : [ { "link" : "http://stroblindustries.com", "title" : "Example Link" }, generatedDropdownObject ]} );
 
 				var generatedSearchbox = syiro.searchbox.Generate( // Generate a Searchbox
 					{
@@ -117,8 +104,8 @@
 			var generatedButton = syiro.button.Generate({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
 			var generatedButtonTwo = syiro.button.Generate({"type" : "basic", "content" : "Change Source"}); // Generate a Basic Button that changes the video source
 			var generatedToggle = syiro.button.Generate({"type" : "toggle"}); // Generate a Toggle Button
-			var exampleLink = syiro.generator.ElementCreator("a", {"link" : "#", "title" : "Test2"});
-			var generatedFooter = syiro.footer.Generate({"content" : "Strobl Industries", "items" : [{"title" : "Test", "link" : "#" }, exampleLink]}); // Generate a Footer
+			var exampleLink = syiro.utilities.ElementCreator("a", {"link" : "#", "title" : "Test2"});
+			var generatedFooter = syiro.navbar.Generate({"position" : "bottom", "content" : "Strobl Industries", "items" : [{"title" : "Test", "link" : "#" }, exampleLink]}); // Generate a Footer
 
 			if (syiro.device.IsSubHD == true){ // If the device is sub HD
 				syiro.CSS(generatedDropdownObject, "float", "right"); // Float the Icon Header to the right
@@ -141,7 +128,7 @@
 			syiroPage.appendChild(syiro.Fetch(generatedButtonTwo));
 			document.querySelector("body").appendChild(syiro.Fetch(generatedFooter));
 
-			var videoPlayerContainer = syiro.generator.ElementCreator("div");
+			var videoPlayerContainer = document.createElement("div");
 			syiroPage.appendChild(videoPlayerContainer);
 
 			if (syiro.device.IsSubHD !== true){
@@ -162,12 +149,12 @@
 				function(x){
 					var componentObject = arguments[0];
 					var event = arguments[1];
-					var screenInfoElement = syiro.generator.ElementCreator("section", { "content" : syiro.events.eventStrings["up"].toString() });
+					var screenInfoElement = syiro.utilities.ElementCreator("section", { "content" : syiro.events.eventStrings["up"].toString() });
 					document.querySelector('div[data-syiro-component="page"]').insertBefore(screenInfoElement, document.querySelector('div[data-syiro-component="page"]').firstChild);
 				}
 			);
 
-			syiro.AddListeners(generatedButtonTwo, // Listen to the Basic Button
+			syiro.events.Add(generatedButtonTwo, // Listen to the Basic Button
 				function(x){
 					var component = arguments[0];
 					syiro.player.SetSources(generatedVideoPlayer, ["https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv", "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4"]); // Change the source
@@ -180,12 +167,12 @@
 			syiro.listitem.SetLabel(testListItem, "First!");
 			syiro.listitem.SetControl(testListItem, generatedToggle);
 
-			syiro.AddListeners(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
-			syiro.AddListeners(secondListItem, // Listen to the second List Item
+			syiro.events.Add(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
+			syiro.events.Add(secondListItem, // Listen to the second List Item
 				function(){
 							var listItemComponent = arguments[0];
 							document.querySelector("body").querySelector('div[data-syiro-component="page"]').appendChild(
-								syiro.generator.ElementCreator("section",
+								syiro.utilities.ElementCreator("section",
 								{
 									"content" : "y: " + syiro.component.FetchDimensionsAndPosition(document.querySelector('div[data-syiro-component="dropdown"]'))["y"]
 								}
@@ -193,7 +180,7 @@
 						);
 
 						document.querySelector("body").querySelector('div[data-syiro-component="page"]').appendChild(
-							syiro.generator.ElementCreator("section",
+							syiro.utilities.ElementCreator("section",
 							{
 								"content" : "x: " + syiro.component.FetchDimensionsAndPosition(document.querySelector('div[data-syiro-component="dropdown"]'))["x"]
 							}

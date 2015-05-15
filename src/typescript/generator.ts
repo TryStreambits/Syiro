@@ -5,6 +5,7 @@
 /// <reference path="syiro.ts" />
 /// <reference path="component.ts" />
 /// <reference path="interfaces.ts" />
+/// <reference path="utilities.ts" />
 
 module syiro.generator {
 
@@ -31,68 +32,6 @@ module syiro.generator {
 
     // #endregion
 
-    // #region Element Creator Function
-
-    export function ElementCreator(... args : any[]) : HTMLElement { // Takes an optional componentId, componentType or the desired element tag name and attributes
-        var attributes : Object; // Define attributes as an Object
-        var generatedElement : HTMLElement; // Define componentElement as the generated HTMLElement
-
-        if (((args.length == 2) && (typeof args[1] == "string")) || (args.length == 3)){ // If we have either defined three arguments: ID, type, and attributes OR two arguments where the second one is a string
-            var componentId : string = args[0]; // Set componentId as the first argument passed
-            var componentType : string = args[1]; // Set componentType as the second argument passed
-            attributes = args[2]; // Set attributes equal to the third argument passed
-
-            if (componentType == "searchbox"){ // If we are creating a searchbox
-                generatedElement = document.createElement("input"); // Use the HTML input tag
-                generatedElement.setAttribute("type", "text"); // Set the searchbox input type to text
-            }
-            else{ // If we are creating a Component that uses a generic div tag as a container
-                generatedElement = document.createElement("div"); // Create a div tag
-            }
-
-            generatedElement.setAttribute("data-syiro-component-id", componentId); // Set the Syiro Component ID to the componentID passed
-            generatedElement.setAttribute("data-syiro-component", componentType); // Set the Syiro Component to the type specified (ex. Navbar)
-        }
-        else{ // If we're not creating a Syiro Component
-            attributes = args[1]; // Set attributes equal to the second argument passed
-            generatedElement = document.createElement(args[0]); // Create an element based on the componentType (in this case, it is really just a element tag name)
-        }
-
-        if (attributes !== undefined){ // If an attributes Object is defined
-            for (var attributeKey in attributes){ // For each attributeKey in attributes
-                var attributeValue = attributes[attributeKey]; // Get the attribute value based on key
-
-                if (attributeKey !== "content"){ // If the attributeKey is not content
-                    if (attributeKey == "content-attr"){ // If the attributeKey is "content-attr" (used in meta tag creation)
-                        attributeKey = "content"; // Set to content instead.
-                    }
-
-                    generatedElement.setAttribute(attributeKey, attributeValue); // Set the attribute
-                }
-                else{ // If the attributeKey IS "content"
-                    if (typeof attributeValue == "string"){ // If the attributeValue we passed is a string
-                        generatedElement.innerHTML = attributeValue.replace(/<*[^]script*>/g, ""); // Replace all <script> and </script> tags
-                    }
-                    else if (typeof attributeValue.nodeType !== "undefined"){ // If this is an Element
-                        if (attributeValue.tagName.toLowerCase() !== "script"){ // If we are not including a singular script tag
-                            var innerScriptElements = attributeValue.getElementsByTagName("script"); // Get all inner JavaScript tags
-
-                            if (innerScriptElements.length !== 0){ // If there are inner JavaScript tags
-                                for (var innerScriptElementIndex = 0; innerScriptElementIndex < innerScriptElements.length; innerScriptElementIndex++){ // For each inner JavaScript tag
-                                    var innerScriptElement = innerScriptElements[innerScriptElementIndex];
-                                    innerScriptElement.parentElement.removeChild(innerScriptElement); // Remove the script tag
-                                }
-                            }
-                        }
-                        generatedElement.appendChild(attributeValue); // Append the attributeValue
-                    }
-                }
-            }
-        }
-
-        return generatedElement; // Return the componentElement
-    }
-
-    // #endregion
+    export var ElementCreator = syiro.utilities.ElementCreator; // Meta-function (API backwards compatibility)
 
 }

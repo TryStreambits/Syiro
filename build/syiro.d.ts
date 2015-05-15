@@ -60,10 +60,14 @@ declare module syiro.data {
     function Write(keyList: string, data: any): any;
     function Delete(keyList: string): any;
 }
+declare module syiro.utilities {
+    function ElementCreator(type: string, attributes: Object): HTMLElement;
+    function SecondsToTimeFormat(seconds: number): Object;
+}
 declare module syiro.generator {
     var lastUniqueIds: Object;
     function IdGen(type: string): string;
-    function ElementCreator(...args: any[]): HTMLElement;
+    var ElementCreator: typeof utilities.ElementCreator;
 }
 declare module syiro.events {
     var eventStrings: Object;
@@ -163,9 +167,6 @@ declare module syiro.dropdown {
     function SetImage(component: Object, content: any): void;
     function AddItem(component: Object, listItemComponent: Object): void;
     function RemoveItem(component: Object, listItemComponent: Object): void;
-}
-declare module syiro.utilities {
-    function SecondsToTimeFormat(seconds: number): Object;
 }
 declare module syiro.player {
     function Init(component: Object): void;

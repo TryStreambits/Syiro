@@ -10,8 +10,16 @@
 module syiro.animation {
 
     // #region Component Animation Function
-    export function Animate(component : Object, properties : Object){ // This function animates a particular Component and calls a post-animation function if applicable
-        var componentElement : Element = syiro.component.Fetch(component); // Get the Syiro Component Element
+    export function Animate(component : any, properties : Object){ // This function animates a particular Component or Element and calls a post-animation function if applicable
+        var componentElement : Element; // Define componentElement as any
+
+        if (syiro.component.IsComponentObject(component)){ // If we passed a Component
+            componentElement = syiro.component.Fetch(component); //  Define componentElement as the fetched Syiro Component
+        }
+        else{ // If we passed an Element
+            componentElement = component; // Define componentElement as the component provided
+            component = syiro.component.FetchComponentObject(componentElement); // Redefine component as the newly fetched Component Object of the componentElement
+        }
 
         if ((componentElement !== null) && (typeof properties["animation"] == "string")){ // If the componentElement exists in the DOM and an animation is provided
             if (typeof properties["duration"] == "undefined"){ // If a duration is not defined
@@ -41,6 +49,7 @@ module syiro.animation {
             if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
                 var tempElement = componentElement; // Define tempElement as the componentElement
                 componentElement = tempElement.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
+                tempElement = null; // Free tempElement
             }
 
             componentElement.setAttribute("class", properties["animation"]); // Add the animation
@@ -51,7 +60,7 @@ module syiro.animation {
 
     // #region Fade In Animation
 
-    export function FadeIn(component : Object, postAnimationFunction ?: Function){
+    export function FadeIn(component : any, postAnimationFunction ?: Function){
         syiro.animation.Animate(component, // Call Animate with the Component and properties
             {
                 "animation" : "fade-in-animation", // Define animation as fade-in-animation
@@ -65,7 +74,7 @@ module syiro.animation {
 
     // #region Fade Out Animation
 
-    export function FadeOut(component : Object, postAnimationFunction ?: Function){
+    export function FadeOut(component : any, postAnimationFunction ?: Function){
         syiro.animation.Animate(component, // Call Animate with the Component and properties
             {
                 "animation" : "fade-out-animation", // Define animation as fade-out-animation

@@ -3,133 +3,35 @@
 	<head>
 		<title>Dynamic Syiro Testing</title>
 		<link rel="stylesheet" type="text/css" href="css/syiro.css">
+		<link rel="stylesheet" type="text/css" href="css/dynamicTest.css" />
 		<script type="text/javascript" src="js/syiro.js"></script>
 		<script type="text/javascript" src="js/alternativeInit.min.js"></script>
+		<script type="text/javascript" src="js/dynamicTest.js"></script>
 		<meta charset="utf-8" />
 	</head>
 	<body>
-		<div data-syiro-component="page" role="main"></div>
+		<div data-syiro-component="page" role="main">
+			<div data-page-component="buttongroup-container"></div>
+			<div data-page-component="audio-player-container"></div>
+			<div data-page-component="video-player-container"></div>
+		</div>
 		<script>
-			syiro.Init(); // Use the modern syiro.Init
+			syiro.Init(); // Initialize Syiro
 
-			var generatedHeader = {};
-			var generatedDropdownObject = {};
+			var globalPageElement = document.querySelector('div[data-syiro-component="page"]');
+			var buttonGroupContainer = globalPageElement.querySelector('div[data-page-component="buttongroup-container"]');
+			var audioPlayerContainer = globalPageElement.querySelector('div[data-page-component="audio-player-container"]');
+			var videoPlayerContainer = globalPageElement.querySelector('div[data-page-component="video-player-container"]');
+			syiro.CSS(videoPlayerContainer, "height", (screen.height * 0.50).toString() + "px");
 
-			// #region Button Group Generation
-
-			var generatedButtongroup = syiro.buttongroup.Generate({"active" : 1, "items" : [{ "content" : "Option 1" }, { "content" : "Option 2" }, { "content" : "Option 3" } ] });
-
-			// #endregion
-
-			if (syiro.device.IsSubHD == false){ // If the device is NOT sub HD
-				var boldContentForListItem = syiro.utilities.ElementCreator("b", {"content" : "List Item with any HTML!"});
-				generatedDropdownObject = syiro.dropdown.Generate(
-						{
-							"label" : "Test Dropdown",
-							"items" : [	{ "label" : "Test Item" }, { "label" : "Second Test Item" }, { "html" : boldContentForListItem }],
-							"position" : { "vertical" : "below", "horizontal" : "center"}
-						}
-				);
-
-				generatedHeader = syiro.navbar.Generate({ "position" : "top", "items" : [ { "link" : "http://stroblindustries.com", "title" : "Example Link" }, generatedDropdownObject ]} );
-
-				var generatedSearchbox = syiro.searchbox.Generate( // Generate a Searchbox
-					{
-						"content" : "Type hello or world!", // Change the default placeholder content
-						"suggestions" : true, // Enable suggestions on this generated Searchbox
-						"preseed" : ["hello", "world"], // Preseed the results
-						"list-item-handler" : function(){
-							var listItemObject = arguments[0]; // Define listItemObject as the first argument passed
-							var listItemElement = syiro.Fetch(listItemObject); // Fetch the List Item Component Element
-							console.log(listItemElement.textContent);
-						}
-					}
-				);
-			}
-			else{
-				generatedDropdownObject = syiro.dropdown.Generate(
-					{
-						"position" : { "vertical" : "below", "horizontal" : "right"}, // Different positioning
-						"items" : [	{ "label" : "Test Item" }, { "label" : "Second Test Item" }	]
-					}
-				);
-
-				var generatedHeader = syiro.header.Generate( { "items" : [ generatedDropdownObject ] } );
-			}
-
-			/* Share Dialogs List Generation */
-
-			var menuDialogItems = [
-				{
-					"image" : "img/facebook.png",
-					"label" : "Facebook"
-				},
-				{
-					"image" : "img/google-plus.png",
-					"label" : "Google+"
-				},
-				{
-					"image" : "img/twitter.png",
-					"label" : "Twitter"
-				}
-			];
-
-			var audioMenuDialogList = syiro.list.Generate({ "items" : menuDialogItems } );
-
-			var videoMenuDialogList = syiro.list.Generate({ "items" : menuDialogItems } );
-
-			/* End of Share Dialogs List Generation */
-
-			var generatedAudioPlayer = syiro.audioplayer.Generate(
-					{
-						"sources": ["http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg", "http://www.noiseaddicts.com/samples/55.mp3" ],
-						"art" : "https://c2.staticflickr.com/6/5134/5518988345_9df9892bb2_b.jpg",
-						"title" : "Example OGG File",
-						"artist" : "JesseW",
-						"menu" : audioMenuDialogList,
-						"UsingExternalLibrary" : true
-					}
-			);
-
-			var generatedVideoPlayer = syiro.videoplayer.Generate(
-					{
-						"art" : "img/video-art.png",
-						"UsingExternalLibrary" : true, // Declare that we are using an external library and to ignore canPlayType error
-						"menu" : videoMenuDialogList,
-						"fill" : [1,1],
-						"sources" : ["http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v", "http://video.webmfiles.org/big-buck-bunny_trailer.webm"]
-					}
-			);
-
-			var generatedButton = syiro.button.Generate({"type" : "basic", "content" : "Hello"}); // Generate a Basic Button
-			var generatedButtonTwo = syiro.button.Generate({"type" : "basic", "content" : "Change Source"}); // Generate a Basic Button that changes the video source
-			var generatedToggle = syiro.button.Generate({"type" : "toggle"}); // Generate a Toggle Button
-			var exampleLink = syiro.utilities.ElementCreator("a", {"link" : "#", "title" : "Test2"});
-			var generatedFooter = syiro.navbar.Generate({"position" : "bottom", "content" : "Strobl Industries", "items" : [{"title" : "Test", "link" : "#" }, exampleLink]}); // Generate a Footer
-
+			window.onload = generatePage; // Call our generatePage function (but only after document has laoded)
+			/*
 			if (syiro.device.IsSubHD == true){ // If the device is sub HD
 				syiro.CSS(generatedDropdownObject, "float", "right"); // Float the Icon Header to the right
 			}
 
 			syiro.CSS(generatedAudioPlayer, "margin-right", "80%"); // Set CSS margin for Audio Player
 			syiro.CSS(generatedVideoPlayer, "margin-right", "80%"); // Set CSS margin for Video Player
-
-			var generatedHeaderElement = syiro.Fetch(generatedHeader); // Fetch the Header
-			document.querySelector("body").insertBefore(generatedHeaderElement, document.querySelector("body").firstChild);
-
-			if (generatedSearchbox !== undefined){
-				syiro.Add(true, generatedHeader, generatedSearchbox); // Append the Searchbox to the Header
-			}
-
-			var syiroPage = document.querySelector('div[data-syiro-component="page"]');
-			syiroPage.appendChild(syiro.Fetch(generatedButtongroup));
-			syiroPage.appendChild(syiro.Fetch(generatedButton));
-			syiroPage.appendChild(syiro.Fetch(generatedAudioPlayer));
-			syiroPage.appendChild(syiro.Fetch(generatedButtonTwo));
-			document.querySelector("body").appendChild(syiro.Fetch(generatedFooter));
-
-			var videoPlayerContainer = document.createElement("div");
-			syiroPage.appendChild(videoPlayerContainer);
 
 			if (syiro.device.IsSubHD !== true){
 				syiro.CSS(videoPlayerContainer, "height", "400px");
@@ -141,53 +43,7 @@
 
 				syiro.CSS(videoPlayerContainer, "height", (screen.width * 0.5625).toString() + "px");
 				syiro.CSS(videoPlayerContainer, "width", (screen.width - 10).toString() + "px");
-			}
-
-			videoPlayerContainer.appendChild(syiro.Fetch(generatedVideoPlayer));
-
-			syiro.events.Add(generatedButton, // Listen to the generatedButton
-				function(x){
-					var componentObject = arguments[0];
-					var event = arguments[1];
-					var screenInfoElement = syiro.utilities.ElementCreator("section", { "content" : syiro.events.eventStrings["up"].toString() });
-					document.querySelector('div[data-syiro-component="page"]').insertBefore(screenInfoElement, document.querySelector('div[data-syiro-component="page"]').firstChild);
-				}
-			);
-
-			syiro.events.Add(generatedButtonTwo, // Listen to the Basic Button
-				function(x){
-					var component = arguments[0];
-					syiro.player.SetSources(generatedVideoPlayer, ["https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv", "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4"]); // Change the source
-				}
-			);
-
-			var testListItem = syiro.FetchComponentObject(document.querySelector('div[data-syiro-component="list"][data-syiro-component-owner] > div:first-of-type'));
-			var secondListItem = syiro.FetchComponentObject(document.querySelector('div[data-syiro-component="list"][data-syiro-component-owner] > div:nth-of-type(2)'));
-
-			syiro.listitem.SetLabel(testListItem, "First!");
-			syiro.listitem.SetControl(testListItem, generatedToggle);
-
-			syiro.events.Add(generatedToggle, function(x){console.log(x)}); // Listen to the Generated Toggle Button
-			syiro.events.Add(secondListItem, // Listen to the second List Item
-				function(){
-							var listItemComponent = arguments[0];
-							document.querySelector("body").querySelector('div[data-syiro-component="page"]').appendChild(
-								syiro.utilities.ElementCreator("section",
-								{
-									"content" : "y: " + syiro.component.FetchDimensionsAndPosition(document.querySelector('div[data-syiro-component="dropdown"]'))["y"]
-								}
-							)
-						);
-
-						document.querySelector("body").querySelector('div[data-syiro-component="page"]').appendChild(
-							syiro.utilities.ElementCreator("section",
-							{
-								"content" : "x: " + syiro.component.FetchDimensionsAndPosition(document.querySelector('div[data-syiro-component="dropdown"]'))["x"]
-							}
-						)
-					);
-				}
-			);
+			}*/
 		</script>
 	</body>
 </html>

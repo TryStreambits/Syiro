@@ -91,9 +91,9 @@ declare module syiro.component {
     function Remove(componentsToRemove: any): void;
 }
 declare module syiro.animation {
-    function Animate(component: Object, properties: Object): void;
-    function FadeIn(component: Object, postAnimationFunction?: Function): void;
-    function FadeOut(component: Object, postAnimationFunction?: Function): void;
+    function Animate(component: any, properties: Object): void;
+    function FadeIn(component: any, postAnimationFunction?: Function): void;
+    function FadeOut(component: any, postAnimationFunction?: Function): void;
 }
 declare module syiro.device {
     var DoNotTrack: boolean;

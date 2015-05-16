@@ -915,7 +915,14 @@ var syiro;
     var animation;
     (function (animation) {
         function Animate(component, properties) {
-            var componentElement = syiro.component.Fetch(component);
+            var componentElement;
+            if (syiro.component.IsComponentObject(component)) {
+                componentElement = syiro.component.Fetch(component);
+            }
+            else {
+                componentElement = component;
+                component = syiro.component.FetchComponentObject(componentElement);
+            }
             if ((componentElement !== null) && (typeof properties["animation"] == "string")) {
                 if (typeof properties["duration"] == "undefined") {
                     properties["duration"] = 250;
@@ -936,6 +943,7 @@ var syiro;
                 if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
                     var tempElement = componentElement;
                     componentElement = tempElement.querySelector('div[data-syiro-minor-component="buttonToggle"]');
+                    tempElement = null;
                 }
                 componentElement.setAttribute("class", properties["animation"]);
             }

@@ -111,7 +111,7 @@ module syiro.component {
 
 	export function FetchComponentObject( ...args : any[]) : Object {
 		var componentElement : Element; // Define componentElement as either the Element provided (one arg) or based on the selector provided (two args)
-		var previouslyDefined : boolean = false; // Define previouslyDefined as a boolean that defaults to true. We use this to determine whether to immediately add event listeners to a Dropdown
+		var previouslyDefined : boolean = false; // Define previouslyDefined as a boolean that defaults to true. We use this to determine whether to immediately add event listeners to a Dropdown Button
 
 		if (arguments.length == 1){ // If only one argument is defined
 			if (typeof arguments[0] == "string"){ // If the first argument defined is a string (selector)
@@ -148,8 +148,8 @@ module syiro.component {
 				previouslyDefined = true; // Set previouslyDefined to true
 			}
 
-			if ((componentElement.getAttribute("data-syiro-component") == "dropdown") && (previouslyDefined == false)){ // If we are defining a Syiro Dropdown component for the first time
-				syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
+			if ((componentElement.getAttribute("data-syiro-component") == "button") && (componentElement.getAttribute("data-syiro-component-type") == "dropdown") && (previouslyDefined == false)){ // If we are defining a Syiro Dropdown Button component for the first time
+				syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.button.Toggle); // Immediately listen to the Dropdown Button
 			}
 
 			return { "id" : componentElement.getAttribute("data-syiro-component-id"), "type" : componentElement.getAttribute("data-syiro-component")}; // Define component as the Object with id and type based on information from componentElement
@@ -184,11 +184,11 @@ module syiro.component {
 
 	// #endregion
 
-	// #region Function for fetching the Linked List component of the Dropdown.
+	// #region Function for fetching the Linked List component of the Dropdown Button or a Searchbox.
 
 	export function FetchLinkedListComponentObject(component) : Object {
-		var listSelector : string = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]'; // Generate a List CSS selector with the owner set to the Dropdown Component's Id
-		return syiro.component.FetchComponentObject(document.querySelector(listSelector)); // Get the Dropdown's Linked Component Object
+		var listSelector : string = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]'; // Generate a List CSS selector with the owner set to the Component's Id
+		return syiro.component.FetchComponentObject(document.querySelector(listSelector)); // Get the Linked Component Object
 	}
 
 	// #endregion
@@ -236,19 +236,12 @@ module syiro.component {
 		if (syiro.component.IsComponentObject(childComponent)){ // If the childComponent is an Syiro Component Object
 			childComponentId = childComponent["id"]; // Get the component's ID
 
-			if (parentComponent["type"] == "navbar" && (syiro.data.Read(parentComponent["id"] + "->Position") == "top") && ((childComponent["type"] == "dropdown") || (childComponent["type"] == "searchbox"))){ // If the parentComponent is a top Navbar and childComponent is either a dropdown or a searchbar
+			if ((parentComponent["type"] == "navbar") && (syiro.data.Read(parentComponent["id"] + "->Position") == "top") && ((childComponent["type"] == "button") || (childComponent["type"] == "searchbox"))){ // If the parentComponent is a top Navbar and childComponent is either a button or a searchbar
 				childElement = syiro.component.Fetch(childComponent); // Get the HTMLElement of the childComponent
 				allowAdding = true; // Allow adding the childComponent
 			}
-			else if (childComponent["type"] == "list-item"){ // If the childComponent is a ListItem
-				if (parentComponent["type"] == "dropdown"){ // If the parentComponent is a Dropdown
-					parentComponent = syiro.component.FetchLinkedListComponentObject(parentComponent); // Change parentComponent type to the one we get from FetchLinkedListComponentObject
-					parentElement = syiro.component.Fetch(parentComponent); // Change parentElement to be the Dropdown's linked List Component Element
-				}
-
-				if (parentComponent["type"] == "list"){ // If the parentComponent is a List
-					allowAdding = true; // Allow adding the childComponent
-				}
+			else if ((parentComponent["type"] == "list") && (childComponent["type"] == "list-item")){ // If the parentComponent is a List and childComponent is a ListItem
+				allowAdding = true; // Allow adding the childComponent
 			}
 			else if (typeof childComponent["link"] !== "undefined"){ // If a component "link" key is defined, meaning it is a link
 				childElement = syiro.utilities.ElementCreator("a", // Create a link element
@@ -261,7 +254,7 @@ module syiro.component {
 
 				allowAdding = true; // Allow adding the childComponent
 			}
-			else{ // If it is NOT a Dropdown, Searchbox, or Link
+			else{ // If it is NOT a Dropdown Button, List, Searchbox, or Link
 				childElement = syiro.component.Fetch(childComponent); // Get the HTMLElement of the childComponent
 				allowAdding = true; // Allow adding the childComponent
 			}

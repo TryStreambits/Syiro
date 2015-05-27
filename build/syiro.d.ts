@@ -62,6 +62,7 @@ declare module syiro.data {
 }
 declare module syiro.utilities {
     function ElementCreator(type: string, attributes: Object): HTMLElement;
+    function SanitizeHTML(content: any): any;
     function SecondsToTimeFormat(seconds: number): Object;
 }
 declare module syiro.generator {
@@ -137,7 +138,10 @@ declare module syiro.footer {
 declare module syiro.button {
     function Generate(properties: Object): Object;
     function SetIcon(component: Object, content: string): boolean;
-    function SetLabel(component: Object, content: string): boolean;
+    function SetImage(component: Object, content: string): boolean;
+    function SetText(component: Object, content: string): boolean;
+    var SetLabel: Function;
+    function Toggle(component?: Object): void;
 }
 declare module syiro.buttongroup {
     function Generate(properties: Object): {
@@ -161,10 +165,10 @@ declare module syiro.listitem {
 declare module syiro.dropdown {
     var FetchLinkedListComponentObject: Function;
     function Generate(properties: Object): Object;
-    function Toggle(component?: Object): void;
-    function SetText(component: Object, content: any): void;
-    function SetIcon(component: Object, content: string): void;
-    function SetImage(component: Object, content: any): void;
+    var Toggle: Function;
+    function SetText(component: Object, content: any): boolean;
+    var SetIcon: Function;
+    function SetImage(component: Object, content: any): boolean;
     function AddItem(component: Object, listItemComponent: Object): void;
     function RemoveItem(component: Object, listItemComponent: Object): void;
 }
@@ -200,6 +204,11 @@ declare module syiro.searchbox {
     function Generate(properties: Object): Object;
     function Suggestions(...args: any[]): void;
     function SetText(component: Object, placeholderText: any): void;
+}
+declare module syiro.sidepane {
+    function Generate(properties: Object): Object;
+    function Drag(): void;
+    function Toggle(component: Object): void;
 }
 declare module syiro {
     var backgroundColor: string;

@@ -280,7 +280,7 @@ module syiro.render {
             if (typeof potentialComponentScalableChildren.pop == "undefined"){ // If children key / val is an Object rather than an Array (Array would have .pop)
                 var childComponentsArray : Array<Object> = []; // Define childComponents as an array of Objects
 
-                for (var childSelector in potentialComponentScalableChildren){0 // For each childSelector in the children section of scaling
+                for (var childSelector in potentialComponentScalableChildren){ // For each childSelector in the children section of scaling
                     var childElement : Element = componentElement.querySelector(childSelector); // Get the childElement from componentElement based on the querySelector of the componentElement
                     var childComponent : Object = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
 

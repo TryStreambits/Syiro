@@ -14,6 +14,7 @@
 /// <reference path="players.ts" />
 /// <reference path="render.ts" />
 /// <reference path="searchbox.ts" />
+/// <reference path="sidepane.ts" />
 /// <reference path="utilities.ts" />
 
 module syiro {
@@ -32,11 +33,11 @@ module syiro {
 
 		syiro.events.Add("scroll", document, // Add an event listener to the document for when the document is scrolling
 			function(){
-				var dropdowns : any = document.querySelectorAll('div[data-syiro-component="dropdown"][active]'); // Get all of the Dropdowns that are active
+				var dropdownButtons : any = document.querySelectorAll('div[data-syiro-component="button"][data-syiro-component-type="dropdown"][active]'); // Get all of the Dropdown Buttons that are active
 
-				for (var dropdownIndex = 0; dropdownIndex < dropdowns.length; dropdownIndex++){ // For each of those Dropdown Components that are active
-					var thisDropdownObject : Object = syiro.component.FetchComponentObject(dropdowns[dropdownIndex]); // Get the Component Object of the Dropdown
-					syiro.dropdown.Toggle(thisDropdownObject); // Toggle the Dropdown
+				for (var dropdownButtonIndex = 0; dropdownButtonIndex < dropdownButtons.length; dropdownButtonIndex++){ // For each of those Dropdown Button Components that are active
+					var thisDropdownButtonObject : Object = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]); // Get the Component Object of the Dropdown Button
+					syiro.dropdown.Toggle(thisDropdownButtonObject); // Toggle the Dropdown Button
 				}
 			}
 		);
@@ -49,16 +50,16 @@ module syiro {
 			function(){
 				var fullscreenVideoPlayerElement : Element; // Define fullscreenVideoPlayerElement as an Element
 
-				if ((typeof document.fullscreenElement !== "undefined") && (typeof document.fullscreenElement !== "null")){
+				if ((typeof document.fullscreenElement !== "undefined") && (document.fullscreenElement !== null)){ // If the standard fullscreenElement is implemented
 					fullscreenVideoPlayerElement = document.fullscreenElement;
 				}
-				else if ((typeof document.mozFullScreenElement !== "undefined") && (typeof document.mozFullScreenElement !== "null")){
+				else if ((typeof document.mozFullScreenElement !== "undefined") && (document.mozFullScreenElement !== null)){ // If the mozilla fullscreenElement is implemented
 					fullscreenVideoPlayerElement = document.mozFullScreenElement;
 				}
-				else if ((typeof document.msFullscreenElement !== "undefined") && (typeof document.msFullscreenElement !== "null")){
+				else if ((typeof document.msFullscreenElement !== "undefined") && (document.msFullscreenElement !== null)){ // If the MS fullscreenElement is implemented
 					fullscreenVideoPlayerElement = document.msFullscreenElement;
 				}
-				else if ((typeof document.webkitFullscreenElement !== "undefined") && (typeof document.webkitFullscreenElement !== "null")){
+				else if ((typeof document.webkitFullscreenElement !== "undefined") && (document.webkitFullscreenElement !== null)){ // If the WebKit fullscreenElement is implemented
 					fullscreenVideoPlayerElement = document.webkitFullscreenElement;
 				}
 
@@ -90,7 +91,7 @@ module syiro {
 		}
 
 		if (documentHeadSection.querySelector('meta[name="viewport"]') == null){ // If the viewportMetaTag does NOT exist
-			var viewportMetaTag : HTMLElement = syiro.utilities.ElementCreator("meta", { "name" : "viewport", "content-attr" : "width=device-width, initial-scale=1,user-scalable=no"} ); // Create a meta tag, setting attributes to enable scaling and disable zooming
+			var viewportMetaTag : HTMLElement = syiro.utilities.ElementCreator("meta", { "name" : "viewport", "content-attr" : "width=device-width, maximum-scale=1.0, initial-scale=1,user-scalable=no"} ); // Create a meta tag, setting attributes to enable scaling and disable zooming
 			documentHeadSection.appendChild(viewportMetaTag); // Append the meta tag
 		}
 
@@ -120,7 +121,7 @@ module syiro {
 								for (var i = 0; i < mutation.addedNodes.length; i++){ // For each node in the mutation.addedNodes
 									var addedNode : any = mutation.addedNodes[i]; // Get the Node
 
-									function NodeParser(passedNode : any){ // Function that parses a Node (type any rather than Node since lib.ts doesn't seem to make not that attribute func are usable on Nodes)
+									var NodeParser : Function = function(passedNode : any){ // Function that parses a Node (type any rather than Node since lib.ts doesn't seem to make not that attribute func are usable on Nodes)
 										if (passedNode.localName !== null){ // If the addedNode has a localName  instead of null
 											if (passedNode.hasAttribute("data-syiro-component")){ // If the element is a Syiro component
 												var componentObject = syiro.component.FetchComponentObject(passedNode); // Fetch the (potential) Component Object of the passedNode
@@ -133,8 +134,8 @@ module syiro {
 														syiro.events.Add(syiro.events.eventStrings["up"], buttonComponentObject, syiro.buttongroup.Toggle); // Immediately enable parent toggling for this Button
 													}
 												}
-												else if (componentObject["type"] == "dropdown"){ // If the component is a Dropdown
-													syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.dropdown.Toggle); // Immediately listen to the Dropdown
+												else if ((componentObject["type"] == "button") && (passedNode.getAttribute("data-syiro-component-type") == "dropdown")){ // If the component is a Dropdown Button
+													syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.button.Toggle); // Immediately listen to the Dropdown Button
 												}
 												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
 													syiro.player.Init(componentObject); // Initialize the Audio or Video Player
@@ -150,6 +151,21 @@ module syiro {
 																syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important"); // Hide the Linked List
 															}.bind(this, componentObject)
 														);
+													}
+												}
+												else if (componentObject["type"] == "sidepane"){ // If the Component is a Sidepane
+													if (syiro.device.SupportsTouch){ // If we are using a touch device
+														var innerSidepaneEdge = passedNode.querySelector('div[data-syiro-minor-component="sidepane-edge"]'); // Get the Sidepane Edge
+														syiro.events.Add(syiro.events.eventStrings["move"], innerSidepaneEdge, syiro.sidepane.Drag.bind(this, componentObject)); // Bind the Sidepane Edge to the Drag function for "move"
+														syiro.events.Add(syiro.events.eventStrings["down"], innerSidepaneEdge, syiro.sidepane.Drag.bind(this, componentObject)); // Bind the Sidepane Edge to Drag function for "down"
+														syiro.events.Add(syiro.events.eventStrings["up"], innerSidepaneEdge, syiro.sidepane.Drag.bind(this, componentObject)); // Bind the Sidepane Edge to Drag function for "up"
+													}
+
+													if (document.querySelector('div[data-syiro-minor-component="overlay"]') == null){ // If there is no overlay on the page
+														var contentOverlay = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "overlay"}); // Generate an Overlay
+														document.body.appendChild(contentOverlay); // Append the contentOverlay to the body
+
+														syiro.events.Add(syiro.events.eventStrings["up"], contentOverlay, syiro.sidepane.Toggle.bind(this, componentObject)); // Enable the toggling of the Sidepane (in this case, hiding), when clicking the contentOverlay
 													}
 												}
 
@@ -184,7 +200,7 @@ module syiro {
 			mutationWatcher.observe(document.querySelector("body"), mutationWatcherOptions); // Watch the document body with the options provided.
 		}
 		else{ // If MutationObserver is NOT supported (IE10 and below), such as in Windows Phone
-			if (syiro.plugin.alternativeInit !== undefined){ // If syiro.plugin.alternativeInit is added in the page as well
+			if (typeof syiro.plugin.alternativeInit !== "undefined"){ // If syiro.plugin.alternativeInit is added in the page as well
 				syiro.plugin.alternativeInit.Init(); // Initialize the alternative init
 			}
 		}
@@ -201,7 +217,7 @@ module syiro {
 	export var Fetch = syiro.component.Fetch; // Meta-function for fetching Syiro component HTMLElements
 	export var FetchComponentObject = syiro.component.FetchComponentObject; // Meta-function for fetching Syiro Component Objects from Component Elements.
 	export var FetchDimensionsAndPosition = syiro.component.FetchDimensionsAndPosition; // Meta-function for fetching the dimensions and position of a Component Object Element or any (HTML)Element.
-	export var FetchLinkedListComponentObject = syiro.component.FetchLinkedListComponentObject; // Meta-function for fetching the linked List of a Component such as a Dropdown or Searchbox
+	export var FetchLinkedListComponentObject = syiro.component.FetchLinkedListComponentObject; // Meta-function for fetching the linked List of a Component such as a Dropdown Button or Searchbox
 
 	export var IsComponentObject = syiro.component.IsComponentObject; // Meta-function for checking if the variable passed is a Component Object
 

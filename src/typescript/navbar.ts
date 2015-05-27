@@ -44,8 +44,8 @@ module syiro.navbar {
 
                         componentElement.appendChild(generatedElement); // Append the component to the parent component element
                     }
-                    else if ((syiro.component.IsComponentObject(individualItem)) && (navbarType == "top")){ // If we are adding a Syiro Component (whether it be a Dropdown or a Searchbox) and the navbarType is top
-                        componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the HTMLElement fetched from syiro.component.Fetch(dropdownComponent)
+                    else if ((syiro.component.IsComponentObject(individualItem)) && (navbarType == "top")){ // If we are adding a Syiro Component (whether it be a Dropdown Button or a Searchbox) and the navbarType is top
+                        componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the fetched Component Element
                     }
                 }
             }

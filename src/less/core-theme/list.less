@@ -46,7 +46,7 @@ div[data-syiro-component="list"]{
 
     // #endregion
 
-    &[data-syiro-component-owner^="dropdown"],&[data-syiro-component-owner^="searchbox"]{ // If the owner of the List is a Dropdown or a Searchbox
+    &[data-syiro-component-owner]{ // If this List is owned
         background-color: darken(@syiroBackground, 2.5); // Set background to slightly darkened form of @syiroBackground
         border-top: 2px solid darken(@syiroBackground, 20%);
         position: fixed; // Fixed position

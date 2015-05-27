@@ -27,6 +27,20 @@
 
 // #endregion
 
+// #region Sliding Mixin
+// Returns properties that are used with the parent went the parent has [data-syiro-animation="slide"]
+
+.slide(@pos; @milliseconds){
+	transition: left unit(@milliseconds, ms);
+	-webkit-transition: left unit(@milliseconds, ms);
+
+	&[data-syiro-animation="slide"]{
+		left: @pos; // Set left to @pos, where pos can be pix, e(calc()), etc.
+	}
+}
+
+// #endregion
+
 // #endregion Pulse
 
 *[class="pulse"]{

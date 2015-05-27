@@ -1,7 +1,7 @@
 /* ================= Page Setup ================= */
 
 function generatePage(){
-    generateNavbar(); // Generate the Navbar & Associated Components
+    generateNavbarAndSidepane(); // Generate the Navbar, Sidepane & Associated Components
 
     /* Buttongroup Generation */
 
@@ -21,27 +21,25 @@ function generatePage(){
         syiro.CSS(videoPlayerContainer, "height", (screen.height * 0.50).toString() + "px");
         var videoPlayerComponentObject = syiro.FetchComponentObject(videoPlayerContainer.querySelector('div[data-syiro-component="video-player"]')); // Get the Component Object of the Video Player inside videoPlayerContainer
         syiro.render.Scale(videoPlayerComponentObject); // Rescale the Video Player
-        console.log("resizing");
     });
 }
 
-function generateNavbar(){
+function generateNavbarAndSidepane(){
     /* Navbar Data Definition */
 
-    var topNavbarComponentData = {
+    var navbarComponentObject = syiro.navbar.Generate({
         "position" : "top",
-        "fixed" : true,
         "items" : [ { "link" : "http://syiro.com", "title" : "Home" }, { "link" : "https://github.com/StroblIndustries/Syiro/wiki", "title" : "Documentation"}, { "link" : "https://github.com/StroblIndustries/Syiro/issues", "title" : "Issues"} ]
-    };
+    });
 
     /* End of Navbar Data Definition */
 
     var backgroundColorToggler = syiro.button.Generate({ "type" : "toggle" }); // Generate a Toggle Button
-    var dropdownComponentObject = syiro.dropdown.Generate({ "items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" } ] } ); // Use "Men" icon for Dropdown (no label defintion)
-    topNavbarComponentData["items"].push(dropdownComponentObject); // Push the Dropdown to the Navbar Component
+    var sidepaneListObject = syiro.list.Generate({ "items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" } ] } ); // Generate a List
+    var sidepaneComponentObject = syiro.sidepane.Generate({ "items" : [ sidepaneListObject ]}); // Generate a List
 
-    var navbarComponentObject = syiro.navbar.Generate(topNavbarComponentData); // Generate the Navbar
-    document.body.insertBefore(syiro.Fetch(navbarComponentObject), document.body.firstChild); // Append the fetched Navbar Element to the document
+    document.body.insertBefore(syiro.Fetch(sidepaneComponentObject), globalPageElement); // Prepend in body
+    globalPageElement.insertBefore(syiro.Fetch(navbarComponentObject), globalPageElement.firstChild); // Append the fetched Navbar Element to the main Element
 
     syiro.events.Add(syiro.events.eventStrings["up"], backgroundColorToggler, backgroundColorSwitcher); // Add the backgroundColorSwitcher function to the toggle button
 }

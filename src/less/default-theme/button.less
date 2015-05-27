@@ -2,8 +2,15 @@
 
 // #region Basic Buttons and Toggle Buttons
 
-div[data-syiro-component="button"]{ // Syiro Button Component
-	float: left;
+div[data-syiro-component="button"]{
+
+	// #region Icon-Only Button
+
+	&:empty { // If the Button is icon-only
+		min-width: 40px;
+	}
+
+	// #endregion
 
 	// #region "Basic" Button Component
 

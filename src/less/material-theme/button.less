@@ -5,8 +5,14 @@
 // #region Basic Buttons and Toggle Buttons
 
 div[data-syiro-component="button"]{ // Syiro Button Component
-	float: left;
-	margin: 5px;
+
+	// #region Icon-Only Button
+
+	&:empty { // If the Button is icon-only
+		min-width: 36px;
+	}
+
+	// #endregion
 
 	// #region "Basic" Button Component
 
@@ -43,7 +49,7 @@ div[data-syiro-component="button"]{ // Syiro Button Component
             background-color: darken(@syiroBackground, 10%);
 
             & > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
-                background-color: #ffffff; // Set to white
+                background-color: white; // Set to white
             }
         }
 

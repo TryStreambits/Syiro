@@ -162,25 +162,6 @@ module syiro.player {
                     );
 
                     // #endregion
-
-                    // #region Poster Art Check
-
-                    var posterImageElement : Element = componentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
-
-                    if (posterImageElement !== null){ // If the posterImageElement exists
-                        syiro.events.Add(syiro.events.eventStrings["up"], posterImageElement, // Add mouseup, touchend, etc listeners to the posterImageElement
-                            function(){
-                                var posterImageElement : Element = arguments[0]; // Set the posterImageElement as the first argument passed
-                                var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
-                                var playerComponentObject = syiro.component.FetchComponentObject(posterImageElement.parentElement); // Fetch the Video Player Component (which is the parent of posterImageElement)
-
-                                syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
-                                syiro.player.PlayOrPause(playerComponentObject); // Play the video
-                            }
-                        );
-                    }
-
-                    // #endregion
                 }
 
                 // #endregion
@@ -512,22 +493,15 @@ module syiro.player {
         }
 
         if (allowPlaying == true){ // If the content is able to be played
+            if (component["type"] == "video-player"){ // If this is a Video Player
+                playerComponentElement.setAttribute("data-syiro-show-video", "true"); // Set attribute of data-syiro-show-video to true, indicating to no longer hide the innerContentElement
+            }
+
             if (playButtonComponentObject == undefined){ // If the Play Button Component is not defined
                 playButtonComponentObject = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-minor-component="player-button-play"]')); // Get the Play Button Component Object
             }
 
             var playButton : Element = syiro.component.Fetch(playButtonComponentObject); // Get the Play Button Element
-
-            // #region Poster Image Hiding
-
-            var posterImageElement : HTMLElement = playerComponentElement.querySelector('img[data-syiro-minor-component="video-poster"]'); // Get the video poster img tag if it exists
-
-            if (posterImageElement !== null){ // If the posterImageElement is defined
-                syiro.component.CSS(posterImageElement, "visibility", "hidden"); // Hide the element
-                syiro.component.CSS(playButton.parentElement, "opacity", false); // Remove opacity setting
-            }
-
-            // #endregion
 
             if (innerContentElement.paused !== true){ // If the audio or video Element is playing
                 innerContentElement.pause(); // Pause the audio or video Element
@@ -644,6 +618,9 @@ module syiro.player {
         var playerControl = playerElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control
 
         if (syiro.data.Read(component["id"] + "->NoUX") == false){ // If this player has UX
+            if (component["type"] == "video-player"){ // If this is a Video Player
+                playerElement.removeAttribute("data-syiro-show-video"); // Remove data-syiro-show-video attribute so the video Element is now hidden
+            }
             // #region Button Attribute Resetting
 
             var playButton = playerControl.querySelector('div[data-syiro-minor-component="player-button-play"]'); // Get the Play Button from the Player Control
@@ -690,11 +667,6 @@ module syiro.player {
         var arrayofSourceElements : Array<HTMLElement> = syiro.player.GenerateSources(component["type"].replace("-player", ""), sources); // Get an array of Source Elements
 
         syiro.player.Reset(component); // Reset the component
-
-        if ((syiro.data.Read(component["id"] + "->NoUX") == false) && (component["type"] == "video-player")){ // If this is a video player and there is a UX
-            syiro.component.CSS(playerElement.querySelector('img[data-syiro-minor-component="video-poster"]'), "visibility", "hidden"); // Hide the Video Poster
-        }
-
         playerInnerContentElement.innerHTML = ""; // Remove all inner source tags from the InnerContentElement (audio or video tag) by resetting the innerHTML
 
         for (var sourceElementKey in arrayofSourceElements){ // For each sourceElement in arrayofSourceElements
@@ -1102,20 +1074,15 @@ module syiro.videoplayer {
             if (navigator.userAgent.indexOf("iPhone") == -1) { // If the browser is NOT an iPhone, generate a proper Video Player Component
                 syiroVideoElementProperties["volume"] = "0.5"; // Set volume to 0.5
 
-                // #region Video Art Poster Creation
+                // #region Video Art
 
                 if (typeof properties["art"] !== "undefined"){ // If art has been defined
-                    var posterImageElement : HTMLElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "video-poster", "src" : properties["art"] }); // Create an img Element with the src set to the artwork
-                    componentElement.appendChild(posterImageElement); // Append to the Video Player container
+                    syiro.component.CSS(componentElement, "background-image", 'url("' + properties["art"] + '")'); // Set the background-image of the main Video container to be the provided art
                 }
 
                 // #endregion
 
                 // #region Player Menu Element Creation (If Applicable)
-
-                if (typeof properties["share"] !== "undefined"){ // If the "share" menu attribute is still being used
-                    properties["menu"] = properties["share"]; // Set "menu" attribute equal to "share" attribute
-                }
 
                 if (properties["menu"] !== undefined){ // If the menu attribute is defined
                     if (properties["menu"]["type"] == "list"){ // If the component provided is a List
@@ -1193,7 +1160,7 @@ module syiro.videoplayer {
 
             var usingExternalLibrary = false; // Declare a variable that we'll use to determine if we are using an external library and tying that into Syiro Player
 
-            if ((typeof properties["UsingExternalLibrary"] !== "undefined")&& (properties["UsingExternalLibrary"] == true)){ // If an external library is going to be tying into the Syiro Video Player
+            if ((typeof properties["UsingExternalLibrary"] !== "undefined") && (properties["UsingExternalLibrary"] == true)){ // If an external library is going to be tying into the Syiro Video Player
                 usingExternalLibrary = true;
             }
 

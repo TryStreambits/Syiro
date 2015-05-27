@@ -177,10 +177,7 @@ func main(){
 
                     specificLESSFlags = append(specificLESSFlags, "src/less/" + lowercaseProjectName + ".less")
                     specificLESSFlags = append(specificLESSFlags, "build/" + compileOptions.FileName + ".css")
-
                     commandOutput := execCommand("lessc", specificLESSFlags) // Run the less compiler
-                    fmt.Println(commandOutput);
-
 
                     if strings.Contains(commandOutput, "ParseError") == false && strings.Contains(commandOutput, "SyntaxError") == false { // If there was no parse or syntax errors in the LESS
                         cssFile, cssFileError := os.Open("build/" + compileOptions.FileName + ".css") // Use os.Open to return an os.File to the CSS file, with any necessary error @ cssFileError
@@ -232,15 +229,12 @@ func main(){
 
                         fmt.Println("Minifying " + projectConfig.ProjectName + " compiled JavaScript.")
 
-                        uglifyJsArgs := []string{} // Define uglifyJsArgs as an empty slice of strings
-                        uglifyJsArgs = append(uglifyJsArgs, "build/" + lowercaseProjectName + ".js") // Add the source of what we'll minify
-                        uglifyJsArgs = append(uglifyJsArgs, "--mangle --screw-ie8") // Have it mangle internal function variable names and not worry about IE8 compat
-                        uglifyJsArgs = append(uglifyJsArgs, "--compress sequences,conditionals,comparisons,evaluate,booleans,loops,join_vars,hoist_funs,if_return,drop_console,properties,unsafe") // Set a long list of things to modify in the source
+                        closureArgs := []string{} // Define uglifyJsArgs as an empty slice of strings
+                        closureArgs = append(closureArgs, "build/syiro.js", "--compilation_level=SIMPLE_OPTIMIZATIONS", "--warning_level=QUIET") // Append syiro.js for build, SIMPLE optimizations, suppress warnings
+                        closureOutput := execCommand("ccjs", closureArgs) // Run Google Closure Compiler and store the output in closureOutput
 
-                        uglifyJsOutput := execCommand("uglifyjs", uglifyJsArgs) // Run uglifyjs and store the output in uglifyJsOutput
-
-                        WriteOrUpdateFile("build/" + lowercaseProjectName + ".min.js", []byte(uglifyJsOutput)) // Write or update the minified JS file content to build/syiro.min.js
-                        WriteOrUpdateFile("tests/design/js/" + lowercaseProjectName + ".min.js", []byte(uglifyJsOutput)) // Write or update the minified JS content to tests
+                        WriteOrUpdateFile("build/" + lowercaseProjectName + ".min.js", []byte(closureOutput)) // Write or update the minified JS file content to build/syiro.min.js
+                        WriteOrUpdateFile("tests/design/js/" + lowercaseProjectName + ".min.js", []byte(closureOutput)) // Write or update the minified JS content to tests
                         execCommand("zopfli", []string{"build/" + lowercaseProjectName + ".min.js"}) // Have zopfli run and gzip the contents
                     } else{ // If tsc did report errors
                         fmt.Println(commandOutput) // Output those errors

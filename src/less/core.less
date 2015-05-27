@@ -77,10 +77,52 @@ body {
 	margin: 0;
 	overflow-x: hidden;
 	scroll-behavior: smooth; // Enable smooth scrolling
-}
 
-div[data-syiro-component="page"]{
-	position: static;
+	// #region Main Page Tweaks
+
+	& > div[data-syiro-component="page"]:first-child {
+		float: left;
+		width: 100%;
+	}
+
+	& > div[data-syiro-component="page"]:nth-child(2) { // If a main page Element is the second Element
+
+		// #region For resolutions with a max of 1280 in width
+
+		@media (max-width: 1280px){
+			float: left;
+			width: 100%; // Have the page Element be full-width of page
+			overflow-x: hidden;
+		}
+
+		// #endregion
+
+		// #region For resolutions greater than 1280
+
+		@media (min-width: 1280px){
+			float: right;
+			width: e('calc(100% - 200px)'); // Set width to be 100% - 200px (Sidepane)
+		}
+
+		// #endregion
+
+	}
+
+	// #endregion
+
+	// #region Overlay
+
+	& > div[data-syiro-minor-component="overlay"]{
+		display: none; // Default to not displaying
+		float: left;
+		height: 100%;
+		width: 100%;
+		background-color: rgba(0,0,0,0.75); // Overlay the content and make it seem darkened by having a opaque black background
+		position: fixed;
+		z-index: 8;
+	}
+
+	// #endregion
 }
 
 // #endregion

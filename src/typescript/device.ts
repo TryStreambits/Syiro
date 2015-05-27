@@ -106,11 +106,13 @@ module syiro.device {
         if ((syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Windows")){ // If we are not on a desktop operating system
             syiro.device.SupportsTouch = true; // Set syiro.device.SupportsTouch to true
             syiro.events.eventStrings["down"] = ["touchstart"]; // Set down events to touchstart
-            syiro.events.eventStrings["up"]= ["mouseup"]; // Set up events to mouseup
+            syiro.events.eventStrings["up"] = ["touchend"]; // Set up events to touchend
+            syiro.events.eventStrings["move"] = ["touchmove"]; // Set move events to touchmove
         }
         else { // If we are on a desktop operating system
             syiro.events.eventStrings["down"] = ["mousedown"]; // Set down events to mousedown
             syiro.events.eventStrings["up"]= ["mouseup"]; // Set up events to mouseup
+            syiro.events.eventStrings["move"] = ["mousemove"]; // Set move events to mousemove
         }
 
         // #endregion

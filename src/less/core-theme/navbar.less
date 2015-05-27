@@ -9,7 +9,6 @@ div[data-syiro-component="navbar"]{
     float: left;
     width: 100%;
     font-size: 16px;
-    box-shadow: 0 0 2px 0 @syiroSecondaryColor;
 
     // #region Link Styling
 
@@ -42,10 +41,11 @@ div[data-syiro-component="navbar"]{
     // #region Top Navbar Component
 
     &[data-syiro-component-type="top"]{
+        border-bottom: 2px lighten(@syiroSecondaryColor, 20%);
 
         // #region Header Dropdown Modifications
 
-      & > div[data-syiro-component="dropdown"]{
+      & > div[data-syiro-component="button"][data-syiro-component-type="dropdown"]{
           height: inherit;
           line-height: inherit;
           margin-top: 0 !important; /* Force the list to be vertically aligned */
@@ -67,6 +67,7 @@ div[data-syiro-component="navbar"]{
     // #region Bottom Navbar
 
     &[data-syiro-component-type="bottom"]{
+        border-top: 2px lighten(@syiroSecondaryColor, 20%);
 
         // #region Footer Component - Footer Text
 

@@ -357,6 +357,18 @@ div[data-syiro-component="audio-player"]{
 div[data-syiro-component="video-player"]{
     float: left;
     background-color: black; // Set the Video Player Component to have a black background to match video letterboxing color
+    background-repeat: no-repeat; // Do not repeat any Video Art
+    background-size: 100%; // Ensure Video Art is full container
+
+    // #region Show Video
+
+    &[data-syiro-show-video="true"]{
+        & > video { // Inner Video
+            visibility: visible; // Make visible
+        }
+    }
+
+    // #endregion
 
     &:-webkit-full-screen{ // Webkit Fullscreen
         height: 100% !important;
@@ -372,21 +384,12 @@ div[data-syiro-component="video-player"]{
         }
     }
 
-    & > img[data-syiro-minor-component="video-poster"]{ // Video Poster
-        float: left;
-        height: inherit; // Inherit from parent Video Player container
-        width: inherit; // Inherit from parent Video Player container
-        margin: 0;
-        padding: 0;
-        position: absolute;
-        z-index: 5; // Force above the video
-    }
-
     & > video { // Inner video
         float: left;
         height: inherit; // Inherit from parent Video Player container
         width: inherit; // Inherit from parent Video Player container
         background-color: black; // Set background color of video to black in the event it doesn't have the proper aspect ratio, to make any letterboxing less jarring
+        visibility: hidden; // Default to being hidden
 
         &:focus { // When the video is focused, typically on right-click, disable the border / outline
             border: 0;

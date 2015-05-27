@@ -18,30 +18,51 @@ module syiro.utilities {
                         attributeKey = "content"; // Set to content instead.
                     }
 
-                    generatedElement.setAttribute(attributeKey, attributeValue); // Set the attribute
+                    generatedElement.setAttribute(attributeKey, syiro.utilities.SanitizeHTML(attributeValue)); // Set the attribute
                 }
                 else{ // If the attributeKey IS "content"
-                    if (typeof attributeValue == "string"){ // If the attributeValue we passed is a string
-                        generatedElement.innerHTML = attributeValue.replace(/<*[^]script*>/g, ""); // Replace all <script> and </script> tags
-                    }
-                    else if (typeof attributeValue.nodeType !== "undefined"){ // If this is an Element
-                        if (attributeValue.tagName.toLowerCase() !== "script"){ // If we are not including a singular script tag
-                            var innerScriptElements = attributeValue.getElementsByTagName("script"); // Get all inner JavaScript tags
+                    if ((typeof attributeValue == "string") || ((typeof attributeValue.nodeType !== "undefined") && (attributeValue.nodeType == 1))){ // If the attributeValue we passed is a string or an appropriate Element
+                        var sanitizedContent = syiro.utilities.SanitizeHTML(attributeValue); // Set sanitizedContent to sanitized HTML (whether it is a string or Element)
 
-                            if (innerScriptElements.length !== 0){ // If there are inner JavaScript tags
-                                for (var innerScriptElementIndex = 0; innerScriptElementIndex < innerScriptElements.length; innerScriptElementIndex++){ // For each inner JavaScript tag
-                                    var innerScriptElement = innerScriptElements[innerScriptElementIndex];
-                                    innerScriptElement.parentElement.removeChild(innerScriptElement); // Remove the script tag
-                                }
-                            }
+                        if (typeof attributeValue == "string"){ // If the attributeValue we passed is a string
+                            generatedElement.innerHTML = sanitizedContent; // Set generatedElement innerHTML to sanitizedContent
                         }
-                        generatedElement.appendChild(attributeValue); // Append the attributeValue
+                        else{ // If this is an Element
+                            generatedElement.appendChild(sanitizedContent); // Append the sanitizedContent
+                        }
                     }
                 }
             }
 
             return generatedElement; // Return the componentElement
         }
+    }
+
+    // #endregion
+
+    // #region Sanitize HTML - This function is responsible for removing script tags from HTML
+
+    export function SanitizeHTML(content : any){
+        var updatedContent : any = false; // Define updatedContent as false (failure) by default
+
+        if (typeof content == "string"){ // If the content we passed is a string
+            updatedContent = content.replace(/<*[^]script*>/g, ""); // Replace all <script> and </script> tags
+        }
+        else if (typeof content.nodeType !== "undefined"){ // If this is an Element
+            if (content.tagName.toLowerCase() !== "script"){ // If we are not including a singular script tag
+                var innerScriptElements = content.getElementsByTagName("script"); // Get all inner JavaScript tags
+
+                if (innerScriptElements.length !== 0){ // If there are inner JavaScript tags
+                    for (var innerScriptElementIndex = 0; innerScriptElementIndex < innerScriptElements.length; innerScriptElementIndex++){ // For each inner JavaScript tag
+                        var innerScriptElement = innerScriptElements[innerScriptElementIndex];
+                        innerScriptElement.parentElement.removeChild(innerScriptElement); // Remove the script tag
+                    }
+                }
+            }
+            updatedContent = content; // Set the updatedContent to the HTML Element
+        }
+
+        return updatedContent; // Return the updatedContent
     }
 
     // #endregion

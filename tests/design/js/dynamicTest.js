@@ -98,6 +98,8 @@ function backgroundColorSwitcher(){
 }
 
 function changeVideoSource(){
+    console.log(arguments);
+
     var buttonComponentObject = arguments[0]; // Set the buttonComponentObject to the first argument
     var buttonComponentElement = syiro.Fetch(buttonComponentObject); // Set buttonComponentElement as the fetched buttonComponentObject Element
 

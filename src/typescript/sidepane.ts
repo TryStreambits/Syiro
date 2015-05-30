@@ -62,41 +62,28 @@ module syiro.sidepane {
     // #region Drag - This function will handle the dragging, positioning, and releases of touch
 
     export function Drag(){
-        var componentObject = arguments[0]; // Define componentObject as the argument passed
-        var componentElement = syiro.component.Fetch(componentObject); // Define componentElement as the fetched Component Object
+        var componentElement = arguments[0]; // Define componentElement as the argument passed
         var eventData = arguments[2]; // Define eventData as the event data passed
+        var touchXPosition = eventData.touches[0].screenX; // Define touchXPosition as the screenX position of the first Touch Object from touches
+        var updatedSidepanePosition = (touchXPosition - componentElement.clientWidth); // Set updatedSidepanePosition to touchXPosition minus the width of the Sidepane
 
-        if (eventData.type == syiro.events.eventStrings["down"][0]){ // If Drag() is being triggered by first "down" eventString (like mousedown or touchstart)
+        if (updatedSidepanePosition > 0){ // If the touch position is further on the right side that the Sidepane would usually "break" from the edge
+            updatedSidepanePosition = 0; // Set left position to 0
+        }
+        else if (touchXPosition <= 0){ // If the touch position is 0 or somehow less than that.
+            updatedSidepanePosition = -200; // Set left position to -200
+        }
+
+        componentElement.style.left = updatedSidepanePosition.toString() + "px"; // Set the left position of the Sidepane
+    }
+
+    // #endregion
+
+    // #region Gesture-Initialize Specific Function
+
+    export function GestureInit(){
             var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
             syiro.component.CSS(contentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
-        }
-        else if (eventData.type == syiro.events.eventStrings["move"][0]){ // If Drag() is being triggered by first "move" eventString (like mousemove or touchmove)
-            var touchXPosition = eventData.touches[0].screenX; // Define touchXPosition as the screenX position of the first Touch Object from touches
-            var updatedSidepanePosition = (touchXPosition - componentElement.clientWidth); // Set updatedSidepanePosition to touchXPosition minus the width of the Sidepane
-
-            if (updatedSidepanePosition > 0){ // If the touch position is further on the right side that the Sidepane would usually "break" from the edge
-                updatedSidepanePosition = 0; // Set left position to 0
-            }
-            else if (touchXPosition <= 0){ // If the touch position is 0 or somehow less than that.
-                updatedSidepanePosition = -200; // Set left position to -200
-            }
-
-            componentElement.style.left = updatedSidepanePosition.toString() + "px"; // Set the left position of the Sidepane
-        }
-        else if (eventData.type == syiro.events.eventStrings["up"][0]){ // If Drag() is being triggered by first "up" eventString (like mouseup or touchend)
-            var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
-            syiro.component.CSS(componentElement, "left", false);
-
-            if (eventData.changedTouches[0].clientX > (screen.width * 0.35)){ // If we are in the second half of the screen
-                componentElement.setAttribute("data-syiro-animation", "slide"); // Set the slide animation
-                syiro.component.CSS(contentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
-            }
-            else { // If we are in the first half of the screen
-                componentElement.removeAttribute("data-syiro-animation"); // Remove the slide animation, sliding the Sidepane back into the edge.
-                syiro.component.CSS(contentOverlay, "display", false); // Hide the contentOverlay
-            }
-
-        }
     }
 
     // #endregion
@@ -107,13 +94,16 @@ module syiro.sidepane {
         if ((syiro.component.IsComponentObject(component)) && (component["type"] == "sidepane")){ // If this is a Component Object and indeed a Sidepane
             var componentElement = syiro.component.Fetch(component); // Fetch the Sidepane Element
             var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
+            var showSidepane : boolean = false; // Define showSidepane as a defaulted "false"
 
             if (componentElement.hasAttribute("data-syiro-animation") == false){ // If we are going to show Sidepane
                 componentElement.setAttribute("data-syiro-animation", "slide"); // Set the slide animation
+                syiro.component.CSS(componentElement, "left", "0px"); // Ensure left is set to 0px
                 syiro.component.CSS(contentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
             }
             else{ // If it is already visible
                 componentElement.removeAttribute("data-syiro-animation"); // Remove the slide animation, sliding the Sidepane back into the edge.
+                syiro.component.CSS(componentElement, "left", false); // Ensure there is no left property
                 syiro.component.CSS(contentOverlay, "display", false); // Hide the contentOverlay
             }
         }

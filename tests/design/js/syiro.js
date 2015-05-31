@@ -2789,7 +2789,7 @@ var syiro;
         var documentHeadSection = document.querySelector("head");
         if (documentHeadSection == null) {
             documentHeadSection = document.createElement("head");
-            document.querySelector("html").insertBefore(documentHeadSection, document.querySelector("body"));
+            document.querySelector("html").insertBefore(documentHeadSection, document.body);
         }
         if (documentHeadSection.querySelector('meta[http-equiv="X-UA-Compatible"]') == null) {
             var compatMetaTag = syiro.utilities.ElementCreator("meta", { "http-equiv": "X-UA-Compatible", "content-attr": "IE=edge" });

@@ -82,7 +82,7 @@ module syiro {
 
 		if (documentHeadSection == null){ // If the documentHeadSection doesn't actually exist
 			documentHeadSection = document.createElement("head"); // Create the head section / tag
-			document.querySelector("html").insertBefore(documentHeadSection, document.querySelector("body")); // Insert the head tag before the body
+			document.querySelector("html").insertBefore(documentHeadSection, document.body); // Insert the head tag before the body
 		}
 
 		if (documentHeadSection.querySelector('meta[http-equiv="X-UA-Compatible"]') == null){ // If the IE compat meta doesn't exist

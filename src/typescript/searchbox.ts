@@ -57,7 +57,7 @@ module syiro.searchbox {
 			searchboxContainerData["aria-owns"] = searchSuggestionsList["id"]; // Define the aria-owns, setting it to the List Component to declare for ARIA that the Searchbox Component "owns" the List Component
 			searchSuggestionsListElement.setAttribute("data-syiro-component-owner", componentId); // Set the List's Component owner to be the component Id
 
-			document.querySelector("body").appendChild(searchSuggestionsListElement); // Append the List Element to the end of the document
+			document.body.appendChild(searchSuggestionsListElement); // Append the List Element to the end of the document
 
 			if (typeof properties["preseed"] !== "undefined"){ // If a preseed []string is provided
 				for (var listItemIndex in listItems){ // For each List Item in listItems array

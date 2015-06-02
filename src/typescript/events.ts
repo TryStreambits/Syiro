@@ -24,14 +24,18 @@ module syiro.events {
         var componentElement : any; // Define componentElement as any (potentially Element)
         var passableValue : any = null; // Set passableValue to any type, defaults to null
 
+        // #region Immediate PreventDefault()
+
+        if (eventData.type.indexOf("touch") !== -1){ // If we are using touch events
+            eventData.preventDefault(); // Prevent the browser from doing default touch actions
+        }
+
         // #region Component Data Determination - Determines the Component Id and Component Element
 
         if (syiro.component.IsComponentObject(component)) { // If the Component provided is a Syiro Component Object
             componentId = component["id"]; // Define componentId as the component Id we've already generated
         }
         else{ // If the Component is either an Element or another interface like screen
-            var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.
-
             if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
                 if (component.hasAttribute("data-syiro-component-id")){ // If the component already has a unique Id defined
                     componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
@@ -48,6 +52,7 @@ module syiro.events {
                 }
             }
             else { // If the Component passed is an Object like window, document, screen
+                var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.
                 componentId = componentType; // Define componentId as the componentType since it is most likely unique
             }
 
@@ -57,9 +62,9 @@ module syiro.events {
         // #endregion
 
         // #region Passable Data Determination
+        componentElement = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
 
         if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a toggle button
-            componentElement = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
             syiro.button.Toggle(component); // Call syiro.button.Toggle with the Toggle Button Component
             if (componentElement.hasAttribute("active") == false){ // If the button is NOT active
                 passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
@@ -68,8 +73,7 @@ module syiro.events {
                 passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
             }
         }
-        else if ((typeof component.nodeType !== "undefined") && (component.nodeName !== "#document") && (component.parentElement.getAttribute("data-syiro-component") == "searchbox")){ // If the component is a Syiro Searchbox
-            componentElement = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
+        else if ((typeof component.parentElement !== "undefined") && (component.parentElement.getAttribute("data-syiro-component") == "searchbox")){ // If the component is a Syiro Searchbox
             passableValue = componentElement.value; // Get the current value of the input
         }
         else{
@@ -95,27 +99,10 @@ module syiro.events {
         var component : any; // Define Component as a Syiro Component Object or an Element
         var listenerCallback : Function; // Default to having the listenerCallback be the handler we are passed.
 
-        if ((args.length == 2) || (args.length == 3)){ // If an appropriate amount of arguments are provided
-            if (args.length == 2){ // If two arguments are passed
-                component = args[0]; // Component is the first argument
-                listenerCallback = args[1]; // Handler is the second argument
-
-                if (component["type"] !== "searchbox"){ // If we are adding listeners to a Component that is NOT a Searchbox (which uses a unique listener)
-                    listeners = syiro.events.eventStrings["up"]; // Use click / touch related events
-
-                    if ((component["type"] == "button") && (listeners.indexOf("keyup") == -1)){ // If we are adding listeners to a Button Component specifically and keyup hasn't been added yet
-                        listeners.push("keyup"); // Add keyup as an event listener for accessibility reasons
-                    }
-                }
-                else{ // If the Component IS a Searchbox
-                    listeners = ["keyup"]; // Use the keyup listener
-                }
-            }
-            else{ // If the arguments list is 3, meaning listeners, a Component Object, and a Handler are provided
-                listeners = args[0]; // Set listeners to the first argument
-                component = args[1]; // Set component to the second argument
-                listenerCallback = args[2]; // Set the handler to the third argument
-            }
+        if (args.length == 3){ // If an appropriate amount of arguments are provided
+            listeners = args[0]; // Set listeners to the first argument
+            component = args[1]; // Set component to the second argument
+            listenerCallback = args[2]; // Set the handler to the third argument
 
             if (typeof listeners == "string"){ // If the listeners is a string
                 listeners = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
@@ -136,9 +123,7 @@ module syiro.events {
                     componentElement = componentElement.querySelector("input"); // Redefine componentElement as the inner input
                 }
             }
-            else{ // If the Component provided is not a Syiro Component Object
-                var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.
-
+            else { // If the Component provided is not a Syiro Component Object
                 if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
                     if (component.hasAttribute("data-syiro-component-id")){ // If the component already has a unique Id defined
                         componentId = component.getAttribute("data-syiro-component-id"); // Get the Id and assign it to the componentId
@@ -155,6 +140,7 @@ module syiro.events {
                     }
                 }
                 else { // If the Component passed is an Object like window, document, screen
+                    var componentType : string = String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase(); // Set the componentType equal to the string form, stripping out [], "object", etc.
                     componentId = componentType; // Define componentId as the componentType since it is most likely unique
                 }
 
@@ -176,7 +162,7 @@ module syiro.events {
                 }
             }
         }
-        else{ // If the arguments length is NOT 2 or 3, meaning either too few or too many arguments were provided
+        else{ // If the arguments length is NOT 3, meaning either too few or too many arguments were provided
             allowListening = false;
         }
 

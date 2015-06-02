@@ -15,8 +15,6 @@ module syiro.data {
         var keyHeirarchy : Array<string> = keyList.split("->"); // Define the keyHeirarchy as the keyList split by the -> delimiter
         var returnableValue = true; // Default to returnableValue as a boolean true
 
-        modificationType = modificationType.replace("change", "update").replace("modify", "update"); // If modificationType contains "change" or "modify", change it to "update"
-
         for (var keyHeirarchyIndex = 0; keyHeirarchyIndex < keyHeirarchy.length; keyHeirarchyIndex++){ // For each key defined in the keyHeirarchy
             var key : string = keyHeirarchy[keyHeirarchyIndex]; // Define the key as the index in keyHeirarchy
 

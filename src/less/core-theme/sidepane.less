@@ -5,6 +5,8 @@
 div[data-syiro-component="sidepane"]{
     float: left;
     height: 100%;
+    touch-action: pan-y; // Ensure only vertical scrolling is enabled
+    -ms-touch-action: pan-y;
     position: fixed; // Fixed positioning
     z-index : 9;
 
@@ -49,8 +51,8 @@ div[data-syiro-component="sidepane"]{
     // #region Sidepane Edge
 
     & > div[data-syiro-minor-component="sidepane-edge"]{
-        float: left;
-        width: 20px;
+        float: right;
+        width: 5%;
         display: none;
         height: inherit;
     }
@@ -60,15 +62,15 @@ div[data-syiro-component="sidepane"]{
     // #region For resolutions with a resolution lower than 1280
 
     @media (max-width: 1279px){
-        width: e('calc(75% + 20px)'); // Use a calc of 75% of the page + 20px (edge)
-        left: -75%; // Default to only showing the edge of the Sidepane
+        width: 80%; // 80% of page (75% for actual content, 5% for Edge)
+        transform: translateX(-95%); // Default to only showing the edge of the Sidepane (-100% of the Sidepane, +5% for edge)
 
         .slide(0, 250); // Enable slide animation for Sidepane so it slides to left position of 0 in 250ms
 
         // #region Sidepane Content
 
         & > div[data-syiro-minor-component="sidepane-content"]{
-            width: e('calc(100% - 20px)'); // Use a calc of 100% of the Sidepane - 20px (edge)
+            width: 95%; // 95% of the Sidepane
         }
 
         // #endregion

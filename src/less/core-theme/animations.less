@@ -31,11 +31,14 @@
 // Returns properties that are used with the parent went the parent has [data-syiro-animation="slide"]
 
 .slide(@pos; @milliseconds){
-	transition: left unit(@milliseconds, ms);
-	-webkit-transition: left unit(@milliseconds, ms);
 
+	&[data-syiro-doing-animation="true"]{
+		transition: transform unit(@milliseconds, ms);
+		-webkit-transition: transform unit(@milliseconds, ms);
+	}
+	
 	&[data-syiro-animation="slide"]{
-		left: @pos; // Set left to @pos, where pos can be pix, e(calc()), etc.
+		transform: translateX(@pos); // Set translateX to @pos, where pos can be pix, e(calc()), etc.
 	}
 }
 

@@ -156,9 +156,9 @@ module syiro {
 												else if (componentObject["type"] == "sidepane"){ // If the Component is a Sidepane
 													if (syiro.device.SupportsTouch){ // If we are using a touch device
 														var innerSidepaneEdge = passedNode.querySelector('div[data-syiro-minor-component="sidepane-edge"]'); // Get the Sidepane Edge
-														syiro.events.Add(syiro.events.eventStrings["move"], innerSidepaneEdge, syiro.sidepane.Drag.bind(this, passedNode)); // Bind the Sidepane Edge to the Drag function for "move"
-														syiro.events.Add(syiro.events.eventStrings["down"], innerSidepaneEdge, syiro.sidepane.GestureInit.bind(this, passedNode)); // Bind the Sidepane Edge to GestureInit function for "down"
-														syiro.events.Add(syiro.events.eventStrings["up"], innerSidepaneEdge, syiro.sidepane.Toggle.bind(this, componentObject)); // Bind the Sidepane Edge to Toggle function for "up"
+														syiro.events.Add(syiro.events.eventStrings["move"], innerSidepaneEdge, syiro.sidepane.Drag); // Bind the Sidepane Edge to the Drag function for "move"
+														syiro.events.Add(syiro.events.eventStrings["down"], innerSidepaneEdge, syiro.sidepane.GestureInit); // Bind the Sidepane Edge to GestureInit function for "down"
+														syiro.events.Add(syiro.events.eventStrings["up"], innerSidepaneEdge, syiro.sidepane.Release); // Bind the Sidepane Edge to Release function for "up"
 													}
 
 													if (document.querySelector('div[data-syiro-minor-component="overlay"]') == null){ // If there is no overlay on the page
@@ -197,7 +197,7 @@ module syiro {
 				subtree: true
 			};
 
-			mutationWatcher.observe(document.querySelector("body"), mutationWatcherOptions); // Watch the document body with the options provided.
+			mutationWatcher.observe(document.body, mutationWatcherOptions); // Watch the document body with the options provided.
 		}
 		else{ // If MutationObserver is NOT supported (IE10 and below), such as in Windows Phone
 			if (typeof syiro.plugin.alternativeInit !== "undefined"){ // If syiro.plugin.alternativeInit is added in the page as well

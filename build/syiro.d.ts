@@ -207,8 +207,9 @@ declare module syiro.searchbox {
 }
 declare module syiro.sidepane {
     function Generate(properties: Object): Object;
-    function Drag(): void;
     function GestureInit(): void;
+    function Drag(): void;
+    function Release(): void;
     function Toggle(component: Object): void;
 }
 declare module syiro {

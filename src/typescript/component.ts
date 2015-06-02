@@ -93,13 +93,10 @@ module syiro.component {
 	// #region Fetch - Function for fetching the HTMLElement of a Component object
 
 	export function Fetch(component : Object) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
-		var componentElement : Element; // The (HTML)Element of the Syiro component we'll be returning
+		var componentElement : Element = document.querySelector('div[data-syiro-component-id="' + component["id"] + '"]'); // The (HTML)Element of the Syiro component we'll be returning (default to fetching Element via querySelector)
 
-		if (syiro.data.Read(component["id"] + "->" + "HTMLElement") !== false){ // If an HTMLElement is defined, meaning this is a new component that has not been put in the DOM yet
+		if (componentElement == null){ // If an HTMLElement is defined, meaning this is a new component that has not been put in the DOM yet
 			componentElement = syiro.data.Read(component["id"] + "->" + "HTMLElement"); // Get the HTMLElement via syiro.data APIs
-		}
-		else{ // If the HTMLElement  is NOT defined (meaning the element is could be in the DOM)
-			componentElement = document.querySelector('*[data-syiro-component-id="' + component["id"] + '"]'); // Look for the component in the DOM, may return null
 		}
 
 		return componentElement;

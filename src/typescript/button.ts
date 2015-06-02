@@ -68,7 +68,7 @@ module syiro.button {
 			}
 
 			var listComponentElement : Element = syiro.component.Fetch(listComponent); // Fetch the List Component Element
-			document.querySelector("body").appendChild(listComponentElement); // Append the List Element to the end of the document
+			document.body.appendChild(listComponentElement); // Append the List Element to the end of the document
 			listComponentElement.setAttribute("data-syiro-component-owner", componentId); // Set the List's owner to be the Dropdown
 			componentData["aria-owns"] = listComponent["id"]; // Define the aria-owns in componentData, setting it to the List Component to declare for ARIA that the Dropdown Button Component "owns" the List Component
 
@@ -231,7 +231,7 @@ module syiro.button {
 			else{ // If the button is active and we are setting it as inactive
 				animationString = "toggle-backward-animation"; // Animate backward the toggle
 			}
-
+			componentElement.setAttribute("data-syiro-doing-animation", "true"); // Indicate that an animation is active
 			syiro.animation.Animate(component, // Animate the Toggle Button
 				{
 					"animation" : animationString, // Define animation as either toggle-forward-animation or toggle-backward-animation
@@ -244,6 +244,8 @@ module syiro.button {
 						else{ // If the status IS active
 							buttonElement.removeAttribute("active"); // Remove the active attribute
 						}
+
+						buttonElement.removeAttribute("data-syiro-doing-animation"); // Remove the indication we are doing an animation
 					}
 				}
 			);

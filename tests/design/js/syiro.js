@@ -2,6 +2,8 @@
     These are interface extensions so Typescript doesn't freak out.
 */
 var WebKitMutationObserver;
+var ontransitionend;
+var webkitTransitionEnd;
 /*
 This is the module for managing Syiro Data.
 */
@@ -890,43 +892,49 @@ var syiro;
                 component = syiro.component.FetchComponentObject(componentElement);
             }
             if ((componentElement !== null) && (typeof properties["animation"] == "string")) {
-                if (typeof properties["duration"] == "undefined") {
-                    properties["duration"] = 250;
-                }
-                var postAnimationFunction = properties["function"];
-                if (typeof properties["function"] !== "undefined") {
-                    var elementTimeoutId = window.setTimeout(function () {
-                        var component = arguments[0];
-                        var componentElement = syiro.component.Fetch(component);
-                        var postAnimationFunction = arguments[1];
-                        var timeoutId = syiro.data.Read(component["id"] + "->AnimationTimeoutId");
-                        syiro.data.Delete(component["id"] + "->AnimationTimeoutId");
-                        window.clearTimeout(timeoutId);
-                        postAnimationFunction(component);
-                    }.bind(syiro, component, postAnimationFunction), properties["duration"]);
-                    syiro.data.Write(component["id"] + "->AnimationTimeoutId", elementTimeoutId);
-                }
+                var transitionEndUsed = false;
                 if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
                     var tempElement = componentElement;
                     componentElement = tempElement.querySelector('div[data-syiro-minor-component="buttonToggle"]');
                     tempElement = null;
                 }
-                componentElement.setAttribute("class", properties["animation"]);
+                if ((typeof ontransitionend !== "undefined") || (typeof webkitTransitionEnd !== "undefined")) {
+                    transitionEndUsed = true;
+                    var transitionEndFlag = "webkitTransitionEnd";
+                    if (typeof ontransitionend !== "undefined") {
+                        transitionEndFlag = "transitionend";
+                    }
+                    syiro.events.Add(componentElement, transitionEndFlag, function () {
+                        var postAnimationFunction = arguments[0];
+                        var element = arguments[1];
+                        element.removeAttribute("data-syiro-animation-status");
+                        if (typeof postAnimationFunction !== "undefined") {
+                            postAnimationFunction(element);
+                        }
+                    }.bind(this, postAnimationFunction));
+                }
+                componentElement.setAttribute("data-syiro-animation-status", "active");
+                componentElement.setAttribute("data-syiro-animation", properties["animation"]);
+                var postAnimationFunction = properties["function"];
+                if (transitionEndUsed == false) {
+                    if (typeof properties["function"] !== "undefined") {
+                        properties["function"].call(this, component);
+                    }
+                    componentElement.removeAttribute("data-syiro-animation-status");
+                }
             }
         }
         animation.Animate = Animate;
         function FadeIn(component, postAnimationFunction) {
             syiro.animation.Animate(component, {
-                "animation": "fade-in-animation",
-                "duration": 125,
+                "animation": "fade-in",
                 "function": postAnimationFunction
             });
         }
         animation.FadeIn = FadeIn;
         function FadeOut(component, postAnimationFunction) {
             syiro.animation.Animate(component, {
-                "animation": "fade-out-animation",
-                "duration": 125,
+                "animation": "fade-out",
                 "function": postAnimationFunction
             });
         }
@@ -1460,10 +1468,10 @@ var syiro;
             else if (componentElement.getAttribute("data-syiro-component-type") == "toggle") {
                 var animationString;
                 if (componentElement.hasAttribute("active") == false) {
-                    animationString = "toggle-forward-animation";
+                    animationString = "toggle-forward";
                 }
                 else {
-                    animationString = "toggle-backward-animation";
+                    animationString = "toggle-backward";
                 }
                 componentElement.setAttribute("data-syiro-doing-animation", "true");
                 syiro.animation.Animate(component, {

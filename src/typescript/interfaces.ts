@@ -3,6 +3,8 @@
 */
 
 var WebKitMutationObserver : any;
+var ontransitionend : Event;
+var webkitTransitionEnd : Event;
 
 interface Object { // As ComponentObject is inherently an Object, extend the Object interface / type
 	id ?: string; // Unique Component ID. Marked as Optional since it only applies for returned Component Objects, syiro.data.storage stores the key / val differently.

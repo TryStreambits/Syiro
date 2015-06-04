@@ -226,12 +226,14 @@ module syiro.button {
 			var animationString : string;
 
 			if (componentElement.hasAttribute("active") == false){ // If the button is NOT active
-				animationString = "toggle-forward-animation"; // Animate forward the toggle
+				animationString = "toggle-forward"; // Animate forward the toggle
 			}
 			else{ // If the button is active and we are setting it as inactive
-				animationString = "toggle-backward-animation"; // Animate backward the toggle
+				animationString = "toggle-backward"; // Animate backward the toggle
 			}
+
 			componentElement.setAttribute("data-syiro-doing-animation", "true"); // Indicate that an animation is active
+
 			syiro.animation.Animate(component, // Animate the Toggle Button
 				{
 					"animation" : animationString, // Define animation as either toggle-forward-animation or toggle-backward-animation

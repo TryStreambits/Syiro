@@ -3,10 +3,19 @@
 // #region Animation Parametric Mixin - Allows easy adding of animations
 
 .animate(@properties; @duration : 250; @timingFunc : "ease-in"){
-	transform: e(@properties); // String escape the provided properties that'll change in transform
-	-webkit-transform: e(@properties); // Same as above, just specific to Webkit
-	transition-duration: unit(@duration, ms); // Duration of nMS, where n defaults to 250
-	transition-timing-function: e(@timingFunc); // String escape the provided timing function, which defaults to "easy-in"
+
+	// #region When the animation is active
+
+	&[data-syiro-animation-status="active"]{
+		transform: e(@properties); // String escape the provided properties that'll change in transform
+		-webkit-transform: e(@properties); // Same as above, just specific to Webkit
+		transition: e(@properties) unit(@duration, ms);
+		-webkit-transition: e(@properties) unit(@duration, ms);
+		transition-duration: unit(@duration, ms); // Duration of nMS, where n defaults to 250
+		transition-timing-function: e(@timingFunc); // String escape the provided timing function, which defaults to "ease-in"
+	}
+
+	// #endregion
 }
 
 // #endregion
@@ -15,14 +24,20 @@
 
 .fade-in-animation{
 	.animate("opacity, visibility"); // Transform opacity and visibility values
-	opacity: 1;
-	visibility: visible;
+
+	&[data-syiro-animation="fade-in"]{ // Fade In Animation
+		opacity: 1;
+		visibility: visible;
+	}
 }
 
 .fade-out-animation{
 	.animate("opacity, visibility"); // Transform opacity and visibility values
-	opacity: 0;
-	visibility: hidden;
+
+	&[data-syiro-animation="fade-out"]{ // Fade Out Animation
+		opacity: 0;
+		visibility: hidden;
+	}
 }
 
 // #endregion
@@ -32,11 +47,13 @@
 
 .slide(@pos; @milliseconds){
 
+	.animate("transform", @milliseconds); //
+
 	&[data-syiro-doing-animation="true"]{
 		transition: transform unit(@milliseconds, ms);
 		-webkit-transition: transform unit(@milliseconds, ms);
 	}
-	
+
 	&[data-syiro-animation="slide"]{
 		transform: translateX(@pos); // Set translateX to @pos, where pos can be pix, e(calc()), etc.
 	}
@@ -47,11 +64,11 @@
 // #endregion Pulse
 
 *[class="pulse"]{
-	box-shadow: 0 0 0 0 @syiroPrimaryColor; // No box-shadow
+	box-shadow: 0 0 0 0 lighten(@syiroPrimaryColor, 25%); // No box-shadow
 	transition: box-shadow 500ms; // Set transition value of box-shadow
 
 	&:hover{
-		box-shadow: 0 0 10px 2px @syiroPrimaryColor; // Box shadow
+		box-shadow: 0 0 10px 0 lighten(@syiroPrimaryColor, 25%); // Box shadow (lighten shadow by 20%)
 	}
 }
 

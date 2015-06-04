@@ -1,4 +1,6 @@
 declare var WebKitMutationObserver: any;
+declare var ontransitionend: Event;
+declare var webkitTransitionEnd: Event;
 interface Object {
     id?: string;
     type: string;

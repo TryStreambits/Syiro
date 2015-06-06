@@ -196,7 +196,7 @@ module syiro.button {
 
 	export function Toggle(component ?: Object){ // Function that will handle toggling the Dropdown
 		var component : Object = arguments[0]; // Get the component that was passed to this function as a bound argument
-		var componentElement : HTMLElement = syiro.component.Fetch(component); // Get the componentElement based on the component Object
+		var componentElement : any = syiro.component.Fetch(component); // Get the componentElement based on the component Object
 
 		if (componentElement.getAttribute("data-syiro-component-type") == "dropdown"){ // If this is a Dropdown Button
 			var linkedListComponentObject : Object = syiro.component.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown Button
@@ -223,34 +223,14 @@ module syiro.button {
 			}
 		}
 		else if (componentElement.getAttribute("data-syiro-component-type") == "toggle"){ // If this a Toggle Button
-			var animationString : string;
-
-			if (componentElement.hasAttribute("active") == false){ // If the button is NOT active
-				animationString = "toggle-forward"; // Animate forward the toggle
-			}
-			else{ // If the button is active and we are setting it as inactive
-				animationString = "toggle-backward"; // Animate backward the toggle
-			}
-
-			componentElement.setAttribute("data-syiro-doing-animation", "true"); // Indicate that an animation is active
-
-			syiro.animation.Animate(component, // Animate the Toggle Button
-				{
-					"animation" : animationString, // Define animation as either toggle-forward-animation or toggle-backward-animation
-					"function" : function(component : Object){ // Post-Animation Function
-						var buttonElement : Element = syiro.component.Fetch(component); // Get the buttonElement based on the component Object
-
-						if (buttonElement.hasAttribute("active") == false){ // If the status is not active
-							buttonElement.setAttribute("active", "active"); // Set to active
-						}
-						else{ // If the status IS active
-							buttonElement.removeAttribute("active"); // Remove the active attribute
-						}
-
-						buttonElement.removeAttribute("data-syiro-doing-animation"); // Remove the indication we are doing an animation
-					}
-				}
-			);
+            if (componentElement.hasAttribute("active") == false){ // If the status is not active
+                syiro.animation.Slide(component);
+                componentElement.setAttribute("active", "true"); // Set to active
+            }
+            else{ // If the status IS active
+                syiro.animation.Reset(component); // Eliminate the animation property
+                componentElement.removeAttribute("active"); // Remove the active attribute
+            }
 		}
 	};
 

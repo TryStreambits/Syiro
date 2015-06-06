@@ -925,6 +925,26 @@ var syiro;
             }
         }
         animation.Animate = Animate;
+        function Reset(component) {
+            var componentElement;
+            if (syiro.component.IsComponentObject(component)) {
+                componentElement = syiro.component.Fetch(component);
+            }
+            else {
+                componentElement = component;
+                component = syiro.component.FetchComponentObject(componentElement);
+            }
+            if (componentElement !== null) {
+                if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
+                    var tempElement = componentElement;
+                    componentElement = tempElement.querySelector('div[data-syiro-minor-component="buttonToggle"]');
+                    tempElement = null;
+                }
+                componentElement.removeAttribute("data-syiro-animation-status");
+                componentElement.removeAttribute("data-syiro-animation");
+            }
+        }
+        animation.Reset = Reset;
         function FadeIn(component, postAnimationFunction) {
             syiro.animation.Animate(component, {
                 "animation": "fade-in",
@@ -939,6 +959,13 @@ var syiro;
             });
         }
         animation.FadeOut = FadeOut;
+        function Slide(component, postAnimationFunction) {
+            syiro.animation.Animate(component, {
+                "animation": "slide",
+                "function": postAnimationFunction
+            });
+        }
+        animation.Slide = Slide;
     })(animation = syiro.animation || (syiro.animation = {}));
 })(syiro || (syiro = {}));
 /*
@@ -1466,27 +1493,14 @@ var syiro;
                 }
             }
             else if (componentElement.getAttribute("data-syiro-component-type") == "toggle") {
-                var animationString;
                 if (componentElement.hasAttribute("active") == false) {
-                    animationString = "toggle-forward";
+                    syiro.animation.Slide(component);
+                    componentElement.setAttribute("active", "true");
                 }
                 else {
-                    animationString = "toggle-backward";
+                    syiro.animation.Reset(component);
+                    componentElement.removeAttribute("active");
                 }
-                componentElement.setAttribute("data-syiro-doing-animation", "true");
-                syiro.animation.Animate(component, {
-                    "animation": animationString,
-                    "function": function (component) {
-                        var buttonElement = syiro.component.Fetch(component);
-                        if (buttonElement.hasAttribute("active") == false) {
-                            buttonElement.setAttribute("active", "active");
-                        }
-                        else {
-                            buttonElement.removeAttribute("active");
-                        }
-                        buttonElement.removeAttribute("data-syiro-doing-animation");
-                    }
-                });
             }
         }
         button.Toggle = Toggle;

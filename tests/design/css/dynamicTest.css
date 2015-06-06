@@ -45,10 +45,6 @@ div[data-page-component="video-player-container"]{
 /* Scaling */
 
 @media (max-width: 600px){
-    div[data-syiro-component="navbar"] > a {
-        display: none; /* Hide links in the navbar */
-    }
-
     /* Shared Player Container Styling */
 
     div[data-page-component*="-container"]:not([data-page-component="buttongroup-container"]){

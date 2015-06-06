@@ -47,7 +47,7 @@
 
 .slide(@pos; @milliseconds){
 
-	.animate("transform", @milliseconds); //
+	.animate("transform", @milliseconds);
 
 	&[data-syiro-doing-animation="true"]{
 		transition: transform unit(@milliseconds, ms);
@@ -55,7 +55,7 @@
 	}
 
 	&[data-syiro-animation="slide"]{
-		transform: translateX(@pos); // Set translateX to @pos, where pos can be pix, e(calc()), etc.
+		transform: translateX(@pos); // Set translateX to @pos, where pos can be px, e(calc()), etc.
 	}
 }
 

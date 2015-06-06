@@ -6,10 +6,9 @@ div[data-syiro-component="navbar"]{
 
     // #region Shared Between "Top" Navbar and "Bottom" Navbar
 
-    height: 80px;
+    height: 60px;
     color: contrast(darken(@syiroBackground, 2.5%));
-    font-size: 16px;
-    line-height: 80px;
+    line-height: 60px;
     background-color: darken(@syiroBackground, 2.5%);
 
     // #endregion
@@ -29,6 +28,11 @@ div[data-syiro-component="navbar"]{
 
         & > div[data-syiro-component="searchbox"]{
             float: right !important; // Force the component to float to the right
+            margin: 10px 10px 0 0 !important; // Center in header, adequate spacing on right
+
+            &:after { // Inner icon
+                margin: -10px 5% 0 0; // Have a negative height so the icon maintains being in the center of the Searchbox
+            }
         }
 
         // #endregion
@@ -41,49 +45,6 @@ div[data-syiro-component="navbar"]{
 
         // #endregion
     }
-
-    // #endregion
-
-    // #region Scaling
-
-    // #region For resolutions with a max of 1280 in width
-
-    @media (max-width: 1280px){
-        height: 60px; // Change the height
-        line-height: 60px; // Change the line-height as well
-
-        // #region Top Navbar Searchbox Modifications
-
-        & > div[data-syiro-component="searchbox"]{
-            margin: 10px 10px 0 0 !important; // Center in header, adequate spacing on right
-
-            &:after { // Inner icon
-                margin: -10px 5% 0 0; // Have a negative height so the icon maintains being in the center of the Searchbox
-            }
-        }
-
-        // #endregion
-    }
-
-    // #endregion
-
-    // #region For resolutions greater than 1280
-
-    @media (min-width: 1281px){
-        // #region Top Navbar Searchbox Modifications
-
-        & > div[data-syiro-component="searchbox"]{
-            margin: 20px 20px 0 0 !important; // Center in header, adequate spacing on right
-
-            &:after { // Inner icon
-                margin: -20px 5% 0 0; // Have a negative height so the icon maintains being in the center of the Searchbox
-            }
-        }
-
-        // #endregion
-    }
-
-    // #endregion
 
     // #endregion
 }

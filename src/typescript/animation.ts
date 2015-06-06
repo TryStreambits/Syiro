@@ -68,6 +68,33 @@ module syiro.animation {
 
     // #endregion
 
+    // #region Reset - Remove Syiro Animation Properties from Components
+
+    export function Reset(component : any){
+        var componentElement : Element; // Define componentElement as any
+
+        if (syiro.component.IsComponentObject(component)){ // If we passed a Component
+            componentElement = syiro.component.Fetch(component); //  Define componentElement as the fetched Syiro Component
+        }
+        else{ // If we passed an Element
+            componentElement = component; // Define componentElement as the component provided
+            component = syiro.component.FetchComponentObject(componentElement); // Redefine component as the newly fetched Component Object of the componentElement
+        }
+
+        if (componentElement !== null){ // If the componentElement exists in the DOM
+            if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
+                var tempElement = componentElement; // Define tempElement as the componentElement
+                componentElement = tempElement.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
+                tempElement = null; // Free tempElement
+            }
+
+            componentElement.removeAttribute("data-syiro-animation-status"); // Remove the status attribute if it for some reason still exists
+            componentElement.removeAttribute("data-syiro-animation"); // Remove the animation attribute
+        }
+    }
+
+    // #endregion
+
     // #region Fade In Animation
 
     export function FadeIn(component : any, postAnimationFunction ?: Function){
@@ -94,8 +121,17 @@ module syiro.animation {
 
     // #endregion
 
-    // #region Pulse Animation
+    // #region Slide Animation
 
-    //export function Pulse
+    export function Slide(component : any, postAnimationFunction ?: Function){
+        syiro.animation.Animate(component, // Call Animate with the Component and properties
+            {
+                "animation" : "slide", // Define animation as slide
+                "function" : postAnimationFunction // Define function as any postAnimationFunction defined
+            }
+        );
+    }
+
+    // #endregion
 
 }

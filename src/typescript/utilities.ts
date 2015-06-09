@@ -8,7 +8,7 @@ module syiro.utilities {
 
     export function ElementCreator(type : string, attributes : Object) { // Takes an optional componentId, componentType or the desired element tag name and attributes
         if ((typeof type == "string") && (typeof attributes == "object")){
-            var generatedElement : HTMLElement = document.createElement(type); // Define componentElement as the generated HTMLElement based on the type supplied by argument 0
+            var generatedElement : any = document.createElement(type); // Define componentElement as the generated HTMLElement based on the type supplied by argument 0
 
             for (var attributeKey in attributes){ // For each attributeKey in attributes
                 var attributeValue = attributes[attributeKey]; // Get the attribute value based on key

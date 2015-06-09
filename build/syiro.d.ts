@@ -2,43 +2,23 @@ declare var WebKitMutationObserver: any;
 declare var ontransitionend: Event;
 declare var webkitTransitionEnd: Event;
 interface Object {
-    id?: string;
+    id: string;
     type: string;
-    link: string;
-    title: string;
-    listeners?: Array<string>;
-    handlers?: Array<Function>;
-    HTMLElement?: Element;
 }
 interface Document {
-    fullscreenElement: Element;
+    msFullscreenElement: Element;
+    msExitFullscreen: Function;
     mozFullScreenElement: Element;
-    webkitFullscreenElement: Element;
-    exitFullscreen: Function;
     mozCancelFullScreen: Function;
-    webkitExitFullscreen: Function;
     SyiroFullscreenElement: Element;
-    ontouchstart: any;
-    ontouchend: any;
 }
 interface Element {
-    requestFullscreen: Function;
+    msRequestFullscreen: Function;
     mozRequestFullScreen: Function;
-    webkitRequestFullscreen: Function;
     ALLOW_KEYBOARD_INPUT: any;
-    parentElement: Element;
-    offsetTop: number;
-    offsetBottom: number;
-    offsetLeft: number;
-    offsetRight: number;
-    offsetHeight: number;
-    offsetWidth: number;
 }
 interface Navigator {
     doNotTrack: string;
-}
-interface HTMLElement {
-    autoplay: boolean;
 }
 interface Screen {
     orientation: any;
@@ -46,10 +26,13 @@ interface Screen {
     onorientationchange: any;
     onmozorientationchange: any;
 }
-interface Window {
-    crypto: any;
-    ontouchend: any;
-    scrollY: number;
+interface Node {
+    appendChild(newChild: (Element | HTMLElement)): Node;
+    insertBefore(newChild: (Element | HTMLElement), refChild?: (Element | HTMLElement | Node)): Node;
+    removeChild(newChild: (Element | HTMLElement)): Node;
+}
+interface MutationObserver {
+    observe(target: HTMLElement, options: MutationObserverInit): void;
 }
 declare module syiro.plugin.alternativeInit {
     function Init(): void;
@@ -63,7 +46,7 @@ declare module syiro.data {
     function Delete(keyList: string): any;
 }
 declare module syiro.utilities {
-    function ElementCreator(type: string, attributes: Object): HTMLElement;
+    function ElementCreator(type: string, attributes: Object): any;
     function SanitizeHTML(content: any): any;
     function SecondsToTimeFormat(seconds: number): Object;
 }
@@ -214,7 +197,7 @@ declare module syiro.sidepane {
     function GestureInit(): void;
     function Drag(): void;
     function Release(): void;
-    function Toggle(component: Object): void;
+    function Toggle(component: Object, touchData?: TouchEvent): void;
 }
 declare module syiro {
     var backgroundColor: string;

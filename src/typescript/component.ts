@@ -162,7 +162,7 @@ module syiro.component {
 
 	export function FetchDimensionsAndPosition(component : any) : Object { // Get the height and width of the Element
 		var dimensionsAndPosition : Object = {}; // Define dimensionsAndPosition as an empty Object
-		var componentElement : Element; // Define componentElement as an Element
+		var componentElement : HTMLElement; // Define componentElement as an Element
 
 		if (syiro.component.IsComponentObject(component)){ // If the Component provided is a Syiro Component Object
 			componentElement = syiro.component.Fetch(component); // Fetch the Component Element

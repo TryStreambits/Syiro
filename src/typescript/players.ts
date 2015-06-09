@@ -538,11 +538,11 @@ module syiro.player {
 
     export function FetchSources(component : Object) : Array<Object> { // Return an array of source types (string)
         var innerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Fetch the inner audio or video Element from the Audio Player or Video Player Component
-        var sourceTags : NodeListOf<HTMLSourceElement> = innerContentElement.getElementsByTagName("SOURCE"); // Get all source tags within the innerContentElement
+        var sourceTags : any = innerContentElement.getElementsByTagName("source"); // Get all source tags within the innerContentElement
         var sourcesArray : Array<Object> = []; // Define sourcesArray as an empty Array to hold source information
 
         for (var sourceElementIndex = 0; sourceElementIndex < sourceTags.length; sourceElementIndex++){ // For each source Element in the sourceTags
-            var sourceElement : HTMLSourceElement = sourceTags.item(sourceElementIndex); // Get the individual source Element
+            var sourceElement : any = sourceTags.item(sourceElementIndex); // Get the individual source Element
 
             if (sourceElement !== undefined){
                 sourcesArray.push(
@@ -945,7 +945,7 @@ module syiro.audioplayer {
 
             // #region Audio Element and Source Creation
 
-            var audioPlayer : HTMLElement = syiro.utilities.ElementCreator("audio", { "preload" : "metadata", "volume" : "0.5" }); // Generate an audio Element with only preloading metadata, setting volume to 50%
+            var audioPlayer : HTMLMediaElement = syiro.utilities.ElementCreator("audio", { "preload" : "metadata", "volume" : "0.5" }); // Generate an audio Element with only preloading metadata, setting volume to 50%
             audioPlayer.autoplay = false; // Set autoplay of audio to false
 
             var arrayofSourceElements : Array<HTMLElement> = syiro.player.GenerateSources("audio", properties["sources"]); // Get an array of Source Elements
@@ -1124,7 +1124,7 @@ module syiro.videoplayer {
 
             // #region Video Element and Sources Creation
 
-            var videoPlayer : HTMLElement = syiro.utilities.ElementCreator("video", syiroVideoElementProperties); // Create the video player with the defined properties
+            var videoPlayer : HTMLMediaElement = syiro.utilities.ElementCreator("video", syiroVideoElementProperties); // Create the video player with the defined properties
 
             videoPlayer.autoplay = false; // Set autoplay of video to false
 

@@ -29,43 +29,43 @@ module syiro.navbar {
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "navbar", "data-syiro-component-id" : componentId, "role" : "navigation", "data-syiro-component-type" : navbarType }); // Generate a div Element with the role of "navigation" (for ARIA) and data-syiro-component-type to navbarType
 
         for (var propertyKey in properties){ // Recursive go through each propertyKey
-            if (propertyKey == "items"){ // If we are adding items to the Header
-                for (var individualItemIndex in properties["items"]){ // For each individualItem in navigationItems Object array
-                    var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as this particular item in the properties["items"]
-
-                    if (syiro.component.IsComponentObject(individualItem) == false){ // If we are adding a link
-                        var generatedElement : HTMLElement = syiro.utilities.ElementCreator("a", // Generate a generic link element
-                            {
-                                "href" : individualItem["link"], // Set the href (link)
-                                "title" : individualItem["title"], // Set the title of the link to the one passed
-                                "content" : individualItem["title"] // Also set the inner content of the <a> tag to title
-                            }
-                        );
-
-                        componentElement.appendChild(generatedElement); // Append the component to the parent component element
-                    }
-                    else if ((syiro.component.IsComponentObject(individualItem)) && (navbarType == "top")){ // If we are adding a Syiro Component (whether it be a Dropdown Button or a Searchbox) and the navbarType is top
-                        componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the fetched Component Element
-                    }
-                }
-            }
-            else if ((propertyKey == "logo") && (navbarType == "top")){ // If we are adding a Logo to the top-positioned navbar (Header)
-				var generatedElement : HTMLElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : properties["logo"] }); // Generate an image with data-syiro-minor-component set to logo and src set to logo defined
-				componentElement.appendChild(generatedElement); // Append the logo to the generatedElement
+		if (propertyKey == "items"){ // If we are adding items to the Header
+			for (var individualItemIndex in properties["items"]){ // For each individualItem in navigationItems Object array
+				var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as this particular item in the properties["items"]
+			
+				if (syiro.component.IsComponentObject(individualItem) == false){ // If we are adding a link
+					var generatedElement : HTMLElement = syiro.utilities.ElementCreator("a", // Generate a generic link element
+						{
+						"href" : individualItem["link"], // Set the href (link)
+						"title" : individualItem["title"], // Set the title of the link to the one passed
+						"content" : individualItem["title"] // Also set the inner content of the <a> tag to title
+						}
+					);
+			
+					componentElement.appendChild(generatedElement); // Append the component to the parent component element
+				}
+				else if ((syiro.component.IsComponentObject(individualItem)) && (navbarType == "top")){ // If we are adding a Syiro Component (whether it be a Dropdown Button or a Searchbox) and the navbarType is top
+					componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the fetched Component Element
+				}
 			}
-            else if ((propertyKey == "content") && (navbarType == "bottom")){ // If content or label prop are not undefined and the navbarType is botto (Footer)
-                var labelContent : string = ""; // Define labelContent initially as an empty string
-
-                if (typeof properties["content"] !== "undefined"){ // If the content property is defined
-                    labelContent = properties["content"]; // Assign content key/val to labelContent
-                }
-                else{ // If the label property is defined
-                    labelContent = properties["label"]; // Assign label key/val to labelContent
-                }
-
-    			var generatedElement : HTMLElement = syiro.utilities.ElementCreator("label", { "content" : labelContent }); // Generate a generic label element
-    			componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the navbar
-    		}
+		}
+		else if ((propertyKey == "logo") && (navbarType == "top")){ // If we are adding a Logo to the top-positioned navbar (Header)
+			var generatedElement : HTMLElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : properties["logo"] }); // Generate an image with data-syiro-minor-component set to logo and src set to logo defined
+			componentElement.appendChild(generatedElement); // Append the logo to the generatedElement
+		}
+		else if ((propertyKey == "content") && (navbarType == "bottom")){ // If content or label prop are not undefined and the navbarType is botto (Footer)
+			var labelContent : string = ""; // Define labelContent initially as an empty string
+		
+			if (typeof properties["content"] !== "undefined"){ // If the content property is defined
+				labelContent = properties["content"]; // Assign content key/val to labelContent
+			}
+			else{ // If the label property is defined
+				labelContent = properties["label"]; // Assign label key/val to labelContent
+			}
+		
+			var generatedElement : HTMLElement = syiro.utilities.ElementCreator("label", { "content" : labelContent }); // Generate a generic label element
+			componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the navbar
+		}
         }
 
         // #region Fixed Positioning Check

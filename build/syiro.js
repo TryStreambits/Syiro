@@ -2094,7 +2094,7 @@ var syiro;
         player.PlayOrPause = PlayOrPause;
         function FetchSources(component) {
             var innerContentElement = syiro.player.FetchInnerContentElement(component);
-            var sourceTags = innerContentElement.getElementsByTagName("SOURCE");
+            var sourceTags = innerContentElement.getElementsByTagName("source");
             var sourcesArray = [];
             for (var sourceElementIndex = 0; sourceElementIndex < sourceTags.length; sourceElementIndex++) {
                 var sourceElement = sourceTags.item(sourceElementIndex);
@@ -2719,27 +2719,25 @@ var syiro;
         sidepane.Drag = Drag;
         function Release() {
             var componentElement = arguments[0].parentElement;
-            var component = syiro.component.FetchComponentObject(componentElement);
+            var component = syiro.component.FetchComponentObject(arguments[0].parentElement);
             var eventData = arguments[1];
             componentElement.removeAttribute("data-syiro-render-animation");
             syiro.component.CSS(componentElement, "transform", false);
-            var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]');
-            if (eventData.changedTouches[0].screenX > (window.screen.width * 0.5)) {
-                syiro.animation.Slide(component);
-                syiro.component.CSS(contentOverlay, "display", "block");
-            }
-            else {
-                syiro.animation.Reset(component);
-                syiro.component.CSS(contentOverlay, "display", false);
-            }
+            syiro.sidepane.Toggle(component, eventData);
         }
         sidepane.Release = Release;
-        function Toggle(component) {
+        function Toggle(component, touchData) {
             if ((syiro.component.IsComponentObject(component)) && (component["type"] == "sidepane")) {
                 var componentElement = syiro.component.Fetch(component);
                 var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]');
                 var showSidepane = false;
-                if (componentElement.hasAttribute("data-syiro-animation") == false) {
+                if ((componentElement.hasAttribute("data-syiro-animation") == false) && (typeof touchData.changedTouches == "undefined")) {
+                    showSidepane = true;
+                }
+                else if ((typeof touchData.changedTouches !== "undefined") && (touchData.changedTouches[0].screenX > (window.screen.width / 2))) {
+                    showSidepane = true;
+                }
+                if (showSidepane == true) {
                     syiro.animation.Slide(component);
                     syiro.component.CSS(contentOverlay, "display", "block");
                 }

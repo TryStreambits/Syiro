@@ -22,7 +22,7 @@ module syiro.sidepane {
         componentElement.appendChild(sidepaneEdge); // Append the edge Element
 
         for (var item of properties["items"]){ // For each item in items
-            var appendableElement : Element; // Define appendableElement as the Element we'll be appending
+            var appendableElement : any; // Define appendableElement as the Element we'll be appending
             var isSyiroComponent = false; // Define isSyiroComponent as false
 
             if (syiro.component.IsComponentObject(item)){ // If this item is a Syiro Component
@@ -64,7 +64,7 @@ module syiro.sidepane {
     export function GestureInit(){
             var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
             componentElement.removeAttribute("data-syiro-animation"); // Remove the slide animation, sliding the Sidepane back into the edge.
-            componentElement.removeAttribute("data-syiro-doing-animation"); // Remove indication we are doing an animation
+            componentElement.setAttribute("data-syiro-render-animation", "false"); // Set render-animation to false so transition properties are not applied
 
             var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
             syiro.component.CSS(contentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
@@ -84,18 +84,19 @@ module syiro.sidepane {
 
     export function Release(){
         var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
+        var component = syiro.component.FetchComponentObject(componentElement); // Define component as the fetched Component Object
         var eventData = arguments[1]; // Define eventData as the event data passed
 
+	componentElement.removeAttribute("data-syiro-render-animation"); // Remove the property declaring to not render animation
         syiro.component.CSS(componentElement, "transform", false); // Ensure there is no transform property
-
-        if (eventData.changedTouches[0].screenX > (screenX * 0.4)){ // If we about 40% to the right of the page
-            componentElement.setAttribute("data-syiro-doing-animation", "true"); // Indicate we are doing an animation
-            componentElement.setAttribute("data-syiro-animation", "slide"); // Set the slide animation
+        var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
+	
+        if (eventData.changedTouches[0].screenX > (window.screen.width * 0.5)){ // If we about 50% to the right of the page
+            syiro.animation.Slide(component); // Slide out the Sidepane
+            syiro.component.CSS(contentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
         }
         else{
-            componentElement.removeAttribute("data-syiro-animation"); // Remove the slide animation, sliding the Sidepane back into the edge.
-            componentElement.removeAttribute("data-syiro-doing-animation"); // Remove indication we are doing an animation
-            var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
+            syiro.animation.Reset(component); // Reset Animation properties in the Sidepane
             syiro.component.CSS(contentOverlay, "display", false); // Hide the contentOverlay
         }
     }
@@ -110,20 +111,12 @@ module syiro.sidepane {
             var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
             var showSidepane : boolean = false; // Define showSidepane as a defaulted "false"
 
-            if (componentElement.hasAttribute("data-syiro-doing-animation") == false){ // If we are going to show Sidepane
-                syiro.component.CSS(componentElement, "transform", false); // Ensure there is no transform property
-
-                componentElement.setAttribute("data-syiro-doing-animation", "true"); // Indicate we are doing an animation
-                componentElement.setAttribute("data-syiro-animation", "slide"); // Set the slide animation
-
+            if (componentElement.hasAttribute("data-syiro-animation") == false){ // If we are going to show Sidepane
+                syiro.animation.Slide(component); // Slide out the Sidepane
                 syiro.component.CSS(contentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
             }
             else{ // If it is already visible
-                syiro.component.CSS(componentElement, "transform", false); // Ensure there is no transform property
-
-                componentElement.removeAttribute("data-syiro-animation"); // Remove the slide animation, sliding the Sidepane back into the edge.
-                componentElement.removeAttribute("data-syiro-doing-animation"); // Remove indication we are doing an animation
-
+                syiro.animation.Reset(component); // Reset Animation properties in the Sidepane
                 syiro.component.CSS(contentOverlay, "display", false); // Hide the contentOverlay
             }
         }

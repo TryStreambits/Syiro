@@ -78,8 +78,9 @@ module syiro.sidepane {
         if (updatedSidepanePosition > 0){ // If the touch position is further on the right side that the Sidepane would usually "break" from the edge
             updatedSidepanePosition = 0; // Set left position to 0
         }
-
-        componentElement.style.cssText = "transform: translateX(" + updatedSidepanePosition.toString() + "px)"; // Use GPU accelerated translate3d to set position of Sidepane
+	
+	syiro.component.CSS(componentElement, "transform", "translateX(" + updatedSidepanePosition.toString() + "px)");  // Use GPU accelerated translateX to set position of Sidepane
+	syiro.component.CSS(componentElement, "-webkit-transform", "translateX(" + updatedSidepanePosition.toString() + "px)");  // Use GPU accelerated translateX to set position of Sidepane
     }
 
     export function Release(){
@@ -89,6 +90,7 @@ module syiro.sidepane {
 
 	componentElement.removeAttribute("data-syiro-render-animation"); // Remove the property declaring to not render animation
         syiro.component.CSS(componentElement, "transform", false); // Ensure there is no transform property
+	syiro.component.CSS(componentElement, "-webkit-transform", false); // Ensure there is no transform property
         
 	syiro.sidepane.Toggle(component, eventData); // Call Sidepane Toggle w/ event data
     }
@@ -97,17 +99,22 @@ module syiro.sidepane {
 
 	// #region Toggle - This function will toggle the Sidepane and the content overlay
 
-	export function Toggle(component : Object, touchData ?: TouchEvent){
+	export function Toggle(component : Object, touchData : any){
 		if ((syiro.component.IsComponentObject(component)) && (component["type"] == "sidepane")){ // If this is a Component Object and indeed a Sidepane
 			var componentElement = syiro.component.Fetch(component); // Fetch the Sidepane Element
 			var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
 			var showSidepane : boolean = false; // Define showSidepane as a defaulted "false"
 	
-			if ((componentElement.hasAttribute("data-syiro-animation") == false) && (typeof touchData.changedTouches == "undefined")){ // If we are programmatically toggling Sidepane and it doesn't have animation attribute
-				showSidepane = true; // Set to true
-			}
-			else if ((typeof touchData.changedTouches !== "undefined") && (touchData.changedTouches[0].screenX > (window.screen.width / 2))){ // If we are going to show Sidepane or touchData was passed that has last pos at greater than 50%
-				showSidepane = true; // Set to true
+			if (componentElement.hasAttribute("data-syiro-animation") == false){ // If it does not have the animation attribute
+				if ((typeof touchData !== "undefined") && (typeof touchData.nodeType !== "undefined")){ // If we are triggering via contentOverlay
+					showSidepane = true; // Set to true
+				}
+				else if ((typeof touchData !== "undefined") && (typeof touchData.changedTouches !== "undefined") && (touchData.changedTouches[0].screenX > (window.screen.width / 2))){ // If we are going to show Sidepane or touchData was passed that has last pos at greater than 50%
+					showSidepane = true; // Set to true
+				}
+				else if (typeof touchData == "undefined"){ // If touchdata is not defined (triggered programmatically)
+					showSidepane = true;
+				}
 			}
 			
 			if (showSidepane == true){ // If we are going to show the Sidepane

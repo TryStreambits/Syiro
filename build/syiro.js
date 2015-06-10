@@ -2709,7 +2709,8 @@ var syiro;
             if (updatedSidepanePosition > 0) {
                 updatedSidepanePosition = 0;
             }
-            componentElement.style.cssText = "transform: translateX(" + updatedSidepanePosition.toString() + "px)";
+            syiro.component.CSS(componentElement, "transform", "translateX(" + updatedSidepanePosition.toString() + "px)");
+            syiro.component.CSS(componentElement, "-webkit-transform", "translateX(" + updatedSidepanePosition.toString() + "px)");
         }
         sidepane.Drag = Drag;
         function Release() {
@@ -2718,6 +2719,7 @@ var syiro;
             var eventData = arguments[1];
             componentElement.removeAttribute("data-syiro-render-animation");
             syiro.component.CSS(componentElement, "transform", false);
+            syiro.component.CSS(componentElement, "-webkit-transform", false);
             syiro.sidepane.Toggle(component, eventData);
         }
         sidepane.Release = Release;
@@ -2726,11 +2728,16 @@ var syiro;
                 var componentElement = syiro.component.Fetch(component);
                 var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]');
                 var showSidepane = false;
-                if ((componentElement.hasAttribute("data-syiro-animation") == false) && (typeof touchData.changedTouches == "undefined")) {
-                    showSidepane = true;
-                }
-                else if ((typeof touchData.changedTouches !== "undefined") && (touchData.changedTouches[0].screenX > (window.screen.width / 2))) {
-                    showSidepane = true;
+                if (componentElement.hasAttribute("data-syiro-animation") == false) {
+                    if ((typeof touchData !== "undefined") && (typeof touchData.nodeType !== "undefined")) {
+                        showSidepane = true;
+                    }
+                    else if ((typeof touchData !== "undefined") && (typeof touchData.changedTouches !== "undefined") && (touchData.changedTouches[0].screenX > (window.screen.width / 2))) {
+                        showSidepane = true;
+                    }
+                    else if (typeof touchData == "undefined") {
+                        showSidepane = true;
+                    }
                 }
                 if (showSidepane == true) {
                     syiro.animation.Slide(component);

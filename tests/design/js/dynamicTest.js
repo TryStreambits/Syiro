@@ -121,7 +121,6 @@ function showPlayerContainer(){
     if (section == "audio"){ // If the section is audio
         syiro.animation.FadeOut(videoPlayerContainer, function(){
             syiro.CSS(videoPlayerContainer, "display", "none"); // Set display to none
-            syiro.CSS(videoPlayerContainer, "visibility", "hidden"); // Set visibility to hidden
             syiro.CSS(audioPlayerContainer, "display", "block"); // Set display to block
 
             syiro.animation.FadeIn(audioPlayerContainer); // Fade in the audio section
@@ -131,7 +130,6 @@ function showPlayerContainer(){
         syiro.animation.FadeOut(audioPlayerContainer, function(){
             syiro.CSS(audioPlayerContainer, "display", "none"); // Set display to none
             syiro.CSS(videoPlayerContainer, "display", "block"); // Set display to block
-            syiro.CSS(videoPlayerContainer, "visibility", "visible"); // Set visibility to visible
 
             syiro.animation.FadeIn(videoPlayerContainer); // Fade in the video section
         });

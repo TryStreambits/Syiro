@@ -2,7 +2,7 @@
 
 // #region Animation Parametric Mixin - Allows easy adding of animations
 
-.animate(@properties; @duration : 250; @timingFunc : "ease-in"){
+.animate(@properties; @duration : 250){
 
 	// #region When the animation is active
 
@@ -18,22 +18,34 @@
 
 // #region Fading
 
-.fade-in-animation{
-	.animate("opacity, visibility"); // Transform opacity and visibility values
-
-	&[data-syiro-animation="fade-in"]{ // Fade In Animation
-		opacity: 1;
-		visibility: visible;
-	}
+&[data-syiro-animation="fade-in"]{ // Fade In Animation
+	transform: opacity, visibility;
+	-ms-transform: opacity, visibility;
+	-webkit-transform: opacity, visibility;
+	
+	transition-duration: 250ms;
+	-webkit-transition-duration: 250ms;
+	
+	transition-timing-function: ease-in;
+	-webkit-transition-timing-function: ease-in;
+	
+	opacity: 1 !important;
+	visibility: visible !important;
 }
 
-.fade-out-animation{
-	.animate("opacity, visibility"); // Transform opacity and visibility values
-
-	&[data-syiro-animation="fade-out"]{ // Fade Out Animation
-		opacity: 0;
-		visibility: hidden;
-	}
+&[data-syiro-animation="fade-out"]{ // Fade Out Animation
+	transform: opacity, visibility;
+	-ms-transform: opacity, visibility;
+	-webkit-transform: opacity, visibility;
+	
+	transition-duration: 250ms;
+	-webkit-transition-duration: 250ms;
+	
+	transition-timing-function: ease-in;
+	-webkit-transition-timing-function: ease-in;
+	
+	opacity: 0 !important;
+	visibility: hidden !important;
 }
 
 // #endregion
@@ -54,12 +66,13 @@
 
 // #endregion Pulse
 
-*[class="pulse"]{
-	box-shadow: 0 0 0 0 lighten(@syiroPrimaryColor, 25%); // No box-shadow
+
+.pulse(){	
+	box-shadow: 0 0 0 0 fadeout(@syiroPrimaryColor, 25%); // No box-shadow
 	transition: box-shadow 500ms; // Set transition value of box-shadow
 
 	&:hover{
-		box-shadow: 0 0 10px 0 lighten(@syiroPrimaryColor, 25%); // Box shadow (lighten shadow by 20%)
+		box-shadow: 0 0 3px 3px fadeout(@syiroPrimaryColor, 25%); // Box shadow (lighten shadow by 20%)
 	}
 }
 

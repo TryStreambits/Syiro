@@ -213,7 +213,7 @@ module syiro.player {
 
                 var playButtonComponent : Object = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-minor-component="player-button-play"]')); // Get the Component Object of the Play Button
 
-                syiro.events.Add(playButtonComponent,
+                syiro.events.Add(syiro.events.eventStrings["up"], playButtonComponent,
                     function(){
                         var playButtonComponent : Object = arguments[0]; // Get the Play Button that was clicked
                         var e : MouseEvent = arguments[1]; // Get the Mouse Event typically passed to the function
@@ -283,7 +283,7 @@ module syiro.player {
                 if (volumeButtonElement !== null){ // If there is a volume button (there is no for iOS)
                     var volumeButtonComponent = syiro.component.FetchComponentObject(volumeButtonElement); // Get the Component Object of the Volume Button
 
-                    syiro.events.Add(volumeButtonComponent,
+                    syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent,
                         function(){
                             var volumeButtonComponent : Object = arguments[0]; // Get the Volume Button that was clicked
                             var volumeButton : Element = syiro.component.Fetch(volumeButtonComponent); // Get the Volume Button Element
@@ -901,10 +901,8 @@ module syiro.playercontrol {
         var playerControlElement : Element = syiro.component.Fetch(component); // Fetch the Syiro Player Control Component Element
         var currentAnimationStored : any = null; // Define currentAnimationStored initially as null. We will define it as the current animation if it has one
 
-        syiro.component.CSS(playerControlElement, "opacity", false); // Remove the opacity styling set by the Video Player Component init for the Player Control to ensure fade animations run properly
-
-        if (playerControlElement.hasAttribute("class")){ // If the Player Control Element has an animation "class" (like fade-in-animation)
-            currentAnimationStored = playerControlElement.getAttribute("class"); // Get the current animation stored in "class"
+        if (playerControlElement.hasAttribute("data-syiro-animation")){ // If the Player Control Element has an animation attribute
+            currentAnimationStored = playerControlElement.getAttribute("data-syiro-animation"); // Get the current animation stored in "data-syiro-animation"
         }
 
         if (forceShow == true){ // If we are forcing to show the Player Control
@@ -914,7 +912,7 @@ module syiro.playercontrol {
             syiro.animation.FadeOut(component); // Fade out the Player Control
         }
         else if (typeof forceShow == "undefined"){ // If the forceShow is not defined
-            if ((currentAnimationStored == "fade-out-animation") || (playerControlElement.hasAttribute("class") == false)){ // If the current status is the Player Control is faded out OR the Player Control does not have a class
+            if ((currentAnimationStored == "fade-out") || (playerControlElement.hasAttribute("data-syiro-animation") == false)){ // If the current status is the Player Control is faded out OR the Player Control does not have the animation attribute
                 syiro.animation.FadeIn(component); // Fade in the Player Control
             }
             else{ // If the current status is the Player Control is faded in (showing)

@@ -94,12 +94,10 @@ div[data-syiro-component="sidepane"]{
     // #region For resolutions greater than 1280
 
     @media (min-width: 1280px){
-        width: 200px; // Default to 200px
-
         // #region Sidepane Content
 
         & > div[data-syiro-minor-component="sidepane-content"]{
-            width: 200px; // Use 100% of the parent Sidepane
+            width: 100%; // Use 100% of the parent Sidepane
             border-right: 1px solid lighten(@syiroSecondaryColor, 25%); // Set border-right to the secondary color, lightened by 25%
         }
 

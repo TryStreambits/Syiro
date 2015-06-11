@@ -331,12 +331,14 @@ div[data-syiro-component="audio-player"]{
         & > section { // Audio Information
             float: left;
             height: 40px;
+	    max-width: 150px;
             text-align: center;
             margin-top: 5px;
 
             & > b,label {
                 float: left;
                 color: contrast(@syiroPlayerControlColor); // Make sure the text contrasts the player control color
+		line-height: 20px; // Half of section
                 width: 100%; // Fill up entire "row"
             }
 

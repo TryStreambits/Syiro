@@ -72,6 +72,14 @@ div[data-syiro-component="internalColorContainer"]{
 
 // #region Page Component
 
+.mainPageWidthCalculate() when (@syiroTheme = "default"){
+	width: e('calc(100% - 200px)'); // Set width to be 100% - 200px (Sidepane)
+}
+
+.mainPageWidthCalculate() when (@syiroTheme = "material"){
+	width: e('calc(100% - 256px)'); // Set width to be 100% - 256px (Sidepane)
+}
+
 body {
 	image-rendering: optimizequality !important; // Optimize for quality in all images in the page
 	margin: 0;
@@ -101,7 +109,7 @@ body {
 
 		@media (min-width: 1280px){
 			float: right;
-			width: e('calc(100% - 200px)'); // Set width to be 100% - 200px (Sidepane)
+			.mainPageWidthCalculate();
 		}
 
 		// #endregion

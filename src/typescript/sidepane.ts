@@ -109,7 +109,7 @@ module syiro.sidepane {
 				if ((typeof touchData !== "undefined") && (typeof touchData.nodeType !== "undefined")){ // If we are triggering via contentOverlay
 					showSidepane = true; // Set to true
 				}
-				else if ((typeof touchData !== "undefined") && (typeof touchData.changedTouches !== "undefined") && (touchData.changedTouches[0].screenX > (window.screen.width / 2))){ // If we are going to show Sidepane or touchData was passed that has last pos at greater than 50%
+				else if ((typeof touchData !== "undefined") && (typeof touchData.changedTouches !== "undefined") && (touchData.changedTouches[0].screenX > (componentElement.clientWidth / 2))){ // If we are going to show Sidepane or touchData was passed that has last pos at greater than 50% of Component Width
 					showSidepane = true; // Set to true
 				}
 				else if (typeof touchData == "undefined"){ // If touchdata is not defined (triggered programmatically)

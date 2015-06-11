@@ -1,0 +1,52 @@
+@import (reference) "../core.less"; // Import Core as a reference
+
+// This is the Default theme LESS of the List and List Item Components.
+
+div[data-syiro-component="navbar"]{
+
+    // #region Shared Between "Top" Navbar and "Bottom" Navbar
+
+    height: 60px;
+    color: contrast(darken(@syiroBackground, 2.5%));
+    line-height: 60px;
+    background-color: darken(@syiroBackground, 2.5%);
+
+    // #endregion
+
+    // #region Top Navbar Component
+
+    &[data-syiro-component-type="top"]{
+        & > img[data-syiro-minor-component="logo"]{ // Logo component within header
+            float: left;
+            height: e("calc(100% - 20px)"); // Set height to 100% of navbar - 20px
+            width: auto;
+            margin: 10px 10px 10px 20px;
+            border: 0;
+        }
+
+        // #region Header Searchbox Modifications
+
+        & > div[data-syiro-component="searchbox"]{
+            float: right !important; // Force the component to float to the right
+            margin: 10px 10px 0 0 !important; // Center in header, adequate spacing on right
+
+            &:after { // Inner icon
+                margin: -10px 5% 0 0; // Have a negative height so the icon maintains being in the center of the Searchbox
+            }
+        }
+
+        // #endregion
+
+        // #region Link Styling
+
+        & > a{
+            min-width: 115px;
+        }
+
+        // #endregion
+    }
+
+    // #endregion
+}
+
+// #endregion

@@ -4,37 +4,28 @@
 
 div[data-syiro-component="list"]{ // Syiro List Component
 	min-height: 48px;
-
-    & > div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Syiro List Item Component (Only applies if the List Item does not have the attribute nonstrict-formatting)
+	
+	& > div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Syiro List Item Component (Only applies if the List Item does not have the attribute nonstrict-formatting)
 		height: 48px;
-		font-size: 14px !important;
 		line-height: 48px;
-        text-indent: 12px;
-
-        // #region Image
-
-        & > img {
+		text-indent: 12px;
+		
+		// #region Image
+		
+		& > img {
 			height: 36px;
 			width: 36px;
-            margin: 6px 0 12px 12px;
+			margin: 6px 0 12px 12px;
 		}
-
+		
 		// #endregion
-
-        // #region Link
-
-		& > a{
-			color: inherit; // Inherit from parent
+		
+		// #region Button
+		
+		& > div[data-syiro-component="button"]{
+			margin: 17px;
 		}
-
-        // #endregion
-
-        // #region Button
-
-        & > div[data-syiro-component="button"]{
-            margin: 17px;
-        }
-
-        // #endregion
+		
+		// #endregion
 	}
 }

@@ -1,10 +1,22 @@
+// #region Syiro "Use Font" Mixin for ensuring correct font is used
+
+.syiroUseFont() when not (@syiroTheme = "ios"){ // When using the Default or Material Design Theme
+	src: local('Fira Sans'), local('fira'), local('Fira'), url(fonts/fira.woff) format('woff'); // Use Fira Sans
+}
+
+.syiroUseFont() when (@syiroTheme = "ios"){ // When using the iOS Theme
+	src: local('San Fransisco Text'), local('San Fransisco Text Regular') format('truetype'); // Use San Fransisco
+}
+
+// #endregion
+
 // #region Required Fonts
 
 @font-face {
-	font-family: 'Fira Sans';
+	font-family: 'Syiro Text';
 	font-style: normal;
 	font-weight: 400;
-	src: local('Fira Sans'), local('fira'), local('Fira'), url(fonts/fira.woff) format('woff');
+	.syiroUseFont();
 }
 
 @font-face {
@@ -47,7 +59,7 @@ div[data-syiro-component] { // Is a Syiro Component
 	// #region Multi-component font utilization
 
 	&, &[data-syiro-component] > input {
-		font-family: 'Fira Sans', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
+		font-family: 'Syiro Text', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
 		font-smoothing: antialiased; // Ensure font-smoothing
 		-moz-osx-font-smoothing: grayscale;
 		-webkit-font-smoothing: antialiased;
@@ -72,7 +84,7 @@ div[data-syiro-component="internalColorContainer"]{
 
 // #region Page Component
 
-.mainPageWidthCalculate() when (@syiroTheme = "default"){
+.mainPageWidthCalculate() when not (@syiroTheme = "material"){ // If Default or iOS
 	width: e('calc(100% - 200px)'); // Set width to be 100% - 200px (Sidepane)
 }
 

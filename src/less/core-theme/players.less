@@ -399,7 +399,7 @@ div[data-syiro-component="video-player"]{
 
 
     & > div[data-syiro-component="player-control"] { // Overrides for Video Player's Player Control
-        background-color: @syiroPlayerControlColor;
+        background-color: fadeout(@syiroPlayerControlColor, 10%);
         position: relative;
         z-index: 6; // Force above video poster
 

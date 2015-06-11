@@ -10,6 +10,10 @@
             "ConfigFlags": "--modify-var=syiroTheme=\"default\""
         },
         {
+            "FileName": "syiro-ios",
+            "ConfigFlags": "--modify-var=syiroTheme=\"ios\""
+        },
+        {
             "FileName": "syiro-material",
             "ConfigFlags": "--modify-var=syiroTheme=\"material\""
         }

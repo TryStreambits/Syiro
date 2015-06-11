@@ -2732,7 +2732,7 @@ var syiro;
                     if ((typeof touchData !== "undefined") && (typeof touchData.nodeType !== "undefined")) {
                         showSidepane = true;
                     }
-                    else if ((typeof touchData !== "undefined") && (typeof touchData.changedTouches !== "undefined") && (touchData.changedTouches[0].screenX > (window.screen.width / 2))) {
+                    else if ((typeof touchData !== "undefined") && (typeof touchData.changedTouches !== "undefined") && (touchData.changedTouches[0].screenX > (componentElement.clientWidth / 2))) {
                         showSidepane = true;
                     }
                     else if (typeof touchData == "undefined") {

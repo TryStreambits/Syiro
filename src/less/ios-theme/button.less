@@ -1,0 +1,75 @@
+@import (reference) "../core.less"; // Import Core as a reference
+
+// #region Basic Buttons and Toggle Buttons
+
+div[data-syiro-component="button"]{
+
+	// #region Icon-Only Button
+
+	&:empty { // If the Button is icon-only
+		min-width: 40px;
+	}
+
+	// #endregion
+
+	// #region "Basic" Button Component
+
+	&[data-syiro-component-type="basic"]{
+		height: 40px;
+		min-width: 115px;
+		line-height: 40px;
+		margin: 5px;
+	}
+
+	// #endregion
+
+	// #region "Toggle" Button Component
+
+	&[data-syiro-component-type="toggle"]{
+		height: 24px; // Make it smaller than the typical button
+		width: 42px; // Fixed width
+		margin: 4px;
+
+		border-radius: 16px; // Make sure the Toggle has a rounded edge
+
+		& > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
+			height: 23px;
+			width: 23px;
+			background-color: @syiroBackground;
+
+			&:not([data-syiro-animation]){ // When there is not an active Syiro animation on the Button
+				border: 1px solid darken(@syiroBackground, 20%);
+				box-shadow: 0 1px 1px 0 darken(@syiroBackground, 10%); // Slight box shadowing
+				margin-left: -1px; // Margin left of -1 so left border aligns
+			}
+			
+			&[data-syiro-animation]{ // When the button has been toggled
+				border: 1px solid #4bd663; // Set same as active background
+			}
+
+			.slide(20px, 125); // Enable slide animation so it slides to left position of 32px in 125ms
+		}
+
+		// #region False Status
+
+		&:not([active]){
+			background-color: white;
+			border: 1px solid darken(@syiroBackground, 25%);
+		}
+
+		// #endregion
+
+		// #region True Staus
+
+		&[active]{ // Syiro "Toggle" Button - Status Set to True
+			background-color: #4bd663;
+			border: 1px solid #4bd663; // Set same as active background
+		}
+
+		// #endregion
+	}
+
+	// #endregion
+}
+
+// #endregion

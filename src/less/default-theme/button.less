@@ -26,19 +26,27 @@ div[data-syiro-component="button"]{
 	// #region "Toggle" Button Component
 
 	&[data-syiro-component-type="toggle"]{
-		height: 24px; // Make it smaller than the typical button
-		width: 60px; // Fixed width (2x height + 1/2 height)
+		height: 22px; // Make it smaller than the typical button
+		width: 50px; // Fixed width
 		margin: 4px;
 		border-radius: 12px; // Make sure the Toggle has a rounded edge
 
 		& > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
-			height: 28px;
-			width: 28px;
+			height: 18px;
+			width: 18px;
 			background-color: @syiroBackground;
-			border: 1px solid darken(@syiroBackground, 20%);
-			margin-top: -3px;
+			margin-top: 1px;
+			
+			&:not([data-syiro-animation]){ // If there is no applied animation
+				border: 1px solid darken(@syiroBackground, 20%);
+				margin-left: 1px;
+			}
+			
+			&[data-syiro-animation]{ // When the Toggle Button is active
+				border: 1px solid @syiroPrimaryColor; // Set to same color as active Toggle Button background
+			}
 
-			.slide(32px, 125); // Enable slide animation so it slides to left position of 32px in 125ms
+			.slide(29px, 125); // Enable slide animation so it slides to left position of 29px in 125ms
 		}
 
 		// #region False Status

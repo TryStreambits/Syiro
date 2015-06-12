@@ -73,7 +73,7 @@ module syiro.events {
                 passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
             }
         }
-        else if ((typeof component.parentElement !== "undefined") && (component.parentElement.getAttribute("data-syiro-component") == "searchbox")){ // If the component is a Syiro Searchbox
+        else if ((typeof component.parentElement !== "undefined") && (component.parentElement !== null) && (component.parentElement.getAttribute("data-syiro-component") == "searchbox")){ // If the component is a Syiro Searchbox
             passableValue = componentElement.value; // Get the current value of the input
         }
         else{
@@ -182,73 +182,73 @@ module syiro.events {
         var specFunc : Function; // Define specFunc as a Function
 
         if ((args.length >= 2) && (args.length < 4)){ // If an appropriate amount of arguments are provided
-		if ((typeof args[0] == "string") || (typeof args[0].length !== "undefined")){ // If this is a string or args[0].length is not undefined (so it is an array)
-			listeners = args[0]; // Define listeners as the first argument
-	
-	                if (typeof listeners == "string"){ // If the listeners was defined a string
-	                    listeners = listeners.trim().split(" "); // Trim the whitespace around the string then convert it to an array
-	                }
-		}
-		else{ // If the first argument is neither a string or an array
-			allowRemoval = false; // Disallow removal
-		}
+			if ((typeof args[0] == "string") || (typeof args[0].length !== "undefined")){ // If this is a string or args[0].length is not undefined (so it is an array)
+				listeners = args[0]; // Define listeners as the first argument
 		
-		component = args[1]; // Declare component as the second argument
-		
-		if (typeof args[2] == "function"){ // If a specific function for removal is defined
-			specFunc = args[2]; // Define specFunc as args[2]
-		}
-
-		if (syiro.component.IsComponentObject(component)){ // If the Component provided is a Syiro Component Object
-			componentElement = syiro.component.Fetch(component); // Get the Component Element
-			
-			if (componentElement !== null){ // If we successfully fetched the Component's Element
-				if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-					if (componentElement.querySelector('div[data-syiro-component="button"]') !== null){ // If there is a div (secondary control) in the List Item
-						allowRemoval = false; // Set allowRemoval to false, since there is a Button within the List Item that would be affected.
-					}
-				}
+		                if (typeof listeners == "string"){ // If the listeners was defined a string
+		                    listeners = listeners.trim().split(" "); // Trim the whitespace around the string then convert it to an array
+		                }
 			}
-		}
-		else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
-			componentElement = component; // Define componentElement as the Component
-			component = syiro.component.FetchComponentObject(componentElement);
-		}
-		else{ // If the component is NOT a Syiro Component Object or an Element
-			component = { "id" : String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase() }; // Set the componentId equal to the string form, stripping out [], "object", etc.
-			componentElement = component; // Define componentElement as the component passed
-		}
+			else{ // If the first argument is neither a string or an array
+				allowRemoval = false; // Disallow removal
+			}
+		
+			component = args[1]; // Declare component as the second argument
+			
+			if (typeof args[2] == "function"){ // If a specific function for removal is defined
+				specFunc = args[2]; // Define specFunc as args[2]
+			}
 
-		if (allowRemoval == true){ // If we are going to allow the removal of event listeners from the Element		
-			if ((typeof componentElement !== "undefined") && (componentElement !== null)){
-				for (var individualListenerIndex in listeners){ // For each listener that was defined in listeners array
-					var listener = listeners[individualListenerIndex]; // Define listener as the value from index of listeners
-					var componentListeners : any = null; // Define componentListeners as an array of functions specific to that listener, only for specFunc, or null (default) if all functions should be removed
-					
-					if (typeof specFunc == "function") { // If a specific function is defined
-						componentListeners = syiro.data.Read(component["id"] + "->handlers->" + listener); // Define componentListeners as the array of functions specific to that listener
-						var componentListenersFunctionIndex : number = componentListeners.indexOf(specFunc); // Get the index of this function
-					
-						if (componentListenersFunctionIndex !== -1){ // If the function exists as a listener
-							componentListeners.splice(componentListenersFunctionIndex, 1); // Remove the specific function from the componentListeners by splicing the array (removing an item based on index and number defined)
+			if (syiro.component.IsComponentObject(component)){ // If the Component provided is a Syiro Component Object
+				componentElement = syiro.component.Fetch(component); // Get the Component Element
+				
+				if (componentElement !== null){ // If we successfully fetched the Component's Element
+					if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
+						if (componentElement.querySelector('div[data-syiro-component="button"]') !== null){ // If there is a div (secondary control) in the List Item
+							allowRemoval = false; // Set allowRemoval to false, since there is a Button within the List Item that would be affected.
 						}
 					}
-			
-					if ((componentListeners == null) || (componentListeners.length == 0)){ // If the componentListeners is null or does NOT have a length (essentially null)
-						syiro.data.Delete(component["id"] + "->handlers->" + listener); // Remove the specific listener from this handler from the particular Component
-						componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component)); // Remove the event listener (specific to the listener and func)
-					}
-					else{ // If componentListeners.length is still not zero after removing the specFunc
-						syiro.data.Write(component["id"] + "->handlers->" + listener, componentListeners); // Update the listener functions array for this handler
-					}
 				}
-			
-				successfulRemoval = true; // Return true since we successfully removed event listeners
+			}
+			else if ((typeof component.nodeType !== "undefined") && (component.nodeType == 1)){ // If the Component passed is an Element
+				componentElement = component; // Define componentElement as the Component
+				component = syiro.component.FetchComponentObject(componentElement);
+			}
+			else{ // If the component is NOT a Syiro Component Object or an Element
+				componentElement = component; // Define componentElement as the component passed
+				component = { "id" : String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase() }; // Set the componentId equal to the string form, stripping out [], "object", etc.
+			}
+
+			if (allowRemoval == true){ // If we are going to allow the removal of event listeners from the Element		
+				if ((typeof componentElement !== "undefined") && (componentElement !== null)){
+					for (var individualListenerIndex in listeners){ // For each listener that was defined in listeners array
+						var listener = listeners[individualListenerIndex]; // Define listener as the value from index of listeners
+						var componentListeners : any = null; // Define componentListeners as an array of functions specific to that listener, only for specFunc, or null (default) if all functions should be removed
+						
+						if (typeof specFunc == "function") { // If a specific function is defined
+							componentListeners = syiro.data.Read(component["id"] + "->handlers->" + listener); // Define componentListeners as the array of functions specific to that listener
+							var componentListenersFunctionIndex : number = componentListeners.indexOf(specFunc); // Get the index of this function
+						
+							if (componentListenersFunctionIndex !== -1){ // If the function exists as a listener
+								componentListeners.splice(componentListenersFunctionIndex, 1); // Remove the specific function from the componentListeners by splicing the array (removing an item based on index and number defined)
+							}
+						}
+				
+						if ((componentListeners == null) || (componentListeners.length == 0)){ // If the componentListeners is null or does NOT have a length (essentially null)
+							syiro.data.Delete(component["id"] + "->handlers->" + listener); // Remove the specific listener from this handler from the particular Component
+							componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component)); // Remove the event listener (specific to the listener and func)
+						}
+						else{ // If componentListeners.length is still not zero after removing the specFunc
+							syiro.data.Write(component["id"] + "->handlers->" + listener, componentListeners); // Update the listener functions array for this handler
+						}
+					}
+				
+					successfulRemoval = true; // Return true since we successfully removed event listeners
+				}
 			}
 		}
-	}
-	
-	return successfulRemoval; // Return whether the removal was successful
+		
+		return successfulRemoval; // Return whether the removal was successful
     }
 
     // #endregion

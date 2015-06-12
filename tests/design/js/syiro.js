@@ -243,7 +243,7 @@ var syiro;
                     passableValue = false;
                 }
             }
-            else if ((typeof component.parentElement !== "undefined") && (component.parentElement.getAttribute("data-syiro-component") == "searchbox")) {
+            else if ((typeof component.parentElement !== "undefined") && (component.parentElement !== null) && (component.parentElement.getAttribute("data-syiro-component") == "searchbox")) {
                 passableValue = componentElement.value;
             }
             else {
@@ -366,8 +366,8 @@ var syiro;
                     component = syiro.component.FetchComponentObject(componentElement);
                 }
                 else {
-                    component = { "id": String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase() };
                     componentElement = component;
+                    component = { "id": String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase() };
                 }
                 if (allowRemoval == true) {
                     if ((typeof componentElement !== "undefined") && (componentElement !== null)) {
@@ -2696,6 +2696,15 @@ var syiro;
         sidepane.Generate = Generate;
         function GestureInit() {
             var componentElement = arguments[0].parentElement;
+            var moveElement;
+            if (typeof arguments[1].touches !== "undefined") {
+                moveElement = arguments[0];
+            }
+            else {
+                moveElement = document;
+            }
+            syiro.events.Add(syiro.events.eventStrings["move"], moveElement, syiro.sidepane.Drag.bind(this, arguments[0]));
+            syiro.events.Add(syiro.events.eventStrings["up"], moveElement, syiro.sidepane.Release.bind(this, arguments[0]));
             componentElement.removeAttribute("data-syiro-animation");
             componentElement.setAttribute("data-syiro-render-animation", "false");
             var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]');
@@ -2704,8 +2713,16 @@ var syiro;
         sidepane.GestureInit = GestureInit;
         function Drag() {
             var componentElement = arguments[0].parentElement;
-            var eventData = arguments[1];
-            var updatedSidepanePosition = (eventData.touches[0].screenX - componentElement.offsetWidth);
+            var eventData = arguments[2];
+            var screenX;
+            var updatedSidepanePosition;
+            if (typeof eventData.touches !== "undefined") {
+                screenX = eventData.touches[0].screenX;
+            }
+            else {
+                screenX = eventData.screenX;
+            }
+            updatedSidepanePosition = screenX - componentElement.offsetWidth;
             if (updatedSidepanePosition > 0) {
                 updatedSidepanePosition = 0;
             }
@@ -2716,26 +2733,38 @@ var syiro;
         function Release() {
             var componentElement = arguments[0].parentElement;
             var component = syiro.component.FetchComponentObject(arguments[0].parentElement);
-            var eventData = arguments[1];
+            var moveElement = arguments[1];
+            var eventData = arguments[2];
             componentElement.removeAttribute("data-syiro-render-animation");
             syiro.component.CSS(componentElement, "transform", false);
             syiro.component.CSS(componentElement, "-webkit-transform", false);
             syiro.sidepane.Toggle(component, eventData);
+            syiro.events.Remove(syiro.events.eventStrings["move"], moveElement);
+            syiro.events.Remove(syiro.events.eventStrings["up"], moveElement);
         }
         sidepane.Release = Release;
-        function Toggle(component, touchData) {
+        function Toggle(component, eventData) {
             if ((syiro.component.IsComponentObject(component)) && (component["type"] == "sidepane")) {
                 var componentElement = syiro.component.Fetch(component);
                 var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]');
                 var showSidepane = false;
                 if (componentElement.hasAttribute("data-syiro-animation") == false) {
-                    if ((typeof touchData !== "undefined") && (typeof touchData.nodeType !== "undefined")) {
+                    if ((typeof eventData !== "undefined") && (typeof eventData.nodeType !== "undefined")) {
                         showSidepane = true;
                     }
-                    else if ((typeof touchData !== "undefined") && (typeof touchData.changedTouches !== "undefined") && (touchData.changedTouches[0].screenX > (componentElement.clientWidth / 2))) {
-                        showSidepane = true;
+                    else if ((typeof eventData !== "undefined") && ((typeof eventData.changedTouches !== "undefined") || (typeof eventData.screenX !== "undefined"))) {
+                        var screenX;
+                        if (typeof eventData.changedTouches !== "undefined") {
+                            screenX = eventData.changedTouches[0].screenX;
+                        }
+                        else {
+                            screenX = eventData.screenX;
+                        }
+                        if (screenX > (componentElement.clientWidth / 2)) {
+                            showSidepane = true;
+                        }
                     }
-                    else if (typeof touchData == "undefined") {
+                    else if (typeof eventData == "undefined") {
                         showSidepane = true;
                     }
                 }
@@ -2863,12 +2892,8 @@ var syiro;
                                             }
                                         }
                                         else if (componentObject["type"] == "sidepane") {
-                                            if (syiro.device.SupportsTouch) {
-                                                var innerSidepaneEdge = passedNode.querySelector('div[data-syiro-minor-component="sidepane-edge"]');
-                                                syiro.events.Add(syiro.events.eventStrings["move"], innerSidepaneEdge, syiro.sidepane.Drag);
-                                                syiro.events.Add(syiro.events.eventStrings["down"], innerSidepaneEdge, syiro.sidepane.GestureInit);
-                                                syiro.events.Add(syiro.events.eventStrings["up"], innerSidepaneEdge, syiro.sidepane.Release);
-                                            }
+                                            var innerSidepaneEdge = passedNode.querySelector('div[data-syiro-minor-component="sidepane-edge"]');
+                                            syiro.events.Add(syiro.events.eventStrings["down"], innerSidepaneEdge, syiro.sidepane.GestureInit);
                                             if (document.querySelector('div[data-syiro-minor-component="overlay"]') == null) {
                                                 var contentOverlay = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "overlay" });
                                                 document.body.appendChild(contentOverlay);

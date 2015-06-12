@@ -59,11 +59,7 @@ div[data-syiro-component] { // Is a Syiro Component
 	// #region Multi-component font utilization
 
 	&, &[data-syiro-component] > input {
-		font-family: 'Syiro Text', 'Droid Sans', 'Segoe UI', Calibri, sans-serif !important;
-		font-smoothing: antialiased; // Ensure font-smoothing
-		-moz-osx-font-smoothing: grayscale;
-		-webkit-font-smoothing: antialiased;
-		text-rendering: optimizeLegibility;
+		font-family: 'Syiro Text', 'Droid Sans', 'Segoe UI', Calibri, sans-serif;
 	}
 
 	// #endregion
@@ -93,7 +89,11 @@ div[data-syiro-component="internalColorContainer"]{
 }
 
 body {
-	image-rendering: optimizequality !important; // Optimize for quality in all images in the page
+	font-smoothing: antialiased; // Ensure font-smoothing
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;	
+	image-rendering: optimizequality; // Optimize for quality in all images in the page
 	margin: 0;
 	overflow-x: hidden;
 	scroll-behavior: smooth; // Enable smooth scrolling

@@ -25,8 +25,8 @@ div[data-syiro-component="player-control"]{
     width: inherit; // Scales to width of video player
 
     &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Player Control
-        height: 50px !important; // Set height to 50px
-        max-height: 50px !important; // Enforce the height of 50px
+        height: 50px; // Set height to 50px
+        max-height: 50px; // Enforce the height of 50px
 
         & > input { // Input Slider
             display: none; // Default to not showing
@@ -34,8 +34,8 @@ div[data-syiro-component="player-control"]{
     }
 
     &:not([data-syiro-component-streamstyling]){ // If we are NOT applying "Stream Styling" to the Player Control
-        height: 60px !important; // Set height to 50px
-        max-height: 60px !important; // Enforce the height of 60px
+        height: 60px; // Set height to 50px
+        max-height: 60px; // Enforce the height of 60px
 
         & > input { // Input Slider
             display: block; // Default to showing
@@ -53,21 +53,21 @@ div[data-syiro-component="player-control"]{
         float: left;
         height: 32px;
         width: 32px;
-        min-width: 0 !important; // Override Basic Button minimum width
-        color: contrast(@syiroPlayerControlColor) !important; // Ensure the color contrasts the syiroPlayerControlColor
+        min-width: 0; // Override Basic Button minimum width
+        color: contrast(@syiroPlayerControlColor); // Ensure the color contrasts the syiroPlayerControlColor
         line-height: 32px; // Ensure the icon is centered vertically
         text-align: center; // Ensure the icon is centered horizontally
         background-color: transparent;
         border-radius: 0;
-        margin: 9px 5px 9px 5px !important; // Center on Player Control
+        margin: 9px 5px 9px 5px; // Center on Player Control
 
         &:not(:first-of-type){ // If the button is the last one
             float: right; // Float to the right of the Player Control
         }
 
         &[active]:not([data-syiro-minor-component="player-button-play"]):after{ // If the button is active and it is not the play button
-            color: @syiroPlayerControlColor !important; // Set the text color to the syiroPlayerControlColor
-            background-color: contrast(@syiroPlayerControlColor) !important; // Set the background to the contrast of the syiroPlayerControlColor
+            color: @syiroPlayerControlColor; // Set the text color to the syiroPlayerControlColor
+            background-color: contrast(@syiroPlayerControlColor); // Set the background to the contrast of the syiroPlayerControlColor
         }
 
         &:after{ // Inner Icon
@@ -116,13 +116,13 @@ div[data-syiro-component="player-control"]{
         // #region Range Thumb
 
         .thumbProperties(){
-            -moz-appearance: none !important; // No Firefox appearance
-            -webkit-appearance: none !important; // No WebKit appearance
+            -moz-appearance: none; // No Firefox appearance
+            -webkit-appearance: none; // No WebKit appearance
 
-            height: 10px !important;
-            width: 10px !important;
-            border: 0 !important;
-            background-color: darken(@syiroPrimaryColor, 10%) !important; // Have the thumb be slightly darker to allow differentation compared to the primary color
+            height: 10px;
+            width: 10px;
+            border: 0;
+            background-color: darken(@syiroPrimaryColor, 10%); // Have the thumb be slightly darker to allow differentation compared to the primary color
             background-image: none; // Mozilla applies an SVG image as the thumbnail. Lets remove that.
             border-radius: 0; // No border radius
         }
@@ -190,7 +190,7 @@ div[data-syiro-minor-component="player-error"]{
 
 div[data-syiro-minor-component="player-menu"]{
     float: left;
-    color: contrast(@syiroPlayerControlColor) !important; // Set the color to the contrasting color of the background color
+    color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the background color
     background-color: fade(@syiroPlayerControlColor, 80%); // Set the background color to the syiroBackgroundColor, faded (transparency) to 80%
     margin: 0;
     padding: 0;
@@ -272,8 +272,8 @@ div[data-syiro-component="audio-player"]{
                 margin-left: 10px; // Ensure the List Item has enough space between the icons and is aligned with the Menu label
 
                 & > img { // If there is an image within the List Item
-                    height: 32px !important; // Reduce the height of the image
-                    width: 32px !important; // Reduce the width of the image
+                    height: 32px; // Reduce the height of the image
+                    width: 32px; // Reduce the width of the image
                     margin: 4px 0 0 0; // Ensure the img looks good in the Audio Player's Menu Dialog "Grid View"
                 }
 
@@ -373,15 +373,15 @@ div[data-syiro-component="video-player"]{
     // #endregion
 
     &:-webkit-full-screen{ // Webkit Fullscreen
-        height: 100% !important;
-        width: 100% !important;
-        margin: 0 !important;
+        height: 100%;
+        width: 100%;
+        margin: 0;
     }
 
     & > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"]{
         & > img { // If there is an image within the List Item
-            height: 32px !important; // Reduce the height of the image
-            width: 32px !important; // Reduce the width of the image
+            height: 32px; // Reduce the height of the image
+            width: 32px; // Reduce the width of the image
             margin: 4px 5px 0 10px; // Make sure the image is properly aligned with the Menu label and label text
         }
     }

@@ -14,7 +14,7 @@ div[data-syiro-component="list"]{
 		display: block;
 		width: 100%;
 		color: contrast(@syiroBackground); // Set the text color to contrast the background color of the List
-		font-size: 14px !important;
+		font-size: 14px;
 		overflow: hidden;
 		
 		// #region Image
@@ -31,7 +31,7 @@ div[data-syiro-component="list"]{
 		& > a{
 			float: left;
 			width: 100%; // Only allow the link to be in this particular List Item component (disallow secondary controls)
-			color: @syiroPrimaryColor !important; // Force link color (primary color)
+			color: @syiroPrimaryColor; // Force link color (primary color)
 			font-weight: normal;
 			text-decoration: none; // No text decoration
 		}
@@ -41,7 +41,7 @@ div[data-syiro-component="list"]{
 		// #region Button
 		
 		& > div[data-syiro-component="button"]{
-			float: right !important; // Float the component to the right
+			float: right; // Float the component to the right
 		}
 		
 		// #endregion

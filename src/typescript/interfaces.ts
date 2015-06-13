@@ -89,12 +89,3 @@ interface MutationObserver {
 }
 
 // #endregion
-
-// #region Official Plugins
-
-declare module syiro.plugin.alternativeInit {
-	function Init(): void;
-	function Wait(): void;
-}
-
-// #endregion

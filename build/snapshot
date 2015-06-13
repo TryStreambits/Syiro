@@ -18,7 +18,6 @@ createSnapshot(){ # Create a snapshot of the branch and package it
 	echo "$syiroVersion" > VERSION.txt # Update the VERSION.txt file
 
 	cp -r build/syiro.min.js build/syiro.min.js.gz ./build/active-snapshot/Syiro/js/ # Copy over particular build content to the snapshot
-	cp -r src/typescript/plugins/alternativeInit.min.js ./build/active-snapshot/Syiro/js/ # Copy over the alternativeInit.min.js in the event someone wants it
 	cp -r src/less/fonts src/less/img README.md License.txt VERSION.txt ./build/active-snapshot/Syiro # Copy over particular non-build data to the snapshot
 	cp -r build/syiro.css ./build/active-snapshot/Syiro/css/ # Move the CSS file to the css folder
 	cp -r build/syiro-ios.css build/syiro-material.css ./build/active-snapshot/Syiro/css/ # Copy over Syiro iOS and Material Design CSS

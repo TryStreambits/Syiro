@@ -107,7 +107,70 @@ module syiro {
 		document.body.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
 
 		// #region Watch DOM For Components
-
+		
+		function ComponentParser(componentElement : Element){
+			if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))){ // If the element is a Syiro component
+				var componentObject = syiro.component.FetchComponentObject(componentElement); // Fetch the (potential) Component Object of the passedNode
+	
+				if (componentObject["type"] == "buttongroup"){ // If the component is a Buttongroup
+					var innerButtons = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all the Button Components inside this Buttongroup
+	
+					for (var innerButtonIndex = 0; innerButtonIndex < innerButtons.length; innerButtonIndex++){ // For each Button
+						var buttonComponentObject = syiro.component.FetchComponentObject(innerButtons[innerButtonIndex]); // Get the buttonComponentObject
+						syiro.events.Add(syiro.events.eventStrings["up"], buttonComponentObject, syiro.buttongroup.Toggle); // Immediately enable parent toggling for this Button
+					}
+				}
+				else if ((componentObject["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "dropdown")){ // If the component is a Dropdown Button
+					syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.button.Toggle); // Immediately listen to the Dropdown Button
+				}
+				else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
+					syiro.player.Init(componentObject); // Initialize the Audio or Video Player
+					syiro.render.Scale(componentObject); // Scale the Audio Player or Video Player
+				}
+				else if (componentObject["type"] == "searchbox"){ // If the Component is a Searchbox
+					if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
+						syiro.events.Add("keyup", componentElement.querySelector("input"), syiro.searchbox.Suggestions);// Add  an event with the Suggestions function to the Searchbox's inner input Element to listen on keyup value
+						syiro.events.Add("blur", componentElement.querySelector("input"),// Add an event to the Searchbox inner input Element to listen to when it loses focus
+							function(){
+								var searchboxObject : Object = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox
+								var searchboxLinkedList : Object = syiro.component.FetchLinkedListComponentObject(searchboxObject); // Define searchboxLinkedList as the fetched Linked List Component
+								syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important"); // Hide the Linked List
+							}.bind(this, componentObject)
+						);
+					}
+				}
+				else if (componentObject["type"] == "sidepane"){ // If the Component is a Sidepane
+					var innerSidepaneEdge = componentElement.querySelector('div[data-syiro-minor-component="sidepane-edge"]'); // Get the Sidepane Edge
+					syiro.events.Add(syiro.events.eventStrings["down"], innerSidepaneEdge, syiro.sidepane.GestureInit); // Bind the Sidepane Edge to GestureInit function for "down"
+	
+					if (document.querySelector('div[data-syiro-minor-component="overlay"]') == null){ // If there is no overlay on the page
+						var contentOverlay = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "overlay"}); // Generate an Overlay
+						document.body.appendChild(contentOverlay); // Append the contentOverlay to the body
+						
+						syiro.events.Add(syiro.events.eventStrings["down"], contentOverlay, function(){ // Create a "down" event so Sidepane dragging doesn't trigger an "up" event
+							syiro.events.Add(syiro.events.eventStrings["up"], arguments[1], function(){ // Create the "up" event for the contentOverlay
+								syiro.sidepane.Toggle(arguments[0]); // Toggle the Sidepane
+								syiro.events.Remove(syiro.events.eventStrings["up"], arguments[1]); // Remove the "up" event on contentOverlay 
+							}.bind(this, arguments[0]));
+						}.bind(this, componentObject));
+					}
+				}
+				
+				// #region Recursive Inner Component Parsing
+				
+				if (componentElement.childNodes.length > 0){ // If the componentElement has child Elements / Nodes
+					for (var i = 0; i < componentElement.childNodes.length; i++){ // For each node in the componentElement.childNodes
+						var childNode : any = componentElement.childNodes[i]; // Get the Node
+						ComponentParser(childNode); // Also parse this childNode
+					}
+				}
+				
+				// #endregion
+				
+				syiro.data.Delete(componentObject["id"] + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
+			}
+		}
+		
 		if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")){ // If MutationObserver is supported by the browser
 			if (typeof WebKitMutationObserver !== "undefined"){ // If WebKitMutationObserver is used instead (like on iOS)
 				MutationObserver = WebKitMutationObserver; // Set MutationObserver to WebKitMutationObserver
@@ -119,70 +182,8 @@ module syiro {
 						function(mutation : MutationRecord){
 							if (mutation.type == "childList"){ // If something in the document changed (childList)
 								for (var i = 0; i < mutation.addedNodes.length; i++){ // For each node in the mutation.addedNodes
-									var addedNode : any = mutation.addedNodes[i]; // Get the Node
-
-									var NodeParser : Function = function(passedNode : any){ // Function that parses a Node (type any rather than Node since lib.ts doesn't seem to make not that attribute func are usable on Nodes)
-										if (passedNode.localName !== null){ // If the addedNode has a localName  instead of null
-											if (passedNode.hasAttribute("data-syiro-component")){ // If the element is a Syiro component
-												var componentObject = syiro.component.FetchComponentObject(passedNode); // Fetch the (potential) Component Object of the passedNode
-
-												if (componentObject["type"] == "buttongroup"){ // If the component is a Buttongroup
-													var innerButtons = passedNode.querySelectorAll('div[data-syiro-component="button"]'); // Get all the Button Components inside this Buttongroup
-
-													for (var innerButtonIndex = 0; innerButtonIndex < innerButtons.length; innerButtonIndex++){ // For each Button
-														var buttonComponentObject = syiro.component.FetchComponentObject(innerButtons[innerButtonIndex]); // Get the buttonComponentObject
-														syiro.events.Add(syiro.events.eventStrings["up"], buttonComponentObject, syiro.buttongroup.Toggle); // Immediately enable parent toggling for this Button
-													}
-												}
-												else if ((componentObject["type"] == "button") && (passedNode.getAttribute("data-syiro-component-type") == "dropdown")){ // If the component is a Dropdown Button
-													syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.button.Toggle); // Immediately listen to the Dropdown Button
-												}
-												else if ((componentObject["type"] == "audio-player") || (componentObject["type"] == "video-player")){ // If the component is an Audio or Video Player Component
-													syiro.player.Init(componentObject); // Initialize the Audio or Video Player
-													syiro.render.Scale(componentObject); // Scale the Audio Player or Video Player
-												}
-												else if (componentObject["type"] == "searchbox"){ // If the Component is a Searchbox
-													if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
-														syiro.events.Add("keyup", passedNode.querySelector("input"), syiro.searchbox.Suggestions);// Add  an event with the Suggestions function to the Searchbox's inner input Element to listen on keyup value
-														syiro.events.Add("blur", passedNode.querySelector("input"),// Add an event to the Searchbox inner input Element to listen to when it loses focus
-															function(){
-																var searchboxObject : Object = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox
-																var searchboxLinkedList : Object = syiro.component.FetchLinkedListComponentObject(searchboxObject); // Define searchboxLinkedList as the fetched Linked List Component
-																syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important"); // Hide the Linked List
-															}.bind(this, componentObject)
-														);
-													}
-												}
-												else if (componentObject["type"] == "sidepane"){ // If the Component is a Sidepane
-													var innerSidepaneEdge = passedNode.querySelector('div[data-syiro-minor-component="sidepane-edge"]'); // Get the Sidepane Edge
-													syiro.events.Add(syiro.events.eventStrings["down"], innerSidepaneEdge, syiro.sidepane.GestureInit); // Bind the Sidepane Edge to GestureInit function for "down"
-
-													if (document.querySelector('div[data-syiro-minor-component="overlay"]') == null){ // If there is no overlay on the page
-														var contentOverlay = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "overlay"}); // Generate an Overlay
-														document.body.appendChild(contentOverlay); // Append the contentOverlay to the body
-														
-														syiro.events.Add(syiro.events.eventStrings["down"], contentOverlay, function(){ // Create a "down" event so Sidepane dragging doesn't trigger an "up" event
-															syiro.events.Add(syiro.events.eventStrings["up"], arguments[1], function(){ // Create the "up" event for the contentOverlay
-																syiro.sidepane.Toggle(arguments[0]); // Toggle the Sidepane
-																syiro.events.Remove(syiro.events.eventStrings["up"], arguments[1]); // Remove the "up" event on contentOverlay 
-															}.bind(this, arguments[0]));
-														}.bind(this, componentObject));
-													}
-												}
-
-												if (passedNode.childNodes.length > 0){ // If the passedNode has childNodes
-													for (var i = 0; i < passedNode.childNodes.length; i++){ // For each node in the mutation.childNodes
-														var childNode : any = passedNode.childNodes[i]; // Get the Node
-														NodeParser(childNode); // Also parse this childNode
-													}
-												}
-
-												syiro.data.Delete(componentObject["id"] + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
-											}
-										}
-									}
-
-									NodeParser(addedNode); // Parse this Node
+									var componentElement : any = mutation.addedNodes[i]; // Get the Node
+									ComponentParser(componentElement); // Send to Component Parser
 								}
 							}
 						}
@@ -201,9 +202,21 @@ module syiro {
 			mutationWatcher.observe(document.body, mutationWatcherOptions); // Watch the document body with the options provided.
 		}
 		else{ // If MutationObserver is NOT supported (IE10 and below), such as in Windows Phone
-			if (typeof syiro.plugin.alternativeInit !== "undefined"){ // If syiro.plugin.alternativeInit is added in the page as well
-				syiro.plugin.alternativeInit.Init(); // Initialize the alternative init
-			}
+	        (function mutationTimer(){
+	            window.setTimeout( // Set interval to 3000 (3 seconds) with a timeout
+	                function(){ // Call this function
+	                    for (var componentId in syiro.data.storage){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
+							var componentElement = document.querySelector('div[data-syiro-component-id="' + componentId + '"]'); // Get the potential component Element
+	                        if (componentElement !== null){ // If the component exists in the DOM
+	                            ComponentParser(componentElement); // Parse the Component Element
+	                        }
+	                    }
+	
+	                    mutationTimer();
+	                },
+	                3000
+	            )
+	        })();
 		}
 
 		// #endregion

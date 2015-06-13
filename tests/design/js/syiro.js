@@ -2735,9 +2735,6 @@ var syiro;
             var component = syiro.component.FetchComponentObject(arguments[0].parentElement);
             var moveElement = arguments[1];
             var eventData = arguments[2];
-            componentElement.removeAttribute("data-syiro-render-animation");
-            syiro.component.CSS(componentElement, "transform", false);
-            syiro.component.CSS(componentElement, "-webkit-transform", false);
             syiro.sidepane.Toggle(component, eventData);
             syiro.events.Remove(syiro.events.eventStrings["move"], moveElement);
             syiro.events.Remove(syiro.events.eventStrings["up"], moveElement);
@@ -2749,10 +2746,8 @@ var syiro;
                 var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]');
                 var showSidepane = false;
                 if (componentElement.hasAttribute("data-syiro-animation") == false) {
-                    if ((typeof eventData !== "undefined") && (typeof eventData.nodeType !== "undefined")) {
-                        showSidepane = true;
-                    }
-                    else if ((typeof eventData !== "undefined") && ((typeof eventData.changedTouches !== "undefined") || (typeof eventData.screenX !== "undefined"))) {
+                    var currentTransformProperty = syiro.component.CSS(component, "transform");
+                    if ((typeof eventData !== "undefined") && ((typeof eventData.changedTouches !== "undefined") || (typeof eventData.screenX !== "undefined"))) {
                         var screenX;
                         if (typeof eventData.changedTouches !== "undefined") {
                             screenX = eventData.changedTouches[0].screenX;
@@ -2764,10 +2759,19 @@ var syiro;
                             showSidepane = true;
                         }
                     }
+                    else if (currentTransformProperty !== false) {
+                        var transformPosition = Number(currentTransformProperty.replace("translateX(-", "").replace("px)", ""));
+                        if (transformPosition < (componentElement.clientWidth / 2)) {
+                            showSidepane = true;
+                        }
+                    }
                     else if (typeof eventData == "undefined") {
                         showSidepane = true;
                     }
                 }
+                componentElement.removeAttribute("data-syiro-render-animation");
+                syiro.component.CSS(componentElement, "transform", false);
+                syiro.component.CSS(componentElement, "-webkit-transform", false);
                 if (showSidepane == true) {
                     syiro.animation.Slide(component);
                     syiro.component.CSS(contentOverlay, "display", "block");
@@ -2897,7 +2901,12 @@ var syiro;
                                             if (document.querySelector('div[data-syiro-minor-component="overlay"]') == null) {
                                                 var contentOverlay = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "overlay" });
                                                 document.body.appendChild(contentOverlay);
-                                                syiro.events.Add(syiro.events.eventStrings["up"], contentOverlay, syiro.sidepane.Toggle.bind(this, componentObject));
+                                                syiro.events.Add(syiro.events.eventStrings["down"], contentOverlay, function () {
+                                                    syiro.events.Add(syiro.events.eventStrings["up"], arguments[1], function () {
+                                                        syiro.sidepane.Toggle(arguments[0]);
+                                                        syiro.events.Remove(syiro.events.eventStrings["up"], arguments[1]);
+                                                    }.bind(this, arguments[0]));
+                                                }.bind(this, componentObject));
                                             }
                                         }
                                         if (passedNode.childNodes.length > 0) {

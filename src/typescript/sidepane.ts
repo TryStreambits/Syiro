@@ -113,12 +113,8 @@ module syiro.sidepane {
 		var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
 		var component : Object = syiro.component.FetchComponentObject(arguments[0].parentElement); // Define component as the fetched Component Object
 		var moveElement = arguments[1]; // Define moveElement as the third argument passed, the actual Element we are listening to
-		var eventData : TouchEvent = arguments[2]; // Define eventData as the event data passed
-
-		componentElement.removeAttribute("data-syiro-render-animation"); // Remove the property declaring to not render animation
-		syiro.component.CSS(componentElement, "transform", false); // Ensure there is no transform property
-		syiro.component.CSS(componentElement, "-webkit-transform", false); // Ensure there is no transform property
-		
+		var eventData : any = arguments[2]; // Define eventData as the event data passed
+	
 		syiro.sidepane.Toggle(component, eventData); // Call Sidepane Toggle w/ event data
 
 		// #region Remove Events for Mouse / Touch Move + Up
@@ -133,17 +129,16 @@ module syiro.sidepane {
 
 	// #region Toggle - This function will toggle the Sidepane and the content overlay
 
-	export function Toggle(component : Object, eventData : any){
+	export function Toggle(component : Object, eventData ?: any){
 		if ((syiro.component.IsComponentObject(component)) && (component["type"] == "sidepane")){ // If this is a Component Object and indeed a Sidepane
 			var componentElement = syiro.component.Fetch(component); // Fetch the Sidepane Element
 			var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
 			var showSidepane : boolean = false; // Define showSidepane as a defaulted "false"
 	
 			if (componentElement.hasAttribute("data-syiro-animation") == false){ // If it does not have the animation attribute
-				if ((typeof eventData !== "undefined") && (typeof eventData.nodeType !== "undefined")){ // If we are triggering via contentOverlay
-					showSidepane = true; // Set to true
-				}
-				else if ((typeof eventData !== "undefined") && ((typeof eventData.changedTouches !== "undefined") || (typeof eventData.screenX !== "undefined"))){ // If eventData is defined and is either touch or mouse event
+				var currentTransformProperty : any = syiro.component.CSS(component, "transform"); // Get the current transform property
+			
+				if ((typeof eventData !== "undefined") && ((typeof eventData.changedTouches !== "undefined") || (typeof eventData.screenX !== "undefined"))){ // If eventData is defined and is either touch or mouse event
 					var screenX : number;
 					
 					if (typeof eventData.changedTouches !== "undefined"){ // If we are getting data from a touch event
@@ -157,14 +152,25 @@ module syiro.sidepane {
 						showSidepane = true; // Set to true
 					}
 				}
+				else if (currentTransformProperty !== false){ // IF currentTransformProperty is not false, meaning transform is a valid existing CSS attribute
+					var transformPosition : number = Number(currentTransformProperty.replace("translateX(-", "").replace("px)", "")); // Define transformPosition as the number after cleaning up the translateX string of the transform property
+					
+					if (transformPosition < (componentElement.clientWidth / 2)){ // If the transformPosition is less than the client width (because moving left with decrease the transform, since the first transform is clientWidth and 100% showing Sidepane is 0
+						showSidepane = true; // Show the Sidepane
+					}
+				}
 				else if (typeof eventData == "undefined"){ // If touchdata is not defined (triggered programmatically)
 					showSidepane = true;
 				}
 			}
 			
+			componentElement.removeAttribute("data-syiro-render-animation"); // Remove the property declaring to not render animation
+			syiro.component.CSS(componentElement, "transform", false); // Ensure there is no transform property
+			syiro.component.CSS(componentElement, "-webkit-transform", false); // Ensure there is no transform property
+			
 			if (showSidepane == true){ // If we are going to show the Sidepane
 				syiro.animation.Slide(component); // Slide out the Sidepane
-	                	syiro.component.CSS(contentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
+				syiro.component.CSS(contentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
 			}
 			else{ // If we are going to hide the Sidepane
 				syiro.animation.Reset(component); // Reset Animation properties in the Sidepane

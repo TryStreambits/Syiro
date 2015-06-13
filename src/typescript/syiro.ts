@@ -160,8 +160,13 @@ module syiro {
 													if (document.querySelector('div[data-syiro-minor-component="overlay"]') == null){ // If there is no overlay on the page
 														var contentOverlay = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "overlay"}); // Generate an Overlay
 														document.body.appendChild(contentOverlay); // Append the contentOverlay to the body
-
-														syiro.events.Add(syiro.events.eventStrings["up"], contentOverlay, syiro.sidepane.Toggle.bind(this, componentObject)); // Enable the toggling of the Sidepane (in this case, hiding), when clicking the contentOverlay
+														
+														syiro.events.Add(syiro.events.eventStrings["down"], contentOverlay, function(){ // Create a "down" event so Sidepane dragging doesn't trigger an "up" event
+															syiro.events.Add(syiro.events.eventStrings["up"], arguments[1], function(){ // Create the "up" event for the contentOverlay
+																syiro.sidepane.Toggle(arguments[0]); // Toggle the Sidepane
+																syiro.events.Remove(syiro.events.eventStrings["up"], arguments[1]); // Remove the "up" event on contentOverlay 
+															}.bind(this, arguments[0]));
+														}.bind(this, componentObject));
 													}
 												}
 

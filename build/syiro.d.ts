@@ -197,7 +197,7 @@ declare module syiro.sidepane {
     function GestureInit(): void;
     function Drag(): void;
     function Release(): void;
-    function Toggle(component: Object, eventData: any): void;
+    function Toggle(component: Object, eventData?: any): void;
 }
 declare module syiro {
     var backgroundColor: string;

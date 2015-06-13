@@ -103,7 +103,7 @@ module syiro.device {
 
         var eventsToRemove : Array<string>; // Define eventsToRemove as an array of strings to remove from eventStrings
 
-        if ((syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Windows")){ // If we are not on a desktop operating system
+        if ((navigator.userAgent.indexOf("Firefox/") == -1) &&(syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Sailfish") && (syiro.device.OperatingSystem !== "Windows")){ // If we are not on a desktop operating system, Firefox, or Sailfish OS (since Gecko has half-backed Touch Events support)
             syiro.device.SupportsTouch = true; // Set syiro.device.SupportsTouch to true
             syiro.events.eventStrings["down"] = ["touchstart"]; // Set down events to touchstart
             syiro.events.eventStrings["up"] = ["touchend"]; // Set up events to touchend

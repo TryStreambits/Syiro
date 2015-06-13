@@ -89,17 +89,17 @@ module syiro.sidepane {
     export function Drag(){
         var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
         var eventData = arguments[2]; // Define eventData as the event data passed
-		var screenX : number;
+		var mousePosition : number;
         var updatedSidepanePosition : number;
 				
 		if (typeof eventData.touches !== "undefined"){ // If Drag is being triggered by touchmove
-			screenX = eventData.touches[0].screenX;
+			mousePosition = eventData.touches[0].screenX;
 		}
 		else { // If Drag is being triggered by mousemove
-			 screenX = eventData.screenX;
+			 mousePosition = eventData.clientX; // Get from clientX since we may be using multiple monitors
 		}
 		
-		updatedSidepanePosition = screenX- componentElement.offsetWidth; // Set updatedSidepanePosition to screenX minus the width of the Sidepane (including borders, padding, etc.)
+		updatedSidepanePosition = mousePosition- componentElement.offsetWidth; // Set updatedSidepanePosition to mousePosition minus the width of the Sidepane (including borders, padding, etc.)
 
         if (updatedSidepanePosition > 0){ // If the touch position is further on the right side that the Sidepane would usually "break" from the edge
             updatedSidepanePosition = 0; // Set left position to 0
@@ -139,16 +139,16 @@ module syiro.sidepane {
 				var currentTransformProperty : any = syiro.component.CSS(component, "transform"); // Get the current transform property
 			
 				if ((typeof eventData !== "undefined") && ((typeof eventData.changedTouches !== "undefined") || (typeof eventData.screenX !== "undefined"))){ // If eventData is defined and is either touch or mouse event
-					var screenX : number;
+					var mousePosition : number;
 					
 					if (typeof eventData.changedTouches !== "undefined"){ // If we are getting data from a touch event
-						screenX = eventData.changedTouches[0].screenX
+						mousePosition = eventData.changedTouches[0].screenX
 					}
 					else { // If we are getting it from a mouse event
-						screenX = eventData.screenX;
+						mousePosition = eventData.clientX; // Get from clientX instead, since we may be using multiple monitors
 					}
 					
-					if (screenX > (componentElement.clientWidth / 2)){ // If we are going to show Sidepane or touchData was passed that has last pos at greater than 50% of Component Width
+					if (mousePosition > (componentElement.clientWidth / 2)){ // If we are going to show Sidepane or touchData was passed that has last pos at greater than 50% of Component Width
 						showSidepane = true; // Set to true
 					}
 				}

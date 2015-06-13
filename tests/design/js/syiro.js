@@ -1016,7 +1016,7 @@ var syiro;
             }
             syiro.device.FetchOperatingSystem();
             var eventsToRemove;
-            if ((syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Windows")) {
+            if ((navigator.userAgent.indexOf("Firefox/") == -1) && (syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Sailfish") && (syiro.device.OperatingSystem !== "Windows")) {
                 syiro.device.SupportsTouch = true;
                 syiro.events.eventStrings["down"] = ["touchstart"];
                 syiro.events.eventStrings["up"] = ["touchend"];
@@ -2714,15 +2714,15 @@ var syiro;
         function Drag() {
             var componentElement = arguments[0].parentElement;
             var eventData = arguments[2];
-            var screenX;
+            var mousePosition;
             var updatedSidepanePosition;
             if (typeof eventData.touches !== "undefined") {
-                screenX = eventData.touches[0].screenX;
+                mousePosition = eventData.touches[0].screenX;
             }
             else {
-                screenX = eventData.screenX;
+                mousePosition = eventData.clientX;
             }
-            updatedSidepanePosition = screenX - componentElement.offsetWidth;
+            updatedSidepanePosition = mousePosition - componentElement.offsetWidth;
             if (updatedSidepanePosition > 0) {
                 updatedSidepanePosition = 0;
             }
@@ -2748,14 +2748,14 @@ var syiro;
                 if (componentElement.hasAttribute("data-syiro-animation") == false) {
                     var currentTransformProperty = syiro.component.CSS(component, "transform");
                     if ((typeof eventData !== "undefined") && ((typeof eventData.changedTouches !== "undefined") || (typeof eventData.screenX !== "undefined"))) {
-                        var screenX;
+                        var mousePosition;
                         if (typeof eventData.changedTouches !== "undefined") {
-                            screenX = eventData.changedTouches[0].screenX;
+                            mousePosition = eventData.changedTouches[0].screenX;
                         }
                         else {
-                            screenX = eventData.screenX;
+                            mousePosition = eventData.clientX;
                         }
-                        if (screenX > (componentElement.clientWidth / 2)) {
+                        if (mousePosition > (componentElement.clientWidth / 2)) {
                             showSidepane = true;
                         }
                     }

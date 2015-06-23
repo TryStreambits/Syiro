@@ -22,7 +22,7 @@ module syiro.button {
 			}
 		}
 
-		var componentId : string = syiro.generator.IdGen("button"); // Generate a component Id
+		var componentId : string = syiro.component.IdGen("button"); // Generate a component Id
 		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
 
 		// #region Initial Button Component Data Generation
@@ -249,7 +249,7 @@ module syiro.buttongroup {
 	export function Generate(properties : Object){
 		if (typeof properties["items"] !== "undefined"){ // If items is defined
 			if (properties["items"].length >= 2){ // If the length of items is equal to or greater than 2
-				var componentId : string = syiro.generator.IdGen("buttongroup"); // Generate a component Id
+				var componentId : string = syiro.component.IdGen("buttongroup"); // Generate a component Id
 				var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "buttongroup", "data-syiro-component-id" : componentId } );
 
 				for (var buttonItemIndex in properties["items"]){

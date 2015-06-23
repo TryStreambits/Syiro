@@ -13,7 +13,7 @@ module syiro.sidepane {
     // #region Generation
 
     export function Generate(properties : Object) : Object {
-        var componentId : string = syiro.generator.IdGen("sidepane"); // Generate a Sidepane Component Id
+        var componentId : string = syiro.component.IdGen("sidepane"); // Generate a Sidepane Component Id
         var componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : componentId, "data-syiro-component" : "sidepane"}); // Generate an empty Sidepane
         var sidepaneContentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-content"}); // Generate an empty Sidepane Content div
         var sidepaneEdge : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-edge"}); // Generate an empty Sidepane Edge div

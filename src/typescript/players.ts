@@ -802,7 +802,7 @@ module syiro.playercontrol {
     // #region Player Control Generator
 
     export function Generate(properties : Object) : Object {
-        var componentId : string = syiro.generator.IdGen("player-control"); // Generate an ID for the Player Control
+        var componentId : string = syiro.component.IdGen("player-control"); // Generate an ID for the Player Control
         var componentElement = syiro.utilities.ElementCreator("div",  { "data-syiro-component" : "player-control", "data-syiro-component-id" : componentId }); // Generate the basic playerControl container
 
         var playButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-play" } ); // Create a play button
@@ -934,7 +934,7 @@ module syiro.audioplayer {
 
     export function Generate(properties : Object) : Object { // Generate a Audio Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the audio property is defined
-            var componentId : string = syiro.generator.IdGen("audio-player"); // Generate a component Id
+            var componentId : string = syiro.component.IdGen("audio-player"); // Generate a component Id
             var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "audio-player", "data-syiro-component-id" : componentId, "id" : componentId, "name" : componentId });
 
             if (typeof properties["share"] !== "undefined"){ // If the "share" menu attribute is still being used
@@ -1063,7 +1063,7 @@ module syiro.videoplayer {
 
     export function Generate(properties : Object) : Object { // Generate a Video Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the video property is defined
-            var componentId : string = syiro.generator.IdGen("video-player"); // Generate a component Id
+            var componentId : string = syiro.component.IdGen("video-player"); // Generate a component Id
             var syiroComponentData : Object = { "scaling" : {}}; // Define syiroComponentData as an Object to hold data we'll be writing to the Syiro Data System
             var syiroVideoElementProperties : Object = { "preload" : "metadata", "UIWebView" : "allowsInlineMediaPlayback"}; // Define syiroVideoElementProperties as a core set of properties we need for the Video Element
 

@@ -8,6 +8,8 @@
 /// <reference path="render.ts" />
 
 module syiro.component {
+	export var lastUniqueIds : Object = {}; // Default the lastUniqueIds to an empty Object
+	
 	// #region Component CSS Fetcher / Modifier
 
 	export function CSS(component : any, property : string, newValue ?: (string | boolean)){
@@ -130,11 +132,11 @@ module syiro.component {
 				var componentType : string; // Define componentType as the type of the Component
 
 				if ((arguments.length == 2) && (typeof arguments[0] == "string")){ // If the first argument is a string and the args length is two
-					componentId = syiro.generator.IdGen(arguments[0]); // Define componentId as Id generated based on the type provided
+					componentId = syiro.component.IdGen(arguments[0]); // Define componentId as Id generated based on the type provided
 					componentType = arguments[0]; // Define the type of the component as the type passed as the first arg
 				}
 				else if (arguments.length == 1){
-					componentId = syiro.generator.IdGen(componentElement.tagName.toLowerCase()); // Generate a unique id for this component based on the component Element's tagName
+					componentId = syiro.component.IdGen(componentElement.tagName.toLowerCase()); // Generate a unique id for this component based on the component Element's tagName
 					componentType = componentElement.tagName.toLowerCase(); // Set the component "type" simple as the lowercased tagName
 				}
 
@@ -188,6 +190,25 @@ module syiro.component {
 		return syiro.component.FetchComponentObject(document.querySelector(listSelector)); // Get the Linked Component Object
 	}
 
+	// #endregion
+	
+	// #region Component or Element ID Generator
+	
+	export function IdGen(type : string) : string { // Takes a Component type or Element tagName and returns the new component Id
+		var lastUniqueIdOfType : number; // Define lastUniqueIdOfType as a Number
+		
+		if (syiro.component.lastUniqueIds[type] == undefined){ // If the lastUniqueId of this type hasn't been defined yet.
+			lastUniqueIdOfType = 0; // Set to zero
+		}
+		else{ // If the lastUniqueId of this type IS defined
+			lastUniqueIdOfType = syiro.component.lastUniqueIds[type]; // Set lastUniqueIdOfType to the one set in lastUniqueIds
+		}
+		
+		var newUniqueIdOfType = lastUniqueIdOfType + 1; // Increment by one
+		syiro.component.lastUniqueIds[type] = newUniqueIdOfType; // Update the lastUniqueIds
+		return (type + newUniqueIdOfType.toString()); // Append newUniqueIdOfType to the type to create a "unique" ID
+	}
+	
 	// #endregion
 
 	// #region Is Component Object

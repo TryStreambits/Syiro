@@ -13,7 +13,7 @@ module syiro.list {
 	// #region List Generator
 
 	export function Generate(properties : Object) : Object { // Generate a List Component and return a Component Object
-		var componentId : string = syiro.generator.IdGen("list"); // Generate a component Id
+		var componentId : string = syiro.component.IdGen("list"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list", "data-syiro-component-id" : componentId, "aria-live" : "polite", "id" : componentId, "role" : "listbox" }); // Generate a List Element with an ID and listbox role for ARIA purposes
 
 		if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)){ // If we are adding List Items
@@ -49,7 +49,7 @@ module syiro.listitem {
 	// #region List Item Generator
 
 	export function Generate(properties : Object) : Object { // Generate a ListItem Component and return a Component Object
-		var componentId : string = syiro.generator.IdGen("list-item"); // Generate a component Id
+		var componentId : string = syiro.component.IdGen("list-item"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list-item", "data-syiro-component-id" : componentId, "role" : "option" }); // Generate a List Item Element with the role as "option" for ARIA
 
 		if (typeof properties["html"] == "undefined"){ // If we are not adding ANY HTML code to the List Item (therefore not needing nonstrict formatting)

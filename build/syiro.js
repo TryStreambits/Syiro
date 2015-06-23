@@ -160,27 +160,11 @@ var syiro;
  This is the module for generating Syiro components.
  */
 /// <reference path="syiro.ts" />
-/// <reference path="component.ts" />
-/// <reference path="interfaces.ts" />
 /// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var generator;
     (function (generator) {
-        generator.lastUniqueIds = {};
-        function IdGen(type) {
-            var lastUniqueIdOfType;
-            if (syiro.generator.lastUniqueIds[type] == undefined) {
-                lastUniqueIdOfType = 0;
-            }
-            else {
-                lastUniqueIdOfType = syiro.generator.lastUniqueIds[type];
-            }
-            var newUniqueIdOfType = lastUniqueIdOfType + 1;
-            syiro.generator.lastUniqueIds[type] = newUniqueIdOfType;
-            return (type + newUniqueIdOfType.toString());
-        }
-        generator.IdGen = IdGen;
         generator.ElementCreator = syiro.utilities.ElementCreator;
     })(generator = syiro.generator || (syiro.generator = {}));
 })(syiro || (syiro = {}));
@@ -222,7 +206,7 @@ var syiro;
                             componentId = component.getAttribute("id");
                         }
                         else {
-                            componentId = syiro.generator.IdGen(component.tagName.toLowerCase());
+                            componentId = syiro.component.IdGen(component.tagName.toLowerCase());
                         }
                         component.setAttribute("data-syiro-component-id", componentId);
                     }
@@ -296,7 +280,7 @@ var syiro;
                                 componentId = component.getAttribute("id");
                             }
                             else {
-                                componentId = syiro.generator.IdGen(component.tagName.toLowerCase());
+                                componentId = syiro.component.IdGen(component.tagName.toLowerCase());
                             }
                             component.setAttribute("data-syiro-component-id", componentId);
                         }
@@ -633,6 +617,7 @@ var syiro;
 (function (syiro) {
     var component;
     (function (component_1) {
+        component_1.lastUniqueIds = {};
         function CSS(component, property, newValue) {
             var modifiableElement;
             var returnedValue;
@@ -730,11 +715,11 @@ var syiro;
                     var componentId;
                     var componentType;
                     if ((arguments.length == 2) && (typeof arguments[0] == "string")) {
-                        componentId = syiro.generator.IdGen(arguments[0]);
+                        componentId = syiro.component.IdGen(arguments[0]);
                         componentType = arguments[0];
                     }
                     else if (arguments.length == 1) {
-                        componentId = syiro.generator.IdGen(componentElement.tagName.toLowerCase());
+                        componentId = syiro.component.IdGen(componentElement.tagName.toLowerCase());
                         componentType = componentElement.tagName.toLowerCase();
                     }
                     componentElement.setAttribute("data-syiro-component-id", componentId);
@@ -774,6 +759,19 @@ var syiro;
             return syiro.component.FetchComponentObject(document.querySelector(listSelector));
         }
         component_1.FetchLinkedListComponentObject = FetchLinkedListComponentObject;
+        function IdGen(type) {
+            var lastUniqueIdOfType;
+            if (syiro.component.lastUniqueIds[type] == undefined) {
+                lastUniqueIdOfType = 0;
+            }
+            else {
+                lastUniqueIdOfType = syiro.component.lastUniqueIds[type];
+            }
+            var newUniqueIdOfType = lastUniqueIdOfType + 1;
+            syiro.component.lastUniqueIds[type] = newUniqueIdOfType;
+            return (type + newUniqueIdOfType.toString());
+        }
+        component_1.IdGen = IdGen;
         function IsComponentObject(variable) {
             var isComponentObject = false;
             if ((typeof variable["id"] !== "undefined") && (typeof variable["type"] !== "undefined") && (typeof variable.nodeType == "undefined")) {
@@ -1160,7 +1158,7 @@ var syiro;
             else {
                 navbarType = properties["position"];
             }
-            var componentId = syiro.generator.IdGen("navbar");
+            var componentId = syiro.component.IdGen("navbar");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "navbar", "data-syiro-component-id": componentId, "role": "navigation", "data-syiro-component-type": navbarType });
             for (var propertyKey in properties) {
                 if (propertyKey == "items") {
@@ -1350,7 +1348,7 @@ var syiro;
                     properties["type"] = "dropdown";
                 }
             }
-            var componentId = syiro.generator.IdGen("button");
+            var componentId = syiro.component.IdGen("button");
             var componentElement;
             var componentData = {
                 "data-syiro-component": "button",
@@ -1509,7 +1507,7 @@ var syiro;
         function Generate(properties) {
             if (typeof properties["items"] !== "undefined") {
                 if (properties["items"].length >= 2) {
-                    var componentId = syiro.generator.IdGen("buttongroup");
+                    var componentId = syiro.component.IdGen("buttongroup");
                     var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "buttongroup", "data-syiro-component-id": componentId });
                     for (var buttonItemIndex in properties["items"]) {
                         var buttonItem = properties["items"][buttonItemIndex];
@@ -1592,7 +1590,7 @@ var syiro;
     var list;
     (function (list) {
         function Generate(properties) {
-            var componentId = syiro.generator.IdGen("list");
+            var componentId = syiro.component.IdGen("list");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "list", "data-syiro-component-id": componentId, "aria-live": "polite", "id": componentId, "role": "listbox" });
             if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)) {
                 for (var individualItemIndex in properties["items"]) {
@@ -1616,7 +1614,7 @@ var syiro;
     var listitem;
     (function (listitem) {
         function Generate(properties) {
-            var componentId = syiro.generator.IdGen("list-item");
+            var componentId = syiro.component.IdGen("list-item");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "list-item", "data-syiro-component-id": componentId, "role": "option" });
             if (typeof properties["html"] == "undefined") {
                 for (var propertyKey in properties) {
@@ -2284,7 +2282,7 @@ var syiro;
     var playercontrol;
     (function (playercontrol) {
         function Generate(properties) {
-            var componentId = syiro.generator.IdGen("player-control");
+            var componentId = syiro.component.IdGen("player-control");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "player-control", "data-syiro-component-id": componentId });
             var playButton = syiro.button.Generate({ "data-syiro-minor-component": "player-button-play" });
             var inputRange = syiro.utilities.ElementCreator("input", { "type": "range", "value": "0" });
@@ -2376,7 +2374,7 @@ var syiro;
     (function (audioplayer) {
         function Generate(properties) {
             if (properties["sources"] !== undefined) {
-                var componentId = syiro.generator.IdGen("audio-player");
+                var componentId = syiro.component.IdGen("audio-player");
                 var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "audio-player", "data-syiro-component-id": componentId, "id": componentId, "name": componentId });
                 if (typeof properties["share"] !== "undefined") {
                     properties["menu"] = properties["share"];
@@ -2454,7 +2452,7 @@ var syiro;
     (function (videoplayer) {
         function Generate(properties) {
             if (properties["sources"] !== undefined) {
-                var componentId = syiro.generator.IdGen("video-player");
+                var componentId = syiro.component.IdGen("video-player");
                 var syiroComponentData = { "scaling": {} };
                 var syiroVideoElementProperties = { "preload": "metadata", "UIWebView": "allowsInlineMediaPlayback" };
                 var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "video-player", "data-syiro-component-id": componentId, "id": componentId, "name": componentId });
@@ -2528,7 +2526,7 @@ var syiro;
     var searchbox;
     (function (searchbox) {
         function Generate(properties) {
-            var componentId = syiro.generator.IdGen("searchbox");
+            var componentId = syiro.component.IdGen("searchbox");
             var componentElement;
             var componentData = {};
             var searchboxContainerData = { "data-syiro-component": "searchbox", "data-syiro-component-id": componentId };
@@ -2654,7 +2652,7 @@ var syiro;
     var sidepane;
     (function (sidepane) {
         function Generate(properties) {
-            var componentId = syiro.generator.IdGen("sidepane");
+            var componentId = syiro.component.IdGen("sidepane");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": componentId, "data-syiro-component": "sidepane" });
             var sidepaneContentElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "sidepane-content" });
             var sidepaneEdge = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "sidepane-edge" });

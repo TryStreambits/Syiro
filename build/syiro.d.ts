@@ -34,10 +34,6 @@ interface Node {
 interface MutationObserver {
     observe(target: HTMLElement, options: MutationObserverInit): void;
 }
-declare module syiro.plugin.alternativeInit {
-    function Init(): void;
-    function Wait(): void;
-}
 declare module syiro.data {
     var storage: Object;
     function Manage(modificationType: string, keyList: string, data?: any): any;
@@ -51,8 +47,6 @@ declare module syiro.utilities {
     function SecondsToTimeFormat(seconds: number): Object;
 }
 declare module syiro.generator {
-    var lastUniqueIds: Object;
-    function IdGen(type: string): string;
     var ElementCreator: typeof utilities.ElementCreator;
 }
 declare module syiro.events {
@@ -66,11 +60,13 @@ declare module syiro.render {
     function Scale(component: Object, data?: Object): void;
 }
 declare module syiro.component {
+    var lastUniqueIds: Object;
     function CSS(component: any, property: string, newValue?: (string | boolean)): any;
     function Fetch(component: Object): any;
     function FetchComponentObject(...args: any[]): Object;
     function FetchDimensionsAndPosition(component: any): Object;
     function FetchLinkedListComponentObject(component: any): Object;
+    function IdGen(type: string): string;
     function IsComponentObject(variable: any): boolean;
     function Update(componentId: string, componentElement: Element): void;
     function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;

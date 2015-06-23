@@ -13,7 +13,7 @@ module syiro.searchbox {
 	// #region Searchbox Generator
 
 	export function Generate(properties : Object) : Object { // Generate a Searchbox Component and return a Component Object
-		var componentId : string = syiro.generator.IdGen("searchbox"); // Generate a component Id
+		var componentId : string = syiro.component.IdGen("searchbox"); // Generate a component Id
 		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
 		var componentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored via syiro.data
 

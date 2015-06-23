@@ -25,7 +25,7 @@ module syiro.navbar {
             navbarType = properties["position"]; // Define navbarType as top or bottom
         }
 
-        var componentId : string = syiro.generator.IdGen("navbar"); // Generate a component Id using "navbar"
+        var componentId : string = syiro.component.IdGen("navbar"); // Generate a component Id using "navbar"
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "navbar", "data-syiro-component-id" : componentId, "role" : "navigation", "data-syiro-component-type" : navbarType }); // Generate a div Element with the role of "navigation" (for ARIA) and data-syiro-component-type to navbarType
 
         for (var propertyKey in properties){ // Recursive go through each propertyKey

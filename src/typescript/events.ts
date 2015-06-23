@@ -45,7 +45,7 @@ module syiro.events {
                         componentId = component.getAttribute("id"); // Get the Id and assign it to the componentId
                     }
                     else {
-                        componentId = syiro.generator.IdGen(component.tagName.toLowerCase()); // Base the unique component Id on the tagName of the Element
+                        componentId = syiro.component.IdGen(component.tagName.toLowerCase()); // Base the unique component Id on the tagName of the Element
                     }
 
                     component.setAttribute("data-syiro-component-id", componentId); // Set the data-syiro-component-id to either the non-Syiro Id or the Id we generated
@@ -133,7 +133,7 @@ module syiro.events {
                             componentId = component.getAttribute("id"); // Get the Id and assign it to the componentId
                         }
                         else {
-                            componentId = syiro.generator.IdGen(component.tagName.toLowerCase()); // Base the unique component Id on the tagName of the Element
+                            componentId = syiro.component.IdGen(component.tagName.toLowerCase()); // Base the unique component Id on the tagName of the Element
                         }
 
                         component.setAttribute("data-syiro-component-id", componentId); // Set the data-syiro-component-id to either the non-Syiro Id or the Id we generated

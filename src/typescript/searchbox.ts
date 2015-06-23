@@ -17,7 +17,7 @@ module syiro.searchbox {
 		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
 		var componentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored via syiro.data
 
-		var searchboxContainerData : Object = { "data-syiro-component" : "searchbox", "data-syiro-component-id" : componentId }; // Define searchboxContainerData to contain properties we should apply to the Searchbox
+		var searchboxContainerData : Object = { "data-syiro-component" : "searchbox", "data-syiro-component-id" : componentId , "data-syiro-render-icon" : "search" }; // Define searchboxContainerData to contain properties we should apply to the Searchbox
 
 		if (properties == undefined){ // If no properties were passed during the Generate call
 			properties = {}; // Set as an empty Object

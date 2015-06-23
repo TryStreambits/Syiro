@@ -6,30 +6,14 @@ div[data-syiro-component="button"]{
     float: left;
     cursor: default; // Default to "arrow" cursor
 	margin: 5px;
-
-    // #region Custom Icon
-
-    &[data-syiro-render-icon="false"]{
-        background-size: 32px; // Max size of 32px
-        background-repeat: no-repeat; // Do not repeat
-    }
-
-    // #endregion
-
-    // #region Icon-Only Button
-
-    &:empty { // If the Button is icon-only
-        &:not([data-syiro-render-icon="false"]){ // If we have not defined our own icon (in which case, render-icon would be set to false)
-            &:after {
-                float: left;
-                width: 100%;
-                .icon("menu"); // Use the menu icon
-                text-align: center;
-            }
-        }
-    }
-
-    // #endregion
+	
+	// #region Custom Icon on Button
+	
+	&[data-syiro-render-icon="custom"]{
+		background-position: 95% 50%; // Float the icon to the right and have it sit in the middle
+	}
+	
+	// #endregion
 
     // #region Inner Image
 
@@ -51,10 +35,6 @@ div[data-syiro-component="button"]{
         border-radius: 3px;
 		background-color: @syiroPrimaryColor;
         padding: 0 5px; // 5px on left and right
-
-        &[data-syiro-render-icon="false"]{ // Custom Icon Tweaks
-            background-position: 95% 50%; // Float the icon to the right and have it sit in the middle
-        }
     }
 
     // #endregion
@@ -70,23 +50,10 @@ div[data-syiro-component="button"]{
             background-color: transparent; // Mask that the text was selected by making the background-color transparent.
         }
 
-        &[data-syiro-render-icon="false"]{ // Custom Icon Tweaks
-            background-position: 95% 50%; // Float the icon to the right and have it sit in the middle
-        }
-
-        // #region Icon-Only Dropdown Button
+        // #region Empty Dropdown Button
 
         &:empty { // If the Dropdown Button is icon-only
             min-width: 40px; // Minimum width of 40px
-
-            &:not([data-syiro-render-icon="false"]){ // If we have not defined our own icon (in which case, render-icon would be set to false)
-                &:after {
-                    float: left;
-                    width: 100%;
-                    .icon("menu"); // Use the menu icon
-                    text-align: center;
-                }
-            }
         }
 
         // #endregion
@@ -96,14 +63,6 @@ div[data-syiro-component="button"]{
         &:not(:empty) {
             min-width: 175px;
             text-indent: 10px;
-
-            &:not([data-syiro-render-icon="false"]){ // If we have not defined our own icon (in which case, render-icon would be set to false)
-                &:after {
-                    float: right;
-                    .icon("dropdown"); // Use the dropdown icon
-                    margin-right: 10px;
-                }
-            }
         }
 
         // #endregion

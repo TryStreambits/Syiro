@@ -198,7 +198,7 @@ module syiro.player {
 
                 // #region Video Player Fullscreen Button Enabling
 
-                var fullscreenButtonElement : Element = componentElement.querySelector('div[data-syiro-minor-component="player-button-fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
+                var fullscreenButtonElement : Element = componentElement.querySelector('div[data-syiro-render-icon="fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
                 syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(fullscreenButtonElement), syiro.player.ToggleFullscreen); // Listen to up events on the fullscreen button
 
                 // #endregion
@@ -211,7 +211,7 @@ module syiro.player {
 
                 // #region Play Button Listener
 
-                var playButtonComponent : Object = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-minor-component="player-button-play"]')); // Get the Component Object of the Play Button
+                var playButtonComponent : Object = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-render-icon="play"]')); // Get the Component Object of the Play Button
 
                 syiro.events.Add(syiro.events.eventStrings["up"], playButtonComponent,
                     function(){
@@ -278,7 +278,7 @@ module syiro.player {
 
                 // #region Volume Button Listener
 
-                var volumeButtonElement = playerControlArea.querySelector('div[data-syiro-minor-component="player-button-volume"]'); // Get any existing volume button in this player
+                var volumeButtonElement = playerControlArea.querySelector('div[data-syiro-render-icon="volume"]'); // Get any existing volume button in this player
 
                 if (volumeButtonElement !== null){ // If there is a volume button (there is no for iOS)
                     var volumeButtonComponent = syiro.component.FetchComponentObject(volumeButtonElement); // Get the Component Object of the Volume Button
@@ -339,7 +339,7 @@ module syiro.player {
 
                 // #region Player Menu Dialog
 
-                var menuButton = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the menuButton if it exists
+                var menuButton = componentElement.querySelector('div[data-syiro-render-icon="menu"]'); // Get the menuButton if it exists
 
                 if (menuButton !== null){ // If the menu button exists
                     syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(menuButton), syiro.player.ToggleMenuDialog.bind(this, component)); // Add an event listener to the button that calls ToggleMenuDialog, binding to the Player Component
@@ -498,7 +498,7 @@ module syiro.player {
             }
 
             if (playButtonComponentObject == undefined){ // If the Play Button Component is not defined
-                playButtonComponentObject = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-minor-component="player-button-play"]')); // Get the Play Button Component Object
+                playButtonComponentObject = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-render-icon="play"]')); // Get the Play Button Component Object
             }
 
             var playButton : Element = syiro.component.Fetch(playButtonComponentObject); // Get the Play Button Element
@@ -623,11 +623,11 @@ module syiro.player {
             }
             // #region Button Attribute Resetting
 
-            var playButton = playerControl.querySelector('div[data-syiro-minor-component="player-button-play"]'); // Get the Play Button from the Player Control
+            var playButton = playerControl.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button from the Player Control
             syiro.component.CSS(playButton, "background-image", false); // Remove the background-image style / reset to play image for Play Button
             playButton.removeAttribute("active"); // Remove component-status to imply play icon is not active (in this case, paused)
 
-            var volumeControl = playerControl.querySelector('div[data-syiro-minor-component="player-button-volume"]'); // Get the Volume Button from the Player Control
+            var volumeControl = playerControl.querySelector('div[data-syiro-render-icon="volume"]'); // Get the Volume Button from the Player Control
 
             if (volumeControl !== null){ // If there is a volume control (there is not on iOS)
                 volumeControl.removeAttribute("active"); // Remove component-status to imply volume icon is not active
@@ -764,7 +764,7 @@ module syiro.player {
         var componentElement : Element = syiro.component.Fetch(component); // Fetch the Player Element
 
         var menuDialog : Element = componentElement.querySelector('div[data-syiro-minor-component="player-menu"]'); // Get the Menu Dialog
-        var menuButton : Element = componentElement.querySelector('div[data-syiro-minor-component="player-button-menu"]'); // Get the menu button element
+        var menuButton : Element = componentElement.querySelector('div[data-syiro-render-icon="menu"]'); // Get the menu button element
 
         if (syiro.component.CSS(menuDialog, "visibility") !== "visible"){ // If the Menu Dialog is currently not showing
             var playerMenuHeight : number; // Define playerMenuHeight as a number (height that the dialog should be)
@@ -805,7 +805,7 @@ module syiro.playercontrol {
         var componentId : string = syiro.component.IdGen("player-control"); // Generate an ID for the Player Control
         var componentElement = syiro.utilities.ElementCreator("div",  { "data-syiro-component" : "player-control", "data-syiro-component-id" : componentId }); // Generate the basic playerControl container
 
-        var playButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-play" } ); // Create a play button
+        var playButton = syiro.button.Generate( { "data-syiro-render-icon" : "play" } ); // Create a play button
         var inputRange : HTMLElement = syiro.utilities.ElementCreator("input", { "type" : "range", "value" : "0"} ); // Create an input range
 
         componentElement.appendChild(inputRange); // Append the input range
@@ -829,7 +829,7 @@ module syiro.playercontrol {
 
         if (properties["menu"] !== undefined){ // If the menu attribute is defined
             if (properties["menu"]["type"] == "list"){ // If the component provided is a List
-                var menuButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-menu"} ); // Generate a Menu Button
+                var menuButton = syiro.button.Generate( { "data-syiro-render-icon" : "menu"} ); // Generate a Menu Button
                 componentElement.appendChild(syiro.component.Fetch(menuButton)); // Append the menuButton to the playerControlElement
             }
         }
@@ -839,14 +839,14 @@ module syiro.playercontrol {
         // #region Video Player - Additional Functionality Adding
 
         if (typeof properties["is-video-player"] !== "undefined"){ // If the properties passed has "is-video-player"
-            var fullscreenButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-fullscreen"} ); // Create a fullscreen button
+            var fullscreenButton = syiro.button.Generate( { "data-syiro-render-icon" : "fullscreen"} ); // Create a fullscreen button
             componentElement.appendChild(syiro.component.Fetch(fullscreenButton)); // Append the fullscreen control
         }
 
         // #endregion
 
         if (syiro.device.OperatingSystem !== "iOS"){ // As iOS does not allow manual control of volume (it has to be done with hardware controls), check if the OS is NOT iOS before volume button generation
-            var volumeButton = syiro.button.Generate( { "data-syiro-minor-component" : "player-button-volume" } ); // Generate a Volume Button
+            var volumeButton = syiro.button.Generate( { "data-syiro-render-icon" : "volume" } ); // Generate a Volume Button
             componentElement.appendChild(syiro.component.Fetch(volumeButton)); // Append the volume control
         }
 

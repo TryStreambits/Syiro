@@ -61,50 +61,20 @@ div[data-syiro-component="player-control"]{
         border-radius: 0;
         margin: 9px 5px 9px 5px; // Center on Player Control
 
-        &:not(:first-of-type){ // If the button is the last one
+        &:not(:first-of-type){ // If the button is not the first one
             float: right; // Float to the right of the Player Control
         }
 
-        &[active]:not([data-syiro-minor-component="player-button-play"]):after{ // If the button is active and it is not the play button
+        &[active]:not([data-syiro-render-icon="play"]):after{ // If the button is active and it is not the play button
             color: @syiroPlayerControlColor; // Set the text color to the syiroPlayerControlColor
             background-color: contrast(@syiroPlayerControlColor); // Set the background to the contrast of the syiroPlayerControlColor
         }
 
-        &:after{ // Inner Icon
-            width: 100%; // Set width to 100%
-        }
-
-        &[data-syiro-minor-component="player-button-fullscreen"]{ // Fullscreen Button
-            &:after {
-                .icon("fullscreen", 14); // Use the fullscreen icon
-            }
-        }
-
-        &[data-syiro-minor-component="player-button-menu"]{ // Menu Button
-            float: right; // Ensure it floats to the right
-
-            &:after {
-                .icon("menu", 14); // Use the play icon
-            }
-        }
-
-        &[data-syiro-minor-component="player-button-play"]{ // Play Button
-            &:not([active]){  // If we are not using the icon as "pause"
+        &[data-syiro-render-icon="play"]{ // Play Button
+            &[active]{ // If the Play Button is set to "active", meaning we are treating it as a "pause" button indicator
                 &:after {
-                    .icon("play", 14); // Use the play icon
+                    .icon("pause", 14); // Use the pause icon
                 }
-            }
-
-            &[active]{ // If we are treaing the icon as a pause icon
-                &:after {
-                    .icon("pause", 14); // Use the play icon
-                }
-            }
-        }
-
-        &[data-syiro-minor-component="player-button-volume"]{ // Volume Button
-            &:after {
-                .icon("volume", 14); // Use the volume icon
             }
         }
     }
@@ -328,19 +298,19 @@ div[data-syiro-component="audio-player"]{
             color: contrast(@syiroPlayerControlColor);
         }
 
-        & > section { // Audio Information
-            float: left;
-            height: 40px;
-	    max-width: 150px;
-            text-align: center;
-            margin-top: 5px;
+		& > section { // Audio Information
+			float: left;
+			height: 40px;
+			max-width: 150px;
+			text-align: center;
+			margin-top: 5px;
 
-            & > b,label {
-                float: left;
-                color: contrast(@syiroPlayerControlColor); // Make sure the text contrasts the player control color
-		line-height: 20px; // Half of section
-                width: 100%; // Fill up entire "row"
-            }
+			& > b,label {
+				float: left;
+				color: contrast(@syiroPlayerControlColor); // Make sure the text contrasts the player control color
+				line-height: 20px; // Half of section
+				width: 100%; // Fill up entire "row"
+			}
 
             & > b, label {
                 font-size: 14px;

@@ -43,3 +43,52 @@
 }
 
 //#endregion
+
+// #region Syiro Data Attribute Values
+
+div[data-syiro-render-icon]:not([data-syiro-render-icon="false"]){ // If we are rendering an icon (has the render-icon attribute but not set to false
+	&:not([data-syiro-render-icon="custom"]):after { // If we are not using a custom icon, set :after
+		width: 100%; // Set width to 100%
+	}
+	
+	&[data-syiro-render-icon="custom"]{ // If we are using a custom icon
+        background-size: 32px; // Max size of 32px
+        background-repeat: no-repeat; // Do not repeat
+    }
+
+	&[data-syiro-render-icon="dropdown"]{ // Dropdown Button
+		&:after {
+			.icon("dropdown", 14); // Use the dropdown icon
+		}
+	}
+
+	&[data-syiro-render-icon="fullscreen"]{ // Fullscreen Button
+		&:after {
+			.icon("fullscreen", 14); // Use the fullscreen icon
+		}
+	}
+
+	&[data-syiro-render-icon="menu"]{ // Menu Button
+		&:after {
+			.icon("menu", 14); // Use the menu icon
+		}
+	}
+
+	&[data-syiro-render-icon="play"]{ // Play Button
+		&:after {
+			.icon("play", 14); // Use the play icon
+		}
+	}
+	
+	&[data-syiro-render-icon="search"]{ // Search Button
+		&:after {
+			.icon("play", 14); // Use the search icon
+		}
+	}
+	
+	&[data-syiro-render-icon="volume"]{ // Volume Button
+		&:after {
+			.icon("volume", 14); // Use the volume icon
+		}
+	}
+}

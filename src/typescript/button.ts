@@ -35,10 +35,14 @@ module syiro.button {
 
 		if (properties["type"] !== "toggle"){ // If the type is NOT Toggle (so we are making either a Basic Button or Dropdown Button)
 			componentData["content"] = ""; // Default as an empty string
+			
+			if (properties["type"] == "dropdown"){ // If this is a Dropdown Button
+				componentData["data-syiro-render-icon"] = "menu"; // Default to Menu icon
+			}
 
 			if (typeof properties["icon"] == "string"){ // If an icon is defined and it is a string
 				componentData["style"] = 'background-image: url("' + properties["icon"] + '")'; // Add to the componentData the style attribute with background-image being set
-				componentData["data-syiro-render-icon"] = "false"; // Set the data-syiro-render-icon to false so we don't automatically render the default Dropdown icon or menu icon
+				componentData["data-syiro-render-icon"] = "custom"; // Set the data-syiro-render-icon to custom so we don't automatically render the default Dropdown icon or menu icon
 
 				delete properties["icon"]; // Remove the "icon" key
 			}
@@ -121,8 +125,14 @@ module syiro.button {
 		var componentElement = syiro.component.Fetch(component); // Get the componentElement
 
 		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") !== "toggle")){ // If the button exists in syiro.data.storage or DOM AND Button is NOT a Toggle Button
-			syiro.component.CSS(componentElement, "background-image", 'url("' + content + '")'); // Set the backgroundImage to the content specified
-			componentElement.setAttribute("data-syiro-render-icon", "false"); // Specify not to render &:after icons
+			if (content !== ""){ // If we are not removing the icon from the Button
+				syiro.component.CSS(componentElement, "background-image", 'url("' + content + '")'); // Set the backgroundImage to the content specified
+				componentElement.setAttribute("data-syiro-render-icon", "custom"); // Specify not to render &:after icons
+			}
+			else{
+				syiro.component.CSS(componentElement, "background-image", false); // Remove the background-image
+				componentElement.removeAttribute("data-syiro-render-icon"); // Remove the render-icon property
+			}
 
 			syiro.component.Update(component["id"] + "->HTMLElement", componentElement); // Update the storedComponent (if necessary)
 			setSucceeded = true; // Define setSucceeded as true

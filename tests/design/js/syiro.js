@@ -1807,10 +1807,10 @@ var syiro;
                     var playerElement = arguments[0];
                     var playerComponentElement = playerElement.parentElement;
                     var playerComponent = syiro.component.FetchComponentObject(playerComponentElement);
-                    var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]');
-                    var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
-                    var playerRange = playerComponentElement.querySelector('input[type="range"]');
                     if (syiro.data.Read(playerComponent["id"] + "->IsStreaming") == false) {
+                        var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]');
+                        var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
+                        var playerRange = playerComponentElement.querySelector('input[type="range"]');
                         var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(playerComponent);
                         playerMediaLengthInformation["value"] = "0";
                         for (var playerRangeAttribute in playerMediaLengthInformation) {
@@ -1827,13 +1827,13 @@ var syiro;
                     if (syiro.data.Read(playerComponent["id"] + "->IsStreaming") == false) {
                         var playerControlElement = playerComponentElement.querySelector('div[data-syiro-component="player-control"]');
                         var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
-                        var playerInputRange = playerControlElement.querySelector("input");
+                        var playerRange = playerControlElement.querySelector("input");
                         var currentTime = playerElement.currentTime;
                         syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime);
                         if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false) {
                             var roundedDownTime = Math.floor(currentTime);
-                            playerInputRange.value = roundedDownTime;
-                            var priorInputSpaceWidth = Math.round((roundedDownTime / Number(playerInputRange.max)) * playerInputRange.clientWidth);
+                            playerRange.value = roundedDownTime;
+                            var priorInputSpaceWidth = Math.round((roundedDownTime / Number(playerRange.max)) * playerRange.clientWidth);
                             var updatedGradient = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth + 2) + "px, ";
                             if (playerComponent["type"] == "audio-player") {
                                 updatedGradient += "transparent";
@@ -1842,17 +1842,11 @@ var syiro;
                                 updatedGradient += "white";
                             }
                             updatedGradient += " 0px)";
-                            syiro.component.CSS(playerInputRange, "background", updatedGradient);
+                            syiro.component.CSS(playerRange, "background", updatedGradient);
                         }
                     }
                 });
-                syiro.events.Add("ended", innerContentElement, function () {
-                    // #region Player Component & Element Defining
-                    var playerElement = arguments[0];
-                    var playerComponentElement = playerElement.parentElement;
-                    var playerComponent = syiro.component.FetchComponentObject(playerComponentElement);
-                    syiro.player.Reset(playerComponent);
-                });
+                syiro.events.Add("ended", innerContentElement, syiro.player.Reset.bind(this, component));
                 if (component["type"] == "video-player") {
                     if (syiro.device.SupportsTouch == false) {
                         syiro.events.Add("mouseenter", componentElement, function () {
@@ -1882,17 +1876,10 @@ var syiro;
                         e.preventDefault();
                     });
                     var fullscreenButtonElement = componentElement.querySelector('div[data-syiro-render-icon="fullscreen"]');
-                    syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(fullscreenButtonElement), syiro.player.ToggleFullscreen);
+                    syiro.events.Add(syiro.events.eventStrings["up"], syiro.component.FetchComponentObject(fullscreenButtonElement), syiro.player.ToggleFullscreen.bind(this, component));
                 }
-                var playButtonComponent = syiro.component.FetchComponentObject(playerControlArea.querySelector('div[data-syiro-render-icon="play"]'));
-                syiro.events.Add(syiro.events.eventStrings["up"], playButtonComponent, function () {
-                    var playButtonComponent = arguments[0];
-                    var e = arguments[1];
-                    var playButton = syiro.component.Fetch(playButtonComponent);
-                    var playerElement = playButton.parentElement.parentElement;
-                    var playerComponent = syiro.component.FetchComponentObject(playerElement);
-                    syiro.player.PlayOrPause(playerComponent, playButtonComponent);
-                });
+                var playButton = playerControlArea.querySelector('div[data-syiro-render-icon="play"]');
+                syiro.events.Add(syiro.events.eventStrings["up"], playButton, syiro.player.PlayOrPause.bind(this, component));
                 var playerRange = playerControlArea.querySelector('input[type="range"]');
                 syiro.events.Add(syiro.events.eventStrings["down"], playerRange, function () {
                     var playerRangeElement = arguments[0];
@@ -1922,9 +1909,8 @@ var syiro;
                 var volumeButtonElement = playerControlArea.querySelector('div[data-syiro-render-icon="volume"]');
                 if (volumeButtonElement !== null) {
                     var volumeButtonComponent = syiro.component.FetchComponentObject(volumeButtonElement);
-                    syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, function () {
-                        var volumeButtonComponent = arguments[0];
-                        var volumeButton = syiro.component.Fetch(volumeButtonComponent);
+                    syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonElement, function () {
+                        var volumeButton = arguments[0];
                         var playerElement = volumeButton.parentElement.parentElement;
                         var playerComponent = syiro.component.FetchComponentObject(playerElement);
                         var playerContentElement = syiro.player.FetchInnerContentElement(playerComponent);
@@ -2049,7 +2035,7 @@ var syiro;
             return !isPaused;
         }
         player.IsPlaying = IsPlaying;
-        function PlayOrPause(component, playButtonComponentObject) {
+        function PlayOrPause(component, playButtonObjectOrElement) {
             var allowPlaying = false;
             var playerComponentElement = syiro.component.Fetch(component);
             var innerContentElement = syiro.player.FetchInnerContentElement(component);
@@ -2065,13 +2051,19 @@ var syiro;
                 allowPlaying = true;
             }
             if (allowPlaying == true) {
+                var playButton;
                 if (component["type"] == "video-player") {
                     playerComponentElement.setAttribute("data-syiro-show-video", "true");
                 }
-                if (playButtonComponentObject == undefined) {
-                    playButtonComponentObject = syiro.component.FetchComponentObject(playerComponentElement.querySelector('div[data-syiro-render-icon="play"]'));
+                if (typeof playButtonObjectOrElement == "undefined") {
+                    playButton = playerComponentElement.querySelector('div[data-syiro-render-icon="play"]');
                 }
-                var playButton = syiro.component.Fetch(playButtonComponentObject);
+                else if (syiro.component.IsComponentObject(playButtonObjectOrElement) == false) {
+                    playButton = playButtonObjectOrElement;
+                }
+                else {
+                    playButton = syiro.component.Fetch(playButtonObjectOrElement);
+                }
                 if (innerContentElement.paused !== true) {
                     innerContentElement.pause();
                     playButton.removeAttribute("active");
@@ -2793,6 +2785,117 @@ var syiro;
     })(sidepane = syiro.sidepane || (syiro.sidepane = {}));
 })(syiro || (syiro = {}));
 /*
+ This is the module for Syiro Toast component.
+ Contrary to common belief, this does not actually have anything to do with toast.
+*/
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
+/// <reference path="utilities.ts" />
+var syiro;
+(function (syiro) {
+    var toast;
+    (function (toast) {
+        function Generate(properties) {
+            if ((typeof properties["type"] == "undefined") || ((properties["type"] !== "normal") && (properties["type"] !== "dialog"))) {
+                properties["type"] = "normal";
+            }
+            var componentId = syiro.component.IdGen("toast");
+            var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": componentId, "data-syiro-component": "toast", "data-syiro-component-type": properties["type"] });
+            if (typeof properties["title"] !== "undefined") {
+                if (typeof properties["message"] !== "undefined") {
+                    var titleLabel = syiro.utilities.ElementCreator("label", { "content": properties["title"] });
+                    componentElement.appendChild(titleLabel);
+                }
+                else {
+                    properties["message"] = properties["title"];
+                    delete properties["title"];
+                }
+            }
+            var message = syiro.utilities.ElementCreator("span", { "content": properties["message"] });
+            componentElement.appendChild(message);
+            if (typeof properties["title"] !== "undefined") {
+                var toastButtonsContainer = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "toast-buttons" });
+                var futureButtonHandlers = [];
+                if (typeof properties["buttons"] == "undefined") {
+                    properties["buttons"] = [{ "action": "deny", "content": "Ok" }];
+                }
+                if (properties["buttons"][0]["action"] == "affirm") {
+                    properties["buttons"].reverse();
+                }
+                for (var _i = 0, _a = properties["buttons"]; _i < _a.length; _i++) {
+                    var toastButtonProperties = _a[_i];
+                    if (typeof toastButtonProperties["content"] == "undefined") {
+                        if (toastButtonProperties["action"] == "deny") {
+                            toastButtonProperties["content"] = "No";
+                        }
+                        else {
+                            toastButtonProperties["content"] = "Yes";
+                        }
+                    }
+                    if (typeof toastButtonProperties["function"] !== "undefined") {
+                        futureButtonHandlers.push({ "action": toastButtonProperties["action"], "function": toastButtonProperties["function"] });
+                    }
+                    var toastButtonObject = syiro.button.Generate({ "type": "basic", "content": toastButtonProperties["content"] });
+                    var toastButtonElement = syiro.component.Fetch(toastButtonObject);
+                    toastButtonElement.setAttribute("data-syiro-dialog-action", toastButtonProperties["action"]);
+                    toastButtonsContainer.appendChild(toastButtonElement);
+                }
+                componentElement.appendChild(toastButtonsContainer);
+                if (futureButtonHandlers.length !== 0) {
+                    syiro.data.Write(componentId + "->ActionHandlers", futureButtonHandlers);
+                }
+            }
+            else {
+                var closeIconButtonObject = syiro.button.Generate({ "type": "basic", "content": "x" });
+                componentElement.appendChild(syiro.component.Fetch(closeIconButtonObject));
+            }
+            syiro.data.Write(componentId + "->HTMLElement", componentElement);
+            return { "id": componentId, "type": "toast" };
+        }
+        toast.Generate = Generate;
+        function Clear(component) {
+            var componentElement = syiro.component.Fetch(component);
+            if (componentElement !== null) {
+                syiro.toast.Toggle(component, "hide");
+                syiro.component.Remove(component);
+            }
+        }
+        toast.Clear = Clear;
+        function ClearAll() {
+            var toasts = document.body.querySelectorAll('div[data-syiro-component="toast"]');
+            if (toasts.length !== 0) {
+                for (var i = 0; i < toasts.length; i++) {
+                    var toastComponentObject = syiro.component.FetchComponentObject(toasts[i]);
+                    syiro.toast.Clear(toastComponentObject);
+                }
+            }
+        }
+        toast.ClearAll = ClearAll;
+        function Toggle(component, action) {
+            var componentElement = syiro.component.Fetch(component);
+            if (componentElement !== null) {
+                var currentAnimation = componentElement.getAttribute("data-syiro-animation");
+                var toastType = componentElement.getAttribute("data-syiro-component-type");
+                if ((currentAnimation == null) || (currentAnimation == "fade-out") || ((typeof action !== "undefined") && (action == "show"))) {
+                    if (toastType == "normal") {
+                    }
+                    else {
+                        syiro.animation.FadeIn(component);
+                    }
+                }
+                else if ((currentAnimation == "fade-in") || ((typeof action !== "undefined") && (action == "show"))) {
+                    if (toastType == "normal") {
+                    }
+                    else {
+                        syiro.animation.FadeOut(component);
+                    }
+                }
+            }
+        }
+        toast.Toggle = Toggle;
+    })(toast = syiro.toast || (syiro.toast = {}));
+})(syiro || (syiro = {}));
+/*
     This is the aggregate of all the Syiro modules into a unified module
 */
 /// <reference path="animation.ts" />
@@ -2809,6 +2912,7 @@ var syiro;
 /// <reference path="render.ts" />
 /// <reference path="searchbox.ts" />
 /// <reference path="sidepane.ts" />
+/// <reference path="toast.ts" />
 /// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {

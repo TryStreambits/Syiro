@@ -15,6 +15,7 @@
 /// <reference path="render.ts" />
 /// <reference path="searchbox.ts" />
 /// <reference path="sidepane.ts" />
+/// <reference path="toast.ts" />
 /// <reference path="utilities.ts" />
 
 module syiro {

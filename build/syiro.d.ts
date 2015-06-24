@@ -161,7 +161,7 @@ declare module syiro.player {
     function FetchInnerContentElement(component: Object): HTMLMediaElement;
     function GetPlayerLengthInfo(component: Object): Object;
     function IsPlaying(component: Object): boolean;
-    function PlayOrPause(component: Object, playButtonComponentObject?: Object): void;
+    function PlayOrPause(component: Object, playButtonObjectOrElement?: any): void;
     function FetchSources(component: Object): Array<Object>;
     function GenerateSources(type: string, sources: any): Array<HTMLElement>;
     function Reset(component: Object): void;
@@ -194,6 +194,15 @@ declare module syiro.sidepane {
     function Drag(): void;
     function Release(): void;
     function Toggle(component: Object, eventData?: any): void;
+}
+declare module syiro.toast {
+    function Generate(properties: Object): {
+        "id": string;
+        "type": string;
+    };
+    function Clear(component: Object): void;
+    function ClearAll(): void;
+    function Toggle(component: Object, action?: string): void;
 }
 declare module syiro {
     var backgroundColor: string;

@@ -3041,14 +3041,15 @@ var syiro;
                 MutationObserver = WebKitMutationObserver;
             }
             var mutationWatcher = new MutationObserver(function (mutations) {
-                mutations.forEach(function (mutation) {
+                for (var _i = 0; _i < mutations.length; _i++) {
+                    var mutation = mutations[_i];
                     if (mutation.type == "childList") {
                         for (var i = 0; i < mutation.addedNodes.length; i++) {
                             var componentElement = mutation.addedNodes[i];
                             ComponentParser(componentElement);
                         }
                     }
-                });
+                }
             });
             var mutationWatcherOptions = {
                 childList: true,

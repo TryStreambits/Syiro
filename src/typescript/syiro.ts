@@ -199,16 +199,14 @@ module syiro {
 
 			var mutationWatcher = new MutationObserver(
 				function(mutations : Array<MutationRecord>){ // Define mutationHandler as a variable that consists of a function that handles mutationRecords
-					mutations.forEach( // For each mutation that occured
-						function(mutation : MutationRecord){
-							if (mutation.type == "childList"){ // If something in the document changed (childList)
-								for (var i = 0; i < mutation.addedNodes.length; i++){ // For each node in the mutation.addedNodes
-									var componentElement : any = mutation.addedNodes[i]; // Get the Node
-									ComponentParser(componentElement); // Send to Component Parser
-								}
+					for (var mutation of mutations){ // For each mutation of mutations
+						if (mutation.type == "childList"){ // If something in the document changed (childList)
+							for (var i = 0; i < mutation.addedNodes.length; i++){ // For each node in the mutation.addedNodes
+								var componentElement : any = mutation.addedNodes[i]; // Get the Node
+								ComponentParser(componentElement); // Send to Component Parser
 							}
 						}
-					);
+					}
 				}
 			);
 

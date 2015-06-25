@@ -2815,7 +2815,7 @@ var syiro;
             componentElement.appendChild(message);
             if (typeof properties["title"] !== "undefined") {
                 var toastButtonsContainer = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "toast-buttons" });
-                var futureButtonHandlers = [];
+                var futureButtonHandlers = {};
                 if (typeof properties["buttons"] == "undefined") {
                     properties["buttons"] = [{ "action": "deny", "content": "Ok" }];
                 }
@@ -2833,7 +2833,7 @@ var syiro;
                         }
                     }
                     if (typeof toastButtonProperties["function"] !== "undefined") {
-                        futureButtonHandlers.push({ "action": toastButtonProperties["action"], "function": toastButtonProperties["function"] });
+                        futureButtonHandlers[toastButtonProperties["action"]] = toastButtonProperties["function"];
                     }
                     var toastButtonObject = syiro.button.Generate({ "type": "basic", "content": toastButtonProperties["content"] });
                     var toastButtonElement = syiro.component.Fetch(toastButtonObject);
@@ -2841,7 +2841,7 @@ var syiro;
                     toastButtonsContainer.appendChild(toastButtonElement);
                 }
                 componentElement.appendChild(toastButtonsContainer);
-                if (futureButtonHandlers.length !== 0) {
+                if (Object.keys(futureButtonHandlers).length !== 0) {
                     syiro.data.Write(componentId + "->ActionHandlers", futureButtonHandlers);
                 }
             }
@@ -3020,11 +3020,27 @@ var syiro;
                     }
                 }
                 else if (componentObject["type"] == "toast") {
+                    var actionHandlers = syiro.data.Read(componentObject["id"] + "->ActionHandlers");
+                    var toastButtons = componentElement.querySelectorAll('div[data-syiro-component="button"]');
                     if (componentElement.getAttribute("data-syiro-component-type") == "dialog") {
                         var toastContentOverlayElement = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="toast"]');
                         if (toastContentOverlayElement == null) {
                             toastContentOverlayElement = createContentOverlay("toast");
                         }
+                    }
+                    for (var i = 0; i < toastButtons.length; i++) {
+                        var toastButton = toastButtons[i];
+                        var toastButtonObject = syiro.component.FetchComponentObject(toastButton);
+                        var dialogAction = toastButton.getAttribute("data-syiro-dialog-action");
+                        syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, componentObject));
+                        if (actionHandlers !== false) {
+                            if (typeof actionHandlers[dialogAction] !== "undefined") {
+                                syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, actionHandlers[dialogAction]);
+                            }
+                        }
+                    }
+                    if (actionHandlers !== false) {
+                        syiro.data.Delete(componentObject["id"] + "->ActionHandlers");
                     }
                 }
                 if (componentElement.childNodes.length > 0) {

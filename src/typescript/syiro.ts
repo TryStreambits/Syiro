@@ -168,12 +168,34 @@ module syiro {
 					}
 				}
 				else if (componentObject["type"] == "toast"){ // If the Component is a Toast
+					var actionHandlers = syiro.data.Read(componentObject["id"] + "->ActionHandlers"); // Get any potential ActionHandlers for this Toast
+					var toastButtons : any = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all inner Syiro Buttons
+					
 					if (componentElement.getAttribute("data-syiro-component-type") == "dialog"){ // If this is a Dialog Toast
 						var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get an existing Toast ContentOverlay if one exists already, no need to create unnecessary ContentOverlays
 						
 						if (toastContentOverlayElement == null){ // If the toastContentOverlayElement does not exist already
 							toastContentOverlayElement = createContentOverlay("toast"); // Create the ContentOverlay (with the purpose of Toast), appending it to the page, and declare contentOverlay as the var pointing to the Element
 						}
+					}
+				
+					for (var i = 0; i < toastButtons.length; i++){ // For each toastButton in toastbuttons
+						var toastButton : Element = toastButtons[i]; // Define toastButton as this specific button
+						var toastButtonObject : Object = syiro.component.FetchComponentObject(toastButton); // Get the Component Object of this Syiro Button
+						
+						var dialogAction = toastButton.getAttribute("data-syiro-dialog-action"); // Get the dialog-action of this Button
+						
+						syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, componentObject)); // Add to each Button the action to Toggle (hide) the Toast
+						
+						if (actionHandlers !== false){ // If there are actionHandlers
+							if (typeof actionHandlers[dialogAction] !== "undefined"){ // If there is a function for this action
+								syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, actionHandlers[dialogAction]); // Assign the function from this actionHandler Object key/val to the Button
+							}
+						}
+					}
+					
+					if (actionHandlers !== false){ // If there were actionHandlers
+						syiro.data.Delete(componentObject["id"] + "->ActionHandlers"); // Delete the ActionHandlers from the data of this Toast
 					}
 				}
 				

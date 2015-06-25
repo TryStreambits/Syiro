@@ -43,7 +43,7 @@ module syiro.toast {
 		
 		if (typeof properties["title"] !== "undefined"){ // If both a title and message are provided (only check title since if title is provided but no message, it is automatically changed to message and therefore title = undefined
 			var toastButtonsContainer : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "toast-buttons" }); // Create a "container" to hold the Buttons
-			var futureButtonHandlers : Array<Object> = []; // Define futureButtonHandlers as an Array of Objects, defaulting as an empty array
+			var futureButtonHandlers : Object = {}; // Define futureButtonHandlers as an Object
 			
 			// #region Buttons Properties Check
 			
@@ -72,7 +72,7 @@ module syiro.toast {
 				}
 				
 				if (typeof toastButtonProperties["function"] !== "undefined"){ // If a function was defined for this action
-					futureButtonHandlers.push({ "action" : toastButtonProperties["action"], "function" : toastButtonProperties["function"] }); // Push an Object with a declaration of the action as well as Function to the Array
+					futureButtonHandlers[toastButtonProperties["action"]] =  toastButtonProperties["function"]; // Push to the futureButtonHandlers Object a key/val where the action is the key and value is the func
 				}
 				
 				var toastButtonObject : Object = syiro.button.Generate({ "type" : "basic", "content" : toastButtonProperties["content"] });
@@ -84,7 +84,7 @@ module syiro.toast {
 			
 			componentElement.appendChild(toastButtonsContainer); // Append the Toast Buttons Container
 			
-			if (futureButtonHandlers.length !== 0){ // If the Future Button Handlers array is not empty
+			if (Object.keys(futureButtonHandlers).length !== 0){ // If the Future Button Handlers Object is not empty
 				syiro.data.Write(componentId + "->ActionHandlers", futureButtonHandlers); // Write to componentId -> ActionHandlers the handlers
 			}
 		}

@@ -185,7 +185,7 @@ module syiro {
 						
 						var dialogAction = toastButton.getAttribute("data-syiro-dialog-action"); // Get the dialog-action of this Button
 						
-						syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, componentObject)); // Add to each Button the action to Toggle (hide) the Toast
+						syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, componentObject, "hide")); // Add to each Button the action to Toggle (force hide) the Toast
 						
 						if (actionHandlers !== false){ // If there are actionHandlers
 							if (typeof actionHandlers[dialogAction] !== "undefined"){ // If there is a function for this action

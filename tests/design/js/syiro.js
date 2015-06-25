@@ -3055,7 +3055,7 @@ var syiro;
                         var toastButton = toastButtons[i];
                         var toastButtonObject = syiro.component.FetchComponentObject(toastButton);
                         var dialogAction = toastButton.getAttribute("data-syiro-dialog-action");
-                        syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, componentObject));
+                        syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, componentObject, "hide"));
                         if (actionHandlers !== false) {
                             if (typeof actionHandlers[dialogAction] !== "undefined") {
                                 syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, actionHandlers[dialogAction]);

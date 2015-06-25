@@ -1,1 +1,0 @@
---declaration --removeComments --target ES5 src/typescript/syiro.ts --out build/syiro.js

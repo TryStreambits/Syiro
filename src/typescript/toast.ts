@@ -136,26 +136,51 @@ module syiro.toast {
 		
 		if (componentElement !== null){ // If the componentElement exists
 			var currentAnimation = componentElement.getAttribute("data-syiro-animation"); // Get the currentAnimation (if any, none being null)
+			var showAnimation = true; // Default to "show" animation
 			var toastType = componentElement.getAttribute("data-syiro-component-type"); // Get the type of this Toast ("normal" or "dialog")
 			var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get the Toast ContentOverlay if it exists
 			
-			if ((currentAnimation == null) || (currentAnimation == "fade-out") || ((typeof action !== "undefined") && (action == "show"))){ // If the Toast is currently not visible or we are forcing to show
-				if (toastType == "normal"){ // If this is a normal Toast
-					
+			if (typeof action == "undefined"){ // If no action was provided
+				if (toastType == "normal"){ // If this is a Normal Toast
+					if ((document.body.clientWidth > 1024) && (currentAnimation == "slide")){ // If the document width is "large" and we did a Slide In
+						showAnimation = false; // Slide Out the Normal Toast
+					}
+					else if ((document.body.clientWidth <= 1024) && ((currentAnimation == "fade-in") || (currentAnimation == "slide"))){ // If the document width is "small" and we did a Fade In or Slide (a Slide would happen if we had a large document width which "shrunk" down)
+						showAnimation = false; // Fade Out the Normal Toast
+					}
 				}
-				else{ // If this is a Dialog Toast
-					syiro.animation.FadeIn(component); // Fade in the Component
-					syiro.component.CSS(toastContentOverlayElement, "display", "block"); // Show the toastContentOverlayElement under the Sidepane
+				else if (toastType == "dialog"){ // If this is a Dialog Toast
+					if (currentAnimation == "fade-in"){ // If we did a Fade In
+						showAnimation = false; // Fade Out the Dialog Toast
+					}
 				}
 			}
-			else if ((currentAnimation == "fade-in") || ((typeof action !== "undefined") && (action == "show"))){ // If it is currently visible or we are forcing to hide
-				if (toastType == "normal"){ // If this is a normal Toast
-					
+			else{ // If an action was provided
+				if (action == "hide"){ // If we are forcing hide
+					showAnimation = false; // Set to false
 				}
-				else{ // If this is a Dialog Toast
-					syiro.animation.FadeOut(component); // Fade out the Component
-					syiro.component.CSS(toastContentOverlayElement, "display", false); // Hide the toastContentOverlayElement
-				}
+			}
+			
+			
+			if ((showAnimation == true) && ((document.body.clientWidth > 1024) && (toastType == "normal"))){ // If we are showing the Toast, document width is "large" and this is a Normal Toast
+				syiro.animation.Slide(component); // Slide the Toast
+			}
+			else if ((showAnimation == true) && (((document.body.clientWidth <= 1024) && (toastType == "normal")) || (toastType == "dialog"))){ // If we are showing the Toast and it is either a Normal Toast w/ document width "small" OR a Dialog Toast
+				 syiro.animation.FadeIn(component); // Fade In the Toast Notification
+				 
+				 if (toastType == "dialog"){ // If this is a Dialog Toast
+					 syiro.component.CSS(toastContentOverlayElement, "display", "block"); // Show the toastContentOverlayElement under the Sidepane
+				 }
+			}
+			else if ((showAnimation == false) && ((document.body.clientWidth > 1024) && (toastType == "normal"))){ // If we are hiding the Toast, document width is "large" and this is a Normal Toast
+				syiro.animation.Reset(component); // Simply reset the Toast
+			}
+			else if ((showAnimation == false) && (((document.body.clientWidth <= 1024) && (toastType == "normal")) || (toastType == "dialog"))){ // If we are hiding the Toast and it is either a Normal Toast w/ document width "small" OR a Dialog Toast
+				 syiro.animation.FadeOut(component); // Fade Out the Toast Notification
+				 
+				 if (toastType == "dialog"){ // If this is a Dialog Toast
+				 	syiro.component.CSS(toastContentOverlayElement, "display", false); // Hide the toastContentOverlayElement
+				 }
 			}
 		}
 	}

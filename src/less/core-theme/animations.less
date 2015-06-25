@@ -53,13 +53,21 @@
 // #region Sliding Mixin
 // Returns properties that are used with the parent went the parent has [data-syiro-animation="slide"]
 
-.slide(@pos; @milliseconds){
+.slide(@pos; @milliseconds){ // Default slide using translateX
 
 	.animate("transform", @milliseconds);
 
 	&[data-syiro-animation="slide"]{
 		transform: translateX(@pos); // Set translateX to @pos, where pos can be px, e(calc()), etc.
 		-webkit-transform: translateX(@pos); // WebKit Equivelant
+	}
+}
+
+.slideLeft(@pos; @milliseconds){ // SlideLeft using left attribute instead of transform+translateX
+	.animate("left", @milliseconds);
+
+	&[data-syiro-animation="slide"]{
+		left: e(@pos); // Set left to @pos, where pos can be px, e(calc()), etc.
 	}
 }
 

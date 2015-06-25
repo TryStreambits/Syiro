@@ -2875,21 +2875,44 @@ var syiro;
             var componentElement = syiro.component.Fetch(component);
             if (componentElement !== null) {
                 var currentAnimation = componentElement.getAttribute("data-syiro-animation");
+                var showAnimation = true;
                 var toastType = componentElement.getAttribute("data-syiro-component-type");
                 var toastContentOverlayElement = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]');
-                if ((currentAnimation == null) || (currentAnimation == "fade-out") || ((typeof action !== "undefined") && (action == "show"))) {
+                if (typeof action == "undefined") {
                     if (toastType == "normal") {
+                        if ((document.body.clientWidth > 1024) && (currentAnimation == "slide")) {
+                            showAnimation = false;
+                        }
+                        else if ((document.body.clientWidth <= 1024) && ((currentAnimation == "fade-in") || (currentAnimation == "slide"))) {
+                            showAnimation = false;
+                        }
                     }
-                    else {
-                        syiro.animation.FadeIn(component);
+                    else if (toastType == "dialog") {
+                        if (currentAnimation == "fade-in") {
+                            showAnimation = false;
+                        }
+                    }
+                }
+                else {
+                    if (action == "hide") {
+                        showAnimation = false;
+                    }
+                }
+                if ((showAnimation == true) && ((document.body.clientWidth > 1024) && (toastType == "normal"))) {
+                    syiro.animation.Slide(component);
+                }
+                else if ((showAnimation == true) && (((document.body.clientWidth <= 1024) && (toastType == "normal")) || (toastType == "dialog"))) {
+                    syiro.animation.FadeIn(component);
+                    if (toastType == "dialog") {
                         syiro.component.CSS(toastContentOverlayElement, "display", "block");
                     }
                 }
-                else if ((currentAnimation == "fade-in") || ((typeof action !== "undefined") && (action == "show"))) {
-                    if (toastType == "normal") {
-                    }
-                    else {
-                        syiro.animation.FadeOut(component);
+                else if ((showAnimation == false) && ((document.body.clientWidth > 1024) && (toastType == "normal"))) {
+                    syiro.animation.Reset(component);
+                }
+                else if ((showAnimation == false) && (((document.body.clientWidth <= 1024) && (toastType == "normal")) || (toastType == "dialog"))) {
+                    syiro.animation.FadeOut(component);
+                    if (toastType == "dialog") {
                         syiro.component.CSS(toastContentOverlayElement, "display", false);
                     }
                 }

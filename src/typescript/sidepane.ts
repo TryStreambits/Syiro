@@ -82,8 +82,8 @@ module syiro.sidepane {
             componentElement.removeAttribute("data-syiro-animation"); // Remove the slide animation, sliding the Sidepane back into the edge.
             componentElement.setAttribute("data-syiro-render-animation", "false"); // Set render-animation to false so transition properties are not applied
 
-            var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
-            syiro.component.CSS(contentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
+            var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Fetch the contentOverlay Element
+            syiro.component.CSS(sidepaneContentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
     }
 
     export function Drag(){
@@ -132,7 +132,7 @@ module syiro.sidepane {
 	export function Toggle(component : Object, eventData ?: any){
 		if ((syiro.component.IsComponentObject(component)) && (component["type"] == "sidepane")){ // If this is a Component Object and indeed a Sidepane
 			var componentElement = syiro.component.Fetch(component); // Fetch the Sidepane Element
-			var contentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"]'); // Fetch the contentOverlay Element
+			var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"'); // Fetch the sidepaneContentOverlay Element
 			var showSidepane : boolean = false; // Define showSidepane as a defaulted "false"
 	
 			if (componentElement.hasAttribute("data-syiro-animation") == false){ // If it does not have the animation attribute
@@ -170,11 +170,11 @@ module syiro.sidepane {
 			
 			if (showSidepane == true){ // If we are going to show the Sidepane
 				syiro.animation.Slide(component); // Slide out the Sidepane
-				syiro.component.CSS(contentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
+				syiro.component.CSS(sidepaneContentOverlay, "display", "block"); // Show the sidepaneContentOverlay under the Sidepane
 			}
 			else{ // If we are going to hide the Sidepane
 				syiro.animation.Reset(component); // Reset Animation properties in the Sidepane
-				syiro.component.CSS(contentOverlay, "display", false); // Hide the contentOverlay
+				syiro.component.CSS(sidepaneContentOverlay, "display", false); // Hide the sidepaneContentOverlay
 			}
 		}
 	}

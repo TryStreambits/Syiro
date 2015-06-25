@@ -110,6 +110,17 @@ module syiro {
 		// #region Watch DOM For Components
 		
 		function ComponentParser(componentElement : Element){
+			
+			// #region Content Overlay Creation Function
+			
+			function createContentOverlay(purpose : string): Element {
+				var contentOverlay : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "overlay", "data-syiro-overlay-purpose" : purpose}); // Generate an Content Overlay
+				document.body.appendChild(contentOverlay); // Append the contentOverlay to the body
+				return contentOverlay; // Return the contentOverlay variable
+			}
+			
+			// #endregion
+			
 			if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))){ // If the element is a Syiro component
 				var componentObject = syiro.component.FetchComponentObject(componentElement); // Fetch the (potential) Component Object of the passedNode
 	
@@ -141,19 +152,28 @@ module syiro {
 					}
 				}
 				else if (componentObject["type"] == "sidepane"){ // If the Component is a Sidepane
+					var sidepaneContentOverlayElement : Element = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Get an existing Sidepane ContentOverlay if one exists already, no need to create unnecessary ContentOverlays 
 					var innerSidepaneEdge = componentElement.querySelector('div[data-syiro-minor-component="sidepane-edge"]'); // Get the Sidepane Edge
 					syiro.events.Add(syiro.events.eventStrings["down"], innerSidepaneEdge, syiro.sidepane.GestureInit); // Bind the Sidepane Edge to GestureInit function for "down"
 	
-					if (document.querySelector('div[data-syiro-minor-component="overlay"]') == null){ // If there is no overlay on the page
-						var contentOverlay = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "overlay"}); // Generate an Overlay
-						document.body.appendChild(contentOverlay); // Append the contentOverlay to the body
+					if (sidepaneContentOverlayElement == null){ // If there is no overlay on the page
+						sidepaneContentOverlayElement = createContentOverlay("sidepane"); // Create the ContentOverlay (with the purpose of the Sidepane, appending it to the page, and declare contentOverlay as the var pointing to the Element
 						
-						syiro.events.Add(syiro.events.eventStrings["down"], contentOverlay, function(){ // Create a "down" event so Sidepane dragging doesn't trigger an "up" event
+						syiro.events.Add(syiro.events.eventStrings["down"], sidepaneContentOverlayElement, function(){ // Create a "down" event so Sidepane dragging doesn't trigger an "up" event
 							syiro.events.Add(syiro.events.eventStrings["up"], arguments[1], function(){ // Create the "up" event for the contentOverlay
 								syiro.sidepane.Toggle(arguments[0]); // Toggle the Sidepane
 								syiro.events.Remove(syiro.events.eventStrings["up"], arguments[1]); // Remove the "up" event on contentOverlay 
 							}.bind(this, arguments[0]));
 						}.bind(this, componentObject));
+					}
+				}
+				else if (componentObject["type"] == "toast"){ // If the Component is a Toast
+					if (componentElement.getAttribute("data-syiro-component-type") == "dialog"){ // If this is a Dialog Toast
+						var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get an existing Toast ContentOverlay if one exists already, no need to create unnecessary ContentOverlays
+						
+						if (toastContentOverlayElement == null){ // If the toastContentOverlayElement does not exist already
+							toastContentOverlayElement = createContentOverlay("toast"); // Create the ContentOverlay (with the purpose of Toast), appending it to the page, and declare contentOverlay as the var pointing to the Element
+						}
 					}
 				}
 				

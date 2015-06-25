@@ -140,7 +140,14 @@ body {
 		width: 100%;
 		background-color: rgba(0,0,0,0.75); // Overlay the content and make it seem darkened by having a opaque black background
 		position: absolute;
-		z-index: 8;
+		
+		&[data-syiro-overlay-purpose="sidepane"]{ // If we are using this Overlay for the Sidepane
+			z-index: 8; // Have it cover all content except the Sidepane
+		}
+		
+		&[data-syiro-overlay-purpose="toast"]{ // If we are using this Overlay for a Dialog Toast
+			z-index: 9; // Have it cover everything (including a Sidepane) except for the Toast
+		}
 	}
 
 	// #endregion

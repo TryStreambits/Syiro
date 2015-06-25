@@ -137,6 +137,7 @@ module syiro.toast {
 		if (componentElement !== null){ // If the componentElement exists
 			var currentAnimation = componentElement.getAttribute("data-syiro-animation"); // Get the currentAnimation (if any, none being null)
 			var toastType = componentElement.getAttribute("data-syiro-component-type"); // Get the type of this Toast ("normal" or "dialog")
+			var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get the Toast ContentOverlay if it exists
 			
 			if ((currentAnimation == null) || (currentAnimation == "fade-out") || ((typeof action !== "undefined") && (action == "show"))){ // If the Toast is currently not visible or we are forcing to show
 				if (toastType == "normal"){ // If this is a normal Toast
@@ -144,6 +145,7 @@ module syiro.toast {
 				}
 				else{ // If this is a Dialog Toast
 					syiro.animation.FadeIn(component); // Fade in the Component
+					syiro.component.CSS(toastContentOverlayElement, "display", "block"); // Show the toastContentOverlayElement under the Sidepane
 				}
 			}
 			else if ((currentAnimation == "fade-in") || ((typeof action !== "undefined") && (action == "show"))){ // If it is currently visible or we are forcing to hide
@@ -152,6 +154,7 @@ module syiro.toast {
 				}
 				else{ // If this is a Dialog Toast
 					syiro.animation.FadeOut(component); // Fade out the Component
+					syiro.component.CSS(toastContentOverlayElement, "display", false); // Hide the toastContentOverlayElement
 				}
 			}
 		}

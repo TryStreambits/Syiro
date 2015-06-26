@@ -2799,6 +2799,9 @@ var syiro;
             if ((typeof properties["type"] == "undefined") || ((properties["type"] !== "normal") && (properties["type"] !== "dialog"))) {
                 properties["type"] = "normal";
             }
+            if ((typeof properties["title"] == "undefined") && (properties["type"] == "dialog")) {
+                properties["type"] = "normal";
+            }
             var componentId = syiro.component.IdGen("toast");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": componentId, "data-syiro-component": "toast", "data-syiro-component-type": properties["type"] });
             if (typeof properties["title"] !== "undefined") {
@@ -2878,7 +2881,7 @@ var syiro;
                 var showAnimation = true;
                 var toastType = componentElement.getAttribute("data-syiro-component-type");
                 var toastContentOverlayElement = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]');
-                if (typeof action == "undefined") {
+                if (typeof action !== "string") {
                     if (toastType == "normal") {
                         if ((document.body.clientWidth > 1024) && (currentAnimation == "slide")) {
                             showAnimation = false;
@@ -3055,7 +3058,7 @@ var syiro;
                         var toastButton = toastButtons[i];
                         var toastButtonObject = syiro.component.FetchComponentObject(toastButton);
                         var dialogAction = toastButton.getAttribute("data-syiro-dialog-action");
-                        syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, componentObject, "hide"));
+                        syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, componentObject));
                         if (actionHandlers !== false) {
                             if (typeof actionHandlers[dialogAction] !== "undefined") {
                                 syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, actionHandlers[dialogAction]);

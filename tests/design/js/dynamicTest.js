@@ -1,6 +1,22 @@
-/* ================= Page Setup ================= */
+// #region Page Setup Functions
+
+var normalToastComponentObject; // Declare normalToastComponentObject
+var dialogToastComponentObject; // Declare dialogToastComponentObject
 
 function generatePage(){
+	// #region Generate Toasts
+	
+	normalToastComponentObject = syiro.toast.Generate({"type" : "normal", "title" : "This is an example Normal Toast!", "message" : "This is the message of the toast"});
+	dialogToastComponentObject = syiro.toast.Generate({
+		"type" : "dialog", "title" : "This is an example Dialog Toast!", "message" : "We are going to show off custom labels on the two buttons as well.",
+		"buttons" : [{ "action" : "deny", "content" : "REJECT ME"}, { "action" : "affirm", "content" : "AFFIRMATIVE" }]
+	});
+	
+	document.body.appendChild(syiro.Fetch(normalToastComponentObject)); // Append the Normal Toast Component Object to the document
+	document.body.appendChild(syiro.Fetch(dialogToastComponentObject)); // Append the Dialog Toast Component Object to the document
+	
+	// #endreigon
+
     generateNavbarAndSidepane(); // Generate the Navbar, Sidepane & Associated Components
 
     /* Buttongroup Generation */
@@ -24,15 +40,31 @@ function generatePage(){
     });
 }
 
+// #region Generate Navbar + Sidepane Function
+
 function generateNavbarAndSidepane(){
-    /* Navbar Data Definition */
+	// #region Dropdown Button Component Generation
+	
+	var toggleNormalToastListItemObject = syiro.listitem.Generate({"label" : "Toggle Normal Toast"}); // Generate a List Item with the content being "Toggle Normal Toast"
+	var toggleDialogToastListItemObject  = syiro.listitem.Generate({"label" : "Toggle Dialog Toast"}); // Generate a List Item with the content being "Toggle Dialog Toast"
+	
+	var dropdownButtonComponentObject = syiro.button.Generate({ "type" : "dropdown", "content" : "Toast Tester", "items" : [ toggleNormalToastListItemObject,  toggleDialogToastListItemObject ] });
+	
+	// #endregion
+	
+    // #region Navbar Component Generation
 
     var navbarComponentObject = syiro.navbar.Generate({
         "position" : "top",
-        "items" : [ { "link" : "http://syiro.com", "title" : "Home" }, { "link" : "https://github.com/StroblIndustries/Syiro/wiki", "title" : "Documentation"}, { "link" : "https://github.com/StroblIndustries/Syiro/issues", "title" : "Issues"} ]
+        "items" : [ 
+			{ "link" : "http://syiro.com", "title" : "Home" },
+			{ "link" : "https://github.com/StroblIndustries/Syiro/wiki", "title" : "Documentation"},
+			{ "link" : "https://github.com/StroblIndustries/Syiro/issues", "title" : "Issues"},
+			dropdownButtonComponentObject
+		]
     });
 
-    /* End of Navbar Data Definition */
+    // #endregion
 
     var backgroundColorToggler = syiro.button.Generate({ "type" : "toggle" }); // Generate a Toggle Button
     var sidepaneListObject = syiro.list.Generate({ "items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" } ] } ); // Generate a List
@@ -41,8 +73,14 @@ function generateNavbarAndSidepane(){
     document.body.insertBefore(syiro.Fetch(sidepaneComponentObject), globalPageElement); // Prepend in body
     globalPageElement.insertBefore(syiro.Fetch(navbarComponentObject), globalPageElement.firstChild); // Append the fetched Navbar Element to the main Element
 
+	syiro.events.Add(syiro.events.eventStrings["up"], toggleNormalToastListItemObject, syiro.toast.Toggle.bind(this, normalToastComponentObject)); // Listen to up event for the Normal Toast List Item Object that'll toggle the Normal Toast Component
+	syiro.events.Add(syiro.events.eventStrings["up"], toggleDialogToastListItemObject, syiro.toast.Toggle.bind(this, dialogToastComponentObject)); // Listen to up event for the Dialog Toast List Item Object that'll toggle the Dialog Toast Component
     syiro.events.Add(syiro.events.eventStrings["up"], backgroundColorToggler, backgroundColorSwitcher); // Add the backgroundColorSwitcher function to the toggle button
 }
+
+// #endregion
+
+// #region Generate Media Players Function
 
 function generateMediaPlayers(){
     /* Share Dialogs List Generation */
@@ -84,9 +122,13 @@ function generateMediaPlayers(){
     syiro.events.Add(syiro.events.eventStrings["up"], changeSourceButtonComponent, changeVideoSource); // Set event (up) of changeSourceButtonComponent to call changeVideoSource()
 }
 
-/* ================= End of Page Setup ================= */
+// #endregion
 
-/* ================= Page Functions ================= */
+// #endregion
+
+// #region Page Functions
+
+// #region Background Color Switcher
 
 function backgroundColorSwitcher(){
     if (syiro.CSS(document.body, "background-color") == false){ // If we are currently using a light background
@@ -96,6 +138,10 @@ function backgroundColorSwitcher(){
         syiro.CSS(document.body, "background-color", false); // Unset
     }
 }
+
+// #endregion
+
+// #region Change VIdeo Source
 
 function changeVideoSource(){
     var buttonComponentObject = arguments[0]; // Set the buttonComponentObject to the first argument
@@ -112,6 +158,10 @@ function changeVideoSource(){
         syiro.player.SetSources(videoPlayerComponentObject, ["http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v", "http://video.webmfiles.org/big-buck-bunny_trailer.webm"]); // Change the source to original
     }
 }
+
+// #endregion
+
+// #region Show Player Container
 
 function showPlayerContainer(){
     var section = arguments[0]; // Set section equal to the first argument passed
@@ -134,4 +184,6 @@ function showPlayerContainer(){
     }
 }
 
-/* ================= End of Page Functions ================= */
+// #endregion
+
+// #endregion

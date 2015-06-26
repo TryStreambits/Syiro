@@ -46,9 +46,19 @@
 
 // #region Syiro Data Attribute Values
 
-div[data-syiro-render-icon]:not([data-syiro-render-icon="false"]){ // If we are rendering an icon (has the render-icon attribute but not set to false
-	&:not([data-syiro-render-icon="custom"]):after { // If we are not using a custom icon, set :after
+div[data-syiro-render-icon]:not([data-syiro-render-icon="false"]){ // If we are rendering an icon (has the render-icon attribute but not set to false)
+	&:empty:after{ // If the element is empty
 		width: 100%; // Set width to 100%
+	}
+	
+	&[data-syiro-component="button"][data-syiro-component-type="dropdown"]{ // If this is a Dropdown Button
+		&:after{
+			float: right;
+		}
+		
+		&:not(:empty):after{ // If it is NOT empty
+			margin-right: 10px;
+		}
 	}
 	
 	&[data-syiro-render-icon="custom"]{ // If we are using a custom icon
@@ -56,37 +66,37 @@ div[data-syiro-render-icon]:not([data-syiro-render-icon="false"]){ // If we are 
         background-repeat: no-repeat; // Do not repeat
     }
 
-	&[data-syiro-render-icon="dropdown"]{ // Dropdown Button
+	&[data-syiro-render-icon="dropdown"]{ // Dropdown Icon
 		&:after {
 			.icon("dropdown", 14); // Use the dropdown icon
 		}
 	}
 
-	&[data-syiro-render-icon="fullscreen"]{ // Fullscreen Button
+	&[data-syiro-render-icon="fullscreen"]{ // Fullscreen Icon
 		&:after {
 			.icon("fullscreen", 14); // Use the fullscreen icon
 		}
 	}
 
-	&[data-syiro-render-icon="menu"]{ // Menu Button
+	&[data-syiro-render-icon="menu"]{ // Menu Icon
 		&:after {
 			.icon("menu", 14); // Use the menu icon
 		}
 	}
 
-	&[data-syiro-render-icon="play"]{ // Play Button
+	&[data-syiro-render-icon="play"]{ // Play Icon
 		&:after {
 			.icon("play", 14); // Use the play icon
 		}
 	}
 	
-	&[data-syiro-render-icon="search"]{ // Search Button
+	&[data-syiro-render-icon="search"]{ // Search Icon
 		&:after {
 			.icon("play", 14); // Use the search icon
 		}
 	}
 	
-	&[data-syiro-render-icon="volume"]{ // Volume Button
+	&[data-syiro-render-icon="volume"]{ // Volume Icon
 		&:after {
 			.icon("volume", 14); // Use the volume icon
 		}

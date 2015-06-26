@@ -71,39 +71,27 @@ div[data-syiro-component="toast"]{
 	& > div[data-syiro-minor-component="toast-buttons"]{
 		float: right; // Float the Toast Buttons Container to the right
 		height: 32px;
-		width: 100px;
 		
 		// #region Inner Syiro Buttons
 		
 		& > div[data-syiro-component="button"]{
 			height: inherit;
-			min-width: 50%; // Half the Toast Buttons Container
-			max-width: 50%; // Ensure it remains 50% of Toast Buttons width
+			min-width: 100px; // Minimum of 100px width
 			font-size: 13px;
 			margin: 0; // Override default margins of Syiro Button
+			
+			&:only-child, &:last-of-type { // If this is the only child or the last Button (usually Affirm)
+				float: right; // Float the Deny button to the right
+				color: @syiroPrimaryColor; // Use the Syiro Primary Color (implying this single action is not "negative")
+			}
 			
 			// #region Deny Button
 			
 			&[data-syiro-dialog-action="deny"]{
-				
-				&:last-child{ // If this is the last child, implying there is only one Button
-					float: right; // Float the Deny button to the right
-					color: @syiroPrimaryColor; // Use the Syiro Primary Color (implying this single action is not "negative")
-				}
-				
 				&:not(:last-child){ // If this is not the last child
 					float: left; // Float the Deny button to the left
 					color: lighten(red, 10%); // Light Red
 				}
-			}
-			
-			// #endregion
-			
-			// #region Affirm Button
-			
-			&[data-syiro-dialog-action="affirm"]{
-				float: right; // Float the Affirm button to the right
-				color: @syiroPrimaryColor; // Use the Primary Color
 			}
 			
 			// #endregion

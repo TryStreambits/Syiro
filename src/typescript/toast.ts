@@ -17,7 +17,11 @@ module syiro.toast {
 		if ((typeof properties["type"] == "undefined") || ((properties["type"] !== "normal") && (properties["type"] !== "dialog"))){ // If no "type" is defined or it was defined as NOT normal or dialog
 			properties["type"] = "normal"; // Define as a "normal" Toast
 		}
-			
+
+		if ((typeof properties["title"] == "undefined") && (properties["type"] == "dialog")){ // If no title was provided for this Dialog Toast
+			properties["type"] = "normal"; // Define as a "normal" Toast
+		}
+
 		var componentId = syiro.component.IdGen("toast"); // Generate a Component Id for this Toast
 		var componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : componentId, "data-syiro-component" : "toast", "data-syiro-component-type" : properties["type"] }); // Generate the Toast container
 		
@@ -140,7 +144,7 @@ module syiro.toast {
 			var toastType = componentElement.getAttribute("data-syiro-component-type"); // Get the type of this Toast ("normal" or "dialog")
 			var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get the Toast ContentOverlay if it exists
 			
-			if (typeof action == "undefined"){ // If no action was provided
+			if (typeof action !== "string"){ // If an action wasn't provided or it wasn't a string ("show" / "hide")
 				if (toastType == "normal"){ // If this is a Normal Toast
 					if ((document.body.clientWidth > 1024) && (currentAnimation == "slide")){ // If the document width is "large" and we did a Slide In
 						showAnimation = false; // Slide Out the Normal Toast
@@ -160,7 +164,6 @@ module syiro.toast {
 					showAnimation = false; // Set to false
 				}
 			}
-			
 			
 			if ((showAnimation == true) && ((document.body.clientWidth > 1024) && (toastType == "normal"))){ // If we are showing the Toast, document width is "large" and this is a Normal Toast
 				syiro.animation.Slide(component); // Slide the Toast

@@ -54,7 +54,7 @@ div[data-syiro-component="list"]{
 		background-color: darken(@syiroBackground, 2.5); // Set background to slightly darkened form of @syiroBackground
 		border-top: 2px solid darken(@syiroBackground, 20%);
 		position: fixed; // Fixed position
-		z-index: 10; // Ensure it floats above other content
+		z-index: 8; // Float above other content, but not above contentOverlay (9) or Toasts (10)
 		visibility: hidden; // Hide (not using display: block) so getBoundingClientRect properly calculates dimensions
 	}
 }

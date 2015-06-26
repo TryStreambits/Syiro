@@ -162,12 +162,12 @@ module syiro.button {
 				}
 
 				innerImage.setAttribute("src", content); // Set the Button image source
+				syiro.component.Update(component["id"], componentElement); // Update the storedComponent (if necessary)
 			}
-			else { // If the content is set to false
-				componentElement.removeChild(innerImage); // Remove the image
+			else if ((content == "") && (innerImage !== null)){ // If the content is set to an empty string and innerImage exists
+				syiro.component.Remove(innerImage); // Remove the image
 			}
 
-			syiro.component.Update(component["id"], componentElement); // Update the storedComponent (if necessary)
 			setSucceeded = true; // Define setSucceeded as true
 		}
 		else{ // If it is NOT a Dropdown Button

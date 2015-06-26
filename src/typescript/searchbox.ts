@@ -142,20 +142,20 @@ module syiro.searchbox {
 
 	// #region Setting Searchbox Text / Placeholder
 
-	export function SetText(component : Object, placeholderText : any) : void {
+	export function SetText(component : Object, content : any) : void {
 		var searchboxElement : Element = syiro.component.Fetch(component); // Get the Searchbox Syiro component element
 
 		if (searchboxElement !== null){ // If the searchboxElement exists in syiro.data.storage or DOM
 			var searchboxInputElement : HTMLInputElement = searchboxElement.getElementsByTagName("input")[0]; // Get the inner input tag of the searchboxElement
 
-			if (placeholderText !== false){ // If we are updating the placeholderText
-				searchboxInputElement.setAttribute("placeholder", placeholderText); // Set the placeholder string
+			if (content !== ""){ // If we are updating the content
+				searchboxInputElement.setAttribute("placeholder", content); // Set the placeholder string
 			}
-			else if (placeholderText == false){ // If the placeholderText is set to false, meaning we are removing the placeholder
+			else if (content == ""){ // If the content is set to false, meaning we are removing the placeholder
 				searchboxInputElement.removeAttribute("placeholder"); // Remove the placeholder attribute
 			}
 
-			syiro.component.Update(component["id"], searchboxElement); // Update the searchboxElement HTMLElement if necessary
+			syiro.component.Update(component["id"], searchboxElement); // Update the Searchbox Component HTMLElement if necessary
 		}
 	}
 

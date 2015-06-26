@@ -1235,28 +1235,26 @@ var syiro;
                     potentialLinkElement = elementOrProperties;
                 }
                 if (typeof potentialLinkElement !== "undefined") {
-                    componentRemovingSucceed = true;
                     syiro.component.Remove(potentialLinkElement);
+                    componentRemovingSucceed = true;
                 }
             }
             return componentRemovingSucceed;
         }
         navbar.RemoveLink = RemoveLink;
-        function SetLogo(component, image) {
+        function SetLogo(component, content) {
             if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "top")) {
                 var navbarElement = syiro.component.Fetch(component);
                 var imageElement = navbarElement.querySelector('img[data-syiro-minor-component="logo"]');
-                if (image.trim().length !== 0) {
+                if (content !== "") {
                     if (imageElement == null) {
-                        imageElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component": "logo", "src": image });
+                        imageElement = document.createElement("img");
                         navbarElement.insertBefore(imageElement, navbarElement.firstChild);
                     }
-                    else {
-                        imageElement.setAttribute("src", image);
-                    }
+                    imageElement.setAttribute("src", syiro.utilities.SanitizeHTML(content));
                     syiro.component.Update(component["id"], navbarElement);
                 }
-                else {
+                else if ((content == "") && (imageElement !== null)) {
                     syiro.component.Remove(imageElement);
                 }
                 return true;
@@ -1270,24 +1268,20 @@ var syiro;
             return syiro.navbar.SetLogo(component, "");
         }
         navbar.RemoveLogo = RemoveLogo;
-        function SetLabel(component, labelText) {
+        function SetLabel(component, content) {
             if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "bottom")) {
                 var navbarElement = syiro.component.Fetch(component);
                 var labelComponent = navbarElement.querySelector("label");
-                if (labelText.trim().length !== 0) {
+                if (content !== "") {
                     if (labelComponent == null) {
-                        labelComponent = syiro.utilities.ElementCreator("label", { "content": labelText });
+                        labelComponent = document.createElement("label");
                         navbarElement.insertBefore(labelComponent, navbarElement.firstChild);
                     }
-                    else {
-                        labelComponent.textContent = labelText;
-                    }
+                    labelComponent.textContent = syiro.utilities.SanitizeHTML(content);
                     syiro.component.Update(component["id"], navbarElement);
                 }
-                else {
-                    if (labelComponent !== null) {
-                        syiro.component.Remove(labelComponent);
-                    }
+                else if ((content == "") && (labelComponent !== null)) {
+                    syiro.component.Remove(labelComponent);
                 }
                 return true;
             }
@@ -1444,11 +1438,11 @@ var syiro;
                         componentElement.insertBefore(innerImage, componentElement.firstChild);
                     }
                     innerImage.setAttribute("src", content);
+                    syiro.component.Update(component["id"], componentElement);
                 }
-                else {
-                    componentElement.removeChild(innerImage);
+                else if ((content == "") && (innerImage !== null)) {
+                    syiro.component.Remove(innerImage);
                 }
-                syiro.component.Update(component["id"], componentElement);
                 setSucceeded = true;
             }
             else {
@@ -1675,7 +1669,7 @@ var syiro;
                     }
                     var innerControlElement = syiro.component.Fetch(control);
                     listItemElement.appendChild(innerControlElement);
-                    syiro.events.Remove(component);
+                    syiro.events.Remove(syiro.events.eventStrings["up"], component);
                     syiro.component.Update(component["id"], listItemElement);
                     setControlSucceeded = true;
                 }
@@ -1690,11 +1684,21 @@ var syiro;
                 if (typeof content == "string") {
                     var listItemLabel = listItemElement.querySelector("label");
                     var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]');
+                    var listItemImage = listItemElement.querySelector('img');
                     if ((listItemLabel !== null) && (listItemControl !== null)) {
                         syiro.component.Remove(listItemControl);
                     }
-                    var generatedImage = syiro.utilities.ElementCreator("img", { "src": content });
-                    listItemElement.insertBefore(generatedImage, listItemElement.firstChild);
+                    if (content !== "") {
+                        if (listItemImage == null) {
+                            listItemImage = document.createElement("img");
+                            syiro.component.Add(false, component, listItemImage);
+                        }
+                        listItemImage.setAttribute("src", syiro.utilities.SanitizeHTML(content));
+                        syiro.component.Update(component["id"], listItemElement);
+                    }
+                    else if ((content == "") && (listItemImage !== null)) {
+                        syiro.component.Remove(listItemImage);
+                    }
                     setImageSucceeded = true;
                 }
             }
@@ -1706,20 +1710,28 @@ var syiro;
             if (component["type"] == "list-item") {
                 var listItemElement = syiro.component.Fetch(component);
                 if (typeof content == "string") {
-                    var listItemLabelElement;
+                    var listItemLabelElement = listItemElement.querySelector("label");
                     var listItemImage = listItemElement.querySelector("img");
                     var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]');
                     if ((listItemImage !== null) && (listItemControl !== null)) {
-                        syiro.component.Remove(listItemImage);
+                        syiro.component.Remove(listItemControl);
                     }
-                    if (listItemElement.querySelector("label") !== null) {
-                        listItemLabelElement = listItemElement.querySelector("label");
+                    if (content !== "") {
+                        if (listItemLabelElement == null) {
+                            listItemLabelElement = document.createElement("label");
+                            if (listItemImage !== null) {
+                                syiro.component.Add(false, component, listItemLabelElement);
+                            }
+                            else {
+                                syiro.component.Add(false, component, listItemLabelElement);
+                            }
+                        }
+                        listItemLabelElement.textContent = syiro.utilities.SanitizeHTML(content);
+                        syiro.component.Update(component["id"], listItemElement);
                     }
-                    else {
-                        listItemLabelElement = document.createElement("label");
-                        listItemElement.insertBefore(listItemLabelElement, listItemElement.firstChild);
+                    else if ((content == "") && (listItemLabelElement !== null)) {
+                        syiro.component.Remove(listItemLabelElement);
                     }
-                    listItemLabelElement.textContent = content;
                     setLabelSucceeded = true;
                 }
             }
@@ -2626,14 +2638,14 @@ var syiro;
             }
         }
         searchbox.Suggestions = Suggestions;
-        function SetText(component, placeholderText) {
+        function SetText(component, content) {
             var searchboxElement = syiro.component.Fetch(component);
             if (searchboxElement !== null) {
                 var searchboxInputElement = searchboxElement.getElementsByTagName("input")[0];
-                if (placeholderText !== false) {
-                    searchboxInputElement.setAttribute("placeholder", placeholderText);
+                if (content !== "") {
+                    searchboxInputElement.setAttribute("placeholder", content);
                 }
-                else if (placeholderText == false) {
+                else if (content == "") {
                     searchboxInputElement.removeAttribute("placeholder");
                 }
                 syiro.component.Update(component["id"], searchboxElement);

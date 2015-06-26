@@ -115,7 +115,7 @@ module syiro.listitem {
 				var innerControlElement = syiro.component.Fetch(control); // Get the Element of the inner control Component
 
 				listItemElement.appendChild(innerControlElement); // Append the control Component
-				syiro.events.Remove(component); // Ensure the List Item has no Listeners after adding the new Control
+				syiro.events.Remove(syiro.events.eventStrings["up"], component); // Ensure the List Item has no up listeners after adding the new Control
 				syiro.component.Update(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
 
 				setControlSucceeded = true; // Set setLabelSucceeded to true
@@ -138,13 +138,24 @@ module syiro.listitem {
 			if (typeof content == "string"){ // Make sure the content is a string
 				var listItemLabel = listItemElement.querySelector("label"); // Define listItemLabel as the potential label within the List Item Element
 				var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]'); // Define listItemControl as the potential control within the List Item Element
+				var listItemImage = listItemElement.querySelector('img'); // Get any existing image within the List Item
 
 				if ((listItemLabel !== null) && (listItemControl !== null)){ // If there is already a label and control in the List Item
 					syiro.component.Remove(listItemControl); // Remove this inner control
 				}
-
-				var generatedImage = syiro.utilities.ElementCreator("img", { "src" : content } ); // Generate an img
-				listItemElement.insertBefore(generatedImage, listItemElement.firstChild); // Prepend the img tag
+				
+				if (content !== ""){ // If content is not empty (adding an image source)
+					 if (listItemImage == null){ // If listItemImage does not exist
+						listItemImage = document.createElement("img"); // Create an image tag					
+						syiro.component.Add(false, component, listItemImage); // Prepend the img tag
+					}
+					
+					listItemImage.setAttribute("src", syiro.utilities.SanitizeHTML(content)); // Set the src to a sanitized form of the content provided
+					syiro.component.Update(component["id"], listItemElement); // Update the List Item Element if necessary in syiro.data
+				}
+				else if ((content == "") && (listItemImage !== null)){ // If content is empty (removing the image) and listItemImage exists
+					syiro.component.Remove(listItemImage); // Remove the List Item Image
+				}
 
 				setImageSucceeded = true; // Set setImageSucceeded to true
 			}
@@ -164,24 +175,34 @@ module syiro.listitem {
 			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
 
 			if (typeof content == "string"){ // If the content is of type string
-				var listItemLabelElement : Element; // Define listItemLabelElement to be an Element
+				var listItemLabelElement : Element = listItemElement.querySelector("label"); // Get any label if it exists
 
 				var listItemImage = listItemElement.querySelector("img"); // Define listItemImage as the potential image within the List Item Element
 				var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]'); // Define listItemControl as the potential control within the List Item Element
 
-				if ((listItemImage !== null) && (listItemControl !== null)){ // If there is already a label and control in the List Item
-					syiro.component.Remove(listItemImage); // Remove this inner control
+				if ((listItemImage !== null) && (listItemControl !== null)){ // If there is already an image and control in the List Item
+					syiro.component.Remove(listItemControl); // Remove this inner control
+				}
+				
+				if (content !== ""){ // If the content is not empty
+					if (listItemLabelElement == null){ // If the label Element does not exist
+						listItemLabelElement = document.createElement("label"); // Create a label and assign it to the listItemLabelElement
+						
+						if (listItemImage !== null){ // If there is an image in this List Item
+							syiro.component.Add(false, component, listItemLabelElement); // Prepend the label
+						}
+						else { // If there is not an image in this List Item
+							syiro.component.Add(false, component, listItemLabelElement); // Prepend the label
+						}
+					}
+					
+					listItemLabelElement.textContent = syiro.utilities.SanitizeHTML(content); // Set the textContent to a sanitized form of the content
+					syiro.component.Update(component["id"], listItemElement); // Update the List Item Element if necessary in syiro.data
+				}
+				else if ((content == "") && (listItemLabelElement !== null)){ // If content is empty, meaning delete the label, and the label exists
+					syiro.component.Remove(listItemLabelElement); // Remove the label
 				}
 
-				if (listItemElement.querySelector("label") !== null){ // If a label is already in the List Item
-					listItemLabelElement = listItemElement.querySelector("label"); // Set listItemLabelElement as the queried label tag from listItemElement
-				}
-				else{
-					listItemLabelElement = document.createElement("label"); // Create a label and assign it to the listItemLabelElement
-					listItemElement.insertBefore(listItemLabelElement, listItemElement.firstChild); // Prepend the label
-				}
-
-				listItemLabelElement.textContent = content; // Set the content of the List Item Label
 				setLabelSucceeded = true; // Set setLabelSucceeded to true
 			}
 		}

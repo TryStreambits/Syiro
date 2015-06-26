@@ -18,7 +18,7 @@ module syiro.utilities {
                         attributeKey = "content"; // Set to content instead.
                     }
 
-                    generatedElement.setAttribute(attributeKey, syiro.utilities.SanitizeHTML(attributeValue)); // Set the attribute
+                    generatedElement.setAttribute(attributeKey, syiro.utilities.SanitizeHTML(attributeValue)); // Set the attribute to a sanitized form of the attributeValue
                 }
                 else{ // If the attributeKey IS "content"
                     if ((typeof attributeValue == "string") || ((typeof attributeValue.nodeType !== "undefined") && (attributeValue.nodeType == 1))){ // If the attributeValue we passed is a string or an appropriate Element

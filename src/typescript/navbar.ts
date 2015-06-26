@@ -118,28 +118,28 @@ module syiro.navbar {
 
     // #region Function to remove a link from the Navbar based on the properties of that link
 
-    export function RemoveLink(component : Object, elementOrProperties : any) : boolean { // Return boolean if it was successful or not
-        var componentRemovingSucceed : boolean = false; // Variable to store the determination of success
-
-        if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (typeof elementOrProperties !== "undefined")){ // If this is a Navbar Component and elementOrProperties is defined
-            var navbarElement : Element = syiro.component.Fetch(component); // Get the Element of the Navbar component
-            var potentialLinkElement : Element; // Get the potential link element.
-
-            if (typeof elementOrProperties.nodeType == "undefined"){ // If a nodeType is not defined, meaning it is not an element
-                potentialLinkElement =  navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"][title="' + elementOrProperties["title"] + '"]'); // Get the potential link element.
-            }
-            else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")){ // If a nodeType is defined meaning it is a link Element
-                potentialLinkElement = elementOrProperties; // Define potentialLinkElement as elementOrProperties
-            }
-
-            if (typeof potentialLinkElement !== "undefined"){ // If the potentialLinkElement is not undefined
-                componentRemovingSucceed = true; // Set to true
-                syiro.component.Remove(potentialLinkElement); // Remove the element
-            }
-        }
-
-        return componentRemovingSucceed;
-    }
+	export function RemoveLink(component : Object, elementOrProperties : any) : boolean { // Return boolean if it was successful or not
+		var componentRemovingSucceed : boolean = false; // Variable to store the determination of success
+		
+		if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (typeof elementOrProperties !== "undefined")){ // If this is a Navbar Component and elementOrProperties is defined
+			var navbarElement : Element = syiro.component.Fetch(component); // Get the Element of the Navbar component
+			var potentialLinkElement : Element; // Get the potential link element.
+			
+			if (typeof elementOrProperties.nodeType == "undefined"){ // If a nodeType is not defined, meaning it is not an element
+				potentialLinkElement =  navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"][title="' + elementOrProperties["title"] + '"]'); // Get the potential link element.
+			}
+			else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")){ // If a nodeType is defined meaning it is a link Element
+				potentialLinkElement = elementOrProperties; // Define potentialLinkElement as elementOrProperties
+			}
+		
+			if (typeof potentialLinkElement !== "undefined"){ // If the potentialLinkElement is not undefined
+				syiro.component.Remove(potentialLinkElement); // Remove the element
+				componentRemovingSucceed = true; // Set to true
+			}
+		}
+		
+		return componentRemovingSucceed;
+	}
 
     // #endregion
 
@@ -148,33 +148,31 @@ module syiro.navbar {
     // #region Top Navbar Specific Functions
 
     // #region Function for setting the top Navbar's logo
+	
+	export function SetLogo(component : Object, content : string) : boolean{ // Requires the component object and string of the image URL
+		if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "top")){ // If this is a "top" Navbar Component
+			var navbarElement : Element = syiro.component.Fetch(component); // Get the HTMLElement
+			var imageElement : Element = navbarElement.querySelector('img[data-syiro-minor-component="logo"]'); // Set imageElement as the IMG element we will either fetch or generate
+		
+			if (content !== ""){ // If image is defined
+				if (imageElement == null){ // If there is NOT already a logo in the top Navbar component
+					imageElement = document.createElement("img");
+					navbarElement.insertBefore(imageElement, navbarElement.firstChild); // Prepend the logo component
+				}
+			
+				imageElement.setAttribute("src", syiro.utilities.SanitizeHTML(content)); // Set the image to a sanitized form of the content
+				syiro.component.Update(component["id"], navbarElement); // Update any existing navbarElement in syiro.data if needed
+			}
+			else if ((content == "") && (imageElement !== null)){ // If image is not defined / defined as empty string
+				syiro.component.Remove(imageElement); // Remove the imageElement and update the navbarElement
+			}
 
-    export function SetLogo(component : Object, image : string) : boolean{ // Requires the component object and string of the image URL
-        if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "top")){ // If this is a "top" Navbar Component
-            var navbarElement : Element = syiro.component.Fetch(component); // Get the HTMLElement
-            var imageElement : Element = navbarElement.querySelector('img[data-syiro-minor-component="logo"]'); // Set imageElement as the IMG element we will either fetch or generate
-
-            if (image.trim().length !== 0){ // If image is defined
-                if (imageElement == null){ // If there is NOT already a logo in the top Navbar component
-                    imageElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : image }); // Create an imageElement
-                    navbarElement.insertBefore(imageElement, navbarElement.firstChild); // Prepend the logo component
-                }
-                else{ // If the image element is already defined
-                    imageElement.setAttribute("src", image); // Set the image source
-                }
-
-                syiro.component.Update(component["id"], navbarElement); // Update the storedComponent HTMLElement if necessary
-            }
-            else{ // If image is not defined / defined as empty string
-                syiro.component.Remove(imageElement); // Remove the imageElement and update the navbarElement
-            }
-
-            return true;
-        }
-        else{ // If this is not a top Navbar Component
-            return false;
-        }
-    }
+			return true;
+		}
+		else{ // If this is not a top Navbar Component
+			return false;
+		}
+	}
 
     // #endregion
 
@@ -192,34 +190,29 @@ module syiro.navbar {
 
     // #region Function to set the bottom navbar label (typically something like a Copyright notice)
 
-    export function SetLabel(component : Object, labelText : string) : boolean{ // Set the label text of the footer component to the labelText defined
-        if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "bottom")){ // If this is a "bottom" Navbar Component
-            var navbarElement = syiro.component.Fetch(component); // Get the Element of the Navbar component
-            var labelComponent : Element = navbarElement.querySelector("label"); // Fetch the labelComponent if it exists
+	export function SetLabel(component : Object, content : string) : boolean{ // Set the label text of the footer component to the labelText defined
+		if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "bottom")){ // If this is a "bottom" Navbar Component
+			var navbarElement = syiro.component.Fetch(component); // Get the Element of the Navbar component
+			var labelComponent : Element = navbarElement.querySelector("label"); // Fetch the labelComponent if it exists
 
-            if (labelText.trim().length !== 0){ // If the labelText is not an empty string
-                if (labelComponent == null){ // If the labelComponent does not exist
-                    labelComponent = syiro.utilities.ElementCreator("label", { "content" : labelText }); // Create a label Element with the content set to labelText
-                    navbarElement.insertBefore(labelComponent, navbarElement.firstChild); // Pre-emptively insert the empty label
-                }
-                else{ // If the labelComponent does exist
-                    labelComponent.textContent = labelText; // Set the labelComponent textContent to the labelText defined
-                }
-
-                syiro.component.Update(component["id"], navbarElement); // Update the navbarElement's Component if necessary
-            }
-            else{ // If labelText is an empty string
-                if (labelComponent !== null){ // If labelComponent exists
-                    syiro.component.Remove(labelComponent); // Remove the labelComponent, updating the navbarElement
-                }
-            }
-
-            return true; // Return a success boolean
-        }
-        else{ // If this is not a bottom Navbar Component
-            return false;
-        }
-    }
+			if (content !== ""){ // If the labelText is not an empty string
+				if (labelComponent == null){ // If the labelComponent does not exist
+					labelComponent = document.createElement("label"); // Create the label
+					navbarElement.insertBefore(labelComponent, navbarElement.firstChild); // Pre-emptively insert the empty label
+				}
+				labelComponent.textContent = syiro.utilities.SanitizeHTML(content); // Set the labelComponent textContent to a sanitized form of the content
+				syiro.component.Update(component["id"], navbarElement); // Update the navbarElement's Component if necessary
+			}
+			else if ((content == "") && (labelComponent !== null)){ // If content is an empty string and the label Component exists
+				syiro.component.Remove(labelComponent); // Remove the labelComponent, updating the navbarElement
+			}
+			
+			return true; // Return a success boolean
+		}
+		else{ // If this is not a bottom Navbar Component
+			return false;
+		}
+	}
 
     // #endregion
 

@@ -102,9 +102,9 @@ declare module syiro.navbar {
     function Generate(properties: Object): Object;
     function AddLink(append: boolean, component: Object, elementOrProperties: any): boolean;
     function RemoveLink(component: Object, elementOrProperties: any): boolean;
-    function SetLogo(component: Object, image: string): boolean;
+    function SetLogo(component: Object, content: string): boolean;
     function RemoveLogo(component: Object): boolean;
-    function SetLabel(component: Object, labelText: string): boolean;
+    function SetLabel(component: Object, content: string): boolean;
     function RemoveLabel(component: Object): boolean;
 }
 declare module syiro.header {
@@ -186,7 +186,7 @@ declare module syiro.videoplayer {
 declare module syiro.searchbox {
     function Generate(properties: Object): Object;
     function Suggestions(...args: any[]): void;
-    function SetText(component: Object, placeholderText: any): void;
+    function SetText(component: Object, content: any): void;
 }
 declare module syiro.sidepane {
     function Generate(properties: Object): Object;

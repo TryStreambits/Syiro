@@ -46,9 +46,10 @@
 
 // #region Syiro Data Attribute Values
 
-div[data-syiro-render-icon]:not([data-syiro-render-icon="false"]){ // If we are rendering an icon (has the render-icon attribute but not set to false)
+*[data-syiro-render-icon]:not([data-syiro-render-icon="false"]){ // If we are rendering an icon (has the render-icon attribute but not set to false)
 	&:empty:after{ // If the element is empty
 		width: 100%; // Set width to 100%
+		text-align: center; // Center the icon
 	}
 	
 	&[data-syiro-component="button"][data-syiro-component-type="dropdown"]{ // If this is a Dropdown Button
@@ -64,6 +65,10 @@ div[data-syiro-render-icon]:not([data-syiro-render-icon="false"]){ // If we are 
 	&[data-syiro-render-icon="custom"]{ // If we are using a custom icon
         background-size: 32px; // Max size of 32px
         background-repeat: no-repeat; // Do not repeat
+		
+		&:empty{ // If the element is empty
+			background-position-x: center; // Center horizontally
+		}
     }
 
 	&[data-syiro-render-icon="dropdown"]{ // Dropdown Icon

@@ -6,7 +6,14 @@ body {
 
 div[data-syiro-component="navbar"] > div[data-syiro-component="button"][data-syiro-component-type="dropdown"]{
     float: right;
-    margin-right: 10px;
+}
+
+div[data-syiro-component="navbar"] > div[data-syiro-component="button"][data-syiro-component-type="dropdown"]:not([active]){ /* If the Dropdown Button is not active */
+    background-image: url("../img/message.png") !important; /* Use message.png as background image */
+}
+
+div[data-syiro-component="navbar"] > div[data-syiro-component="button"][data-syiro-component-type="dropdown"][active]{ /* If the Dropdown Button is active */
+    background-image: url("../img/message-inverted.png") !important; /* Use message-inverted.png as background image */
 }
 
 /* End of Navbar Inner Dropdown Button */
@@ -44,7 +51,16 @@ div[data-page-component="video-player-container"]{
 
 /* Scaling */
 
-@media (max-width: 600px){
+@media screen and (max-width: 600px){
+	
+	/* Navbar Links */
+	
+	div[data-syiro-component="navbar"] > a {
+		min-width: 0px !important; /* No minimum width */
+	}
+	
+	/* End of Navbar Links */
+
     /* Shared Player Container Styling */
 
     div[data-page-component*="-container"]:not([data-page-component="buttongroup-container"]){

@@ -2754,7 +2754,7 @@ var syiro;
         function Toggle(component, eventData) {
             if ((syiro.component.IsComponentObject(component)) && (component["type"] == "sidepane")) {
                 var componentElement = syiro.component.Fetch(component);
-                var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"');
+                var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]');
                 var showSidepane = false;
                 if (componentElement.hasAttribute("data-syiro-animation") == false) {
                     var currentTransformProperty = syiro.component.CSS(component, "transform");
@@ -2917,19 +2917,25 @@ var syiro;
                     syiro.animation.Slide(component);
                 }
                 else if ((showAnimation == true) && (((document.body.clientWidth <= 1024) && (toastType == "normal")) || (toastType == "dialog"))) {
-                    syiro.animation.FadeIn(component);
-                    if (toastType == "dialog") {
-                        syiro.component.CSS(toastContentOverlayElement, "display", "block");
-                    }
+                    syiro.animation.FadeIn(component, function () {
+                        var toastElement = syiro.component.Fetch(component);
+                        if (toastElement.getAttribute("data-syiro-component-type") == "dialog") {
+                            var toastContentOverlayElement = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]');
+                            syiro.component.CSS(toastContentOverlayElement, "display", "block");
+                        }
+                    });
                 }
                 else if ((showAnimation == false) && ((document.body.clientWidth > 1024) && (toastType == "normal"))) {
                     syiro.animation.Reset(component);
                 }
                 else if ((showAnimation == false) && (((document.body.clientWidth <= 1024) && (toastType == "normal")) || (toastType == "dialog"))) {
-                    syiro.animation.FadeOut(component);
-                    if (toastType == "dialog") {
-                        syiro.component.CSS(toastContentOverlayElement, "display", false);
-                    }
+                    syiro.animation.FadeOut(component, function () {
+                        var toastElement = syiro.component.Fetch(component);
+                        if (toastElement.getAttribute("data-syiro-component-type") == "dialog") {
+                            var toastContentOverlayElement = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]');
+                            syiro.component.CSS(toastContentOverlayElement, "display", false);
+                        }
+                    });
                 }
             }
         }

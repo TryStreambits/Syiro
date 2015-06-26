@@ -37,6 +37,12 @@ function generatePage(){
         syiro.CSS(videoPlayerContainer, "height", (screen.height * 0.50).toString() + "px");
         var videoPlayerComponentObject = syiro.FetchComponentObject(videoPlayerContainer.querySelector('div[data-syiro-component="video-player"]')); // Get the Component Object of the Video Player inside videoPlayerContainer
         syiro.render.Scale(videoPlayerComponentObject); // Rescale the Video Player
+		
+		var dropdownButtonComponentObject = syiro.FetchComponentObject(document.querySelector('div[data-syiro-component="button"][data-syiro-component-type="dropdown"]'));
+		
+		if (document.body.clientWidth < 1024){ // If the 
+			syiro.button.SetText(dropdownButtonComponentObject, "");
+		}
     });
 }
 
@@ -48,7 +54,7 @@ function generateNavbarAndSidepane(){
 	var toggleNormalToastListItemObject = syiro.listitem.Generate({"label" : "Toggle Normal Toast"}); // Generate a List Item with the content being "Toggle Normal Toast"
 	var toggleDialogToastListItemObject  = syiro.listitem.Generate({"label" : "Toggle Dialog Toast"}); // Generate a List Item with the content being "Toggle Dialog Toast"
 	
-	var dropdownButtonComponentObject = syiro.button.Generate({ "type" : "dropdown", "content" : "Toast Tester", "items" : [ toggleNormalToastListItemObject,  toggleDialogToastListItemObject ] });
+	var dropdownButtonComponentObject = syiro.button.Generate({ "type" : "dropdown", "icon" : "", "items" : [ toggleNormalToastListItemObject,  toggleDialogToastListItemObject ], "position" : ["below", "right"] });
 	
 	// #endregion
 	

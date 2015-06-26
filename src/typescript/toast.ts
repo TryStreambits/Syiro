@@ -169,21 +169,31 @@ module syiro.toast {
 				syiro.animation.Slide(component); // Slide the Toast
 			}
 			else if ((showAnimation == true) && (((document.body.clientWidth <= 1024) && (toastType == "normal")) || (toastType == "dialog"))){ // If we are showing the Toast and it is either a Normal Toast w/ document width "small" OR a Dialog Toast
-				 syiro.animation.FadeIn(component); // Fade In the Toast Notification
-				 
-				 if (toastType == "dialog"){ // If this is a Dialog Toast
-					 syiro.component.CSS(toastContentOverlayElement, "display", "block"); // Show the toastContentOverlayElement under the Sidepane
-				 }
+				 syiro.animation.FadeIn(component, // Fade In the Toast Notification
+				 	function(){
+					 	var toastElement = syiro.component.Fetch(component); // Get the Toast Element
+						 
+						 if (toastElement.getAttribute("data-syiro-component-type") == "dialog"){
+							 var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get the Toast ContentOverlay if it exists
+						 	syiro.component.CSS(toastContentOverlayElement, "display", "block"); // Show the toastContentOverlayElement under the Sidepane
+						 }
+					 }
+				 );
 			}
 			else if ((showAnimation == false) && ((document.body.clientWidth > 1024) && (toastType == "normal"))){ // If we are hiding the Toast, document width is "large" and this is a Normal Toast
 				syiro.animation.Reset(component); // Simply reset the Toast
 			}
 			else if ((showAnimation == false) && (((document.body.clientWidth <= 1024) && (toastType == "normal")) || (toastType == "dialog"))){ // If we are hiding the Toast and it is either a Normal Toast w/ document width "small" OR a Dialog Toast
-				 syiro.animation.FadeOut(component); // Fade Out the Toast Notification
-				 
-				 if (toastType == "dialog"){ // If this is a Dialog Toast
-				 	syiro.component.CSS(toastContentOverlayElement, "display", false); // Hide the toastContentOverlayElement
-				 }
+				 syiro.animation.FadeOut(component, // Fade Out the Toast Notification
+				 	function(){
+						 var toastElement = syiro.component.Fetch(component); // Get the Toast Element
+						 
+						 if (toastElement.getAttribute("data-syiro-component-type") == "dialog"){
+							 var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get the Toast ContentOverlay if it exists
+							syiro.component.CSS(toastContentOverlayElement, "display", false); // Hide the toastContentOverlayElement
+						 }
+					 }
+				 );
 			}
 		}
 	}

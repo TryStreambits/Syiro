@@ -132,7 +132,7 @@ module syiro.sidepane {
 	export function Toggle(component : Object, eventData ?: any){
 		if ((syiro.component.IsComponentObject(component)) && (component["type"] == "sidepane")){ // If this is a Component Object and indeed a Sidepane
 			var componentElement = syiro.component.Fetch(component); // Fetch the Sidepane Element
-			var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"'); // Fetch the sidepaneContentOverlay Element
+			var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Fetch the sidepaneContentOverlay Element
 			var showSidepane : boolean = false; // Define showSidepane as a defaulted "false"
 	
 			if (componentElement.hasAttribute("data-syiro-animation") == false){ // If it does not have the animation attribute

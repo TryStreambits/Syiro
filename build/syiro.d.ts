@@ -69,7 +69,7 @@ declare module syiro.component {
     function IdGen(type: string): string;
     function IsComponentObject(variable: any): boolean;
     function Update(componentId: string, componentElement: Element): void;
-    function Add(append: boolean, parentComponent: Object, childComponent: any): boolean;
+    function Add(appendOrPrepend: any, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): void;
 }
 declare module syiro.animation {
@@ -218,4 +218,5 @@ declare module syiro {
     var Add: typeof component.Add;
     var Remove: typeof component.Remove;
     var Position: typeof render.Position;
+    var Scale: typeof render.Scale;
 }

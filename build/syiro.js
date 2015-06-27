@@ -786,7 +786,13 @@ var syiro;
             }
         }
         component_1.Update = Update;
-        function Add(append, parentComponent, childComponent) {
+        function Add(appendOrPrepend, parentComponent, childComponent) {
+            if (appendOrPrepend == true) {
+                appendOrPrepend = "append";
+            }
+            else {
+                appendOrPrepend = "prepend";
+            }
             var parentElement = syiro.component.Fetch(parentComponent);
             var childComponentId;
             var childComponentType = (typeof childComponent).toLowerCase();
@@ -819,7 +825,7 @@ var syiro;
                 allowAdding = true;
             }
             if ((allowAdding == true) && (parentElement !== null) && (childElement !== null)) {
-                if (append == false) {
+                if (appendOrPrepend == "prepend") {
                     parentElement.insertBefore(childElement, parentElement.firstChild);
                 }
                 else {
@@ -1691,7 +1697,7 @@ var syiro;
                     if (content !== "") {
                         if (listItemImage == null) {
                             listItemImage = document.createElement("img");
-                            syiro.component.Add(false, component, listItemImage);
+                            syiro.component.Add("prepend", component, listItemImage);
                         }
                         listItemImage.setAttribute("src", syiro.utilities.SanitizeHTML(content));
                         syiro.component.Update(component["id"], listItemElement);
@@ -1720,10 +1726,10 @@ var syiro;
                         if (listItemLabelElement == null) {
                             listItemLabelElement = document.createElement("label");
                             if (listItemImage !== null) {
-                                syiro.component.Add(false, component, listItemLabelElement);
+                                syiro.component.Add("prepend", component, listItemLabelElement);
                             }
                             else {
-                                syiro.component.Add(false, component, listItemLabelElement);
+                                syiro.component.Add("prepend", component, listItemLabelElement);
                             }
                         }
                         listItemLabelElement.textContent = syiro.utilities.SanitizeHTML(content);
@@ -1784,7 +1790,7 @@ var syiro;
         dropdown.SetImage = SetImage;
         function AddItem(component, listItemComponent) {
             var listComponentObject = syiro.component.FetchLinkedListComponentObject(component);
-            syiro.component.Add(true, listComponentObject, listItemComponent);
+            syiro.component.Add("append", listComponentObject, listItemComponent);
         }
         dropdown.AddItem = AddItem;
         function RemoveItem(component, listItemComponent) {
@@ -3144,4 +3150,5 @@ var syiro;
     syiro.Add = syiro.component.Add;
     syiro.Remove = syiro.component.Remove;
     syiro.Position = syiro.render.Position;
+    syiro.Scale = syiro.render.Scale;
 })(syiro || (syiro = {}));

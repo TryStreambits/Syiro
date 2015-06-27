@@ -147,7 +147,7 @@ module syiro.listitem {
 				if (content !== ""){ // If content is not empty (adding an image source)
 					 if (listItemImage == null){ // If listItemImage does not exist
 						listItemImage = document.createElement("img"); // Create an image tag					
-						syiro.component.Add(false, component, listItemImage); // Prepend the img tag
+						syiro.component.Add("prepend", component, listItemImage); // Prepend the img tag
 					}
 					
 					listItemImage.setAttribute("src", syiro.utilities.SanitizeHTML(content)); // Set the src to a sanitized form of the content provided
@@ -189,10 +189,10 @@ module syiro.listitem {
 						listItemLabelElement = document.createElement("label"); // Create a label and assign it to the listItemLabelElement
 						
 						if (listItemImage !== null){ // If there is an image in this List Item
-							syiro.component.Add(false, component, listItemLabelElement); // Prepend the label
+							syiro.component.Add("prepend", component, listItemLabelElement); // Prepend the label
 						}
 						else { // If there is not an image in this List Item
-							syiro.component.Add(false, component, listItemLabelElement); // Prepend the label
+							syiro.component.Add("prepend", component, listItemLabelElement); // Prepend the label
 						}
 					}
 					

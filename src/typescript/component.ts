@@ -238,7 +238,14 @@ module syiro.component {
 
 	// #region Add Component function - Responsible for adding components to other components or elements
 
-	export function Add(append : boolean, parentComponent : Object, childComponent : any) : boolean { // Returns boolean if the component adding was successful or not
+	export function Add(appendOrPrepend : any, parentComponent : Object, childComponent : any) : boolean { // Returns boolean if the component adding was successful or not
+		if (appendOrPrepend == true){ // If we are appending
+			appendOrPrepend = "append"; // Set as "append"
+		}
+		else{
+			appendOrPrepend = "prepend"; // Set as "prepend"
+		}
+	
 		var parentElement : any = syiro.component.Fetch(parentComponent); // Get the HTMLElement of the parentComponent
 
 		// #region Child Component Details
@@ -283,7 +290,7 @@ module syiro.component {
 		}
 
 		if ((allowAdding == true) && (parentElement !== null) && (childElement !== null)){ // If we are allowing the adding of the childComponent and both the parentElement and childElement exist in syiro.data.storage or DOM
-			if (append == false){ // If we are prepending the childElement
+			if (appendOrPrepend == "prepend"){ // If we are prepending the childElement
 				parentElement.insertBefore(childElement, parentElement.firstChild); // Insert before the first component
 			}
 			else{ // If we are appending the childComponent

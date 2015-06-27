@@ -68,7 +68,7 @@ module syiro.dropdown {
 
 	export function AddItem(component : Object, listItemComponent : Object) : void {
 		var listComponentObject = syiro.component.FetchLinkedListComponentObject(component); // Fetch the internal List component from the Dropdown
-		syiro.component.Add(true, listComponentObject, listItemComponent); // Add the List Item component to the inner List
+		syiro.component.Add("append", listComponentObject, listItemComponent); // Add the List Item component to the inner List
 	}
 
 	// #endregion

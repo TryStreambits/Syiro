@@ -280,6 +280,7 @@ module syiro {
 	export var Remove = syiro.component.Remove; // Meta-function for removing Syiro components
 
 	export var Position = syiro.render.Position; // Meta function for setting the position of a Syiro Component
+	export var Scale = syiro.render.Scale; // Meta function for scaling a Syiro Component
 
 	// #endregion
 

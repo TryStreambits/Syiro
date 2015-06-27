@@ -27,7 +27,7 @@ We have a [document that highlights our policy](https://github.com/StroblIndustr
 
 ### Download ###
 
-You can download either our [stable 1.3.1 release](https://github.com/StroblIndustries/Syiro/blob/master/stable.tar.gz) or our [development releases](https://github.com/StroblIndustries/Syiro/blob/master/devel.tar.gz), which provides the necessary minified CSS, images and JS wrapped in a nice package.
+You can download either our [stable 1.4.0 release](https://github.com/StroblIndustries/Syiro/releases/download/v1.4.0/stable.tar.gz) or our [development releases](https://github.com/StroblIndustries/Syiro/blob/master/devel.tar.gz), which provides the necessary minified CSS, images and JS wrapped in a nice package.
 
 The package also comes with a gzipped version of the JavaScript code, so you can easily serve the compressed content.
 
@@ -35,28 +35,27 @@ The package also comes with a gzipped version of the JavaScript code, so you can
 
 Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
-Bootstrap | 117kb + 20.0kb (theme.min.css)| 119.8kb | 37.5kb
-Polymer | Varies depending on use of components | 123.5kb | 35.7kb
-Syiro | 20.6kb | 94.3kb | 15.4kb
+Bootstrap 3.3.5 | 145.9kb | 121.1kb | None Provided
+Polymer 1.0.5 | Varies depending on use of components | 148.3kb | None Provided
+Syiro 1.4.0 | 26.0kb | 58.2kb | 12.9kb
 
 Details:
 
-1. Bootstrap did not provide a gzipped JavaScript file.
-2. Bootstrap's size is also calculating in jQuery, which is a requirement for Bootstrap.
-3. Syiro's build script auto-minifies and gzipped JS.
-4. All gzipped  JavaScript was done using [zopfli](https://code.google.com/p/zopfli/) with default iterations: `zopfli x.min.js`
-5. This is as of 1.3.1 and will update for releases (*aside from release candidates*).
+1. Bootstrap's size is also calculating in jQuery `2.1.4`, jQuery being a requirement of Bootstrap.
+2. Polymer's minified calculation is based on using: `[CustomElement.min.js, HTMLImports.min.js, MutationObserver.min.js, ShadowDOM.min.js, webcomponents-lite.min.js]`
+3. All gzipped  JavaScript was done using [Google's Closure Comopiler](https://developers.google.com/closure/compiler/) at "simple" optimizations level.
+4. Syiro numbers are updated for stable releases.
 
 ### Using Syiro ###
 
 You can get started using Syiro by using the guide below:
 
-1. [Understanding Syiro Components](https://github.com/StroblIndustries/Syiro/wiki/Understanding-Syiro-Components) - *Honestly not much to understand*
-2. [The Components Index](https://github.com/StroblIndustries/Syiro/wiki/Component-Index) - *Like the Pokèdex but for Components*
-3. [Managing Components](https://github.com/StroblIndustries/Syiro/wiki/Managing-Components) - *Covers creating both static and dynamically defined Components and other Component functions.*
-4. [Syiro's Event System](https://github.com/StroblIndustries/Syiro/wiki/Event-System) - *Covers Syiro's Event System and adding / removing listeners.*
-5. [Theming Syiro](https://github.com/StroblIndustries/Syiro/wiki/Theming) - *Yay for writing LESS (see what I did there?)*
-6. [Getting Device Information](https://github.com/StroblIndustries/Syiro/wiki/Getting-Device-Information) - *Are you even using a FullHDOrAbove screen, bro?*
+1. [Understanding Syiro Components](https://github.com/StroblIndustries/Syiro/wiki/Understanding-Syiro-Components)
+2. [The Components Index](https://github.com/StroblIndustries/Syiro/wiki/Component-Index) - A list of Components we have in Syiro
+3. [Managing Components](https://github.com/StroblIndustries/Syiro/wiki/Managing-Components) - Covers creating both static and dynamically defined Components and other Component functions.
+4. [Syiro's Event System](https://github.com/StroblIndustries/Syiro/wiki/Event-System) - Covers Syiro's Event System and adding / removing listeners.
+5. [Theming Syiro](https://github.com/StroblIndustries/Syiro/wiki/Theming) - Yay for writing LESS (see what I did there?)
+6. [Getting Device Information](https://github.com/StroblIndustries/Syiro/wiki/Getting-Device-Information)
 
 We also highly recommend you take a look at the [Additional Component Functions](https://github.com/StroblIndustries/Syiro/wiki/Additional-Component-Functions) page, which goes into detail additional functions that are exposed to particular Components that are certainly useful.
 

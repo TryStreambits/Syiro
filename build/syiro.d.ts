@@ -56,7 +56,7 @@ declare module syiro.events {
     function Remove(...args: any[]): boolean;
 }
 declare module syiro.render {
-    function Position(...args: any[]): boolean;
+    function Position(positioningList: (string | Array<string>), componentObject: (Object | Element), relativeComponentObject: (Object | Element)): boolean;
     function Scale(component: Object, data?: Object): void;
 }
 declare module syiro.component {
@@ -93,6 +93,8 @@ declare module syiro.device {
     var IsFullHDOrAbove: boolean;
     var Orientation: string;
     var OrientationObject: any;
+    var height: number;
+    var width: number;
     function Detect(): void;
     function FetchOperatingSystem(): string;
     function FetchScreenDetails(): void;

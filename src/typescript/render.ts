@@ -9,14 +9,11 @@ module syiro.render {
 
     // #region Positioning of Components or Elements
 
-    export function Position(...args : any[]) : boolean {
+    export function Position(positioningList : (string | Array<string>), componentObject : (Object | Element), relativeComponentObject : (Object | Element)) : boolean {
         var positioningAllowed : boolean = false; // Define positioningAllowed as a boolean, defaulting to false
 
         if (arguments.length == 3){ // If three arguments were passed
-            var positioningList : Array<string>; // Define positioningList as a list of positions we will be setting for the Component or Element
-            var componentObject : Object; // Define componentObject as the Object (if any) that was passed that we will be changing the positioning of
             var componentElement : Element; // Define componentElement as the Element (if a Component Object was passed, of the Component)
-            var relativeComponentObject : Object; // Define relativeComponentObject as an Object (if any) that was passed so we know how to relate the positioning of the Component / Element
             var relativeComponentElement : Element; // Define realtiveComponentElement as an Element (if a relativeComponentObject was passed, of the Component)
 
             if (typeof arguments[0] == "string"){ // If the first argument passed (positioning) is a string
@@ -30,93 +27,106 @@ module syiro.render {
                 componentObject = arguments[1]; // Define componentObject as the second argument passed
                 componentElement = syiro.component.Fetch(componentObject); // Define componentElement as the Component Element that we fetch from the Component Object
             }
-            else if ((typeof arguments[1]).toLowerCase().indexOf("element") !== -1){ // If the type of the argument is an Element
-                componentElement = arguments[1]; // Define componentElement as the second argument passed
-            }
 
             if (syiro.component.IsComponentObject(arguments[2])){ // If the third argument is a Syiro Component Object
                 relativeComponentObject = arguments[2]; // Define componentObject as the second argument passed
                 relativeComponentElement = syiro.component.Fetch(relativeComponentObject); // Define relativeComponentElement as the Component Element that we fetch from the relativeComponentObject
             }
-            else if ((typeof arguments[2]).toLowerCase().indexOf("element") !== -1){ // If the type of the argument is an Element
-                relativeComponentElement = arguments[2]; // Define relativeComponentElement as the second argument passed
-            }
 
-            if ((typeof positioningList !== "undefined") && (typeof componentElement !== "undefined") && (typeof relativeComponentElement !== "undefined")){ // If all the variables necessary for positioning are defined
+            if ((typeof positioningList == "object") && (componentElement !== null) && (relativeComponentElement !== null)){ // If all the variables necessary for positioning are defined
                 positioningAllowed = true; // Define positioningAllowed as true
 
                 // #region Primary Component & Relative Component Position Variable Defining
 
-                var primaryComponentDimensionsAndPosition : Object = syiro.component.FetchDimensionsAndPosition(componentElement); // Get the dimensions of the Component
+                var componentDimensionsAndPosition : Object = syiro.component.FetchDimensionsAndPosition(componentElement); // Get the dimensions of the Component
                 var relativeComponentDimensionsAndPosition : Object = syiro.component.FetchDimensionsAndPosition(relativeComponentElement); // Get the dimensions and position of the Relative Component Element
 
-                var primaryComponentHeight : number = primaryComponentDimensionsAndPosition["height"]; // Get the height of the primaryComponent
-                var primaryComponentWidth : number = primaryComponentDimensionsAndPosition["width"]; // Get the width of the primaryComponent
+                var componentHeight : number = componentDimensionsAndPosition["height"]; // Get the height of the primaryComponent
+                var componentWidth : number = componentDimensionsAndPosition["width"]; // Get the width of the primaryComponent
 
                 var relativeComponentHeight : number = relativeComponentDimensionsAndPosition["height"]; // Get the height of the relativeComponentElement
                 var relativeComponentWidth : number = relativeComponentDimensionsAndPosition["width"]; // Get the width of the relativeComponentElement
-                var relativeComponentVerticalPosition : number = relativeComponentDimensionsAndPosition["y"]; // Get the vertical position (Y coord) of the relativeComponentElement
-                var relativeComponentHorizontalPosition : number = relativeComponentDimensionsAndPosition["x"]; // Get the horizontal position (X coord) of the relativeComponentElement
+                var relativeComponentYPosition : number = relativeComponentDimensionsAndPosition["y"]; // Get the Y position (Y coord) of the relativeComponentElement
+                var relativeComponentXPosition : number = relativeComponentDimensionsAndPosition["x"]; // Get the Y position (X coord) of the relativeComponentElement
 
-                var primaryComponentWidthInRelationToRelativeComponent = (primaryComponentWidth - relativeComponentWidth); // Set as the primaryComponent Element width minus the relativeComponent Element width
+                var componentWidthDifference = (componentWidth - relativeComponentWidth); // Set as the componentElement width minus the relativeComponent Element width
 
                 // #endregion
 
                 // #region Position Calculation and Setting
 
-                for (var positioningListIndex in positioningList){ // For each position in the positioningList
-                    var position : string = positioningList[positioningListIndex]; // Define position as the positioningIndex value in positioningList
+				var componentAbovePosition : number = (relativeComponentYPosition - componentHeight); // Set the Component's above position to the relative Component's Y position minus the height of the component we are positioning
+				var componentBelowPosition : number = (relativeComponentYPosition + relativeComponentHeight); // Set the Component's below position to the relative Component's Y position plus the height of said Component
+				var componentLeftPosition : number = relativeComponentXPosition; // Set the Component's left position to the same as the relative Component's X position, since we are aligning to the left edge of the Components
+				var componentRightPosition : number = relativeComponentXPosition; // Initially set componentRightPosition to the relative Component's X position (assume initially that widths are same)
+
+				if (componentWidthDifference > 0){ // If the Component is wider than the relative Component
+					componentRightPosition = (relativeComponentXPosition - componentWidthDifference); // Set componentRightPosition to the X position of the relativeComponent minus the difference in width
+				}
+				else if (componentWidthDifference < 0){ // If the Component is narrower than the relative Component
+					componentRightPosition = (relativeComponentXPosition + Math.abs(componentWidthDifference)); // Set componentRightPosition to the X position + the positive form (using Math.abs) of the negative difference number
+				}
+
+				for (var position of positioningList){ // For each position in the positioningList
                     var positionValue : number; // Define positionValue as the variable to hold the coordinate of where the componentElement should render
 
                     switch (position) {
                         case "above": // If we are positioning the Component above the relativeComponent
-                            if ((relativeComponentVerticalPosition == 0) || (relativeComponentVerticalPosition - primaryComponentHeight < 0)){ // If the vertical position of the relativeComponent Element is zero or the primaryComponent vertical position would end up being less than zero
-                                positionValue = relativeComponentHeight; // Set the positionValue to sit below the relativeComponentElement
-                            }
-                            else{ // If the relativeComponentVerticalPosition is not zero or the primaryComponentElement would not clip
-                                positionValue = (relativeComponentVerticalPosition - primaryComponentHeight); // Set the position be the Y coord position of the relativeComponent minus the height of the primaryComponent
-                            }
+                            if (componentAbovePosition >= 0){ // If the component will not clip on the top of the page
+								positionValue = componentAbovePosition; // Set positionValue to componentAbovePosition
+							}
+							else{ // If it would clip the top of the page
+								positionValue = componentBelowPosition; // Force to position below instead of above
+							}
 
                             break;
                         case "below": // If we are positioning the Component below the relativeComponent
-                            if ((relativeComponentVerticalPosition == (window.screen.height - relativeComponentHeight)) || ((relativeComponentVerticalPosition + primaryComponentHeight) > window.screen.height)){ // If the relativeComponent Element is right up against the bottom of the screen or the primaryComponent Element vertical position would end up clipping it below the page
-                                positionValue = (relativeComponentVerticalPosition - primaryComponentHeight); // Set the primaryComponent Element to be above the relativeComponentElement so it won't clip.
-                            }
-                            else{ // If the relativeComponent Element is NOT right up against the bottom of the screen or the primaryComponent Element would not clip
-                                positionValue = (relativeComponentVerticalPosition + relativeComponentHeight); // Set the position to be the relative Component Y coord position plus the height the relativeComponent
-                            }
+							if (componentBelowPosition <= (syiro.device.height - componentHeight)){ // If the Component would not be clipping through the bottom of the screen
+								positionValue = componentBelowPosition; // Set positionValue to componentBelowPosition
+							}
+							else{ // If it would clip the bottom of the page
+								positionValue = componentAbovePosition; // Force to position above instead of below
+							}
 
                             break;
                         case "left": // If we are positioning the Component to the left of the relativeComponent
-                            if ((relativeComponentHorizontalPosition + primaryComponentWidth) <= window.screen.width){ // If the relative Component Element's X position plus the primaryComponent width is less than (or equal to) the screen width
-                                positionValue = relativeComponentHorizontalPosition; // Have the positionValue equal the relativeComponent Element's X position
-                            }
-                            else{ // If the primaryComponent would end up partially clipping outside the page
-                                positionValue = (relativeComponentHorizontalPosition - primaryComponentWidthInRelationToRelativeComponent); // Set the position to be the relativeComponent Element's X coord position minus primaryComponentWidthInRelationToRelativeComponent
-                            }
-
-                            break;
-                        case "center": // If we are positioning the Component centered to the relativeComponent
-                            var primaryComponentSideLength = (primaryComponentWidthInRelationToRelativeComponent / 2); // Get the amount of pixels that each side of the primaryComponent would have
-
-                            if ((relativeComponentHorizontalPosition - primaryComponentSideLength) < 0){ // If the primaryComponent would partially clip to the left of the page
-                                positionValue = relativeComponentHorizontalPosition; // Set the List to align on the LEFT edge of the relativeComponent instead, to prevent clipping
-                            }
-                            else if ((relativeComponentHorizontalPosition + primaryComponentSideLength) > window.screen.width){ // If the primaryComponent would partially clip to the right of the page
-                                positionValue = (relativeComponentHorizontalPosition - primaryComponentWidthInRelationToRelativeComponent); // Set the position to be the relativeComponent Element's X coord position minus primaryComponentWidthInRelationToRelativeComponent
-                            }
-                            else{ // If the primaryCOmponent would NOT clip
-                                positionValue = (relativeComponentHorizontalPosition - primaryComponentSideLength); // Set the position to be the relativeComponent Element's X coord position minus primaryComponentSideLength(ex. X  = 300. pSL = 80. pV = 220.)
-                            }
+							if ((componentLeftPosition >= 0) && ((componentLeftPosition + componentWidth) < (syiro.device.width - componentWidth))){ // If the left position is greater or equal to zero but doesn't partially clip on right side of page
+								positionValue = componentLeftPosition; // Set positionValue to componentLeftPosition
+							}
+							else{ // If it is less than zero or clips the page
+								positionValue = componentRightPosition; // Force to position right instead of left.
+							}
 
                             break;
                         case "right": // If we are positioning the Component to the right of the relativeComponent
-                            if ((relativeComponentHorizontalPosition - (primaryComponentWidth - relativeComponentWidth)) < 0){ // If aligning the right edge of the relativeComponent and primaryComponent would cause the left part of the primaryComponent to clip to the left side of the page
-                                positionValue = relativeComponentHorizontalPosition; // Have the primaryComponent align to the LEFT edge of the relativeComponent instead
-                            }
-                            else{ // If the primaryComponent would NOT clip
-                                positionValue = (relativeComponentHorizontalPosition - primaryComponentWidthInRelationToRelativeComponent); // Set the position to be the relativeComponent Element's X coord position minus primaryComponentWidthInRelationToRelativeComponent (ex. X = 300. pCWR = 160. pV = 140)
-                            }
+							if (componentRightPosition > 0){ //If the Component will not clip on the left side of the page
+								positionValue = componentRightPosition; // Set positionValue to the componentRightPosition
+							}
+							else{ // If the Component will clip on the left side of the page
+								positionValue = componentLeftPosition; // Force to position left instead of right
+							}
+
+                            break;
+                        case "center": // If we are positioning the Component centered to the relativeComponent
+							if (componentWidthDifference > 0){ // If the Component is wider than the relative Component
+								var primaryComponentSideLength = (componentWidthDifference / 2); // Get the amount of pixels that each side of the primaryComponent would have
+
+								if (((relativeComponentXPosition - primaryComponentSideLength) + componentWidth) > syiro.device.width){ // If the X position of the relative Component minus the diff (since Component is wider) plus the total length means it will clip the right side of the page
+									positionValue = componentRightPosition; // Force to position right instead of center
+								}
+								else if ((relativeComponentXPosition - primaryComponentSideLength) < 0){ // If the relative Component X position minus the side difference means the Component will clip the left side of the page
+									positionValue = componentLeftPosition; // Force to position left instead of center
+								}
+								else{ // If it will not clip on either side
+									positionValue = (relativeComponentXPosition - primaryComponentSideLength); // Set positionValue to the centered value
+								}
+							}
+							else if (componentWidthDifference < 0){ // If the Component is narrower than the relative Component
+								positionValue = (relativeComponentXPosition + (Math.abs(componentWidthDifference) / 2)); // Set the positionValue to be the X position of the relative Component plus the positive form of componentWidthDifference (since it is negative) divided by 2
+							}
+							else{ // If the Component and relative Component widths are equal
+								positionValue = relativeComponentXPosition; // Set to the X position of the relative Component
+							}
 
                             break;
                     }
@@ -147,7 +157,6 @@ module syiro.render {
 		var componentId = component["id"]; // Get the Component Id of the Component
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement
 
-		var userHorizontalSpace : number = window.screen.width; // Define userHorizontalSpace as the space the user has, in pixels, horizontally.
 		var parentHeight : number = componentElement.parentElement.clientHeight; // Set the parentHeight to the parent Element's clientHeight of the Component Element
 		var parentWidth : number = componentElement.parentElement.clientWidth; // Set the parentWidth to the parent Element's clientWidth of the Component Element
 
@@ -232,8 +241,8 @@ module syiro.render {
 
             // #region Component Overflow Prevention
 
-            if (componentWidth > userHorizontalSpace){ // If the width of the updatedComponentWidth is greater than the horizontal space available to the user
-                componentWidth = userHorizontalSpace; // Initially the updatedComponentWidth to horizontal space available to the user
+            if (componentWidth > syiro.device.width){ // If the width of the updatedComponentWidth is greater than the horizontal space available to the user
+                componentWidth = syiro.device.width; // Initially the updatedComponentWidth to horizontal space available to the user
 
                 if ((ratios !== false) && (ratios[0] !== 0)){ // If we can scale the height of the Component as necessary
                     componentHeight = (componentWidth * (initialDimensions[0] / initialDimensions[1])); // Define the updatedComponentHeight as the width times the height-to-width pixel ratio

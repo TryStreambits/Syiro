@@ -227,7 +227,7 @@ var syiro;
                     passableValue = false;
                 }
             }
-            else if ((typeof component.parentElement !== "undefined") && (component.parentElement !== null) && (component.parentElement.getAttribute("data-syiro-component") == "searchbox")) {
+            else if ((typeof component.nodeName !== "undefined") && (component.nodeName == "input")) {
                 passableValue = componentElement.value;
             }
             else {
@@ -267,7 +267,7 @@ var syiro;
                         }
                     }
                     else if (component["type"] == "searchbox") {
-                        componentElement = componentElement.querySelector("input");
+                        componentElement = componentElement.firstElementChild.value;
                     }
                 }
                 else {
@@ -391,17 +391,10 @@ var syiro;
 (function (syiro) {
     var render;
     (function (render) {
-        function Position() {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
-            }
+        function Position(positioningList, componentObject, relativeComponentObject) {
             var positioningAllowed = false;
             if (arguments.length == 3) {
-                var positioningList;
-                var componentObject;
                 var componentElement;
-                var relativeComponentObject;
                 var relativeComponentElement;
                 if (typeof arguments[0] == "string") {
                     positioningList = [arguments[0]];
@@ -413,73 +406,85 @@ var syiro;
                     componentObject = arguments[1];
                     componentElement = syiro.component.Fetch(componentObject);
                 }
-                else if ((typeof arguments[1]).toLowerCase().indexOf("element") !== -1) {
-                    componentElement = arguments[1];
-                }
                 if (syiro.component.IsComponentObject(arguments[2])) {
                     relativeComponentObject = arguments[2];
                     relativeComponentElement = syiro.component.Fetch(relativeComponentObject);
                 }
-                else if ((typeof arguments[2]).toLowerCase().indexOf("element") !== -1) {
-                    relativeComponentElement = arguments[2];
-                }
-                if ((typeof positioningList !== "undefined") && (typeof componentElement !== "undefined") && (typeof relativeComponentElement !== "undefined")) {
+                if ((typeof positioningList == "object") && (componentElement !== null) && (relativeComponentElement !== null)) {
                     positioningAllowed = true;
-                    var primaryComponentDimensionsAndPosition = syiro.component.FetchDimensionsAndPosition(componentElement);
+                    var componentDimensionsAndPosition = syiro.component.FetchDimensionsAndPosition(componentElement);
                     var relativeComponentDimensionsAndPosition = syiro.component.FetchDimensionsAndPosition(relativeComponentElement);
-                    var primaryComponentHeight = primaryComponentDimensionsAndPosition["height"];
-                    var primaryComponentWidth = primaryComponentDimensionsAndPosition["width"];
+                    var componentHeight = componentDimensionsAndPosition["height"];
+                    var componentWidth = componentDimensionsAndPosition["width"];
                     var relativeComponentHeight = relativeComponentDimensionsAndPosition["height"];
                     var relativeComponentWidth = relativeComponentDimensionsAndPosition["width"];
-                    var relativeComponentVerticalPosition = relativeComponentDimensionsAndPosition["y"];
-                    var relativeComponentHorizontalPosition = relativeComponentDimensionsAndPosition["x"];
-                    var primaryComponentWidthInRelationToRelativeComponent = (primaryComponentWidth - relativeComponentWidth);
-                    for (var positioningListIndex in positioningList) {
-                        var position = positioningList[positioningListIndex];
+                    var relativeComponentYPosition = relativeComponentDimensionsAndPosition["y"];
+                    var relativeComponentXPosition = relativeComponentDimensionsAndPosition["x"];
+                    var componentWidthDifference = (componentWidth - relativeComponentWidth);
+                    var componentAbovePosition = (relativeComponentYPosition - componentHeight);
+                    var componentBelowPosition = (relativeComponentYPosition + relativeComponentHeight);
+                    var componentLeftPosition = relativeComponentXPosition;
+                    var componentRightPosition = relativeComponentXPosition;
+                    if (componentWidthDifference > 0) {
+                        componentRightPosition = (relativeComponentXPosition - componentWidthDifference);
+                    }
+                    else if (componentWidthDifference < 0) {
+                        componentRightPosition = (relativeComponentXPosition + Math.abs(componentWidthDifference));
+                    }
+                    for (var _i = 0; _i < positioningList.length; _i++) {
+                        var position = positioningList[_i];
                         var positionValue;
                         switch (position) {
                             case "above":
-                                if ((relativeComponentVerticalPosition == 0) || (relativeComponentVerticalPosition - primaryComponentHeight < 0)) {
-                                    positionValue = relativeComponentHeight;
+                                if (componentAbovePosition >= 0) {
+                                    positionValue = componentAbovePosition;
                                 }
                                 else {
-                                    positionValue = (relativeComponentVerticalPosition - primaryComponentHeight);
+                                    positionValue = componentBelowPosition;
                                 }
                                 break;
                             case "below":
-                                if ((relativeComponentVerticalPosition == (window.screen.height - relativeComponentHeight)) || ((relativeComponentVerticalPosition + primaryComponentHeight) > window.screen.height)) {
-                                    positionValue = (relativeComponentVerticalPosition - primaryComponentHeight);
+                                if (componentBelowPosition <= (syiro.device.height - componentHeight)) {
+                                    positionValue = componentBelowPosition;
                                 }
                                 else {
-                                    positionValue = (relativeComponentVerticalPosition + relativeComponentHeight);
+                                    positionValue = componentAbovePosition;
                                 }
                                 break;
                             case "left":
-                                if ((relativeComponentHorizontalPosition + primaryComponentWidth) <= window.screen.width) {
-                                    positionValue = relativeComponentHorizontalPosition;
+                                if ((componentLeftPosition >= 0) && ((componentLeftPosition + componentWidth) < (syiro.device.width - componentWidth))) {
+                                    positionValue = componentLeftPosition;
                                 }
                                 else {
-                                    positionValue = (relativeComponentHorizontalPosition - primaryComponentWidthInRelationToRelativeComponent);
-                                }
-                                break;
-                            case "center":
-                                var primaryComponentSideLength = (primaryComponentWidthInRelationToRelativeComponent / 2);
-                                if ((relativeComponentHorizontalPosition - primaryComponentSideLength) < 0) {
-                                    positionValue = relativeComponentHorizontalPosition;
-                                }
-                                else if ((relativeComponentHorizontalPosition + primaryComponentSideLength) > window.screen.width) {
-                                    positionValue = (relativeComponentHorizontalPosition - primaryComponentWidthInRelationToRelativeComponent);
-                                }
-                                else {
-                                    positionValue = (relativeComponentHorizontalPosition - primaryComponentSideLength);
+                                    positionValue = componentRightPosition;
                                 }
                                 break;
                             case "right":
-                                if ((relativeComponentHorizontalPosition - (primaryComponentWidth - relativeComponentWidth)) < 0) {
-                                    positionValue = relativeComponentHorizontalPosition;
+                                if (componentRightPosition > 0) {
+                                    positionValue = componentRightPosition;
                                 }
                                 else {
-                                    positionValue = (relativeComponentHorizontalPosition - primaryComponentWidthInRelationToRelativeComponent);
+                                    positionValue = componentLeftPosition;
+                                }
+                                break;
+                            case "center":
+                                if (componentWidthDifference > 0) {
+                                    var primaryComponentSideLength = (componentWidthDifference / 2);
+                                    if (((relativeComponentXPosition - primaryComponentSideLength) + componentWidth) > syiro.device.width) {
+                                        positionValue = componentRightPosition;
+                                    }
+                                    else if ((relativeComponentXPosition - primaryComponentSideLength) < 0) {
+                                        positionValue = componentLeftPosition;
+                                    }
+                                    else {
+                                        positionValue = (relativeComponentXPosition - primaryComponentSideLength);
+                                    }
+                                }
+                                else if (componentWidthDifference < 0) {
+                                    positionValue = (relativeComponentXPosition + (Math.abs(componentWidthDifference) / 2));
+                                }
+                                else {
+                                    positionValue = relativeComponentXPosition;
                                 }
                                 break;
                         }
@@ -499,7 +504,6 @@ var syiro;
             // #region Variable Setup
             var componentId = component["id"];
             var componentElement = syiro.component.Fetch(component);
-            var userHorizontalSpace = window.screen.width;
             var parentHeight = componentElement.parentElement.clientHeight;
             var parentWidth = componentElement.parentElement.clientWidth;
             var storedScalingData = syiro.data.Read(componentId + "->scaling");
@@ -555,8 +559,8 @@ var syiro;
                     componentWidth = initialDimensions[1];
                     scalingState = "no-scaling";
                 }
-                if (componentWidth > userHorizontalSpace) {
-                    componentWidth = userHorizontalSpace;
+                if (componentWidth > syiro.device.width) {
+                    componentWidth = syiro.device.width;
                     if ((ratios !== false) && (ratios[0] !== 0)) {
                         componentHeight = (componentWidth * (initialDimensions[0] / initialDimensions[1]));
                     }
@@ -647,10 +651,10 @@ var syiro;
                         returnedValue = stylePropertyValue;
                     }
                     else {
-                        returnedValue = false;
+                        returnedValue = "";
                     }
                 }
-                else if (typeof newValue == "string") {
+                else if ((newValue !== "") && (newValue !== false)) {
                     elementStylingObject[property] = newValue;
                     modifiedStyling = true;
                     returnedValue = newValue;
@@ -677,7 +681,7 @@ var syiro;
                 }
             }
             else {
-                returnedValue = false;
+                returnedValue = "";
             }
             return returnedValue;
         }
@@ -747,10 +751,11 @@ var syiro;
             else {
                 componentElement = component;
             }
-            dimensionsAndPosition["x"] = componentElement.offsetLeft;
-            dimensionsAndPosition["y"] = componentElement.offsetTop - window.scrollY;
-            dimensionsAndPosition["height"] = componentElement.offsetHeight;
-            dimensionsAndPosition["width"] = componentElement.offsetWidth;
+            var componentClientRectList = componentElement.getClientRects();
+            dimensionsAndPosition["x"] = componentClientRectList[0].left;
+            dimensionsAndPosition["y"] = componentClientRectList[0].top;
+            dimensionsAndPosition["height"] = componentClientRectList[0].height;
+            dimensionsAndPosition["width"] = componentClientRectList[0].width;
             return dimensionsAndPosition;
         }
         component_1.FetchDimensionsAndPosition = FetchDimensionsAndPosition;
@@ -989,6 +994,8 @@ var syiro;
         device.IsFullHDOrAbove;
         device.Orientation;
         device.OrientationObject = screen;
+        device.height;
+        device.width;
         function Detect() {
             // #region Do Not Track
             if (typeof navigator.doNotTrack !== "undefined") {
@@ -1031,6 +1038,9 @@ var syiro;
                 syiro.events.eventStrings["up"] = ["mouseup"];
                 syiro.events.eventStrings["move"] = ["mousemove"];
             }
+            Object.freeze(syiro.events.eventStrings["down"]);
+            Object.freeze(syiro.events.eventStrings["up"]);
+            Object.freeze(syiro.events.eventStrings["move"]);
             syiro.device.FetchScreenDetails();
             syiro.device.Orientation = syiro.device.FetchScreenOrientation();
             syiro.events.Add("resize", window, syiro.device.FetchScreenDetails);
@@ -1074,6 +1084,8 @@ var syiro;
             else {
                 window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000);
             }
+            Object.freeze(syiro.events.eventStrings["orientationchange"]);
+            Object.freeze(syiro.events.eventStrings);
         }
         device.Detect = Detect;
         function FetchOperatingSystem() {
@@ -1108,18 +1120,21 @@ var syiro;
         }
         device.FetchOperatingSystem = FetchOperatingSystem;
         function FetchScreenDetails() {
-            if (window.screen.height < 720) {
+            var documentElementClientRect = document.documentElement.getClientRects()[0];
+            syiro.device.height = documentElementClientRect.height;
+            syiro.device.width = documentElementClientRect.width;
+            if (syiro.device.height < 720) {
                 syiro.device.IsSubHD = true;
                 syiro.device.IsHD = false;
                 syiro.device.IsFullHDOrAbove = false;
             }
             else {
-                if (((window.screen.height >= 720) && (window.screen.height < 1080)) && (window.screen.width >= 1280)) {
+                if (((syiro.device.height >= 720) && (syiro.device.height < 1080)) && (syiro.device.width >= 1280)) {
                     syiro.device.IsSubHD = false;
                     syiro.device.IsHD = true;
                     syiro.device.IsFullHDOrAbove = false;
                 }
-                else if ((window.screen.height >= 1080) && (window.screen.width >= 1920)) {
+                else if ((syiro.device.height >= 1080) && (syiro.device.width >= 1920)) {
                     syiro.device.IsSubHD = false;
                     syiro.device.IsHD = true;
                     syiro.device.IsFullHDOrAbove = true;
@@ -1421,7 +1436,7 @@ var syiro;
                     componentElement.setAttribute("data-syiro-render-icon", "custom");
                 }
                 else {
-                    syiro.component.CSS(componentElement, "background-image", false);
+                    syiro.component.CSS(componentElement, "background-image", "");
                     componentElement.removeAttribute("data-syiro-render-icon");
                 }
                 syiro.component.Update(component["id"] + "->HTMLElement", componentElement);
@@ -1478,9 +1493,9 @@ var syiro;
             if (componentElement.getAttribute("data-syiro-component-type") == "dropdown") {
                 var linkedListComponentObject = syiro.component.FetchLinkedListComponentObject(component);
                 var linkedListComponentElement = syiro.component.Fetch(linkedListComponentObject);
-                if (syiro.component.CSS(linkedListComponentElement, "visibility") !== false) {
+                if (syiro.component.CSS(linkedListComponentElement, "visibility") !== "") {
                     componentElement.removeAttribute("active");
-                    syiro.component.CSS(linkedListComponentElement, "visibility", false);
+                    syiro.component.CSS(linkedListComponentElement, "visibility", "");
                 }
                 else {
                     var linkedListComponentElementWidth = componentElement.clientWidth;
@@ -2168,7 +2183,7 @@ var syiro;
                     playerElement.removeAttribute("data-syiro-show-video");
                 }
                 var playButton = playerControl.querySelector('div[data-syiro-render-icon="play"]');
-                syiro.component.CSS(playButton, "background-image", false);
+                syiro.component.CSS(playButton, "background-image", "");
                 playButton.removeAttribute("active");
                 var volumeControl = playerControl.querySelector('div[data-syiro-render-icon="volume"]');
                 if (volumeControl !== null) {
@@ -2288,9 +2303,9 @@ var syiro;
             }
             else {
                 menuButton.removeAttribute("active");
-                syiro.component.CSS(menuDialog, "visibility", false);
-                syiro.component.CSS(menuDialog, "height", false);
-                syiro.component.CSS(menuDialog, "width", false);
+                syiro.component.CSS(menuDialog, "visibility", "");
+                syiro.component.CSS(menuDialog, "height", "");
+                syiro.component.CSS(menuDialog, "width", "");
             }
         }
         player.ToggleMenuDialog = ToggleMenuDialog;
@@ -2901,10 +2916,10 @@ var syiro;
                 var toastContentOverlayElement = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]');
                 if (typeof action !== "string") {
                     if (toastType == "normal") {
-                        if ((document.body.clientWidth > 1024) && (currentAnimation == "slide")) {
+                        if ((syiro.device.width > 1024) && (currentAnimation == "slide")) {
                             showAnimation = false;
                         }
-                        else if ((document.body.clientWidth <= 1024) && ((currentAnimation == "fade-in") || (currentAnimation == "slide"))) {
+                        else if ((syiro.device.width <= 1024) && ((currentAnimation == "fade-in") || (currentAnimation == "slide"))) {
                             showAnimation = false;
                         }
                     }
@@ -2919,10 +2934,10 @@ var syiro;
                         showAnimation = false;
                     }
                 }
-                if ((showAnimation == true) && ((document.body.clientWidth > 1024) && (toastType == "normal"))) {
+                if ((showAnimation == true) && ((syiro.device.width > 1024) && (toastType == "normal"))) {
                     syiro.animation.Slide(component);
                 }
-                else if ((showAnimation == true) && (((document.body.clientWidth <= 1024) && (toastType == "normal")) || (toastType == "dialog"))) {
+                else if ((showAnimation == true) && (((syiro.device.width <= 1024) && (toastType == "normal")) || (toastType == "dialog"))) {
                     syiro.animation.FadeIn(component, function () {
                         var toastElement = syiro.component.Fetch(component);
                         if (toastElement.getAttribute("data-syiro-component-type") == "dialog") {
@@ -2931,15 +2946,15 @@ var syiro;
                         }
                     });
                 }
-                else if ((showAnimation == false) && ((document.body.clientWidth > 1024) && (toastType == "normal"))) {
+                else if ((showAnimation == false) && ((syiro.device.width > 1024) && (toastType == "normal"))) {
                     syiro.animation.Reset(component);
                 }
-                else if ((showAnimation == false) && (((document.body.clientWidth <= 1024) && (toastType == "normal")) || (toastType == "dialog"))) {
+                else if ((showAnimation == false) && (((syiro.device.width <= 1024) && (toastType == "normal")) || (toastType == "dialog"))) {
                     syiro.animation.FadeOut(component, function () {
                         var toastElement = syiro.component.Fetch(component);
                         if (toastElement.getAttribute("data-syiro-component-type") == "dialog") {
                             var toastContentOverlayElement = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]');
-                            syiro.component.CSS(toastContentOverlayElement, "display", false);
+                            syiro.component.CSS(toastContentOverlayElement, "display", "");
                         }
                     });
                 }
@@ -3117,6 +3132,10 @@ var syiro;
                     }
                 }
             });
+            var triggerAccurateInitialDimensions = new MutationObserver(function () {
+                syiro.device.FetchScreenDetails();
+                arguments[2].disconnect();
+            }.bind(this, triggerAccurateInitialDimensions));
             var mutationWatcherOptions = {
                 childList: true,
                 attributes: true,
@@ -3124,7 +3143,10 @@ var syiro;
                 attributeFilter: ['data-syiro-component'],
                 subtree: true
             };
+            var tempWatcherOptions = mutationWatcherOptions;
+            delete tempWatcherOptions.attributeFilter;
             mutationWatcher.observe(document.body, mutationWatcherOptions);
+            triggerAccurateInitialDimensions.observe(document.body, tempWatcherOptions);
         }
         else {
             (function mutationTimer() {

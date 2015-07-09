@@ -28,6 +28,9 @@ module syiro.device {
     export var Orientation : string; // Define Orientation as the correct device orientation
     export var OrientationObject : any = screen; // Define orientationObject as the proper Object to listen to orientation change events on. During detection, this CAN change to screen.orientation.
 
+	export var height : number; // Define height as the number of the true height of the content
+	export var width : number; // Define width as the number of the true width of the content
+
     // #endregion
 
     // #region Detection Function - Use to detect functionality, define variables, etc.
@@ -115,9 +118,14 @@ module syiro.device {
             syiro.events.eventStrings["move"] = ["mousemove"]; // Set move events to mousemove
         }
 
+		Object.freeze(syiro.events.eventStrings["down"]); // Lock down events
+		Object.freeze(syiro.events.eventStrings["up"]); // Lock up events
+		Object.freeze(syiro.events.eventStrings["move"]); // Lock move events
+
         // #endregion
 
         syiro.device.FetchScreenDetails(); // Do an initial fetch of the screen details
+
         syiro.device.Orientation = syiro.device.FetchScreenOrientation(); // Do an initial fetch of the screen orientation
         syiro.events.Add("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing for updating the screen details
 
@@ -171,8 +179,11 @@ module syiro.device {
             window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000); // Set a timer for every two seconds to check for change in device orientation. We are using this due to the lack of full orientationchange event support in major browsers.
         }
 
+		Object.freeze(syiro.events.eventStrings["orientationchange"]); // Lock orientationchange events
+
         // #endregion
 
+		Object.freeze(syiro.events.eventStrings); // Lock the eventStrings Object
     }
 
     // #endregion
@@ -217,18 +228,22 @@ module syiro.device {
     // #region Screen Dimension Details
 
     export function FetchScreenDetails(){
-        if (window.screen.height < 720){ // If the screen height is less than 720px
+		var documentElementClientRect : ClientRect = document.documentElement.getClientRects()[0]; // Define documentElementClientRect as the ClientRect of the fetched documentElement ClientRects
+		syiro.device.height = documentElementClientRect.height; // Define syiro.device.height as the actual height of the document
+		syiro.device.width = documentElementClientRect.width; // Define syiro.device.width as the actual width of the document
+
+        if (syiro.device.height < 720){ // If the document height is less than 720px
             syiro.device.IsSubHD = true; // Set IsSubHD to true
             syiro.device.IsHD = false; // Set IsHD to false
             syiro.device.IsFullHDOrAbove = false; // Set IsFullHDOrAbove to false
         }
         else{ // If the screen height is greater than 720px
-            if (((window.screen.height >= 720) && (window.screen.height < 1080)) && (window.screen.width >= 1280)){ // If the screen is essentially "720p" HD (greater than 720px but less than 1080px) in width
+            if (((syiro.device.height >= 720) && (syiro.device.height< 1080)) && (syiro.device.width >= 1280)){ // If the document is essentially "720p" HD (greater than 720px but less than 1280px) in width
                 syiro.device.IsSubHD = false; // Set IsSubHD to false
                 syiro.device.IsHD = true; // Set IsHD to true
                 syiro.device.IsFullHDOrAbove = false; // Set IsFullHDOrAbove to false
             }
-            else if ((window.screen.height >= 1080) && (window.screen.width >= 1920)){ // If the screen width is greater or equal to 1920px and the screen height is greater or equal to 1080px
+            else if ((syiro.device.height >= 1080) && (syiro.device.width >= 1920)){ // If the document width is greater or equal to 1920px and the document height is greater or equal to 1080px
                 syiro.device.IsSubHD = false; // Set IsSubHD to false
                 syiro.device.IsHD = true; // Set IsHD to true, since technically it supports 720p content
                 syiro.device.IsFullHDOrAbove = true; // Set IsFullHDOrAbove to true

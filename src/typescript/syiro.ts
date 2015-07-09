@@ -27,7 +27,6 @@ module syiro {
 	// #region Syiro Initialization Function
 
 	export function Init() : void {
-
 		syiro.device.Detect(); // Detect Device information and functionality support by using our Detect() function.
 
 		// #region Document Scroll Event Listening
@@ -108,25 +107,25 @@ module syiro {
 		document.body.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
 
 		// #region Watch DOM For Components
-		
+
 		function ComponentParser(componentElement : Element){
-			
+
 			// #region Content Overlay Creation Function
-			
+
 			function createContentOverlay(purpose : string): Element {
 				var contentOverlay : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "overlay", "data-syiro-overlay-purpose" : purpose}); // Generate an Content Overlay
 				document.body.appendChild(contentOverlay); // Append the contentOverlay to the body
 				return contentOverlay; // Return the contentOverlay variable
 			}
-			
+
 			// #endregion
-			
+
 			if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))){ // If the element is a Syiro component
 				var componentObject = syiro.component.FetchComponentObject(componentElement); // Fetch the (potential) Component Object of the passedNode
-	
+
 				if (componentObject["type"] == "buttongroup"){ // If the component is a Buttongroup
 					var innerButtons = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all the Button Components inside this Buttongroup
-	
+
 					for (var innerButtonIndex = 0; innerButtonIndex < innerButtons.length; innerButtonIndex++){ // For each Button
 						var buttonComponentObject = syiro.component.FetchComponentObject(innerButtons[innerButtonIndex]); // Get the buttonComponentObject
 						syiro.events.Add(syiro.events.eventStrings["up"], buttonComponentObject, syiro.buttongroup.Toggle); // Immediately enable parent toggling for this Button
@@ -152,17 +151,17 @@ module syiro {
 					}
 				}
 				else if (componentObject["type"] == "sidepane"){ // If the Component is a Sidepane
-					var sidepaneContentOverlayElement : Element = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Get an existing Sidepane ContentOverlay if one exists already, no need to create unnecessary ContentOverlays 
+					var sidepaneContentOverlayElement : Element = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Get an existing Sidepane ContentOverlay if one exists already, no need to create unnecessary ContentOverlays
 					var innerSidepaneEdge = componentElement.querySelector('div[data-syiro-minor-component="sidepane-edge"]'); // Get the Sidepane Edge
 					syiro.events.Add(syiro.events.eventStrings["down"], innerSidepaneEdge, syiro.sidepane.GestureInit); // Bind the Sidepane Edge to GestureInit function for "down"
-	
+
 					if (sidepaneContentOverlayElement == null){ // If there is no overlay on the page
 						sidepaneContentOverlayElement = createContentOverlay("sidepane"); // Create the ContentOverlay (with the purpose of the Sidepane, appending it to the page, and declare contentOverlay as the var pointing to the Element
-						
+
 						syiro.events.Add(syiro.events.eventStrings["down"], sidepaneContentOverlayElement, function(){ // Create a "down" event so Sidepane dragging doesn't trigger an "up" event
 							syiro.events.Add(syiro.events.eventStrings["up"], arguments[1], function(){ // Create the "up" event for the contentOverlay
 								syiro.sidepane.Toggle(arguments[0]); // Toggle the Sidepane
-								syiro.events.Remove(syiro.events.eventStrings["up"], arguments[1]); // Remove the "up" event on contentOverlay 
+								syiro.events.Remove(syiro.events.eventStrings["up"], arguments[1]); // Remove the "up" event on contentOverlay
 							}.bind(this, arguments[0]));
 						}.bind(this, componentObject));
 					}
@@ -170,50 +169,50 @@ module syiro {
 				else if (componentObject["type"] == "toast"){ // If the Component is a Toast
 					var actionHandlers = syiro.data.Read(componentObject["id"] + "->ActionHandlers"); // Get any potential ActionHandlers for this Toast
 					var toastButtons : any = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all inner Syiro Buttons
-					
+
 					if (componentElement.getAttribute("data-syiro-component-type") == "dialog"){ // If this is a Dialog Toast
 						var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get an existing Toast ContentOverlay if one exists already, no need to create unnecessary ContentOverlays
-						
+
 						if (toastContentOverlayElement == null){ // If the toastContentOverlayElement does not exist already
 							toastContentOverlayElement = createContentOverlay("toast"); // Create the ContentOverlay (with the purpose of Toast), appending it to the page, and declare contentOverlay as the var pointing to the Element
 						}
 					}
-				
+
 					for (var i = 0; i < toastButtons.length; i++){ // For each toastButton in toastbuttons
 						var toastButton : Element = toastButtons[i]; // Define toastButton as this specific button
 						var toastButtonObject : Object = syiro.component.FetchComponentObject(toastButton); // Get the Component Object of this Syiro Button
-						
+
 						var dialogAction = toastButton.getAttribute("data-syiro-dialog-action"); // Get the dialog-action of this Button
-						
+
 						syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, componentObject)); // Add to each Button the action to Toggle (force hide) the Toast
-						
+
 						if (actionHandlers !== false){ // If there are actionHandlers
 							if (typeof actionHandlers[dialogAction] !== "undefined"){ // If there is a function for this action
 								syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, actionHandlers[dialogAction]); // Assign the function from this actionHandler Object key/val to the Button
 							}
 						}
 					}
-					
+
 					if (actionHandlers !== false){ // If there were actionHandlers
 						syiro.data.Delete(componentObject["id"] + "->ActionHandlers"); // Delete the ActionHandlers from the data of this Toast
 					}
 				}
-				
+
 				// #region Recursive Inner Component Parsing
-				
+
 				if (componentElement.childNodes.length > 0){ // If the componentElement has child Elements / Nodes
 					for (var i = 0; i < componentElement.childNodes.length; i++){ // For each node in the componentElement.childNodes
 						var childNode : any = componentElement.childNodes[i]; // Get the Node
 						ComponentParser(childNode); // Also parse this childNode
 					}
 				}
-				
+
 				// #endregion
-				
+
 				syiro.data.Delete(componentObject["id"] + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
 			}
 		}
-		
+
 		if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")){ // If MutationObserver is supported by the browser
 			if (typeof WebKitMutationObserver !== "undefined"){ // If WebKitMutationObserver is used instead (like on iOS)
 				MutationObserver = WebKitMutationObserver; // Set MutationObserver to WebKitMutationObserver
@@ -232,6 +231,13 @@ module syiro {
 				}
 			);
 
+			var triggerAccurateInitialDimensions = new MutationObserver( // Create a MutationObserver
+				function(){
+					syiro.device.FetchScreenDetails(); // Do a fetch of the screen details now that we have elements in the DOM
+					arguments[2].disconnect(); // Disconnect from the MutationObserver that we passed (which is provided as second argument since an array of changes are passed first)
+				}.bind(this, triggerAccurateInitialDimensions)
+			);
+
 			var mutationWatcherOptions = { // Define mutationWatcherOptions as the options we'll pass to mutationWatcher.observe()
 				childList : true, // Watch child nodes of the element we are watching
 				attributes : true, // Watch for attribute changes
@@ -240,7 +246,11 @@ module syiro {
 				subtree: true
 			};
 
+			var tempWatcherOptions = mutationWatcherOptions; // Define tempWatcherOptions as a copy of the mutationWatcherOptions
+			delete tempWatcherOptions.attributeFilter; // Remove the attributeFilter from the tempWatcherOptions
+
 			mutationWatcher.observe(document.body, mutationWatcherOptions); // Watch the document body with the options provided.
+			triggerAccurateInitialDimensions.observe(document.body, tempWatcherOptions); // Watch the document body temporarily
 		}
 		else{ // If MutationObserver is NOT supported (IE10 and below), such as in Windows Phone
 	        (function mutationTimer(){
@@ -252,7 +262,7 @@ module syiro {
 	                            ComponentParser(componentElement); // Parse the Component Element
 	                        }
 	                    }
-	
+
 	                    mutationTimer();
 	                },
 	                3000
@@ -261,6 +271,7 @@ module syiro {
 		}
 
 		// #endregion
+
 	}
 
 	// #endregion

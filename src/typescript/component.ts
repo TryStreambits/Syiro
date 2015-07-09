@@ -9,7 +9,7 @@
 
 module syiro.component {
 	export var lastUniqueIds : Object = {}; // Default the lastUniqueIds to an empty Object
-	
+
 	// #region Component CSS Fetcher / Modifier
 
 	export function CSS(component : any, property : string, newValue ?: (string | boolean)){
@@ -51,10 +51,10 @@ module syiro.component {
 					returnedValue = stylePropertyValue; // Define returnedValue as the value of the property
 				}
 				else{ // If the property we are looking for does not exist
-					returnedValue = false; // Define the returnedValue as false
+					returnedValue = ""; // Define the returnedValue as an empty string
 				}
 			}
-			else if (typeof newValue == "string"){ // If we are updated the value
+			else if ((newValue !== "") && (newValue !== false)){ // If we are updated the value (not an empty string)
 				elementStylingObject[property] = newValue; // Assign the newValue to the property
 				modifiedStyling = true; // Indicate that we've modified the Element's styling
 				returnedValue = newValue; // Define returnedValue as the value we are setting
@@ -84,7 +84,7 @@ module syiro.component {
 			}
 		}
 		else{ // If the modifiableElement doesn't exist
-			returnedValue = false; // Set returnedValue to false
+			returnedValue = ""; // Set returnedValue to an empty string
 		}
 
 		return returnedValue;
@@ -173,10 +173,12 @@ module syiro.component {
 			componentElement = component; // Set the componentElement to the component (Element) provided
 		}
 
-		dimensionsAndPosition["x"] = componentElement.offsetLeft; // Set the dimensionsAndPosition X to the Element's left offset
-		dimensionsAndPosition["y"] = componentElement.offsetTop - window.scrollY; // Set the dimensionsAndPosition Y to the Element's top offset minus the amount of scrolling that has occurred.
-		dimensionsAndPosition["height"] = componentElement.offsetHeight; // Set the dimensionsAndPosition height to the Element's height offset
-		dimensionsAndPosition["width"] = componentElement.offsetWidth; // Set the dimensionsAndPosition width to the Element's width offset
+		var componentClientRectList : ClientRectList = componentElement.getClientRects(); // Get the list of ComponentRect of this Component
+
+		dimensionsAndPosition["x"] = componentClientRectList[0].left; // Set x to the horizontal "left" position
+		dimensionsAndPosition["y"] = componentClientRectList[0].top; // Set y to the vertical "top" position
+		dimensionsAndPosition["height"] = componentClientRectList[0].height; // Set height to the ClientRect height
+		dimensionsAndPosition["width"] = componentClientRectList[0].width; // Set width to the ClientRect width
 
 		return dimensionsAndPosition;
 	}
@@ -191,24 +193,24 @@ module syiro.component {
 	}
 
 	// #endregion
-	
+
 	// #region Component or Element ID Generator
-	
+
 	export function IdGen(type : string) : string { // Takes a Component type or Element tagName and returns the new component Id
 		var lastUniqueIdOfType : number; // Define lastUniqueIdOfType as a Number
-		
+
 		if (syiro.component.lastUniqueIds[type] == undefined){ // If the lastUniqueId of this type hasn't been defined yet.
 			lastUniqueIdOfType = 0; // Set to zero
 		}
 		else{ // If the lastUniqueId of this type IS defined
 			lastUniqueIdOfType = syiro.component.lastUniqueIds[type]; // Set lastUniqueIdOfType to the one set in lastUniqueIds
 		}
-		
+
 		var newUniqueIdOfType = lastUniqueIdOfType + 1; // Increment by one
 		syiro.component.lastUniqueIds[type] = newUniqueIdOfType; // Update the lastUniqueIds
 		return (type + newUniqueIdOfType.toString()); // Append newUniqueIdOfType to the type to create a "unique" ID
 	}
-	
+
 	// #endregion
 
 	// #region Is Component Object
@@ -245,7 +247,7 @@ module syiro.component {
 		else{
 			appendOrPrepend = "prepend"; // Set as "prepend"
 		}
-	
+
 		var parentElement : any = syiro.component.Fetch(parentComponent); // Get the HTMLElement of the parentComponent
 
 		// #region Child Component Details

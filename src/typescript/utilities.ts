@@ -7,7 +7,7 @@ module syiro.utilities {
     // #region Element Creator Function
 
     export function ElementCreator(type : string, attributes : Object) { // Takes an optional componentId, componentType or the desired element tag name and attributes
-        if ((typeof type == "string") && (typeof attributes == "object")){
+	    if ((typeof type == "string") && (typeof attributes == "object")){
             var generatedElement : any = document.createElement(type); // Define componentElement as the generated HTMLElement based on the type supplied by argument 0
 
             for (var attributeKey in attributes){ // For each attributeKey in attributes

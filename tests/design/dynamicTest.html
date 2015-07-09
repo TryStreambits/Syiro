@@ -23,7 +23,7 @@
 			var videoPlayerContainer = globalPageElement.querySelector('div[data-page-component="video-player-container"]');
 			syiro.CSS(videoPlayerContainer, "height", (screen.height * 0.50).toString() + "px");
 
-			window.onload = generatePage; // Call our generatePage function (but only after document has laoded)
+			generatePage(); // Call our generatePage function
 			/*
 			if (syiro.device.IsSubHD == true){ // If the device is sub HD
 				syiro.CSS(generatedDropdownObject, "float", "right"); // Float the Icon Header to the right

@@ -466,7 +466,7 @@ module syiro.player {
 
         if (allowPlaying == true){ // If the content is able to be played
 			var playButton : Element; // Define playButton as an Element
-		
+
             if (component["type"] == "video-player"){ // If this is a Video Player
                 playerComponentElement.setAttribute("data-syiro-show-video", "true"); // Set attribute of data-syiro-show-video to true, indicating to no longer hide the innerContentElement
             }
@@ -602,7 +602,7 @@ module syiro.player {
             // #region Button Attribute Resetting
 
             var playButton = playerControl.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button from the Player Control
-            syiro.component.CSS(playButton, "background-image", false); // Remove the background-image style / reset to play image for Play Button
+            syiro.component.CSS(playButton, "background-image", ""); // Remove the background-image style / reset to play image for Play Button
             playButton.removeAttribute("active"); // Remove component-status to imply play icon is not active (in this case, paused)
 
             var volumeControl = playerControl.querySelector('div[data-syiro-render-icon="volume"]'); // Get the Volume Button from the Player Control
@@ -762,9 +762,9 @@ module syiro.player {
         }
         else{ // If the Menu dialog currently IS showing
             menuButton.removeAttribute("active"); // Remove the menu button active status
-            syiro.component.CSS(menuDialog, "visibility", false); // Hide the menu dialog (removing the visibility attribute, putting the Menu Dialog back to default state)
-            syiro.component.CSS(menuDialog, "height", false); // Remove the height attribute from the Player Menu Dialog
-            syiro.component.CSS(menuDialog, "width", false); // Remove the width attribute from the Player Menu Dialog
+            syiro.component.CSS(menuDialog, "visibility", ""); // Hide the menu dialog (removing the visibility attribute, putting the Menu Dialog back to default state)
+            syiro.component.CSS(menuDialog, "height", ""); // Remove the height attribute from the Player Menu Dialog
+            syiro.component.CSS(menuDialog, "width", ""); // Remove the width attribute from the Player Menu Dialog
         }
     }
 

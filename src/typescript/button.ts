@@ -35,7 +35,7 @@ module syiro.button {
 
 		if (properties["type"] !== "toggle"){ // If the type is NOT Toggle (so we are making either a Basic Button or Dropdown Button)
 			componentData["content"] = ""; // Default as an empty string
-			
+
 			if (properties["type"] == "dropdown"){ // If this is a Dropdown Button
 				componentData["data-syiro-render-icon"] = "menu"; // Default to Menu icon
 			}
@@ -130,7 +130,7 @@ module syiro.button {
 				componentElement.setAttribute("data-syiro-render-icon", "custom"); // Specify not to render &:after icons
 			}
 			else{
-				syiro.component.CSS(componentElement, "background-image", false); // Remove the background-image
+				syiro.component.CSS(componentElement, "background-image", ""); // Remove the background-image
 				componentElement.removeAttribute("data-syiro-render-icon"); // Remove the render-icon property
 			}
 
@@ -212,9 +212,9 @@ module syiro.button {
 			var linkedListComponentObject : Object = syiro.component.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown Button
 			var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponentObject); // Get the List Component's Element
 
-			if (syiro.component.CSS(linkedListComponentElement, "visibility") !== false){ // If the CSS of the linked List Component is stating the List is active (visibility is visible)
+			if (syiro.component.CSS(linkedListComponentElement, "visibility") !== ""){ // If the CSS of the linked List Component is stating the List is active (visibility is visible)
 				componentElement.removeAttribute("active"); // Remove the "active" attribute
-				syiro.component.CSS(linkedListComponentElement, "visibility", false); // Remove the visibility attribute and hide the List
+				syiro.component.CSS(linkedListComponentElement, "visibility", ""); // Remove the visibility attribute and hide the List
 			}
 			else{ // If the linked List is not active / showing
 				var linkedListComponentElementWidth : number = componentElement.clientWidth; // Define linkedListComponentELementWidth as a number, defaulting to the Dropdown width

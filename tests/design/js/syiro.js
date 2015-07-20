@@ -217,15 +217,16 @@ var syiro;
                 }
                 componentElement = component;
             }
+            var functionsForListener = syiro.data.Read(componentId + "->handlers->" + eventData.type);
             componentElement = syiro.component.Fetch(component);
             if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
-                syiro.button.Toggle(component);
-                if (componentElement.hasAttribute("active") == false) {
-                    passableValue = true;
-                }
-                else {
+                if (componentElement.hasAttribute("active")) {
                     passableValue = false;
                 }
+                else {
+                    passableValue = true;
+                }
+                functionsForListener.unshift(syiro.button.Toggle);
             }
             else if ((typeof component.nodeName !== "undefined") && (component.nodeName == "input")) {
                 passableValue = componentElement.value;
@@ -233,7 +234,6 @@ var syiro;
             else {
                 passableValue = eventData;
             }
-            var functionsForListener = syiro.data.Read(componentId + "->handlers->" + eventData.type);
             for (var _i = 0; _i < functionsForListener.length; _i++) {
                 var individualFunc = functionsForListener[_i];
                 individualFunc.call(this, component, passableValue);
@@ -1487,7 +1487,7 @@ var syiro;
         }
         button.SetText = SetText;
         button.SetLabel = syiro.button.SetText;
-        function Toggle(component) {
+        function Toggle(component, active) {
             var component = arguments[0];
             var componentElement = syiro.component.Fetch(component);
             if (componentElement.getAttribute("data-syiro-component-type") == "dropdown") {
@@ -1510,13 +1510,21 @@ var syiro;
                 }
             }
             else if (componentElement.getAttribute("data-syiro-component-type") == "toggle") {
-                if (componentElement.hasAttribute("active") == false) {
-                    syiro.animation.Slide(component);
-                    componentElement.setAttribute("active", "true");
+                if (typeof active == "undefined") {
+                    if (componentElement.hasAttribute("active")) {
+                        active = false;
+                    }
+                    else {
+                        active = true;
+                    }
                 }
-                else {
+                if (active) {
                     syiro.animation.Reset(component);
                     componentElement.removeAttribute("active");
+                }
+                else {
+                    syiro.animation.Slide(component);
+                    componentElement.setAttribute("active", "true");
                 }
             }
         }

@@ -61,18 +61,21 @@ module syiro.events {
 
         // #endregion
 
+		var functionsForListener : Array<Function> = syiro.data.Read(componentId + "->handlers->" + eventData.type); // Fetch all functions for this particular listener
+
         // #region Passable Data Determination
         componentElement = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
 
-        if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a toggle button
-            syiro.button.Toggle(component); // Call syiro.button.Toggle with the Toggle Button Component
-            if (componentElement.hasAttribute("active") == false){ // If the button is NOT active
-                passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
-            }
-            else{ // If the button is active and we are setting it as inactive
-                passableValue = false; // Set the passable value to FALSE since that is the new status of the toggleButton
-            }
-        }
+		if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a Toggle Button
+			if (componentElement.hasAttribute("active")){ // If the button is active
+				passableValue = false; // Set the passable value to FALSE since that is the new status of the Toggle Button
+			}
+			else{ // If the button is inactive and we are setting it to active
+				passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
+			}
+
+			functionsForListener.unshift(syiro.button.Toggle); // Add the Toggle function to the beginning of the functionListeners array
+		}
         else if ((typeof component.nodeName !== "undefined") && (component.nodeName == "input")){ // If the Element is an input Element
             passableValue = componentElement.value; // Get the current value of the input
         }
@@ -82,7 +85,6 @@ module syiro.events {
 
         // #endregion
 
-        var functionsForListener : Array<Function> = syiro.data.Read(componentId + "->handlers->" + eventData.type); // Fetch all functions for this particular listener
         for (var individualFunc of functionsForListener){ // For each function that is related to the Component for this particular listener
             individualFunc.call(this, component, passableValue); // Call the function, passing along the passableValue and the Component
         }

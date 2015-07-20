@@ -204,7 +204,7 @@ module syiro.button {
 
 	// #region Function for toggling either a Dropdown Button or Toggle Button
 
-	export function Toggle(component ?: Object){ // Function that will handle toggling the Dropdown
+	export function Toggle(component ?: Object, active ?: boolean){ // Function that will handle toggling the Dropdown
 		var component : Object = arguments[0]; // Get the component that was passed to this function as a bound argument
 		var componentElement : any = syiro.component.Fetch(component); // Get the componentElement based on the component Object
 
@@ -233,14 +233,23 @@ module syiro.button {
 			}
 		}
 		else if (componentElement.getAttribute("data-syiro-component-type") == "toggle"){ // If this a Toggle Button
-            if (componentElement.hasAttribute("active") == false){ // If the status is not active
-                syiro.animation.Slide(component);
-                componentElement.setAttribute("active", "true"); // Set to active
-            }
-            else{ // If the status IS active
-                syiro.animation.Reset(component); // Eliminate the animation property
-                componentElement.removeAttribute("active"); // Remove the active attribute
-            }
+			if (typeof active == "undefined"){ // If is not provided
+				if (componentElement.hasAttribute("active")){ // If the status is active
+					active = false; // Switch to being inactive
+				}
+				else { // If status is inactive
+					active = true; // Switch to being active
+				}
+			}
+
+			if (active){ // If the status is active
+				syiro.animation.Reset(component); // Eliminate the animation property
+				componentElement.removeAttribute("active"); // Remove the active attribute
+			}
+			else{ // If the status is NOT active
+				syiro.animation.Slide(component);
+				componentElement.setAttribute("active", "true"); // Set to active
+			}
 		}
 	};
 

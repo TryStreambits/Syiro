@@ -126,7 +126,7 @@ declare module syiro.button {
     function SetImage(component: Object, content: string): boolean;
     function SetText(component: Object, content: string): boolean;
     var SetLabel: Function;
-    function Toggle(component?: Object): void;
+    function Toggle(component?: Object, active?: boolean): void;
 }
 declare module syiro.buttongroup {
     function Generate(properties: Object): {

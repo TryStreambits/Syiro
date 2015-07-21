@@ -235,14 +235,22 @@ module syiro.button {
 		else if (componentElement.getAttribute("data-syiro-component-type") == "toggle"){ // If this a Toggle Button
 			if (typeof active == "undefined"){ // If is not provided
 				if (componentElement.hasAttribute("active")){ // If the status is active
-					active = false; // Switch to being inactive
+					active = true; // Is currently active
 				}
 				else { // If status is inactive
-					active = true; // Switch to being active
+					active = false; // Is current inactive
 				}
 			}
-
-			if (active){ // If the status is active
+			else { // If active is provided, flip the logic since the expected action is the FORCE the active provided
+				if (active){ // If status is active
+					active = false; // Set to false, since we want to force active
+				}
+				else{
+					active = true; // Set to true, since we want to force inactive
+				}
+			}
+			
+			if (active){ // If the status is currently active
 				syiro.animation.Reset(component); // Eliminate the animation property
 				componentElement.removeAttribute("active"); // Remove the active attribute
 			}

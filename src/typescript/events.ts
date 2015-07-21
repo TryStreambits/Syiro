@@ -73,8 +73,6 @@ module syiro.events {
 			else{ // If the button is inactive and we are setting it to active
 				passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
 			}
-
-			functionsForListener.unshift(syiro.button.Toggle); // Add the Toggle function to the beginning of the functionListeners array
 		}
         else if ((typeof component.nodeName !== "undefined") && (component.nodeName == "input")){ // If the Element is an input Element
             passableValue = componentElement.value; // Get the current value of the input
@@ -150,18 +148,25 @@ module syiro.events {
             }
 
             if (allowListening == true){ // If allowListening is TRUE
-                for (var individualListenerIndex in listeners){ // For each listener in the listeners array
-                    var listener = listeners[individualListenerIndex]; // Define listener as the individual listener in the listeners array
-                    var currentListenersArray : any = syiro.data.Read(componentId + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
+				for (var listener of listeners){ // For each listener in the listeners array
+					var currentListenersArray : any = syiro.data.Read(componentId + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
 
-                    if (currentListenersArray == false){ // If the individual listener key is undefined in the handlers of the Component
-                        currentListenersArray = []; // Define currentListenersArray as an empty array
-                        componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component
-                    }
+					if (currentListenersArray == false){ // If there are no listeners for this Component
+						currentListenersArray = []; // Define as a new Array
+					}
 
-                    currentListenersArray.push(listenerCallback); // Push the listenerCallback to the currentListenersArray
-                    syiro.data.Write(componentId + "->handlers->" + listener, currentListenersArray); // Write currentListenersArray (whether it is an empty array or a newly updated one) to the Component's handlers for this listener
-                }
+					if (currentListenersArray.length == 0){ // If there are no functions in the Array
+						currentListenersArray = [listenerCallback]; // Define currentListenersArray as a new array containing this listenerCallback
+						componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component
+					}
+					else{ // If there is already functions in currentListenersArray
+						if (currentListenersArray.indexOf(listenerCallback) == -1){ // If this function isn't already in currentListenersArray
+							currentListenersArray.push(listenerCallback); // Push the listener to the currentListenersArray
+						}
+					}
+
+					syiro.data.Write(componentId + "->handlers->" + listener, currentListenersArray); // Write currentListenersArray (whether it is an empty array or a newly updated one) to the Component's handlers for this listener
+				}
             }
         }
         else{ // If the arguments length is NOT 3, meaning either too few or too many arguments were provided

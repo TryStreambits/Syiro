@@ -41,6 +41,13 @@ declare module syiro.data {
     function Write(keyList: string, data: any): any;
     function Delete(keyList: string): any;
 }
+declare module syiro.animation {
+    function Animate(component: any, properties: Object): void;
+    function Reset(component: any): void;
+    function FadeIn(component: any, postAnimationFunction?: Function): void;
+    function FadeOut(component: any, postAnimationFunction?: Function): void;
+    function Slide(component: any, postAnimationFunction?: Function): void;
+}
 declare module syiro.utilities {
     function ElementCreator(type: string, attributes: Object): any;
     function SanitizeHTML(content: any): any;
@@ -72,12 +79,13 @@ declare module syiro.component {
     function Add(appendOrPrepend: any, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): void;
 }
-declare module syiro.animation {
-    function Animate(component: any, properties: Object): void;
-    function Reset(component: any): void;
-    function FadeIn(component: any, postAnimationFunction?: Function): void;
-    function FadeOut(component: any, postAnimationFunction?: Function): void;
-    function Slide(component: any, postAnimationFunction?: Function): void;
+declare module syiro.init {
+    function Parser(componentElement: Element): void;
+    function createContentOverlay(purpose: string): Element;
+    function Buttongroup(componentObject: Object): void;
+    function Searchbox(componentObject: Object): void;
+    function Sidepane(componentObject: Object): void;
+    function Toast(componentObject: Object): void;
 }
 declare module syiro.device {
     var DoNotTrack: boolean;

@@ -5,25 +5,25 @@ var dialogToastComponentObject; // Declare dialogToastComponentObject
 
 function generatePage(){
 	// #region Generate Toasts
-	
-	normalToastComponentObject = syiro.toast.Generate({"type" : "normal", "title" : "This is an example Normal Toast!", "message" : "This is the message of the toast"});
-	dialogToastComponentObject = syiro.toast.Generate({
+
+	normalToastComponentObject = syiro.toast.New({"type" : "normal", "title" : "This is an example Normal Toast!", "message" : "This is the message of the toast"});
+	dialogToastComponentObject = syiro.toast.New({
 		"type" : "dialog", "title" : "This is an example Dialog Toast!", "message" : "We are going to show off custom labels on the two buttons as well.",
 		"buttons" : [{ "action" : "deny", "content" : "REJECT ME"}, { "action" : "affirm", "content" : "AFFIRMATIVE" }]
 	});
-	
+
 	document.body.appendChild(syiro.Fetch(normalToastComponentObject)); // Append the Normal Toast Component Object to the document
 	document.body.appendChild(syiro.Fetch(dialogToastComponentObject)); // Append the Dialog Toast Component Object to the document
-	
+
 	// #endreigon
 
     generateNavbarAndSidepane(); // Generate the Navbar, Sidepane & Associated Components
 
     /* Buttongroup Generation */
 
-    var audioButtonComponent = syiro.button.Generate( { "content" : "Audio"});
-    var videoButtonComponent = syiro.button.Generate( { "content" : "Video"});
-    var buttonGroupComponent = syiro.buttongroup.Generate({ "active" : 1, "items" : [ audioButtonComponent, videoButtonComponent ]}); // Generate a Button Group with two Buttons
+    var audioButtonComponent = syiro.button.New( { "content" : "Audio"});
+    var videoButtonComponent = syiro.button.New( { "content" : "Video"});
+    var buttonGroupComponent = syiro.buttongroup.New({ "active" : 1, "items" : [ audioButtonComponent, videoButtonComponent ]}); // Generate a Button Group with two Buttons
     buttonGroupContainer.appendChild(syiro.Fetch(buttonGroupComponent)); // Fetch the Buttongroup Component and append it to Buttongroup Container
 
     syiro.events.Add(syiro.events.eventStrings["up"], audioButtonComponent, showPlayerContainer.bind(this, "audio")); // Add an event (up) to the audioButtonComponent, having it trigger showPlayerContainer w/ audio
@@ -37,10 +37,10 @@ function generatePage(){
         syiro.CSS(videoPlayerContainer, "height", (screen.height * 0.50).toString() + "px");
         var videoPlayerComponentObject = syiro.FetchComponentObject(videoPlayerContainer.querySelector('div[data-syiro-component="video-player"]')); // Get the Component Object of the Video Player inside videoPlayerContainer
         syiro.render.Scale(videoPlayerComponentObject); // Rescale the Video Player
-		
+
 		var dropdownButtonComponentObject = syiro.FetchComponentObject(document.querySelector('div[data-syiro-component="button"][data-syiro-component-type="dropdown"]'));
-		
-		if (document.body.clientWidth < 1024){ // If the 
+
+		if (document.body.clientWidth < 1024){ // If the
 			syiro.button.SetText(dropdownButtonComponentObject, "");
 		}
     });
@@ -50,19 +50,19 @@ function generatePage(){
 
 function generateNavbarAndSidepane(){
 	// #region Dropdown Button Component Generation
-	
-	var toggleNormalToastListItemObject = syiro.listitem.Generate({"label" : "Toggle Normal Toast"}); // Generate a List Item with the content being "Toggle Normal Toast"
-	var toggleDialogToastListItemObject  = syiro.listitem.Generate({"label" : "Toggle Dialog Toast"}); // Generate a List Item with the content being "Toggle Dialog Toast"
-	
-	var dropdownButtonComponentObject = syiro.button.Generate({ "type" : "dropdown", "icon" : "", "items" : [ toggleNormalToastListItemObject,  toggleDialogToastListItemObject ], "position" : ["below", "right"] });
-	
+
+	var toggleNormalToastListItemObject = syiro.listitem.New({"label" : "Toggle Normal Toast"}); // Generate a List Item with the content being "Toggle Normal Toast"
+	var toggleDialogToastListItemObject  = syiro.listitem.New({"label" : "Toggle Dialog Toast"}); // Generate a List Item with the content being "Toggle Dialog Toast"
+
+	var dropdownButtonComponentObject = syiro.button.New({ "type" : "dropdown", "icon" : "", "items" : [ toggleNormalToastListItemObject,  toggleDialogToastListItemObject ], "position" : ["below", "right"] });
+
 	// #endregion
-	
+
     // #region Navbar Component Generation
 
-    var navbarComponentObject = syiro.navbar.Generate({
+    var navbarComponentObject = syiro.navbar.New({
         "position" : "top",
-        "items" : [ 
+        "items" : [
 			{ "link" : "http://syiro.com", "title" : "Home" },
 			{ "link" : "https://github.com/StroblIndustries/Syiro/wiki", "title" : "Documentation"},
 			{ "link" : "https://github.com/StroblIndustries/Syiro/issues", "title" : "Issues"},
@@ -72,9 +72,9 @@ function generateNavbarAndSidepane(){
 
     // #endregion
 
-    var backgroundColorToggler = syiro.button.Generate({ "type" : "toggle" }); // Generate a Toggle Button
-    var sidepaneListObject = syiro.list.Generate({ "items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" } ] } ); // Generate a List
-    var sidepaneComponentObject = syiro.sidepane.Generate({ "items" : [ sidepaneListObject ]}); // Generate a List
+    var backgroundColorToggler = syiro.button.New({ "type" : "toggle" }); // Generate a Toggle Button
+    var sidepaneListObject = syiro.list.New({ "items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" } ] } ); // Generate a List
+    var sidepaneComponentObject = syiro.sidepane.New({ "items" : [ sidepaneListObject ]}); // Generate a List
 
     document.body.insertBefore(syiro.Fetch(sidepaneComponentObject), globalPageElement); // Prepend in body
     globalPageElement.insertBefore(syiro.Fetch(navbarComponentObject), globalPageElement.firstChild); // Append the fetched Navbar Element to the main Element
@@ -92,12 +92,12 @@ function generateMediaPlayers(){
     /* Share Dialogs List Generation */
 
     var menuDialogItems = [ { "image" : "img/facebook.png", "label" : "Facebook" }, { "image" : "img/google-plus.png", "label" : "Google+" }, { "image" : "img/twitter.png", "label" : "Twitter" } ];
-    var audioMenuDialogList = syiro.list.Generate({ "items" : menuDialogItems } );
-    var videoMenuDialogList = syiro.list.Generate({ "items" : menuDialogItems } );
+    var audioMenuDialogList = syiro.list.New({ "items" : menuDialogItems } );
+    var videoMenuDialogList = syiro.list.New({ "items" : menuDialogItems } );
 
     /* End of Share Dialogs List Generation */
 
-    var generatedAudioPlayer = syiro.audioplayer.Generate(
+    var generatedAudioPlayer = syiro.audioplayer.New(
             {
                 "UsingExternalLibrary" : true,
                 "menu" : audioMenuDialogList,
@@ -108,7 +108,7 @@ function generateMediaPlayers(){
             }
     );
 
-    var generatedVideoPlayer = syiro.videoplayer.Generate(
+    var generatedVideoPlayer = syiro.videoplayer.New(
             {
                 "art" : "img/video-art.png",
                 "UsingExternalLibrary" : true, // Declare that we are using an external library and to ignore canPlayType error
@@ -123,7 +123,7 @@ function generateMediaPlayers(){
 
     /* Change Source Button Generation */
 
-    var changeSourceButtonComponent = syiro.button.Generate({ "content" : "Change Sources" }); // Generate the Change Source Button
+    var changeSourceButtonComponent = syiro.button.New({ "content" : "Change Sources" }); // Generate the Change Source Button
     videoPlayerContainer.appendChild(syiro.Fetch(changeSourceButtonComponent)); // Fetch and append the Change Source Button to the Video Player Container
     syiro.events.Add(syiro.events.eventStrings["up"], changeSourceButtonComponent, changeVideoSource); // Set event (up) of changeSourceButtonComponent to call changeVideoSource()
 }

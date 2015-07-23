@@ -109,7 +109,8 @@ declare module syiro.device {
     function FetchScreenOrientation(): string;
 }
 declare module syiro.navbar {
-    function Generate(properties: Object): Object;
+    function New(properties: Object): Object;
+    var Generate: typeof New;
     function AddLink(append: boolean, component: Object, elementOrProperties: any): boolean;
     function RemoveLink(component: Object, elementOrProperties: any): boolean;
     function SetLogo(component: Object, content: string): boolean;
@@ -129,7 +130,8 @@ declare module syiro.footer {
     var RemoveLink: typeof navbar.RemoveLink;
 }
 declare module syiro.button {
-    function Generate(properties: Object): Object;
+    function New(properties: Object): Object;
+    var Generate: typeof New;
     function SetIcon(component: Object, content: string): boolean;
     function SetImage(component: Object, content: string): boolean;
     function SetText(component: Object, content: string): boolean;
@@ -137,20 +139,23 @@ declare module syiro.button {
     function Toggle(component?: Object, active?: boolean): void;
 }
 declare module syiro.buttongroup {
-    function Generate(properties: Object): {
+    function New(properties: Object): {
         "id": string;
         "type": string;
     };
+    var Generate: typeof New;
     function CalculateInnerButtonWidth(component: any): HTMLElement;
     function Toggle(buttonComponent?: Object): void;
 }
 declare module syiro.list {
-    function Generate(properties: Object): Object;
+    function New(properties: Object): Object;
+    var Generate: typeof New;
     var AddItem: typeof component.Add;
     var RemoveItem: typeof component.Remove;
 }
 declare module syiro.listitem {
-    function Generate(properties: Object): Object;
+    function New(properties: Object): Object;
+    var Generate: typeof New;
     function SetControl(component: Object, control: Object): boolean;
     function SetImage(component: Object, content: string): boolean;
     function SetLabel(component: Object, content: string): boolean;
@@ -182,34 +187,40 @@ declare module syiro.player {
     function ToggleMenuDialog(component: Object): void;
 }
 declare module syiro.playercontrol {
-    function Generate(properties: Object): Object;
+    function New(properties: Object): Object;
+    var Generate: typeof New;
     function TimeLabelUpdater(component: Object, timePart: number, value: any): void;
     function Toggle(component: Object, forceShow?: boolean): void;
 }
 declare module syiro.audioplayer {
-    function Generate(properties: Object): Object;
+    function New(properties: Object): Object;
+    var Generate: typeof New;
     function CenterInformation(component: Object): void;
 }
 declare module syiro.videoplayer {
-    function Generate(properties: Object): Object;
+    function New(properties: Object): Object;
+    var Generate: typeof New;
 }
 declare module syiro.searchbox {
-    function Generate(properties: Object): Object;
+    function New(properties: Object): Object;
+    var Generate: typeof New;
     function Suggestions(...args: any[]): void;
     function SetText(component: Object, content: any): void;
 }
 declare module syiro.sidepane {
-    function Generate(properties: Object): Object;
+    function New(properties: Object): Object;
+    var Generate: typeof New;
     function GestureInit(): void;
     function Drag(): void;
     function Release(): void;
     function Toggle(component: Object, eventData?: any): void;
 }
 declare module syiro.toast {
-    function Generate(properties: Object): {
+    function New(properties: Object): {
         "id": string;
         "type": string;
     };
+    var Generate: typeof New;
     function Clear(component: Object): void;
     function ClearAll(): void;
     function Toggle(component: Object, action?: string): void;

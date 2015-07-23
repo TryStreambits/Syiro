@@ -26,7 +26,7 @@ module syiro.dropdown {
 				delete properties["label"];
 			}
 
-			return syiro.button.Generate(properties);
+			return syiro.button.New(properties);
 		}
 		else{ // If the necessary properties are NOT defined
 			return false; // Return false

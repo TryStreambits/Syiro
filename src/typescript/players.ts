@@ -779,11 +779,11 @@ module syiro.playercontrol {
 
     // #region Player Control Generator
 
-    export function Generate(properties : Object) : Object {
+    export function New(properties : Object) : Object {
         var componentId : string = syiro.component.IdGen("player-control"); // Generate an ID for the Player Control
         var componentElement = syiro.utilities.ElementCreator("div",  { "data-syiro-component" : "player-control", "data-syiro-component-id" : componentId }); // Generate the basic playerControl container
 
-        var playButton = syiro.button.Generate( { "data-syiro-render-icon" : "play" } ); // Create a play button
+        var playButton = syiro.button.New( { "data-syiro-render-icon" : "play" } ); // Create a play button
         var inputRange : HTMLElement = syiro.utilities.ElementCreator("input", { "type" : "range", "value" : "0"} ); // Create an input range
 
         componentElement.appendChild(inputRange); // Append the input range
@@ -807,7 +807,7 @@ module syiro.playercontrol {
 
         if (properties["menu"] !== undefined){ // If the menu attribute is defined
             if (properties["menu"]["type"] == "list"){ // If the component provided is a List
-                var menuButton = syiro.button.Generate( { "data-syiro-render-icon" : "menu"} ); // Generate a Menu Button
+                var menuButton = syiro.button.New( { "data-syiro-render-icon" : "menu"} ); // Generate a Menu Button
                 componentElement.appendChild(syiro.component.Fetch(menuButton)); // Append the menuButton to the playerControlElement
             }
         }
@@ -817,20 +817,22 @@ module syiro.playercontrol {
         // #region Video Player - Additional Functionality Adding
 
         if (typeof properties["is-video-player"] !== "undefined"){ // If the properties passed has "is-video-player"
-            var fullscreenButton = syiro.button.Generate( { "data-syiro-render-icon" : "fullscreen"} ); // Create a fullscreen button
+            var fullscreenButton = syiro.button.New( { "data-syiro-render-icon" : "fullscreen"} ); // Create a fullscreen button
             componentElement.appendChild(syiro.component.Fetch(fullscreenButton)); // Append the fullscreen control
         }
 
         // #endregion
 
         if (syiro.device.OperatingSystem !== "iOS"){ // As iOS does not allow manual control of volume (it has to be done with hardware controls), check if the OS is NOT iOS before volume button generation
-            var volumeButton = syiro.button.Generate( { "data-syiro-render-icon" : "volume" } ); // Generate a Volume Button
+            var volumeButton = syiro.button.New( { "data-syiro-render-icon" : "volume" } ); // Generate a Volume Button
             componentElement.appendChild(syiro.component.Fetch(volumeButton)); // Append the volume control
         }
 
         syiro.data.Write(componentId + "->HTMLElement", componentElement); // Store the Component HTMLElement of the Player Control
         return { "id" : componentId, "type" : "player-control" }; // Return a Component Object
     }
+
+	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
 
     // #endregion
 
@@ -910,7 +912,7 @@ module syiro.audioplayer {
 
     // #region Audio Player Generator
 
-    export function Generate(properties : Object) : Object { // Generate a Audio Player Component and return a Component Object
+    export function New(properties : Object) : Object { // Generate a Audio Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the audio property is defined
             var componentId : string = syiro.component.IdGen("audio-player"); // Generate a component Id
             var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "audio-player", "data-syiro-component-id" : componentId, "id" : componentId, "name" : componentId });
@@ -964,7 +966,7 @@ module syiro.audioplayer {
 
             syiro.component.CSS(componentElement, "width", properties["width"].toString() + "px"); // Set the width of the Audio Player Component Element
 
-            var playerControlComponent : Object = syiro.playercontrol.Generate(properties);
+            var playerControlComponent : Object = syiro.playercontrol.New(properties);
             var playerControlElement : Element = syiro.component.Fetch(playerControlComponent); // Fetch the HTMLElement
 
             // #region Player Menu Element Creation (If Applicable)
@@ -1012,6 +1014,8 @@ module syiro.audioplayer {
 
     }
 
+	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
+
     // #endregion
 
     // #region Audio Information Center
@@ -1039,7 +1043,7 @@ module syiro.videoplayer {
 
     // #region Video Player Generator
 
-    export function Generate(properties : Object) : Object { // Generate a Video Player Component and return a Component Object
+    export function New(properties : Object) : Object { // Generate a Video Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the video property is defined
             var componentId : string = syiro.component.IdGen("video-player"); // Generate a component Id
             var syiroComponentData : Object = { "scaling" : {}}; // Define syiroComponentData as an Object to hold data we'll be writing to the Syiro Data System
@@ -1074,7 +1078,7 @@ module syiro.videoplayer {
                 // #region Player Control Creation
 
                 properties["is-video-player"] = true; // Add "is-video-player" key before calling playercontrol Generate so it'll generate the fullscreen button
-                var playerControlComponent : Object = syiro.playercontrol.Generate(properties);
+                var playerControlComponent : Object = syiro.playercontrol.New(properties);
                 componentElement.appendChild(syiro.component.Fetch(playerControlComponent)); // Fetch the HTMLElement and append the player control
 
                 // #endregion
@@ -1149,6 +1153,8 @@ module syiro.videoplayer {
             return { "error" : "no video defined" }; // Return an error Object
         }
     }
+
+	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
 
     // #endregion
 

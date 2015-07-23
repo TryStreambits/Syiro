@@ -990,6 +990,7 @@ var syiro;
         function Parser(componentElement) {
             if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))) {
                 var componentObject = syiro.component.FetchComponentObject(componentElement);
+                console.time(componentObject["id"]);
                 switch (componentObject["type"]) {
                     case "button":
                         if (componentElement.getAttribute("data-syiro-component-type") !== "basic") {
@@ -1023,6 +1024,7 @@ var syiro;
                     syiro.init.Parser(childComponentElement);
                 }
                 syiro.data.Delete(componentObject["id"] + "->HTMLElement");
+                console.timeEnd(componentObject["id"]);
             }
         }
         init.Parser = Parser;
@@ -1297,7 +1299,7 @@ var syiro;
 (function (syiro) {
     var navbar;
     (function (navbar) {
-        function Generate(properties) {
+        function New(properties) {
             var navbarType;
             if ((typeof properties["position"] !== "string") || ((properties["position"] !== "top") && (properties["position"] !== "bottom"))) {
                 navbarType = "top";
@@ -1347,7 +1349,8 @@ var syiro;
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "navbar" };
         }
-        navbar.Generate = Generate;
+        navbar.New = New;
+        navbar.Generate = New;
         function AddLink(append, component, elementOrProperties) {
             var componentAddingSucceeded = false;
             if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (typeof elementOrProperties !== "undefined")) {
@@ -1449,7 +1452,7 @@ var syiro;
     (function (header) {
         function Generate(properties) {
             properties["position"] = "top";
-            return syiro.navbar.Generate(properties);
+            return syiro.navbar.New(properties);
         }
         header.Generate = Generate;
         header.SetLogo = syiro.navbar.SetLogo;
@@ -1462,7 +1465,7 @@ var syiro;
     (function (footer) {
         function Generate(properties) {
             properties["position"] = "bottom";
-            return syiro.navbar.Generate(properties);
+            return syiro.navbar.New(properties);
         }
         footer.Generate = Generate;
         footer.SetLabel = syiro.navbar.SetLabel;
@@ -1480,7 +1483,7 @@ var syiro;
 (function (syiro) {
     var button;
     (function (button) {
-        function Generate(properties) {
+        function New(properties) {
             if (typeof properties["type"] == "undefined") {
                 if ((typeof properties["list"] == "undefined") && (typeof properties["items"] == "undefined")) {
                     properties["type"] = "basic";
@@ -1519,7 +1522,7 @@ var syiro;
             if (properties["type"] == "dropdown") {
                 var listComponent;
                 if (typeof properties["items"] !== "undefined") {
-                    listComponent = syiro.list.Generate({ "items": properties["items"] });
+                    listComponent = syiro.list.New({ "items": properties["items"] });
                 }
                 else {
                     listComponent = properties["list"];
@@ -1552,7 +1555,8 @@ var syiro;
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "button" };
         }
-        button.Generate = Generate;
+        button.New = New;
+        button.Generate = New;
         function SetIcon(component, content) {
             var setSucceeded;
             var componentElement = syiro.component.Fetch(component);
@@ -1670,7 +1674,7 @@ var syiro;
 (function (syiro) {
     var buttongroup;
     (function (buttongroup) {
-        function Generate(properties) {
+        function New(properties) {
             if (typeof properties["items"] !== "undefined") {
                 if (properties["items"].length >= 2) {
                     var componentId = syiro.component.IdGen("buttongroup");
@@ -1678,7 +1682,7 @@ var syiro;
                     for (var buttonItemIndex in properties["items"]) {
                         var buttonItem = properties["items"][buttonItemIndex];
                         if (syiro.component.IsComponentObject(buttonItem) == false) {
-                            buttonItem = syiro.button.Generate(buttonItem);
+                            buttonItem = syiro.button.New(buttonItem);
                         }
                         var buttonElement = syiro.component.Fetch(buttonItem);
                         if (buttonElement.getAttribute("data-syiro-component-type") == "basic") {
@@ -1698,7 +1702,8 @@ var syiro;
                 }
             }
         }
-        buttongroup.Generate = Generate;
+        buttongroup.New = New;
+        buttongroup.Generate = New;
         function CalculateInnerButtonWidth(component) {
             var componentElement;
             if (syiro.component.IsComponentObject(component)) {
@@ -1755,14 +1760,14 @@ var syiro;
 (function (syiro) {
     var list;
     (function (list) {
-        function Generate(properties) {
+        function New(properties) {
             var componentId = syiro.component.IdGen("list");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "list", "data-syiro-component-id": componentId, "aria-live": "polite", "id": componentId, "role": "listbox" });
             if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)) {
                 for (var individualItemIndex in properties["items"]) {
                     var individualItem = properties["items"][individualItemIndex];
                     if (syiro.component.IsComponentObject(individualItem) == false) {
-                        individualItem = syiro.listitem.Generate(individualItem);
+                        individualItem = syiro.listitem.New(individualItem);
                     }
                     componentElement.appendChild(syiro.component.Fetch(individualItem));
                 }
@@ -1770,7 +1775,8 @@ var syiro;
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "list" };
         }
-        list.Generate = Generate;
+        list.New = New;
+        list.Generate = New;
         list.AddItem = syiro.component.Add;
         list.RemoveItem = syiro.component.Remove;
     })(list = syiro.list || (syiro.list = {}));
@@ -1779,7 +1785,7 @@ var syiro;
 (function (syiro) {
     var listitem;
     (function (listitem) {
-        function Generate(properties) {
+        function New(properties) {
             var componentId = syiro.component.IdGen("list-item");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "list-item", "data-syiro-component-id": componentId, "role": "option" });
             if (typeof properties["html"] == "undefined") {
@@ -1817,7 +1823,8 @@ var syiro;
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "list-item" };
         }
-        listitem.Generate = Generate;
+        listitem.New = New;
+        listitem.Generate = New;
         function SetControl(component, control) {
             var setControlSucceeded = false;
             if (component["type"] == "list-item") {
@@ -1922,7 +1929,7 @@ var syiro;
                     properties["content"] = properties["label"];
                     delete properties["label"];
                 }
-                return syiro.button.Generate(properties);
+                return syiro.button.New(properties);
             }
             else {
                 return false;
@@ -2457,10 +2464,10 @@ var syiro;
 (function (syiro) {
     var playercontrol;
     (function (playercontrol) {
-        function Generate(properties) {
+        function New(properties) {
             var componentId = syiro.component.IdGen("player-control");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "player-control", "data-syiro-component-id": componentId });
-            var playButton = syiro.button.Generate({ "data-syiro-render-icon": "play" });
+            var playButton = syiro.button.New({ "data-syiro-render-icon": "play" });
             var inputRange = syiro.utilities.ElementCreator("input", { "type": "range", "value": "0" });
             componentElement.appendChild(inputRange);
             componentElement.appendChild(syiro.component.Fetch(playButton));
@@ -2478,22 +2485,23 @@ var syiro;
             }
             if (properties["menu"] !== undefined) {
                 if (properties["menu"]["type"] == "list") {
-                    var menuButton = syiro.button.Generate({ "data-syiro-render-icon": "menu" });
+                    var menuButton = syiro.button.New({ "data-syiro-render-icon": "menu" });
                     componentElement.appendChild(syiro.component.Fetch(menuButton));
                 }
             }
             if (typeof properties["is-video-player"] !== "undefined") {
-                var fullscreenButton = syiro.button.Generate({ "data-syiro-render-icon": "fullscreen" });
+                var fullscreenButton = syiro.button.New({ "data-syiro-render-icon": "fullscreen" });
                 componentElement.appendChild(syiro.component.Fetch(fullscreenButton));
             }
             if (syiro.device.OperatingSystem !== "iOS") {
-                var volumeButton = syiro.button.Generate({ "data-syiro-render-icon": "volume" });
+                var volumeButton = syiro.button.New({ "data-syiro-render-icon": "volume" });
                 componentElement.appendChild(syiro.component.Fetch(volumeButton));
             }
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "player-control" };
         }
-        playercontrol.Generate = Generate;
+        playercontrol.New = New;
+        playercontrol.Generate = New;
         function TimeLabelUpdater(component, timePart, value) {
             var playerControlElement = syiro.component.Fetch(component);
             var playerTimeElement = playerControlElement.querySelector("time");
@@ -2548,7 +2556,7 @@ var syiro;
 (function (syiro) {
     var audioplayer;
     (function (audioplayer) {
-        function Generate(properties) {
+        function New(properties) {
             if (properties["sources"] !== undefined) {
                 var componentId = syiro.component.IdGen("audio-player");
                 var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "audio-player", "data-syiro-component-id": componentId, "id": componentId, "name": componentId });
@@ -2580,7 +2588,7 @@ var syiro;
                     properties["width"] = 400;
                 }
                 syiro.component.CSS(componentElement, "width", properties["width"].toString() + "px");
-                var playerControlComponent = syiro.playercontrol.Generate(properties);
+                var playerControlComponent = syiro.playercontrol.New(properties);
                 var playerControlElement = syiro.component.Fetch(playerControlComponent);
                 if (properties["menu"] !== undefined) {
                     if (properties["menu"]["type"] == "list") {
@@ -2609,7 +2617,8 @@ var syiro;
                 return { "error": "no sources defined" };
             }
         }
-        audioplayer.Generate = Generate;
+        audioplayer.New = New;
+        audioplayer.Generate = New;
         function CenterInformation(component) {
             var componentElement = syiro.component.Fetch(component);
             var playerControlElement = componentElement.querySelector('div[data-syiro-component="player-control"]');
@@ -2626,7 +2635,7 @@ var syiro;
 (function (syiro) {
     var videoplayer;
     (function (videoplayer) {
-        function Generate(properties) {
+        function New(properties) {
             if (properties["sources"] !== undefined) {
                 var componentId = syiro.component.IdGen("video-player");
                 var syiroComponentData = { "scaling": {} };
@@ -2646,7 +2655,7 @@ var syiro;
                         }
                     }
                     properties["is-video-player"] = true;
-                    var playerControlComponent = syiro.playercontrol.Generate(properties);
+                    var playerControlComponent = syiro.playercontrol.New(properties);
                     componentElement.appendChild(syiro.component.Fetch(playerControlComponent));
                     if ((typeof properties["ForceLiveUX"] !== "undefined") && (properties["ForceLiveUX"] == true)) {
                         syiroComponentData["ForceLiveUX"] = true;
@@ -2688,7 +2697,8 @@ var syiro;
                 return { "error": "no video defined" };
             }
         }
-        videoplayer.Generate = Generate;
+        videoplayer.New = New;
+        videoplayer.Generate = New;
     })(videoplayer = syiro.videoplayer || (syiro.videoplayer = {}));
 })(syiro || (syiro = {}));
 /*
@@ -2701,7 +2711,7 @@ var syiro;
 (function (syiro) {
     var searchbox;
     (function (searchbox) {
-        function Generate(properties) {
+        function New(properties) {
             var componentId = syiro.component.IdGen("searchbox");
             var componentElement;
             var componentData = {};
@@ -2723,14 +2733,14 @@ var syiro;
                 if (typeof properties["preseed"] == "object") {
                     componentData["preseed"] = true;
                     for (var preseedItemIndex in properties["preseed"]) {
-                        listItems.push(syiro.listitem.Generate({ "label": properties["preseed"][preseedItemIndex] }));
+                        listItems.push(syiro.listitem.New({ "label": properties["preseed"][preseedItemIndex] }));
                     }
                 }
                 else {
                     componentData["handlers"]["suggestions"] = properties["handler"];
                     componentData["preseed"] = false;
                 }
-                var searchSuggestionsList = syiro.list.Generate({ "items": listItems });
+                var searchSuggestionsList = syiro.list.New({ "items": listItems });
                 var searchSuggestionsListElement = syiro.component.Fetch(searchSuggestionsList);
                 searchboxContainerData["aria-owns"] = searchSuggestionsList["id"];
                 searchSuggestionsListElement.setAttribute("data-syiro-component-owner", componentId);
@@ -2746,7 +2756,8 @@ var syiro;
             syiro.data.Write(componentId, componentData);
             return { "id": componentId, "type": "searchbox" };
         }
-        searchbox.Generate = Generate;
+        searchbox.New = New;
+        searchbox.Generate = New;
         function Suggestions() {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -2788,7 +2799,7 @@ var syiro;
                             syiro.component.Remove(innerListItemsOfLinkedList);
                         }
                         for (var suggestionIndex in suggestions) {
-                            var suggestionListItem = syiro.listitem.Generate({ "label": suggestions[suggestionIndex] });
+                            var suggestionListItem = syiro.listitem.New({ "label": suggestions[suggestionIndex] });
                             syiro.list.AddItem(true, linkedListComponent, suggestionListItem);
                             syiro.events.Add(syiro.events.eventStrings["up"], suggestionListItem, syiro.data.Read(searchboxComponent["id"] + "handlers->list-item-handler"));
                         }
@@ -2827,7 +2838,7 @@ var syiro;
 (function (syiro) {
     var sidepane;
     (function (sidepane) {
-        function Generate(properties) {
+        function New(properties) {
             var componentId = syiro.component.IdGen("sidepane");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": componentId, "data-syiro-component": "sidepane" });
             var sidepaneContentElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "sidepane-content" });
@@ -2867,7 +2878,8 @@ var syiro;
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "sidepane" };
         }
-        sidepane.Generate = Generate;
+        sidepane.New = New;
+        sidepane.Generate = New;
         function GestureInit() {
             var componentElement = arguments[0].parentElement;
             var moveElement;
@@ -2970,7 +2982,7 @@ var syiro;
 (function (syiro) {
     var toast;
     (function (toast) {
-        function Generate(properties) {
+        function New(properties) {
             if ((typeof properties["type"] == "undefined") || ((properties["type"] !== "normal") && (properties["type"] !== "dialog"))) {
                 properties["type"] = "normal";
             }
@@ -3013,7 +3025,7 @@ var syiro;
                     if (typeof toastButtonProperties["function"] !== "undefined") {
                         futureButtonHandlers[toastButtonProperties["action"]] = toastButtonProperties["function"];
                     }
-                    var toastButtonObject = syiro.button.Generate({ "type": "basic", "content": toastButtonProperties["content"] });
+                    var toastButtonObject = syiro.button.New({ "type": "basic", "content": toastButtonProperties["content"] });
                     var toastButtonElement = syiro.component.Fetch(toastButtonObject);
                     toastButtonElement.setAttribute("data-syiro-dialog-action", toastButtonProperties["action"]);
                     toastButtonsContainer.appendChild(toastButtonElement);
@@ -3024,13 +3036,14 @@ var syiro;
                 }
             }
             else {
-                var closeIconButtonObject = syiro.button.Generate({ "type": "basic", "content": "x" });
+                var closeIconButtonObject = syiro.button.New({ "type": "basic", "content": "x" });
                 componentElement.appendChild(syiro.component.Fetch(closeIconButtonObject));
             }
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "toast" };
         }
-        toast.Generate = Generate;
+        toast.New = New;
+        toast.Generate = New;
         function Clear(component) {
             var componentElement = syiro.component.Fetch(component);
             if (componentElement !== null) {

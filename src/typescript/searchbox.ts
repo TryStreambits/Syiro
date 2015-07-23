@@ -12,7 +12,7 @@ module syiro.searchbox {
 
 	// #region Searchbox Generator
 
-	export function Generate(properties : Object) : Object { // Generate a Searchbox Component and return a Component Object
+	export function New(properties : Object) : Object { // Generate a Searchbox Component and return a Component Object
 		var componentId : string = syiro.component.IdGen("searchbox"); // Generate a component Id
 		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
 		var componentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored via syiro.data
@@ -43,7 +43,7 @@ module syiro.searchbox {
 				componentData["preseed"] = true; // Define preseed value in searchboxComponentData as true
 
 				for (var preseedItemIndex in properties["preseed"]){ // For each item in preseed
-					listItems.push(syiro.listitem.Generate({ "label" : properties["preseed"][preseedItemIndex] })); /// Push a new generated List Item Component Object to listItemsArray
+					listItems.push(syiro.listitem.New({ "label" : properties["preseed"][preseedItemIndex] })); /// Push a new generated List Item Component Object to listItemsArray
 				}
 			}
 			else{ // If preseed []string is not provided
@@ -51,7 +51,7 @@ module syiro.searchbox {
 				componentData["preseed"] = false; // Define preseed value in searchboxComponentData as false
 			}
 
-			var searchSuggestionsList : Object = syiro.list.Generate( { "items" : listItems }); // Generate a List with the items provided (if any)
+			var searchSuggestionsList : Object = syiro.list.New( { "items" : listItems }); // Generate a List with the items provided (if any)
 			var searchSuggestionsListElement : Element = syiro.component.Fetch(searchSuggestionsList); // Get the List Component Element
 
 			searchboxContainerData["aria-owns"] = searchSuggestionsList["id"]; // Define the aria-owns, setting it to the List Component to declare for ARIA that the Searchbox Component "owns" the List Component
@@ -72,6 +72,8 @@ module syiro.searchbox {
 
 		return { "id" : componentId, "type" : "searchbox" }; // Return a Component Object
 	}
+
+	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
 
 	// #endregion
 
@@ -124,7 +126,7 @@ module syiro.searchbox {
 					}
 
 					for (var suggestionIndex in suggestions){ // For each suggestion in suggestions
-						var suggestionListItem : Object = syiro.listitem.Generate({ "label" : suggestions[suggestionIndex] }); // Create a List Item with the label being the suggestion
+						var suggestionListItem : Object = syiro.listitem.New({ "label" : suggestions[suggestionIndex] }); // Create a List Item with the label being the suggestion
 						syiro.list.AddItem(true, linkedListComponent, suggestionListItem); // Append the List Item to the Linked List
 						syiro.events.Add(syiro.events.eventStrings["up"], suggestionListItem, syiro.data.Read(searchboxComponent["id"] + "handlers->list-item-handler")); // Add the list-item-handler we have stored from syiro.data to the suggestionListItem
 					}

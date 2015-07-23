@@ -12,7 +12,7 @@ module syiro.button {
 
 	// #region Basic, Dropdown, Toggle Button Generator
 
-	export function Generate(properties : Object) : Object { // Generate a Button Component and return a Component Object
+	export function New(properties : Object) : Object { // Generate a Button Component and return a Component Object
 		if (typeof properties["type"] == "undefined"){ // If the type is undefined
 			if ((typeof properties["list"] == "undefined") && (typeof properties["items"] == "undefined")){ // If there is no List or Items provided in properties
 				properties["type"] = "basic"; // Default to a basic button
@@ -65,7 +65,7 @@ module syiro.button {
 			var listComponent : Object; // Define listComponent as the Component Object of the List
 
 			if (typeof properties["items"] !== "undefined"){ // If List Items are provided in the properties
-				listComponent = syiro.list.Generate({ "items" : properties["items"]}); // Simply generate a new List component from the provided list items and set the listComponent Object to the one provided by Generate
+				listComponent = syiro.list.New({ "items" : properties["items"]}); // Simply generate a new List component from the provided list items and set the listComponent Object to the one provided by Generate
 			}
 			else{ // If a List is provided
 				listComponent = properties["list"]; // Simply set the listComponent to the List Component Object that was provided
@@ -114,6 +114,8 @@ module syiro.button {
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 		return { "id" : componentId, "type" : "button" }; // Return a Component Object
 	}
+
+	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
 
 	// #endregion
 
@@ -249,7 +251,7 @@ module syiro.button {
 					active = true; // Set to true, since we want to force inactive
 				}
 			}
-			
+
 			if (active){ // If the status is currently active
 				syiro.animation.Reset(component); // Eliminate the animation property
 				componentElement.removeAttribute("active"); // Remove the active attribute
@@ -273,7 +275,7 @@ module syiro.buttongroup {
 
 	// #region Buttongroup Generator
 
-	export function Generate(properties : Object){
+	export function New(properties : Object){
 		if (typeof properties["items"] !== "undefined"){ // If items is defined
 			if (properties["items"].length >= 2){ // If the length of items is equal to or greater than 2
 				var componentId : string = syiro.component.IdGen("buttongroup"); // Generate a component Id
@@ -283,7 +285,7 @@ module syiro.buttongroup {
 					var buttonItem : Object = properties["items"][buttonItemIndex];
 
 					if (syiro.component.IsComponentObject(buttonItem) == false){ // If the buttonItem provided is NOT Syiro Component Object
-						buttonItem = syiro.button.Generate(buttonItem); // Redefine buttonItem as the provided Button Component Object when we use generate a Syiro Button with the buttonItem current content
+						buttonItem = syiro.button.New(buttonItem); // Redefine buttonItem as the provided Button Component Object when we use generate a Syiro Button with the buttonItem current content
 					}
 
 					var buttonElement : Element = syiro.component.Fetch(buttonItem); // Define buttonElement as the fetched Button Element of the Button Component
@@ -308,6 +310,8 @@ module syiro.buttongroup {
 			}
 		}
 	}
+
+	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
 
 	// #endregion
 

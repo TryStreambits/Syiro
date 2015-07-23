@@ -13,7 +13,7 @@ module syiro.toast {
 
 	// #region Generate Function
 
-	export function Generate(properties : Object){
+	export function New(properties : Object){
 		if ((typeof properties["type"] == "undefined") || ((properties["type"] !== "normal") && (properties["type"] !== "dialog"))){ // If no "type" is defined or it was defined as NOT normal or dialog
 			properties["type"] = "normal"; // Define as a "normal" Toast
 		}
@@ -79,7 +79,7 @@ module syiro.toast {
 					futureButtonHandlers[toastButtonProperties["action"]] =  toastButtonProperties["function"]; // Push to the futureButtonHandlers Object a key/val where the action is the key and value is the func
 				}
 
-				var toastButtonObject : Object = syiro.button.Generate({ "type" : "basic", "content" : toastButtonProperties["content"] });
+				var toastButtonObject : Object = syiro.button.New({ "type" : "basic", "content" : toastButtonProperties["content"] });
 				var toastButtonElement : Element = syiro.component.Fetch(toastButtonObject); // Fetch the Button Element
 				toastButtonElement.setAttribute("data-syiro-dialog-action", toastButtonProperties["action"]); // Set the dialog-action of attribute of the toastButtonElement
 
@@ -93,7 +93,7 @@ module syiro.toast {
 			}
 		}
 		else{ // If just a message is provided
-			var closeIconButtonObject : Object = syiro.button.Generate({ "type" : "basic", "content": "x" }); // TEMP "x" LABEL
+			var closeIconButtonObject : Object = syiro.button.New({ "type" : "basic", "content": "x" }); // TEMP "x" LABEL
 			componentElement.appendChild(syiro.component.Fetch(closeIconButtonObject)); // Append the closeIconButton (that we fetch from closeIconButtonObject) to the Toast
 		}
 
@@ -102,6 +102,8 @@ module syiro.toast {
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 		return { "id" : componentId, "type" : "toast" }; // Return a Component Object
 	}
+
+	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
 
 	// #endregion
 

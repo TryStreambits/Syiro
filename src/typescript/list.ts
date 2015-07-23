@@ -12,7 +12,7 @@ module syiro.list {
 
 	// #region List Generator
 
-	export function Generate(properties : Object) : Object { // Generate a List Component and return a Component Object
+	export function New(properties : Object) : Object { // Generate a List Component and return a Component Object
 		var componentId : string = syiro.component.IdGen("list"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list", "data-syiro-component-id" : componentId, "aria-live" : "polite", "id" : componentId, "role" : "listbox" }); // Generate a List Element with an ID and listbox role for ARIA purposes
 
@@ -21,7 +21,7 @@ module syiro.list {
 				var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as an Object
 
 				if (syiro.component.IsComponentObject(individualItem) == false){ // If the individualItem is NOT a List Item Object
-					individualItem = syiro.listitem.Generate(individualItem); // Generate a List Item based on the individualItem properties
+					individualItem = syiro.listitem.New(individualItem); // Generate a List Item based on the individualItem properties
 				}
 
 				componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the List Item component to the List
@@ -31,6 +31,8 @@ module syiro.list {
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 		return { "id" : componentId, "type" : "list" }; // Return a Component Object
 	}
+
+	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
 
 	// #endregion
 
@@ -48,7 +50,7 @@ module syiro.listitem {
 
 	// #region List Item Generator
 
-	export function Generate(properties : Object) : Object { // Generate a ListItem Component and return a Component Object
+	export function New(properties : Object) : Object { // Generate a ListItem Component and return a Component Object
 		var componentId : string = syiro.component.IdGen("list-item"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list-item", "data-syiro-component-id" : componentId, "role" : "option" }); // Generate a List Item Element with the role as "option" for ARIA
 
@@ -91,6 +93,8 @@ module syiro.listitem {
 
 		return { "id" : componentId, "type" : "list-item" }; // Return a Component Object
 	}
+
+	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
 
 	// #endregion
 
@@ -143,13 +147,13 @@ module syiro.listitem {
 				if ((listItemLabel !== null) && (listItemControl !== null)){ // If there is already a label and control in the List Item
 					syiro.component.Remove(listItemControl); // Remove this inner control
 				}
-				
+
 				if (content !== ""){ // If content is not empty (adding an image source)
 					 if (listItemImage == null){ // If listItemImage does not exist
-						listItemImage = document.createElement("img"); // Create an image tag					
+						listItemImage = document.createElement("img"); // Create an image tag
 						syiro.component.Add("prepend", component, listItemImage); // Prepend the img tag
 					}
-					
+
 					listItemImage.setAttribute("src", syiro.utilities.SanitizeHTML(content)); // Set the src to a sanitized form of the content provided
 					syiro.component.Update(component["id"], listItemElement); // Update the List Item Element if necessary in syiro.data
 				}
@@ -183,11 +187,11 @@ module syiro.listitem {
 				if ((listItemImage !== null) && (listItemControl !== null)){ // If there is already an image and control in the List Item
 					syiro.component.Remove(listItemControl); // Remove this inner control
 				}
-				
+
 				if (content !== ""){ // If the content is not empty
 					if (listItemLabelElement == null){ // If the label Element does not exist
 						listItemLabelElement = document.createElement("label"); // Create a label and assign it to the listItemLabelElement
-						
+
 						if (listItemImage !== null){ // If there is an image in this List Item
 							syiro.component.Add("prepend", component, listItemLabelElement); // Prepend the label
 						}
@@ -195,7 +199,7 @@ module syiro.listitem {
 							syiro.component.Add("prepend", component, listItemLabelElement); // Prepend the label
 						}
 					}
-					
+
 					listItemLabelElement.textContent = syiro.utilities.SanitizeHTML(content); // Set the textContent to a sanitized form of the content
 					syiro.component.Update(component["id"], listItemElement); // Update the List Item Element if necessary in syiro.data
 				}

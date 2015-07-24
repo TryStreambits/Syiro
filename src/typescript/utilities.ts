@@ -1,8 +1,8 @@
 /*
-    This is a module for Syiro utilities that are commonly used throughout Syiro's core code and may be useful to others.
+    This is a namespace for Syiro utilities that are commonly used throughout Syiro's core code and may be useful to others.
 */
 
-module syiro.utilities {
+namespace syiro.utilities {
 
     // #region Element Creator Function
 

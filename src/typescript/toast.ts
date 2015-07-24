@@ -1,5 +1,5 @@
 /*
- This is the module for Syiro Toast component.
+ This is the namespace for Syiro Toast component.
  Contrary to common belief, this does not actually have anything to do with toast.
 */
 
@@ -9,7 +9,7 @@
 
 // #region Syiro Toast Component
 
-module syiro.toast {
+namespace syiro.toast {
 
 	// #region Generate Function
 

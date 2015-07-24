@@ -1,5 +1,5 @@
 /*
-	This is the module for core Syiro functionality.
+	This is the namespace for core Syiro functionality.
 */
 
 /// <reference path="data.ts" />
@@ -7,7 +7,7 @@
 /// <reference path="interfaces.ts" />
 /// <reference path="render.ts" />
 
-module syiro.component {
+namespace syiro.component {
 	export var lastUniqueIds : Object = {}; // Default the lastUniqueIds to an empty Object
 
 	// #region Component CSS Fetcher / Modifier

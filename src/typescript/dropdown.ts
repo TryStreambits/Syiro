@@ -1,5 +1,5 @@
 /*
- This is the module for Syiro Dropdown component.
+ This is the namespace for Syiro Dropdown component.
  */
 
 /// <reference path="button.ts" />
@@ -7,7 +7,7 @@
 /// <reference path="generator.ts" />
 /// <reference path="list.ts" />
 
-module syiro.dropdown {
+namespace syiro.dropdown {
 
 	// #region Meta-function for fetching the linked List Component Object of the Dropdown
 

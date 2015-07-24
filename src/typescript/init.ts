@@ -1,5 +1,5 @@
 /*
-    This is the module for Syiro's init system
+    This is the namespace for Syiro's init system
 */
 
 /// <reference path="component.ts" />
@@ -7,15 +7,13 @@
 
 // #region Syiro Init System
 
-module syiro.init {
+namespace syiro.init {
 
 	// #region Parser - Determines what the Component is and does the correct initialization
 
 	export function Parser(componentElement : Element){
 		if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))){ // If the element is a Syiro component
 			var componentObject = syiro.component.FetchComponentObject(componentElement); // Fetch the (potential) Component Object of the componentElement
-
-			console.time(componentObject["id"]);
 
 			switch (componentObject["type"]) { // Do initialization based on Component Object type
 				case "button" : // If it is a Button Component
@@ -57,8 +55,6 @@ module syiro.init {
 			// #endregion
 
 			syiro.data.Delete(componentObject["id"] + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
-
-			console.timeEnd(componentObject["id"]);
 		}
 	}
 

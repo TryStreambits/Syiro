@@ -1,5 +1,5 @@
 /*
- This is the module for Syiro List component and it's sub-component, List Item
+ This is the namespace for Syiro List component and it's sub-component, List Item
  */
 
 /// <reference path="component.ts" />
@@ -8,7 +8,7 @@
 
 // #region Syiro List Component
 
-module syiro.list {
+namespace syiro.list {
 
 	// #region List Generator
 
@@ -46,7 +46,7 @@ module syiro.list {
 
 // #region List Item Component
 
-module syiro.listitem {
+namespace syiro.listitem {
 
 	// #region List Item Generator
 

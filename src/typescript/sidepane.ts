@@ -1,5 +1,5 @@
 /*
- This is the module for the Syiro Sidepane Component.
+ This is the namespace for the Syiro Sidepane Component.
  */
 
 /// <reference path="component.ts" />
@@ -8,7 +8,7 @@
 
 // #region Syiro Sidepane Functionality
 
-module syiro.sidepane {
+namespace syiro.sidepane {
 
     // #region Generation
 

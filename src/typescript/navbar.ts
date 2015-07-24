@@ -1,5 +1,5 @@
 /*
-    This is the module for Syiro Navbar component (previously referred to as Header and Footer Components).
+    This is the namespace for Syiro Navbar component (previously referred to as Header and Footer Components).
 */
 
 /// <reference path="component.ts" />
@@ -8,7 +8,7 @@
 
 // #region Navbar Component
 
-module syiro.navbar {
+namespace syiro.navbar {
 
     // #region Shared Functionality
 
@@ -232,7 +232,7 @@ module syiro.navbar {
 
 // #region Faux "Header" Component
 
-module syiro.header {
+namespace syiro.header {
 
     export function Generate(properties : Object) : Object{
         properties["position"] = "top"; // Add "position" key/val to indicate this is meant to be a top Navbar Component
@@ -248,7 +248,7 @@ module syiro.header {
 
 // #region Faux "Footer" Component
 
-module syiro.footer {
+namespace syiro.footer {
 
     export function Generate(properties : Object) : Object{
         properties["position"] = "bottom"; // Add "position" key/val to indicate this is meant to be a bottom Navbar Component

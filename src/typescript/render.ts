@@ -1,11 +1,11 @@
 /*
-This is the module for render-oriented functionality for Components, such as positioning.
+This is the namespace for render-oriented functionality for Components, such as positioning.
 */
 
 /// <reference path="component.ts" />
 /// <reference path="data.ts" />
 
-module syiro.render {
+namespace syiro.render {
 
     // #region Positioning of Components or Elements
 

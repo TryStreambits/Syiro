@@ -1,5 +1,5 @@
 /*
-	This is the aggregate of all the Syiro modules into a unified module
+	This is the aggregate of all the Syiro namespace into a unified namespace
 */
 /// <reference path="init.ts" />
 /// <reference path="animation.ts" />
@@ -19,7 +19,7 @@
 /// <reference path="toast.ts" />
 /// <reference path="utilities.ts" />
 
-module syiro {
+namespace syiro {
 
 	export var backgroundColor : string; // Define backgroundColor as the rgba value we get from the CSS of the Syiro Background Color
 	export var primaryColor : string; // Define primaryColor as the rgba value we get from the CSS of the Syiro Primary Color

@@ -1,5 +1,5 @@
 /*
-    This is the module for Syiro Component and Generic Element Event Handling
+    This is the namespace for Syiro Component and Generic Element Event Handling
 */
 
 /// <reference path="animation.ts" />
@@ -7,7 +7,7 @@
 /// <reference path="generator.ts" />
 /// <reference path="interfaces.ts" />
 
-module syiro.events {
+namespace syiro.events {
 
     export var eventStrings : Object = { // Set syiro.component.listenerStrings as an Object containing commonly used event lister combinations
         "down" : [], "up" : [],

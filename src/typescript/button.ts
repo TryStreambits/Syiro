@@ -1,5 +1,5 @@
 /*
- This is the module for the Syiro Button, Buttongroup, and Toggle Button components.
+ This is the namespace for the Syiro Button, Buttongroup, and Toggle Button components.
  */
 
 /// <reference path="component.ts" />
@@ -8,7 +8,7 @@
 
 // #region Syiro Button and Toggle Button Functionality
 
-module syiro.button {
+namespace syiro.button {
 
 	// #region Basic, Dropdown, Toggle Button Generator
 
@@ -271,7 +271,7 @@ module syiro.button {
 
 // #region Syiro Buttongroup Component
 
-module syiro.buttongroup {
+namespace syiro.buttongroup {
 
 	// #region Buttongroup Generator
 

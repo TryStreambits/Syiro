@@ -1,5 +1,5 @@
 /*
- This is the module for information and functionality Syiro provides regarding the device using Syiro.
+ This is the namespace for information and functionality Syiro provides regarding the device using Syiro.
 */
 
 /// <reference path="events.ts" />
@@ -7,7 +7,7 @@
 
 // #region Syiro Device Information and Functionality
 
-module syiro.device {
+namespace syiro.device {
 
     // #region Browser / Device Support (Default all to true since Detect() will change it if necessary)
 

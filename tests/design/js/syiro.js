@@ -5,7 +5,7 @@ var WebKitMutationObserver;
 var ontransitionend;
 var webkitTransitionEnd;
 /*
-This is the module for managing Syiro Data.
+This is the namespace for managing Syiro Data.
 */
 /// <reference path="interfaces.ts" />
 var syiro;
@@ -74,7 +74,7 @@ var syiro;
     })(data = syiro.data || (syiro.data = {}));
 })(syiro || (syiro = {}));
 /*
-    This is the module for animation in Syiro
+    This is the namespace for animation in Syiro
 */
 /// <reference path="component.ts" />
 /// <reference path="interfaces.ts" />
@@ -170,7 +170,7 @@ var syiro;
     })(animation = syiro.animation || (syiro.animation = {}));
 })(syiro || (syiro = {}));
 /*
-    This is a module for Syiro utilities that are commonly used throughout Syiro's core code and may be useful to others.
+    This is a namespace for Syiro utilities that are commonly used throughout Syiro's core code and may be useful to others.
 */
 var syiro;
 (function (syiro) {
@@ -253,7 +253,7 @@ var syiro;
     })(utilities = syiro.utilities || (syiro.utilities = {}));
 })(syiro || (syiro = {}));
 /*
- This is the module for generating Syiro components.
+ This is the namespace for generating Syiro components.
  */
 /// <reference path="syiro.ts" />
 /// <reference path="utilities.ts" />
@@ -265,7 +265,7 @@ var syiro;
     })(generator = syiro.generator || (syiro.generator = {}));
 })(syiro || (syiro = {}));
 /*
-    This is the module for Syiro Component and Generic Element Event Handling
+    This is the namespace for Syiro Component and Generic Element Event Handling
 */
 /// <reference path="animation.ts" />
 /// <reference path="component.ts" />
@@ -485,7 +485,7 @@ var syiro;
     })(events = syiro.events || (syiro.events = {}));
 })(syiro || (syiro = {}));
 /*
-This is the module for render-oriented functionality for Components, such as positioning.
+This is the namespace for render-oriented functionality for Components, such as positioning.
 */
 /// <reference path="component.ts" />
 /// <reference path="data.ts" />
@@ -713,7 +713,7 @@ var syiro;
     })(render = syiro.render || (syiro.render = {}));
 })(syiro || (syiro = {}));
 /*
-    This is the module for core Syiro functionality.
+    This is the namespace for core Syiro functionality.
 */
 /// <reference path="data.ts" />
 /// <reference path="events.ts" />
@@ -979,7 +979,7 @@ var syiro;
     })(component = syiro.component || (syiro.component = {}));
 })(syiro || (syiro = {}));
 /*
-    This is the module for Syiro's init system
+    This is the namespace for Syiro's init system
 */
 /// <reference path="component.ts" />
 /// <reference path="interfaces.ts" />
@@ -990,7 +990,6 @@ var syiro;
         function Parser(componentElement) {
             if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))) {
                 var componentObject = syiro.component.FetchComponentObject(componentElement);
-                console.time(componentObject["id"]);
                 switch (componentObject["type"]) {
                     case "button":
                         if (componentElement.getAttribute("data-syiro-component-type") !== "basic") {
@@ -1024,7 +1023,6 @@ var syiro;
                     syiro.init.Parser(childComponentElement);
                 }
                 syiro.data.Delete(componentObject["id"] + "->HTMLElement");
-                console.timeEnd(componentObject["id"]);
             }
         }
         init.Parser = Parser;
@@ -1101,7 +1099,7 @@ var syiro;
     })(init = syiro.init || (syiro.init = {}));
 })(syiro || (syiro = {}));
 /*
- This is the module for information and functionality Syiro provides regarding the device using Syiro.
+ This is the namespace for information and functionality Syiro provides regarding the device using Syiro.
 */
 /// <reference path="events.ts" />
 /// <reference path="interfaces.ts" />
@@ -1290,7 +1288,7 @@ var syiro;
     })(device = syiro.device || (syiro.device = {}));
 })(syiro || (syiro = {}));
 /*
-    This is the module for Syiro Navbar component (previously referred to as Header and Footer Components).
+    This is the namespace for Syiro Navbar component (previously referred to as Header and Footer Components).
 */
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
@@ -1474,7 +1472,7 @@ var syiro;
     })(footer = syiro.footer || (syiro.footer = {}));
 })(syiro || (syiro = {}));
 /*
- This is the module for the Syiro Button, Buttongroup, and Toggle Button components.
+ This is the namespace for the Syiro Button, Buttongroup, and Toggle Button components.
  */
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
@@ -1751,7 +1749,7 @@ var syiro;
     })(buttongroup = syiro.buttongroup || (syiro.buttongroup = {}));
 })(syiro || (syiro = {}));
 /*
- This is the module for Syiro List component and it's sub-component, List Item
+ This is the namespace for Syiro List component and it's sub-component, List Item
  */
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
@@ -1911,7 +1909,7 @@ var syiro;
     })(listitem = syiro.listitem || (syiro.listitem = {}));
 })(syiro || (syiro = {}));
 /*
- This is the module for Syiro Dropdown component.
+ This is the namespace for Syiro Dropdown component.
  */
 /// <reference path="button.ts" />
 /// <reference path="component.ts" />
@@ -1964,7 +1962,7 @@ var syiro;
     })(dropdown = syiro.dropdown || (syiro.dropdown = {}));
 })(syiro || (syiro = {}));
 /*
-    This is a file containing the modules for the Syiro Audio Player and Video Player, as well as shared player functionality.
+    This is a file containing the namespace for the Syiro Audio Player and Video Player, as well as shared player functionality.
     The Audio Player is exposed via syiro.audioplayer.
     The Video Player is exposed via syiro.videoplayer.
     The shared Player functionality is exposed via syiro.player.
@@ -2702,7 +2700,7 @@ var syiro;
     })(videoplayer = syiro.videoplayer || (syiro.videoplayer = {}));
 })(syiro || (syiro = {}));
 /*
- This is the module for Syiro Searchbox component.
+ This is the namespace for Syiro Searchbox component.
 */
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
@@ -2829,7 +2827,7 @@ var syiro;
     })(searchbox = syiro.searchbox || (syiro.searchbox = {}));
 })(syiro || (syiro = {}));
 /*
- This is the module for the Syiro Sidepane Component.
+ This is the namespace for the Syiro Sidepane Component.
  */
 /// <reference path="component.ts" />
 /// <reference path="generator.ts" />
@@ -2972,7 +2970,7 @@ var syiro;
     })(sidepane = syiro.sidepane || (syiro.sidepane = {}));
 })(syiro || (syiro = {}));
 /*
- This is the module for Syiro Toast component.
+ This is the namespace for Syiro Toast component.
  Contrary to common belief, this does not actually have anything to do with toast.
 */
 /// <reference path="component.ts" />
@@ -3119,7 +3117,7 @@ var syiro;
     })(toast = syiro.toast || (syiro.toast = {}));
 })(syiro || (syiro = {}));
 /*
-    This is the aggregate of all the Syiro modules into a unified module
+    This is the aggregate of all the Syiro namespace into a unified namespace
 */
 /// <reference path="init.ts" />
 /// <reference path="animation.ts" />

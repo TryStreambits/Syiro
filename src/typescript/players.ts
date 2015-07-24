@@ -1,5 +1,5 @@
 /*
-    This is a file containing the modules for the Syiro Audio Player and Video Player, as well as shared player functionality.
+    This is a file containing the namespace for the Syiro Audio Player and Video Player, as well as shared player functionality.
     The Audio Player is exposed via syiro.audioplayer.
     The Video Player is exposed via syiro.videoplayer.
     The shared Player functionality is exposed via syiro.player.
@@ -13,7 +13,7 @@
 
 // #region Shared Player Functionality
 
-module syiro.player {
+namespace syiro.player {
 
     // #region Shared Player Initialization
 
@@ -775,7 +775,7 @@ module syiro.player {
 
 // #region Syiro Player Controls Component
 
-module syiro.playercontrol {
+namespace syiro.playercontrol {
 
     // #region Player Control Generator
 
@@ -908,7 +908,7 @@ module syiro.playercontrol {
 
 // #region Audio Player Component
 
-module syiro.audioplayer {
+namespace syiro.audioplayer {
 
     // #region Audio Player Generator
 
@@ -1039,7 +1039,7 @@ module syiro.audioplayer {
 
 // #region Video Player Component
 
-module syiro.videoplayer {
+namespace syiro.videoplayer {
 
     // #region Video Player Generator
 

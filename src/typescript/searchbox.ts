@@ -1,5 +1,5 @@
 /*
- This is the module for Syiro Searchbox component.
+ This is the namespace for Syiro Searchbox component.
 */
 
 /// <reference path="component.ts" />
@@ -8,7 +8,7 @@
 
 // #region Syiro Searchbox Component
 
-module syiro.searchbox {
+namespace syiro.searchbox {
 
 	// #region Searchbox Generator
 

@@ -1114,6 +1114,7 @@ var syiro;
         device.HasLocalStorage = true;
         device.IsOnline = true;
         device.OperatingSystem;
+        device.SupportsMutationObserver = false;
         device.SupportsTouch = false;
         device.IsSubHD;
         device.IsHD;
@@ -1141,6 +1142,12 @@ var syiro;
             }
             if (typeof window.localStorage == "undefined") {
                 syiro.device.HasLocalStorage = false;
+            }
+            if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")) {
+                if (typeof WebKitMutationObserver !== "undefined") {
+                    MutationObserver = WebKitMutationObserver;
+                }
+                syiro.device.SupportsMutationObserver = true;
             }
             if (typeof navigator.onLine !== "undefined") {
                 syiro.device.IsOnline = navigator.onLine;
@@ -3141,6 +3148,7 @@ var syiro;
     syiro.backgroundColor;
     syiro.primaryColor;
     syiro.secondaryColor;
+    syiro.legacyDimensionsDetection;
     function Init() {
         syiro.device.Detect();
         syiro.events.Add("scroll", document, function () {
@@ -3191,10 +3199,7 @@ var syiro;
         syiro.primaryColor = window.getComputedStyle(syiroInternalColorContainer).color;
         syiro.secondaryColor = window.getComputedStyle(syiroInternalColorContainer).borderColor;
         document.body.removeChild(syiroInternalColorContainer);
-        if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")) {
-            if (typeof WebKitMutationObserver !== "undefined") {
-                MutationObserver = WebKitMutationObserver;
-            }
+        if (syiro.device.SupportsMutationObserver) {
             var mutationWatcher = new MutationObserver(function (mutations) {
                 for (var _i = 0; _i < mutations.length; _i++) {
                     var mutation = mutations[_i];
@@ -3223,12 +3228,17 @@ var syiro;
             triggerAccurateInitialDimensions.observe(document.body, tempWatcherOptions);
         }
         else {
+            syiro.legacyDimensionsDetection = false;
             (function mutationTimer() {
                 window.setTimeout(function () {
                     for (var componentId in syiro.data.storage) {
                         var componentElement = document.querySelector('div[data-syiro-component-id="' + componentId + '"]');
                         if (componentElement !== null) {
                             syiro.init.Parser(componentElement);
+                            if (syiro.legacyDimensionsDetection == false) {
+                                syiro.device.FetchScreenDetails();
+                                syiro.legacyDimensionsDetection = true;
+                            }
                         }
                     }
                     mutationTimer();

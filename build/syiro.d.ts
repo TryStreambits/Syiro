@@ -95,6 +95,7 @@ declare module syiro.device {
     var HasLocalStorage: boolean;
     var IsOnline: boolean;
     var OperatingSystem: string;
+    var SupportsMutationObserver: boolean;
     var SupportsTouch: boolean;
     var IsSubHD: boolean;
     var IsHD: boolean;
@@ -229,6 +230,7 @@ declare module syiro {
     var backgroundColor: string;
     var primaryColor: string;
     var secondaryColor: string;
+    var legacyDimensionsDetection: boolean;
     function Init(): void;
     var CSS: typeof component.CSS;
     var Fetch: typeof component.Fetch;

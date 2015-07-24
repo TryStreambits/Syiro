@@ -24,6 +24,7 @@ namespace syiro {
 	export var backgroundColor : string; // Define backgroundColor as the rgba value we get from the CSS of the Syiro Background Color
 	export var primaryColor : string; // Define primaryColor as the rgba value we get from the CSS of the Syiro Primary Color
 	export var secondaryColor : string; // Define secondaryColor as the rgba value we get from the CSS of the Syiro Secondary Color
+	export var legacyDimensionsDetection : boolean; // Define legacyDimensionsDetection as a boolean, used if we need to check dimensions for non-MutationObserver supported browsers
 
 	// #region Syiro Initialization Function
 
@@ -109,11 +110,7 @@ namespace syiro {
 
 		// #region Watch DOM For Components
 
-		if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")){ // If MutationObserver is supported by the browser
-			if (typeof WebKitMutationObserver !== "undefined"){ // If WebKitMutationObserver is used instead (like on iOS)
-				MutationObserver = WebKitMutationObserver; // Set MutationObserver to WebKitMutationObserver
-			}
-
+		if (syiro.device.SupportsMutationObserver){ // If MutationObserver is supported by the browser
 			var mutationWatcher = new MutationObserver(
 				function(mutations : Array<MutationRecord>){ // Define mutationHandler as a variable that consists of a function that handles mutationRecords
 					for (var mutation of mutations){ // For each mutation of mutations
@@ -149,6 +146,8 @@ namespace syiro {
 			triggerAccurateInitialDimensions.observe(document.body, tempWatcherOptions); // Watch the document body temporarily
 		}
 		else{ // If MutationObserver is NOT supported (IE10 and below), such as in Windows Phone
+			syiro.legacyDimensionsDetection = false; // Define legacyDimensionsDetection as false, implying we have not already had a Component enter DOM and need to re-check screen dimensions
+
 	        (function mutationTimer(){
 	            window.setTimeout( // Set interval to 3000 (3 seconds) with a timeout
 	                function(){ // Call this function
@@ -156,6 +155,11 @@ namespace syiro {
 							var componentElement = document.querySelector('div[data-syiro-component-id="' + componentId + '"]'); // Get the potential component Element
 	                        if (componentElement !== null){ // If the component exists in the DOM
 								syiro.init.Parser(componentElement); // Send to Syiro's Component Parser
+
+								if (syiro.legacyDimensionsDetection == false){ // If we should update screen dimensions now
+									syiro.device.FetchScreenDetails(); // Update screen details
+									syiro.legacyDimensionsDetection = true; // Set legacyDimensionsDetection to true
+								}
 	                        }
 	                    }
 

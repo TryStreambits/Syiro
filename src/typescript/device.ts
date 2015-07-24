@@ -18,6 +18,7 @@ namespace syiro.device {
     export var HasLocalStorage : boolean = true; // Define HasLocalStorage as a boolean if the device has LocalStorage support.
     export var IsOnline : boolean = true; // Define IsOnline as a boolean if the device is online.
     export var OperatingSystem : string; // Define OperatingSystem as a string of what the OS is
+	export var SupportsMutationObserver : boolean = false; // Define SupportsMutationObserver as a boolean, defaulting to false, as to whether the browser / device supports MutationObserver or WebKitMutationObserver
     export var SupportsTouch : boolean = false; // Define SupportsTouch as a boolean, defaulting to false, as to whether or not the device supports touch.
 
     // #region Screen Variables
@@ -80,6 +81,16 @@ namespace syiro.device {
 
         // #endregion
 
+		// #region MutationObserver Support
+
+		if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")){ // If MutationObserver is supported by the browser
+			if (typeof WebKitMutationObserver !== "undefined"){ // If WebKitMutationObserver is used instead (like on iOS)
+				MutationObserver = WebKitMutationObserver; // Set MutationObserver to WebKitMutationObserver
+			}
+
+			syiro.device.SupportsMutationObserver = true; // Set SupportsMutationObserver support variable to true
+		}
+		
         // #region Online Status Support
 
         if (typeof navigator.onLine !== "undefined"){ // If the browser is online

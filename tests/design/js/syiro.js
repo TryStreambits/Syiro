@@ -1096,7 +1096,7 @@ var syiro;
                 var playerComponentObject = arguments[0];
                 var playerRange = arguments[1];
                 var valueNum = Number(playerRange.value);
-                if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") !== false) {
+                if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) {
                     syiro.player.SetTime(playerComponentObject, valueNum);
                 }
                 else {
@@ -1110,7 +1110,7 @@ var syiro;
             syiro.events.Add(syiro.events.eventStrings["up"], playButton, syiro.player.PlayOrPause.bind(this, componentObject));
             var volumeButton = playerControlElement.querySelector('div[data-syiro-render-icon="volume"]');
             var volumeButtonComponent = syiro.component.FetchComponentObject(volumeButton);
-            syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, syiro.playercontrol.ShowVolumeSlider.bind(this, componentObject));
+            syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, syiro.playercontrol.ShowVolumeSlider.bind(this, playerControlComponentObject));
             var menuButton = playerControlElement.querySelector('div[data-syiro-render-icon="menu"]');
             if (menuButton !== null) {
                 var menuButtonObject = syiro.component.FetchComponentObject(menuButton);
@@ -2453,7 +2453,7 @@ var syiro;
             var playerControl = syiro.component.Fetch(playerControlComponent);
             var volumeButton = syiro.component.Fetch(volumeButtonComponent);
             var playerComponentObject = syiro.component.FetchComponentObject(playerControl.parentElement);
-            var playerContentElement = playerControl.parentElement.querySelector(playerComponentObject["id"].replace("-player", ""));
+            var playerContentElement = syiro.player.FetchInnerContentElement(playerComponentObject);
             var playerRange = playerControl.querySelector("input");
             var playerRangeAttributes = {};
             if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") !== true) {
@@ -2667,9 +2667,8 @@ var syiro;
                 else {
                     syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]];
                 }
-                var usingExternalLibrary = false;
                 if ((typeof properties["UsingExternalLibrary"] !== "undefined") && (properties["UsingExternalLibrary"] == true)) {
-                    usingExternalLibrary = true;
+                    syiroComponentData["UsingExternalLibrary"] = true;
                 }
                 syiro.data.Write(componentId, syiroComponentData);
                 return { "id": componentId, "type": "video-player" };

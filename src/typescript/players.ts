@@ -139,7 +139,7 @@ namespace syiro.player {
             else if ((contentDuration > 300) && (contentDuration < 900)){ // If the contentDuration is greater than 5 minutes but less than 15 minutes
                 playerLengthInfo["step"] = 10; // Set the step value to 10 seconds
             }
-            else{ // If the video is greater than 15 seconds
+            else{ // If the video is greater than 15 minutes
                 playerLengthInfo["step"] = 15; // Set the step value to 15 seconds
             }
         }
@@ -224,7 +224,7 @@ namespace syiro.player {
 				if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")){ // If we are working strictly with a streaming protocol and not normal HTTP (or HLS)
 					isStreamble = true; // Define isStreamable as true
 				}
-				else if ((streamingProtocol.indexOf("http") !== -1) && (sourceExtension == "m3u8")){ // If we are dealing with a m3u8 file over HTTP
+				else if ((streamingProtocol.indexOf("http") == 0) && (sourceExtension == "m3u8")){ // If we are dealing with a m3u8 file over HTTP
 					isStreamble = true; // Define isStreamable as true
 				}
 			}
@@ -557,7 +557,7 @@ namespace syiro.playercontrol {
 		var volumeButton : Element = syiro.component.Fetch(volumeButtonComponent); // Fetch the Volume Button Element
 
 		var playerComponentObject : Object = syiro.component.FetchComponentObject(playerControl.parentElement); // Get the Component Object of the parent Player Component
-		var playerContentElement : any = playerControl.parentElement.querySelector(playerComponentObject["id"].replace("-player", "")); // Get the audio or video Element of the parent Player Component
+		var playerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(playerComponentObject); // Get the audio or video Element of the parent Player Component
 
 		var playerRange : any = playerControl.querySelector("input"); // Get the Player Control Range
 		var playerRangeAttributes : Object= {}; // Set playerRangeAttributes as an empty Object to hold attribute information that we'll apply to the input range later
@@ -751,7 +751,7 @@ namespace syiro.audioplayer {
 
             var usingExternalLibrary = false; // Declare a variable that we'll use to determine if we are using an external library and tying that into Syiro Player
 
-            if ((typeof properties["UsingExternalLibrary"] !== "undefined")&& (properties["UsingExternalLibrary"] == true)){ // If an external library is going to be tying into the Syiro Video Player
+            if ((typeof properties["UsingExternalLibrary"] !== "undefined") && (properties["UsingExternalLibrary"] == true)){ // If an external library is going to be tying into the Syiro Video Player
                 usingExternalLibrary = true;
             }
 
@@ -900,10 +900,8 @@ namespace syiro.videoplayer {
             // #region Third-Party Streaming Support
             // This section will determine if we are using a third-party library for live streaming support (like dashjs)
 
-            var usingExternalLibrary = false; // Declare a variable that we'll use to determine if we are using an external library and tying that into Syiro Player
-
-            if ((typeof properties["UsingExternalLibrary"] !== "undefined") && (properties["UsingExternalLibrary"] == true)){ // If an external library is going to be tying into the Syiro Video Player
-                usingExternalLibrary = true;
+            if ((typeof properties["UsingExternalLibrary"] !== "undefined") && (properties["UsingExternalLibrary"] == true)){ // If an external library is going to be tied into the Syiro Video Player
+				syiroComponentData["UsingExternalLibrary"] = true; // Set the UsingExternalLibrary to true
             }
 
             // #endregion

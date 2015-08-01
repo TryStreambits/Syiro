@@ -219,7 +219,7 @@ namespace syiro.init {
 
 				var valueNum : number = Number(playerRange.value); // Define valueNum as the converted string-to-number, where the value was the playerRange value
 
-				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume")!== false){ // If we are doing a time change and not a volume change
+				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
 					syiro.player.SetTime(playerComponentObject, valueNum); // Set the Time
 				}
 				else{ // If we are doing a volume change
@@ -245,7 +245,7 @@ namespace syiro.init {
 
 		var volumeButton : Element = playerControlElement.querySelector('div[data-syiro-render-icon="volume"]'); // Get the Volume Button Element
 		var volumeButtonComponent : Object = syiro.component.FetchComponentObject(volumeButton); // Fetch the Component Object of the Volume Button so we may bind it during event adding
-		syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, syiro.playercontrol.ShowVolumeSlider.bind(this, componentObject)); // Listen to up events on the volumeButton Component to ShowVolumeSlider (binding the Player Component Object)
+		syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, syiro.playercontrol.ShowVolumeSlider.bind(this, playerControlComponentObject)); // Listen to up events on the volumeButton Component to ShowVolumeSlider (binding the Player Component Object)
 
 		// #endregion
 

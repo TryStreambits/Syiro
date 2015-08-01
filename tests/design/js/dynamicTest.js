@@ -99,7 +99,6 @@ function generateMediaPlayers(){
 
     var generatedAudioPlayer = syiro.audioplayer.New(
             {
-                "UsingExternalLibrary" : true,
                 "menu" : audioMenuDialogList,
                 "sources": ["http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg", "http://www.noiseaddicts.com/samples/55.mp3" ],
                 "art" : "https://c2.staticflickr.com/6/5134/5518988345_9df9892bb2_b.jpg",
@@ -111,7 +110,6 @@ function generateMediaPlayers(){
     var generatedVideoPlayer = syiro.videoplayer.New(
             {
                 "art" : "img/video-art.png",
-                "UsingExternalLibrary" : true, // Declare that we are using an external library and to ignore canPlayType error
                 "menu" : videoMenuDialogList,
                 "fill" : [1,1],
                 "sources" : ["http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v", "http://video.webmfiles.org/big-buck-bunny_trailer.webm"]

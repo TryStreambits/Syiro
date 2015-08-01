@@ -136,8 +136,6 @@ namespace syiro.init {
 
 			// #endregion
 
-			// #endregion
-
 			syiro.init.PlayerControl(component, playerControlComponent); // Initialize the PlayerControl and inner Buttons
 
 			// #region Audio Player-Specific Initialization
@@ -155,25 +153,9 @@ namespace syiro.init {
 				if (syiro.device.SupportsTouch){ // If the device supports touch
 					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.playercontrol.Toggle.bind(this, playerControlComponent)); // Add an "up" event to player container that toggles the Player Control
 				}
-                else if (syiro.device.SupportsTouch == false){ // If the device uses a mouse instead of touch
+                else { // If the device uses a mouse instead of touch
 					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.player.PlayOrPause.bind(this, component)); // Add an "up" event to toggle play / pause the video
-
-					// #region Player Control Toggling
-
-					syiro.events.Add(["mouseenter", "mouseleave"], componentElement, // Add event to mouseenter and mouseleave to trigger syiro.playercontrol.Toggle
-						function(){
-							var eventData : MouseEvent = arguments[1]; // Define eventData as the second argument provided by the handler, which is a MouseEvent in this case
-							var showPlayerControl = false; // Default to not showing the Player Control
-
-							if (eventData.type == "mouseenter"){ // If we entered the Player
-								showPlayerControl = true; // Set showPlayerControl to true
-							}
-
-							syiro.playercontrol.Toggle(playerControlComponent, showPlayerControl); // Toggle the Player Control
-						}.bind(this, playerControlComponent)
-					);
-
-					// #endregion
+					syiro.events.Add(["mouseenter", "mouseleave"], componentElement, syiro.playercontrol.Toggle.bind(this, playerControlComponent)); // Add event to mouseenter and mouseleave to trigger syiro.playercontrol.Toggle
 
                 }
 			}

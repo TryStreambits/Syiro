@@ -181,6 +181,20 @@ namespace syiro.player {
 		}
 
 		if (syiro.data.Read(component["id"] + "->NoUX") == false){ // If this player has UX
+			if (playerErrorNotice == null){ // If the playerErrorNotice doesn't exist
+				playerErrorNotice = syiro.utilities.ElementCreator("div", { // Create a div to add to the player stating there is a codec error
+					"data-syiro-minor-component" : "player-error", "content" : "This content is not capable of being played on this browser or device."
+				});
+
+				var playerHalfHeight = ((componentElement.clientHeight - 40) / 2); // Define playerHalfHeight equal to half the height of the Player, minus 40 (height of the codecErrorElement)
+
+				syiro.component.CSS(playerErrorNotice, "width", componentElement.clientWidth.toString() + "px"); // Set the width to the width of the Player
+				syiro.component.CSS(playerErrorNotice, "padding-top", playerHalfHeight.toString() + "px"); // Set the padding-top to the playerHalfHeight
+				syiro.component.CSS(playerErrorNotice, "padding-bottom", playerHalfHeight.toString() + "px"); // Set the padding-bottom to the playerHalfHeight
+
+				componentElement.insertBefore(playerErrorNotice, componentElement.firstChild); // Prepend the codecErrorElement to the Player
+			}
+
 			if (isPlayable || isStreamable){ // If the content is playable
 				syiro.component.CSS(playerErrorNotice, "visibility", ""); // Remove the playerErrorNotice visibility styling if it exists (it defaults to hidden)
 			}
@@ -643,11 +657,15 @@ namespace syiro.playercontrol {
 
     export function Toggle(component : Object, forceShow ?: boolean){
         var playerControlElement : Element = syiro.component.Fetch(component); // Fetch the Syiro Player Control Component Element
-        var currentAnimationStored : any = null; // Define currentAnimationStored initially as null. We will define it as the current animation if it has one
+        var currentAnimationStored : string; // Define currentAnimationStored as an undefined string
 
         if (playerControlElement.hasAttribute("data-syiro-animation")){ // If the Player Control Element has an animation attribute
             currentAnimationStored = playerControlElement.getAttribute("data-syiro-animation"); // Get the current animation stored in "data-syiro-animation"
         }
+
+		if (typeof forceShow !== "boolean"){ // If we are passed eventData rather than a boolean
+			forceShow = null; // Set forceShow to null
+		}
 
         if (forceShow == true){ // If we are forcing to show the Player Control
             syiro.animation.FadeIn(component); // Fade in the Player Control
@@ -655,7 +673,7 @@ namespace syiro.playercontrol {
         else if (forceShow == false){ // If we are forcing to hide the Player Control
             syiro.animation.FadeOut(component); // Fade out the Player Control
         }
-        else if (typeof forceShow == "undefined"){ // If the forceShow is not defined
+        else if ((typeof forceShow == "undefined") || (forceShow == null)){ // If the forceShow is not defined or defined as null
             if ((currentAnimationStored == "fade-out") || (playerControlElement.hasAttribute("data-syiro-animation") == false)){ // If the current status is the Player Control is faded out OR the Player Control does not have the animation attribute
                 syiro.animation.FadeIn(component); // Fade in the Player Control
             }

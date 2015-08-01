@@ -1063,16 +1063,9 @@ var syiro;
                     if (syiro.device.SupportsTouch) {
                         syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.playercontrol.Toggle.bind(this, playerControlComponent));
                     }
-                    else if (syiro.device.SupportsTouch == false) {
+                    else {
                         syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.player.PlayOrPause.bind(this, component));
-                        syiro.events.Add(["mouseenter", "mouseleave"], componentElement, function () {
-                            var eventData = arguments[1];
-                            var showPlayerControl = false;
-                            if (eventData.type == "mouseenter") {
-                                showPlayerControl = true;
-                            }
-                            syiro.playercontrol.Toggle(playerControlComponent, showPlayerControl);
-                        }.bind(this, playerControlComponent));
+                        syiro.events.Add(["mouseenter", "mouseleave"], componentElement, syiro.playercontrol.Toggle.bind(this, playerControlComponent));
                     }
                 }
                 syiro.player.IsPlayable(component);
@@ -2179,6 +2172,16 @@ var syiro;
                 }
             }
             if (syiro.data.Read(component["id"] + "->NoUX") == false) {
+                if (playerErrorNotice == null) {
+                    playerErrorNotice = syiro.utilities.ElementCreator("div", {
+                        "data-syiro-minor-component": "player-error", "content": "This content is not capable of being played on this browser or device."
+                    });
+                    var playerHalfHeight = ((componentElement.clientHeight - 40) / 2);
+                    syiro.component.CSS(playerErrorNotice, "width", componentElement.clientWidth.toString() + "px");
+                    syiro.component.CSS(playerErrorNotice, "padding-top", playerHalfHeight.toString() + "px");
+                    syiro.component.CSS(playerErrorNotice, "padding-bottom", playerHalfHeight.toString() + "px");
+                    componentElement.insertBefore(playerErrorNotice, componentElement.firstChild);
+                }
                 if (isPlayable || isStreamable) {
                     syiro.component.CSS(playerErrorNotice, "visibility", "");
                 }
@@ -2212,7 +2215,7 @@ var syiro;
                     if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")) {
                         isStreamble = true;
                     }
-                    else if ((streamingProtocol.indexOf("http") !== -1) && (sourceExtension == "m3u8")) {
+                    else if ((streamingProtocol.indexOf("http") == 0) && (sourceExtension == "m3u8")) {
                         isStreamble = true;
                     }
                 }
@@ -2511,9 +2514,12 @@ var syiro;
         playercontrol.TimeLabelUpdater = TimeLabelUpdater;
         function Toggle(component, forceShow) {
             var playerControlElement = syiro.component.Fetch(component);
-            var currentAnimationStored = null;
+            var currentAnimationStored;
             if (playerControlElement.hasAttribute("data-syiro-animation")) {
                 currentAnimationStored = playerControlElement.getAttribute("data-syiro-animation");
+            }
+            if (typeof forceShow !== "boolean") {
+                forceShow = null;
             }
             if (forceShow == true) {
                 syiro.animation.FadeIn(component);
@@ -2521,7 +2527,7 @@ var syiro;
             else if (forceShow == false) {
                 syiro.animation.FadeOut(component);
             }
-            else if (typeof forceShow == "undefined") {
+            else if ((typeof forceShow == "undefined") || (forceShow == null)) {
                 if ((currentAnimationStored == "fade-out") || (playerControlElement.hasAttribute("data-syiro-animation") == false)) {
                     syiro.animation.FadeIn(component);
                 }

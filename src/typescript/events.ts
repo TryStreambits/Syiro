@@ -92,18 +92,11 @@ namespace syiro.events {
 
     // #region Syiro Component and Generic Element Add Listener Function
 
-    export function Add(... args : any[]) : boolean { // Takes (optional) space-separated listeners, Component Object or a generic Element, and the handler function.
+    export function Add(listeners : any, component : any, listenerCallback : Function) : boolean { // Takes (optional) space-separated listeners, Component Object or a generic Element, and the handler function.
         var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
         var componentId : string; // Define componentId as the ID which we query for in syiro.data.storage
-        var listeners : any; // Define listeners as any (array or string -> array)
-        var component : any; // Define Component as a Syiro Component Object or an Element
-        var listenerCallback : Function; // Default to having the listenerCallback be the handler we are passed.
 
-        if (args.length == 3){ // If an appropriate amount of arguments are provided
-            listeners = args[0]; // Set listeners to the first argument
-            component = args[1]; // Set component to the second argument
-            listenerCallback = args[2]; // Set the handler to the third argument
-
+        if (arguments.length == 3){ // If an appropriate amount of arguments are provided
             if (typeof listeners == "string"){ // If the listeners is a string
                 listeners = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
             }

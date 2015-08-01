@@ -216,10 +216,10 @@ namespace syiro.component {
 	// #region Is Component Object
 	// This function verifies using multiple tests if the variable passed is actualy a Component Object
 
-	export function IsComponentObject(variable : any) : boolean {
+	export function IsComponentObject(component : any) : boolean {
 		var isComponentObject : boolean = false; // Define isComponentObject as a boolean defaulting to false
 
-		if ((typeof variable["id"] !== "undefined") && (typeof variable["type"] !== "undefined") && (typeof variable.nodeType == "undefined")){ // If the variable provided has both an id value and a type value both does not have a nodeType (is not an Element)
+		if ((typeof component["id"] !== "undefined") && (typeof component["type"] !== "undefined") && (typeof component.nodeType == "undefined")){ // If the component provided has both an id value and a type value both does not have a nodeType (is not an Element)
 			isComponentObject = true; // This variable is a Component Object
 		}
 

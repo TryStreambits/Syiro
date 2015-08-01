@@ -131,7 +131,7 @@ namespace syiro {
 				}.bind(this, triggerAccurateInitialDimensions)
 			);
 
-			var mutationWatcherOptions = { // Define mutationWatcherOptions as the options we'll pass to mutationWatcher.observe()
+			var mutationWatcherOptions : MutationObserverInit = { // Define mutationWatcherOptions as the options we'll pass to mutationWatcher.observe()
 				childList : true, // Watch child nodes of the element we are watching
 				attributes : true, // Watch for attribute changes
 				characterData : false, // Don't bother to watch character data changes

@@ -59,7 +59,7 @@ declare module syiro.generator {
 declare module syiro.events {
     var eventStrings: Object;
     function Handler(): void;
-    function Add(...args: any[]): boolean;
+    function Add(listeners: any, component: any, listenerCallback: Function): boolean;
     function Remove(...args: any[]): boolean;
 }
 declare module syiro.render {
@@ -74,7 +74,7 @@ declare module syiro.component {
     function FetchDimensionsAndPosition(component: any): Object;
     function FetchLinkedListComponentObject(component: any): Object;
     function IdGen(type: string): string;
-    function IsComponentObject(variable: any): boolean;
+    function IsComponentObject(component: any): boolean;
     function Update(componentId: string, componentElement: Element): void;
     function Add(appendOrPrepend: any, parentComponent: Object, childComponent: any): boolean;
     function Remove(componentsToRemove: any): void;
@@ -83,6 +83,8 @@ declare module syiro.init {
     function Parser(componentElement: Element): void;
     function createContentOverlay(purpose: string): Element;
     function Buttongroup(componentObject: Object): void;
+    function Player(component: Object): void;
+    function PlayerControl(componentObject: Object, playerControlComponentObject: Object): void;
     function Searchbox(componentObject: Object): void;
     function Sidepane(componentObject: Object): void;
     function Toast(componentObject: Object): void;
@@ -172,24 +174,27 @@ declare module syiro.dropdown {
     function RemoveItem(component: Object, listItemComponent: Object): void;
 }
 declare module syiro.player {
-    function Init(component: Object): void;
-    function CheckIfStreamable(component: Object): void;
+    function DurationChange(): void;
+    function Tick(): void;
     function FetchInnerContentElement(component: Object): HTMLMediaElement;
-    function GetPlayerLengthInfo(component: Object): Object;
-    function IsPlaying(component: Object): boolean;
-    function PlayOrPause(component: Object, playButtonObjectOrElement?: any): void;
     function FetchSources(component: Object): Array<Object>;
-    function GenerateSources(type: string, sources: any): Array<HTMLElement>;
+    function GetPlayerLengthInfo(component: Object): Object;
+    function IsPlayable(component: Object): boolean;
+    function IsPlaying(component: Object): boolean;
+    function IsStreamable(component: Object): boolean;
+    function GenerateSources(type: string, sources: Array<string>): Array<HTMLElement>;
+    function PlayOrPause(component: Object, playButtonObjectOrElement?: any): void;
     function Reset(component: Object): void;
     function SetSources(component: Object, sources: any): void;
     function SetTime(component: Object, time: number): void;
     function SetVolume(component: Object, volume: number): void;
-    function ToggleFullscreen(...args: any[]): void;
+    function ToggleFullscreen(component: Object): void;
     function ToggleMenuDialog(component: Object): void;
 }
 declare module syiro.playercontrol {
     function New(properties: Object): Object;
     var Generate: typeof New;
+    function ShowVolumeSlider(playerControlComponent: Object, volumeButtonComponent: Object): void;
     function TimeLabelUpdater(component: Object, timePart: number, value: any): void;
     function Toggle(component: Object, forceShow?: boolean): void;
 }

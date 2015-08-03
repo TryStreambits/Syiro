@@ -304,17 +304,22 @@ div[data-syiro-component="audio-player"]{
 			text-align: center;
 			margin-top: 5px;
 
-			& > b,label {
-				float: left;
-				color: contrast(@syiroPlayerControlColor); // Make sure the text contrasts the player control color
-				line-height: 20px; // Half of section
-				width: 100%; // Fill up entire "row"
-			}
-
             & > b, label {
+				float: left;
+				width: 100%; // Fill up entire "row"
+				color: contrast(@syiroPlayerControlColor); // Make sure the text contrasts the player control color
                 font-size: 14px;
                 font-weight: normal; // No font-weight
             }
+
+			& > b:not(:only-child), & > label:not(only-child) {
+				line-height: 20px; // Half of section
+			}
+
+			& > b:only-child, & > label:only-child { // If only a title or artist is provided
+				height: 100%;
+				line-height: 40px;
+			}
         }
     }
 

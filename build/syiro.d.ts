@@ -174,7 +174,7 @@ declare module syiro.dropdown {
     function RemoveItem(component: Object, listItemComponent: Object): void;
 }
 declare module syiro.player {
-    function DurationChange(): void;
+    function DurationChange(component: Object): void;
     function Tick(): void;
     function FetchInnerContentElement(component: Object): HTMLMediaElement;
     function FetchSources(component: Object): Array<Object>;

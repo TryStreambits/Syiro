@@ -154,9 +154,8 @@ namespace syiro.init {
 					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.playercontrol.Toggle.bind(this, playerControlComponent)); // Add an "up" event to player container that toggles the Player Control
 				}
                 else { // If the device uses a mouse instead of touch
-					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.player.PlayOrPause.bind(this, component)); // Add an "up" event to toggle play / pause the video
+					syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, syiro.player.PlayOrPause.bind(this, component)); // Add an "up" event to video to toggle play / pause the video
 					syiro.events.Add(["mouseenter", "mouseleave"], componentElement, syiro.playercontrol.Toggle.bind(this, playerControlComponent)); // Add event to mouseenter and mouseleave to trigger syiro.playercontrol.Toggle
-
                 }
 			}
 
@@ -205,12 +204,12 @@ namespace syiro.init {
 					syiro.player.SetTime(playerComponentObject, valueNum); // Set the Time
 				}
 				else{ // If we are doing a volume change
-					syiro.player.SetVolume(playerComponentObject, (valueNum / 100)); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
+					syiro.player.SetVolume(playerComponentObject, (valueNum / 10)); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
 				}
 
 				var priorInputSpaceWidth : number = (valueNum / Number(playerRange.max)) * playerRange.clientWidth; // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
-				var linearGradientInfo : string = "(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)"; // Set the linearGradientInfo to use for both linear-gradient and -webkit-linear-gradient
-				syiro.component.CSS(playerRange, "background", "linear-gradient" + linearGradientInfo + ", -webkit-linear-gradient" + linearGradientInfo);
+				var linearGradientInfo : string = "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)"; // Set the linearGradientInfo
+				syiro.component.CSS(playerRange, "background", linearGradientInfo);
 			}.bind(this, componentObject)
 		);
 

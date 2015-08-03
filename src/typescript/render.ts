@@ -166,7 +166,7 @@ namespace syiro.render {
 
         var storedScalingData : any = syiro.data.Read(componentId + "->scaling"); // Check if we have any scaling data
 
-        if ((typeof data !== "undefined") && (storedScalingData == false)){ // If data has been defined (passed as second arg) and there is no stored scalingData
+        if ((typeof data == "object") && (storedScalingData == false)){ // If data has been defined (passed as second arg) and there is no stored scalingData
             syiro.data.Write(componentId + "->scaling", data); // Write the data to the componentId scaling key/val
             storedScalingData = data; // Define storedScalingData as the data based
         }

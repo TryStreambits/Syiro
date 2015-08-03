@@ -221,6 +221,7 @@ namespace syiro.player {
 	export function IsStreamable(component : Object) : boolean {
 		var componentElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerControlElement  = componentElement.querySelector('div[data-syiro-component="player-control"]');
+		var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement); // Fetch the Player Control Component Object
 		var isStreamble : boolean = false; // Set isStreamable as a boolean default to false
 
 		if (syiro.data.Read(component["id"] + "->UsingExternalLibrary")){ // If we are using an external library
@@ -259,6 +260,9 @@ namespace syiro.player {
 			if (playerControlElement.querySelector("time") !== null){ // If there is a time Element
 				playerControlElement.querySelector("time").removeAttribute("data-syiro-component-live"); // Remove the "Live" View of Time Label
 				playerControlElement.querySelector("time").textContent = "00:00"; // Set the time label to "00:00"
+
+	            var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(component);
+	            syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
 			}
 		}
 

@@ -2200,6 +2200,7 @@ var syiro;
         function IsStreamable(component) {
             var componentElement = syiro.component.Fetch(component);
             var playerControlElement = componentElement.querySelector('div[data-syiro-component="player-control"]');
+            var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
             var isStreamble = false;
             if (syiro.data.Read(component["id"] + "->UsingExternalLibrary")) {
                 isStreamble = true;
@@ -2233,6 +2234,8 @@ var syiro;
                 if (playerControlElement.querySelector("time") !== null) {
                     playerControlElement.querySelector("time").removeAttribute("data-syiro-component-live");
                     playerControlElement.querySelector("time").textContent = "00:00";
+                    var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(component);
+                    syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
                 }
             }
             return isStreamble;

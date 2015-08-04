@@ -175,7 +175,6 @@ declare module syiro.dropdown {
 }
 declare module syiro.player {
     function DurationChange(component: Object): void;
-    function Tick(): void;
     function FetchInnerContentElement(component: Object): HTMLMediaElement;
     function FetchSources(component: Object): Array<Object>;
     function GetPlayerLengthInfo(component: Object): Object;
@@ -186,7 +185,7 @@ declare module syiro.player {
     function PlayOrPause(component: Object, playButtonObjectOrElement?: any): void;
     function Reset(component: Object): void;
     function SetSources(component: Object, sources: any): void;
-    function SetTime(component: Object, time: number): void;
+    function SetTime(...args: any[]): void;
     function SetVolume(component: Object, volume: number): void;
     function ToggleFullscreen(component: Object): void;
     function ToggleMenuDialog(component: Object): void;

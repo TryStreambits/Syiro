@@ -40,52 +40,6 @@ namespace syiro.player {
 
 	// #endregion
 
-	// #region Tick - Triggered on timeupdate for innerContentElement
-
-	export function Tick(){
-        // #region Player Component & Element Defining
-
-		var playerComponent = arguments[0]; // Define playerComponent as the first argument since it is bound during Init
-		var componentElement = syiro.component.Fetch(playerComponent); // Fetch the Player Element
-		var innerContentElement = arguments[1]; // Define innerContentElement as the second argument since it is what the event is actually bound to
-
-        // #endregion
-
-		if (syiro.data.Read(playerComponent["id"] + "->IsStreaming") == false){ // If the Player is NOT streaming content
-			// #region Player Control Component & Element Defining
-
-			var playerControlElement = componentElement.querySelector('div[data-syiro-component="player-control"]'); // Fetch the Player Control Element
-			var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
-			var playerRange = playerControlElement.querySelector("input"); // Get the input range of the Player Control
-
-			// #endregion
-
-			var currentTime = innerContentElement.currentTime; // Get the currentTime of innerContentElement
-			syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, currentTime); // Update the label
-
-			if (syiro.data.Read(playerComponent["id"] + "->IsChangingInputValue") == false){ // If the user is NOT using the input range to change volume or time
-				var roundedDownTime : number = Math.floor(currentTime);
-				playerRange.value = roundedDownTime; // Set the range input to roundedDownTime
-
-				var priorInputSpaceWidth : number = Math.round((roundedDownTime / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
-
-				var updatedGradient : string = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth +2) + "px, "; // Define updatedGradient as the information we'd apply to linear-gradient
-
-				if (playerComponent["type"] == "audio-player"){ // If this is an Audio Player's Player Range
-					updatedGradient += "transparent"; // Set to transparent background
-				}
-				else{ // IF this is a Video Player's Player Range
-					updatedGradient += "white"; // Set to white background
-				}
-
-				updatedGradient += " 0px)"; // Ending of linear-gradient content
-				syiro.component.CSS(playerRange, "background", updatedGradient); // Set background to updated linear-gradient
-			}
-		}
-	}
-
-	// #endregion
-
     // #region Fetch Internal Audio or Video Element of Player container Component
 
     export function FetchInnerContentElement(component : Object) : HTMLMediaElement {
@@ -261,7 +215,7 @@ namespace syiro.player {
 				playerControlElement.querySelector("time").removeAttribute("data-syiro-component-live"); // Remove the "Live" View of Time Label
 				playerControlElement.querySelector("time").textContent = "00:00"; // Set the time label to "00:00"
 
-	            var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(component);
+	            var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(component); // Get information about the appropriate settings for the input range
 	            syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
 			}
 		}
@@ -402,6 +356,7 @@ namespace syiro.player {
 			playerInnerContentElement.appendChild(sourceElement); // Append the HTMLElement
 		}
 
+		playerInnerContentElement.setAttribute("src", sources[0]); // Set via attribute to trigger MutationObserver
 		playerInnerContentElement.src = sources[0]; // Set the initial src of the audio or video player to the first source provided
 	}
 
@@ -409,12 +364,58 @@ namespace syiro.player {
 
 	// #region Set Time - Function for easily setting the time location of an Audio or Video Player Component
 
-	export function SetTime(component : Object, time : number){
-		var playerElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
-		var playerInnerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Get the associated audio or video player
+	export function SetTime(... args : any[]){
+		var component : Object = arguments[0]; // Component Object is always passed on the first argument
+		var componentElement = syiro.component.Fetch(component); // Define componentElement as the fetched Component Element
+		var playerInnerContentElement : HTMLMediaElement; // Define playerInnerContentElement as the HTMLMediaElement we'll be assigning passed arg or fetched component to
+		var time : number;
+		var fromEvent : string;
 
-		if (playerInnerContentElement.currentTime !== time){ // If we are not setting the time to what it already is (for instance 0, which would cause an InvalidStateError)
+		if (arguments.length == 2){ // If there are only two arguments passed to SetTime (Component Object and time)
+			playerInnerContentElement = syiro.player.FetchInnerContentElement(component); // Get the associated audio or video player
+			time = arguments[1]; // Set time to the second argument provided
+		}
+		else if (arguments.length > 2){ // If there are three arguments passed to SetTime (Component Object, fromEvent, time)
+			playerInnerContentElement = arguments[2]; // Define playerInnerContentElement as the passed audio / video tag
+			fromEvent = arguments[1]; // Define fromEvent as the second argument (since it is from binding)
+		}
+
+		var currentPlayerTime : number = playerInnerContentElement.currentTime; // Define currentPlayerTime as the currentTime provided by the content Element
+
+		if ((typeof time == "number") && (currentPlayerTime !== time)){ // If we are not setting the time to what it already is (for instance 0, which would cause an InvalidStateError)
 			playerInnerContentElement.currentTime = time; // Set the playerInnerContentElement's currentTime to the time provided
+		}
+		else if ((typeof fromEvent == "string") && (fromEvent == "tick")){ // If this is called from event listener
+			time = currentPlayerTime; // Set time to currentPlayerTime
+		}
+
+		// #region Player Control Component & Element Defining
+
+		var playerControlElement = componentElement.querySelector('div[data-syiro-component="player-control"]'); // Fetch the Player Control Element
+		var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
+		var playerRange = playerControlElement.querySelector("input"); // Get the input range of the Player Control
+
+		// #endregion
+
+		syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, time); // Update the label
+
+		if ((syiro.data.Read(component["id"] + "->IsStreaming") == false) && (syiro.data.Read(component["id"] + "->IsChangingInputValue") == false)){ // If the user is NOT using the input range to change volume or time and we're not streaming
+			var roundedDownTime : number = Math.floor(time);
+			playerRange.value = roundedDownTime; // Set the range input to roundedDownTime
+
+			var priorInputSpaceWidth : number = Math.round((roundedDownTime / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
+
+			var updatedGradient : string = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth +2) + "px, "; // Define updatedGradient as the information we'd apply to linear-gradient
+
+			if (component["type"] == "audio-player"){ // If this is an Audio Player's Player Range
+				updatedGradient += "transparent"; // Set to transparent background
+			}
+			else{ // IF this is a Video Player's Player Range
+				updatedGradient += "white"; // Set to white background
+			}
+
+			updatedGradient += " 0px)"; // Ending of linear-gradient content
+			syiro.component.CSS(playerRange, "background", updatedGradient); // Set background to updated linear-gradient
 		}
 	}
 

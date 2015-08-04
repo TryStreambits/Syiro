@@ -112,7 +112,7 @@ namespace syiro.init {
 			// #region Audio / Video Player Timing Events
 
 			syiro.events.Add("durationchange", innerContentElement, syiro.player.DurationChange.bind(this, component)); // Add durationchange event to innerContentElement that calls syiro.player.DurationChange with bound componentObject
-			syiro.events.Add("timeupdate", innerContentElement, syiro.player.Tick.bind(this, component)); // Add timeupdate event to innerContentElement that calls syiro.player.Tick with bound componentObject
+			syiro.events.Add("timeupdate", innerContentElement, syiro.player.SetTime.bind(this, component, "tick")); // Add timeupdate event to innerContentElement that calls syiro.player.SetTime with bound componentObject and event indicator
 			syiro.events.Add("ended", innerContentElement, syiro.player.Reset.bind(this, component)); // Add ended event to innerContentElement that calls syiro.player.Reset with bound componentObject
 
 			// #endregion

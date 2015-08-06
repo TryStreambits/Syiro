@@ -180,15 +180,21 @@ namespace syiro.init {
 			function(){
 				var playerComponentObject : Object = arguments[0]; // Get the Player Component Object passed as bound argument
 				syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true); // Set the ChangingInputValue to true to infer we are changing the input value of the playerRange
+
+				if ((syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) && (syiro.player.IsPlaying(playerComponentObject))){ // If we are not changing the volume and the video is playing
+					syiro.player.PlayOrPause(playerComponentObject); // Pause the video
+				}
 			}.bind(this, componentObject)
 		);
 
 		syiro.events.Add(syiro.events.eventStrings["up"], playerRange, // Add mouseup / touchend events to the playerRange, which calls a function to indicate we are no longer changing the input value
 			function(){
 				var playerComponentObject : Object = arguments[0]; // Get the Player Component Object passed as bound argument
+				var playerRange = arguments[1]; // Get the playerRange passed as the second argument
 
 				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
 					syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove  IsChangingInputValue
+					syiro.player.PlayOrPause(playerComponentObject); // Play the video
 				}
 			}.bind(this, componentObject)
 		);
@@ -204,12 +210,8 @@ namespace syiro.init {
 					syiro.player.SetTime(playerComponentObject, valueNum); // Set the Time
 				}
 				else{ // If we are doing a volume change
-					syiro.player.SetVolume(playerComponentObject, (valueNum / 10)); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
+					syiro.player.SetVolume(playerComponentObject, valueNum, "input"); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
 				}
-
-				var priorInputSpaceWidth : number = (valueNum / Number(playerRange.max)) * playerRange.clientWidth; // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
-				var linearGradientInfo : string = "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)"; // Set the linearGradientInfo
-				syiro.component.CSS(playerRange, "background", linearGradientInfo);
 			}.bind(this, componentObject)
 		);
 

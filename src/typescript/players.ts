@@ -18,7 +18,6 @@ namespace syiro.player {
 	// #region DurationChange - Triggered on durationchange of innerContentElement
 
 	export function DurationChange(component : Object){
-
         if (syiro.data.Read(component["id"] + "->IsStreaming") == false){ // If the Player is NOT streaming content
 			var componentElement = syiro.component.Fetch(component); // Fetch the Player Element
         	var playerControlElement  = componentElement.querySelector('div[data-syiro-component="player-control"]');
@@ -26,12 +25,8 @@ namespace syiro.player {
         	var playerRange : Element = playerControlElement.querySelector('input[type="range"]'); // Get the input range
 
             var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(component); // Get information about the appropriate settings for the input range
-            playerMediaLengthInformation["value"] = "0";
-
-            for (var playerRangeAttribute in playerMediaLengthInformation){ // For each attribute defined in the playerRangeAttributes Object
-                playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]); // Set the attribute on the playerRange
-            }
-
+			playerRange.setAttribute("max", playerMediaLengthInformation["max"]); // Set max attribute the playerMediaLengthInformation max key/val
+			playerRange.setAttribute("step", playerMediaLengthInformation["step"]); // Set step attribute the playerMediaLengthInformation step key/val
             syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
         }
 
@@ -80,7 +75,6 @@ namespace syiro.player {
         var contentDuration : any = syiro.player.FetchInnerContentElement(component).duration; // Get the Player's internal audio or video Element and its duration property
 
         if ((isNaN(contentDuration) == false) && (isFinite(contentDuration))){ // If we are able to properly fetch the duration and we are not streaming
-            contentDuration = Math.floor(Number(contentDuration)); // Round down the contentDuration
             playerLengthInfo["max"] = contentDuration; // Set the maximum to the contentDuration
 
             if (contentDuration < 60){ // If the contentDuration is less than 60 seconds
@@ -271,14 +265,14 @@ namespace syiro.player {
 			playerComponentElement.setAttribute("data-syiro-show-video", "true"); // Set attribute of data-syiro-show-video to true, indicating to no longer hide the innerContentElement
 		}
 
-		if (syiro.component.IsComponentObject(playButtonObjectOrElement)){ // If what was passed is a Component Object
+		if ((typeof playButtonObjectOrElement == "object") && (syiro.component.IsComponentObject(playButtonObjectOrElement))){ // If what was passed is a Component Object
 			playButton = syiro.component.Fetch(playButtonObjectOrElement); // Fetch the playButton
 		}
 		else {  // If what was passed is not a Component Object
 			if ((typeof playButtonObjectOrElement == "undefined") || (playButtonObjectOrElement.getAttribute("data-syiro-render-icon") !== "play")){ // If the playButtonObjectOrElement is undefined or isn't actually the Play Button
 				playButton = playerComponentElement.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button Element
 			}
-			else{ // If what was passed was in fac the playButton
+			else{ // If what was passed was in fact the playButton Element
 				playButton = playButtonObjectOrElement;
 			}
 		}
@@ -399,23 +393,25 @@ namespace syiro.player {
 
 		syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, time); // Update the label
 
-		if ((syiro.data.Read(component["id"] + "->IsStreaming") == false) && (syiro.data.Read(component["id"] + "->IsChangingInputValue") == false)){ // If the user is NOT using the input range to change volume or time and we're not streaming
-			var roundedDownTime : number = Math.floor(time);
-			playerRange.value = roundedDownTime; // Set the range input to roundedDownTime
+		if (syiro.data.Read(component["id"] + "->IsStreaming") == false){ // If we are not streaming
+			var allowInputChange : boolean = false; // Default to not allowing input value changing
+			var isChangingInputValue : boolean = syiro.data.Read(component["id"] + "->IsChangingInputValue"); // Get the boolean value if we are changing the input value or not
 
-			var priorInputSpaceWidth : number = Math.round((roundedDownTime / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
-
-			var updatedGradient : string = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth +2) + "px, "; // Define updatedGradient as the information we'd apply to linear-gradient
-
-			if (component["type"] == "audio-player"){ // If this is an Audio Player's Player Range
-				updatedGradient += "transparent"; // Set to transparent background
+			if ((typeof fromEvent == "undefined") && (isChangingInputValue)){ // If the SetTime call did not come from timeupdate and we are changing the input value
+				allowInputChange = true; // Allow input change
 			}
-			else{ // IF this is a Video Player's Player Range
-				updatedGradient += "white"; // Set to white background
+			else if ((fromEvent == "tick") && (isChangingInputValue == false)){ // If the SetTime call came from timeupdate and we are not changing the input value
+				allowInputChange = true; // Allow input change
 			}
 
-			updatedGradient += " 0px)"; // Ending of linear-gradient content
-			syiro.component.CSS(playerRange, "background", updatedGradient); // Set background to updated linear-gradient
+			if (allowInputChange){ // If we are allowing input change
+				var roundedDownTime : number = Math.floor(time);
+				playerRange.value = roundedDownTime; // Set the value to the volume (which is 0.1 to 1.0) times 10
+
+				var priorInputSpaceWidth : number = (roundedDownTime / Number(playerRange.max)) * playerRange.clientWidth; // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
+				var updatedGradient : string = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth +2) + "px, transparent 0px)"; // Define updatedGradient as the information we'd apply to linear-gradient
+				syiro.component.CSS(playerRange, "background", updatedGradient); // Set background to updated linear-gradient
+			}
 		}
 	}
 
@@ -423,9 +419,31 @@ namespace syiro.player {
 
 	// #region Set Volume - Function for easily setting the volume of an Audio or Video Player
 
-	export function SetVolume(component : Object, volume : number){
+	export function SetVolume(component : Object, volume : number, fromEvent ?: string){
 		var playerElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerInnerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Get the associated audio or video player
+		var playerRange : HTMLInputElement = playerElement.querySelector('input[type="range"]'); // Get the Player Control Range
+		var inputVolumeValue : number = volume; // Set inputVolumeValue equal to volume
+
+		if ((typeof fromEvent == "string") && (fromEvent == "input")){ // If it came from playerRange input change
+			 inputVolumeValue *= 10; // Times the number by 100 to get absolute percentage value
+			 volume /= 10; // Divide the number by 10 to get the floating point number we assign to HTMLMediaElement.volume
+		}
+		else{ // If it is not from an event
+			if ((inputVolumeValue > 10) && (inputVolumeValue <= 100)){ // If we are provided a number between 10 and 100
+				inputVolumeValue = Math.round(volume / 10) * 10; // Round the number to nearest 10 after dividing it by 10 (example 84 -> 8.4 -> 8 * 10 -> 80)
+				volume /= 100; // Divide the number by 100 to get the floating point number we assign to HTMLMediaElement.volume
+			}
+			else if ((inputVolumeValue > 1) && (inputVolumeValue <= 10)){ // If we are being provided a number between 1 and 10
+				inputVolumeValue *= 10; // Times the number by 10 to get absolute percentage value
+			 	volume /= 10; // Divide the number by 10 to get the floating point number we assign to HTMLMediaElement.volume
+			}
+			else if (inputVolumeValue <= 1){ // If we are being provided a floating number (or 1, which im passed by input change
+				inputVolumeValue *= 100; // Times the number by 100 to get absolute percentage value
+			}
+		}
+
+		syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + inputVolumeValue  + "%, transparent 0px)");
 		playerInnerContentElement.volume = volume; // Set the Player volume
 	}
 
@@ -584,8 +602,7 @@ namespace syiro.playercontrol {
 		var playerComponentObject : Object = syiro.component.FetchComponentObject(playerControl.parentElement); // Get the Component Object of the parent Player Component
 		var playerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(playerComponentObject); // Get the audio or video Element of the parent Player Component
 
-		var playerRange : any = playerControl.querySelector("input"); // Get the Player Control Range
-		var playerRangeAttributes : Object= {}; // Set playerRangeAttributes as an empty Object to hold attribute information that we'll apply to the input range later
+		var playerRange : any = playerControl.querySelector('input[type="range"]'); // Get the Player Control Range
 
 		if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") !== true){ // If we are NOT already actively doing a volume change
 			syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true); // Set the IsChangingInputValue so Tick doesn't update slider while we have the Volume Slider area showing
@@ -593,38 +610,29 @@ namespace syiro.playercontrol {
 
 			volumeButton.setAttribute("active", "true"); // Set component active to true to imply it is active
 
-			var playerRangeValueFromVolume : string = (playerContentElement.volume * 10).toString();
-
-			playerRangeAttributes["max"] = "10"; // Set max to 10
-			playerRangeAttributes["step"] = "1"; // Set step to 1
-			playerRangeAttributes["value"] = playerRangeValueFromVolume;
-			playerRange.value = playerRangeValueFromVolume; // Set the value to the volume (which is 0.1 to 1.0) times 10
-
 			if (syiro.data.Read(playerComponentObject["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
 				playerControl.removeAttribute("data-syiro-component-streamstyling"); // Default to NOT having the Player Control "Stream Styling"
 			}
+
+			playerRange.setAttribute("max", "10"); // Set max attribute to 10 in playerRange
+			playerRange.setAttribute("step", "1"); // Set step attribute to 1 in playerRange
+			syiro.player.SetVolume(playerComponentObject, playerContentElement.volume); // Call SetVolume initially to do proper playerRange gradient styling
 		}
 		else{ // If we are already actively doing a volume change, meaning the user wants to switch back to the normal view
 			volumeButton.removeAttribute("active"); // Remove component-active to imply volume icon is not active
-
-			playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponentObject); // Get a returned Object with the max the input range should be, as well as a reasonable, pre-calculated amount of steps.
-			playerRangeAttributes["value"] = playerContentElement.currentTime;
-			playerRange.value = playerContentElement.currentTime; // Set the playerRange value to the currentTime
 
 			if (syiro.data.Read(playerComponentObject["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
 				playerControl.setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
 			}
 
+            var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(playerComponentObject); // Get information about the appropriate settings for the input range
+			playerRange.setAttribute("max", playerMediaLengthInformation["max"]); // Set max attribute the playerMediaLengthInformation max key/val
+			playerRange.setAttribute("step", playerMediaLengthInformation["step"]); // Set step attribute the playerMediaLengthInformation step key/val
+
 			syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove  IsChangingInputValue
 			syiro.data.Delete(playerComponentObject["id"] + "->IsChangingVolume"); // Delete the IsChangingVolume key from this Player's data
+			syiro.player.SetTime(playerComponentObject, playerContentElement.currentTime); // Call SetTime (which will have no visual change of the video for the user) to update the slider to the accurate position
 		}
-
-		for (var playerRangeAttribute in playerRangeAttributes){ // For each attribute defined in the playerRangeAttributes Object
-		    playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]); // Set the attribute on the playerRange
-		}
-
-		var priorInputSpaceWidth : number = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth); // Get the width of the empty space before the input range thumb by getting the current value, dividing by the max value and times the clientWidth
-		syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + "  " + priorInputSpaceWidth + "px, white 0px)");
 	}
 
 	// #endregion

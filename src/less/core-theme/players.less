@@ -86,15 +86,10 @@ div[data-syiro-component="player-control"]{
         // #region Range Thumb
 
         .thumbProperties(){
-            -moz-appearance: none; // No Firefox appearance
-            -webkit-appearance: none; // No WebKit appearance
-
-            height: 10px;
-            width: 10px;
-            border: 0;
-            background-color: darken(@syiroPrimaryColor, 10%); // Have the thumb be slightly darker to allow differentation compared to the primary color
-            background-image: none; // Mozilla applies an SVG image as the thumbnail. Lets remove that.
-            border-radius: 0; // No border radius
+			-moz-appearance: none; // No Firefox appearance
+			-webkit-appearance: none; // No WebKit appearance
+            visbility: hidden;
+			background-color: transparent;
         }
 
         &::-moz-range-thumb { // Firefox "Thumb" Styling

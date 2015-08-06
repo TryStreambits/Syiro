@@ -186,7 +186,7 @@ declare module syiro.player {
     function Reset(component: Object): void;
     function SetSources(component: Object, sources: any): void;
     function SetTime(...args: any[]): void;
-    function SetVolume(component: Object, volume: number): void;
+    function SetVolume(component: Object, volume: number, fromEvent?: string): void;
     function ToggleFullscreen(component: Object): void;
     function ToggleMenuDialog(component: Object): void;
 }

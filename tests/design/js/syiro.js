@@ -1078,11 +1078,16 @@ var syiro;
             syiro.events.Add(syiro.events.eventStrings["down"], playerRange, function () {
                 var playerComponentObject = arguments[0];
                 syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true);
+                if ((syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) && (syiro.player.IsPlaying(playerComponentObject))) {
+                    syiro.player.PlayOrPause(playerComponentObject);
+                }
             }.bind(this, componentObject));
             syiro.events.Add(syiro.events.eventStrings["up"], playerRange, function () {
                 var playerComponentObject = arguments[0];
+                var playerRange = arguments[1];
                 if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) {
                     syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue");
+                    syiro.player.PlayOrPause(playerComponentObject);
                 }
             }.bind(this, componentObject));
             syiro.events.Add("input", playerRange, function () {
@@ -1093,11 +1098,8 @@ var syiro;
                     syiro.player.SetTime(playerComponentObject, valueNum);
                 }
                 else {
-                    syiro.player.SetVolume(playerComponentObject, (valueNum / 10));
+                    syiro.player.SetVolume(playerComponentObject, valueNum, "input");
                 }
-                var priorInputSpaceWidth = (valueNum / Number(playerRange.max)) * playerRange.clientWidth;
-                var linearGradientInfo = "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, white 0px)";
-                syiro.component.CSS(playerRange, "background", linearGradientInfo);
             }.bind(this, componentObject));
             var playButton = playerControlElement.querySelector('div[data-syiro-render-icon="play"]');
             syiro.events.Add(syiro.events.eventStrings["up"], playButton, syiro.player.PlayOrPause.bind(this, componentObject));
@@ -2065,10 +2067,8 @@ var syiro;
                 var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
                 var playerRange = playerControlElement.querySelector('input[type="range"]');
                 var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(component);
-                playerMediaLengthInformation["value"] = "0";
-                for (var playerRangeAttribute in playerMediaLengthInformation) {
-                    playerRange.setAttribute(playerRangeAttribute, playerMediaLengthInformation[playerRangeAttribute]);
-                }
+                playerRange.setAttribute("max", playerMediaLengthInformation["max"]);
+                playerRange.setAttribute("step", playerMediaLengthInformation["step"]);
                 syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
             }
         }
@@ -2098,7 +2098,6 @@ var syiro;
             var playerLengthInfo = {};
             var contentDuration = syiro.player.FetchInnerContentElement(component).duration;
             if ((isNaN(contentDuration) == false) && (isFinite(contentDuration))) {
-                contentDuration = Math.floor(Number(contentDuration));
                 playerLengthInfo["max"] = contentDuration;
                 if (contentDuration < 60) {
                     playerLengthInfo["step"] = 1;
@@ -2248,7 +2247,7 @@ var syiro;
             if (component["type"] == "video-player") {
                 playerComponentElement.setAttribute("data-syiro-show-video", "true");
             }
-            if (syiro.component.IsComponentObject(playButtonObjectOrElement)) {
+            if ((typeof playButtonObjectOrElement == "object") && (syiro.component.IsComponentObject(playButtonObjectOrElement))) {
                 playButton = syiro.component.Fetch(playButtonObjectOrElement);
             }
             else {
@@ -2342,25 +2341,48 @@ var syiro;
             var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
             var playerRange = playerControlElement.querySelector("input");
             syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, time);
-            if ((syiro.data.Read(component["id"] + "->IsStreaming") == false) && (syiro.data.Read(component["id"] + "->IsChangingInputValue") == false)) {
-                var roundedDownTime = Math.floor(time);
-                playerRange.value = roundedDownTime;
-                var priorInputSpaceWidth = Math.round((roundedDownTime / Number(playerRange.max)) * playerRange.clientWidth);
-                var updatedGradient = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth + 2) + "px, ";
-                if (component["type"] == "audio-player") {
-                    updatedGradient += "transparent";
+            if (syiro.data.Read(component["id"] + "->IsStreaming") == false) {
+                var allowInputChange = false;
+                var isChangingInputValue = syiro.data.Read(component["id"] + "->IsChangingInputValue");
+                if ((typeof fromEvent == "undefined") && (isChangingInputValue)) {
+                    allowInputChange = true;
                 }
-                else {
-                    updatedGradient += "white";
+                else if ((fromEvent == "tick") && (isChangingInputValue == false)) {
+                    allowInputChange = true;
                 }
-                updatedGradient += " 0px)";
-                syiro.component.CSS(playerRange, "background", updatedGradient);
+                if (allowInputChange) {
+                    var roundedDownTime = Math.floor(time);
+                    playerRange.value = roundedDownTime;
+                    var priorInputSpaceWidth = (roundedDownTime / Number(playerRange.max)) * playerRange.clientWidth;
+                    var updatedGradient = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth + 2) + "px, transparent 0px)";
+                    syiro.component.CSS(playerRange, "background", updatedGradient);
+                }
             }
         }
         player.SetTime = SetTime;
-        function SetVolume(component, volume) {
+        function SetVolume(component, volume, fromEvent) {
             var playerElement = syiro.component.Fetch(component);
             var playerInnerContentElement = syiro.player.FetchInnerContentElement(component);
+            var playerRange = playerElement.querySelector('input[type="range"]');
+            var inputVolumeValue = volume;
+            if ((typeof fromEvent == "string") && (fromEvent == "input")) {
+                inputVolumeValue *= 10;
+                volume /= 10;
+            }
+            else {
+                if ((inputVolumeValue > 10) && (inputVolumeValue <= 100)) {
+                    inputVolumeValue = Math.round(volume / 10) * 10;
+                    volume /= 100;
+                }
+                else if ((inputVolumeValue > 1) && (inputVolumeValue <= 10)) {
+                    inputVolumeValue *= 10;
+                    volume /= 10;
+                }
+                else if (inputVolumeValue <= 1) {
+                    inputVolumeValue *= 100;
+                }
+            }
+            syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + inputVolumeValue + "%, transparent 0px)");
             playerInnerContentElement.volume = volume;
         }
         player.SetVolume = SetVolume;
@@ -2474,37 +2496,30 @@ var syiro;
             var volumeButton = syiro.component.Fetch(volumeButtonComponent);
             var playerComponentObject = syiro.component.FetchComponentObject(playerControl.parentElement);
             var playerContentElement = syiro.player.FetchInnerContentElement(playerComponentObject);
-            var playerRange = playerControl.querySelector("input");
-            var playerRangeAttributes = {};
+            var playerRange = playerControl.querySelector('input[type="range"]');
             if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") !== true) {
                 syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true);
                 syiro.data.Write(playerComponentObject["id"] + "->IsChangingVolume", true);
                 volumeButton.setAttribute("active", "true");
-                var playerRangeValueFromVolume = (playerContentElement.volume * 10).toString();
-                playerRangeAttributes["max"] = "10";
-                playerRangeAttributes["step"] = "1";
-                playerRangeAttributes["value"] = playerRangeValueFromVolume;
-                playerRange.value = playerRangeValueFromVolume;
                 if (syiro.data.Read(playerComponentObject["id"] + "->IsStreaming")) {
                     playerControl.removeAttribute("data-syiro-component-streamstyling");
                 }
+                playerRange.setAttribute("max", "10");
+                playerRange.setAttribute("step", "1");
+                syiro.player.SetVolume(playerComponentObject, playerContentElement.volume);
             }
             else {
                 volumeButton.removeAttribute("active");
-                playerRangeAttributes = syiro.player.GetPlayerLengthInfo(playerComponentObject);
-                playerRangeAttributes["value"] = playerContentElement.currentTime;
-                playerRange.value = playerContentElement.currentTime;
                 if (syiro.data.Read(playerComponentObject["id"] + "->IsStreaming")) {
                     playerControl.setAttribute("data-syiro-component-streamstyling", "");
                 }
+                var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(playerComponentObject);
+                playerRange.setAttribute("max", playerMediaLengthInformation["max"]);
+                playerRange.setAttribute("step", playerMediaLengthInformation["step"]);
                 syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue");
                 syiro.data.Delete(playerComponentObject["id"] + "->IsChangingVolume");
+                syiro.player.SetTime(playerComponentObject, playerContentElement.currentTime);
             }
-            for (var playerRangeAttribute in playerRangeAttributes) {
-                playerRange.setAttribute(playerRangeAttribute, playerRangeAttributes[playerRangeAttribute]);
-            }
-            var priorInputSpaceWidth = Math.round((Number(playerRange.value) / Number(playerRange.max)) * playerRange.clientWidth);
-            syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + "  " + priorInputSpaceWidth + "px, white 0px)");
         }
         playercontrol.ShowVolumeSlider = ShowVolumeSlider;
         function TimeLabelUpdater(component, timePart, value) {

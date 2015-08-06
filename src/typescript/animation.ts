@@ -42,7 +42,7 @@ namespace syiro.animation {
 					}
 				}
 
-				if (transitionEndUsed == true){ // If transitionend Event is used
+				if (transitionEndUsed){ // If transitionend Event is used
 					syiro.events.Add(transitionEndFlag, element,
 						function(){
 							var postAnimationFunction = arguments[0]; // Get the first arg as postAnimationFunction

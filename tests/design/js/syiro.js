@@ -2,8 +2,6 @@
     These are interface extensions so Typescript doesn't freak out.
 */
 var WebKitMutationObserver;
-var ontransitionend;
-var webkitTransitionEnd;
 /*
 This is the namespace for managing Syiro Data.
 */
@@ -107,7 +105,7 @@ var syiro;
                             transitionEndFlag = "transitionend";
                         }
                     }
-                    if (transitionEndUsed == true) {
+                    if (transitionEndUsed) {
                         syiro.events.Add(transitionEndFlag, element, function () {
                             var postAnimationFunction = arguments[0];
                             var transitionEndFlag = arguments[1];
@@ -376,7 +374,7 @@ var syiro;
                     }
                     componentElement = component;
                 }
-                if (allowListening == true) {
+                if (allowListening) {
                     for (var _i = 0; _i < listeners.length; _i++) {
                         var listener = listeners[_i];
                         var currentListenersArray = syiro.data.Read(componentId + "->handlers->" + listener);
@@ -445,7 +443,7 @@ var syiro;
                     componentElement = component;
                     component = { "id": String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase() };
                 }
-                if (allowRemoval == true) {
+                if (allowRemoval) {
                     if ((typeof componentElement !== "undefined") && (componentElement !== null)) {
                         for (var individualListenerIndex in listeners) {
                             var listener = listeners[individualListenerIndex];
@@ -757,7 +755,7 @@ var syiro;
                         modifiedStyling = true;
                     }
                 }
-                if (modifiedStyling == true) {
+                if (modifiedStyling) {
                     var updatedCSSStyle = "";
                     for (var cssProperty in elementStylingObject) {
                         if (elementStylingObject[cssProperty] !== null) {
@@ -884,7 +882,7 @@ var syiro;
         }
         component_1.Update = Update;
         function Add(appendOrPrepend, parentComponent, childComponent) {
-            if (appendOrPrepend == true) {
+            if (appendOrPrepend) {
                 appendOrPrepend = "append";
             }
             else {
@@ -921,7 +919,7 @@ var syiro;
                 childElement = childComponent;
                 allowAdding = true;
             }
-            if ((allowAdding == true) && (parentElement !== null) && (childElement !== null)) {
+            if ((allowAdding) && (parentElement !== null) && (childElement !== null)) {
                 if (appendOrPrepend == "prepend") {
                     parentElement.insertBefore(childElement, parentElement.firstChild);
                 }
@@ -1424,7 +1422,7 @@ var syiro;
                     componentElement.insertBefore(generatedElement, componentElement.firstChild);
                 }
             }
-            if ((typeof properties["fixed"] == "boolean") && (properties["fixed"] == true)) {
+            if ((typeof properties["fixed"] == "boolean") && (properties["fixed"])) {
                 componentElement.setAttribute("data-syiro-position", "fixed");
             }
             syiro.data.Write(componentId + "->Position", navbarType);
@@ -1623,7 +1621,7 @@ var syiro;
             }
             else if (properties["type"] == "toggle") {
                 var buttonToggleAttributes = { "data-syiro-minor-component": "buttonToggle" };
-                if ((typeof properties["default"] == "boolean") && (properties["default"] == true)) {
+                if ((typeof properties["default"] == "boolean") && (properties["default"])) {
                     buttonToggleAttributes["data-syiro-component-status"] = "true";
                     delete properties["default"];
                 }
@@ -2497,7 +2495,7 @@ var syiro;
             var playerComponentObject = syiro.component.FetchComponentObject(playerControl.parentElement);
             var playerContentElement = syiro.player.FetchInnerContentElement(playerComponentObject);
             var playerRange = playerControl.querySelector('input[type="range"]');
-            if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") !== true) {
+            if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) {
                 syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true);
                 syiro.data.Write(playerComponentObject["id"] + "->IsChangingVolume", true);
                 volumeButton.setAttribute("active", "true");
@@ -2557,7 +2555,7 @@ var syiro;
             if (typeof forceShow !== "boolean") {
                 forceShow = null;
             }
-            if (forceShow == true) {
+            if (forceShow) {
                 syiro.animation.FadeIn(component);
             }
             else if (forceShow == false) {
@@ -2615,7 +2613,7 @@ var syiro;
                 }
                 componentElement.appendChild(playerControlElement);
                 var usingExternalLibrary = false;
-                if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"] == true)) {
+                if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"])) {
                     usingExternalLibrary = true;
                 }
                 syiro.data.Write(componentId, {
@@ -2670,7 +2668,7 @@ var syiro;
                     properties["is-video-player"] = true;
                     var playerControlComponent = syiro.playercontrol.New(properties);
                     componentElement.appendChild(syiro.component.Fetch(playerControlComponent));
-                    if ((typeof properties["ForceLiveUX"] == "boolean") && (properties["ForceLiveUX"] == true)) {
+                    if ((typeof properties["ForceLiveUX"] == "boolean") && (properties["ForceLiveUX"])) {
                         syiroComponentData["ForceLiveUX"] = true;
                     }
                 }
@@ -2699,7 +2697,7 @@ var syiro;
                 else {
                     syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]];
                 }
-                if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"] == true)) {
+                if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"])) {
                     syiroComponentData["UsingExternalLibrary"] = true;
                 }
                 syiro.data.Write(componentId, syiroComponentData);
@@ -2736,7 +2734,7 @@ var syiro;
             }
             var inputElement = syiro.utilities.ElementCreator("input", { "aria-autocomplete": "list", "role": "textbox", "placeholder": properties["content"] });
             searchboxContainerData["content"] = inputElement;
-            if ((typeof properties["suggestions"] !== "undefined") && (properties["suggestions"] == true)) {
+            if ((typeof properties["suggestions"] !== "undefined") && (properties["suggestions"])) {
                 componentData["suggestions"] = "enabled";
                 componentData["handlers"] = {
                     "list-item-handler": properties["list-item-handler"]
@@ -2784,7 +2782,7 @@ var syiro;
             syiro.component.CSS(linkedListComponentElement, "width", searchboxElement.clientWidth + "px");
             syiro.render.Position(["below", "center"], linkedListComponent, searchboxComponent);
             if (searchboxValue !== "") {
-                if (syiro.data.Read(searchboxComponent["id"] + "->preseed") == true) {
+                if (syiro.data.Read(searchboxComponent["id"] + "->preseed")) {
                     syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important");
                     if (innerListItemsOfLinkedList.length > 0) {
                         var numOfListItemsThatWillShow = 0;
@@ -2970,7 +2968,7 @@ var syiro;
                 componentElement.removeAttribute("data-syiro-render-animation");
                 syiro.component.CSS(componentElement, "transform", false);
                 syiro.component.CSS(componentElement, "-webkit-transform", false);
-                if (showSidepane == true) {
+                if (showSidepane) {
                     syiro.animation.Slide(component);
                     syiro.component.CSS(sidepaneContentOverlay, "display", "block");
                 }
@@ -3101,10 +3099,10 @@ var syiro;
                         showAnimation = false;
                     }
                 }
-                if ((showAnimation == true) && ((syiro.device.width > 1024) && (toastType == "normal"))) {
+                if ((showAnimation) && ((syiro.device.width > 1024) && (toastType == "normal"))) {
                     syiro.animation.Slide(component);
                 }
-                else if ((showAnimation == true) && (((syiro.device.width <= 1024) && (toastType == "normal")) || (toastType == "dialog"))) {
+                else if ((showAnimation) && (((syiro.device.width <= 1024) && (toastType == "normal")) || (toastType == "dialog"))) {
                     syiro.animation.FadeIn(component, function () {
                         var toastElement = syiro.component.Fetch(component);
                         if (toastElement.getAttribute("data-syiro-component-type") == "dialog") {

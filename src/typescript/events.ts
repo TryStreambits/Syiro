@@ -140,7 +140,7 @@ namespace syiro.events {
                 componentElement = component; // Define componentElement as the Component
             }
 
-            if (allowListening == true){ // If allowListening is TRUE
+            if (allowListening){ // If allowListening is TRUE
 				for (var listener of listeners){ // For each listener in the listeners array
 					var currentListenersArray : any = syiro.data.Read(componentId + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
 
@@ -219,7 +219,7 @@ namespace syiro.events {
 				component = { "id" : String(component).replace("[", "").replace("]", "").replace("object", "").replace("HTML", "").trim().toLowerCase() }; // Set the componentId equal to the string form, stripping out [], "object", etc.
 			}
 
-			if (allowRemoval == true){ // If we are going to allow the removal of event listeners from the Element
+			if (allowRemoval){ // If we are going to allow the removal of event listeners from the Element
 				if ((typeof componentElement !== "undefined") && (componentElement !== null)){
 					for (var individualListenerIndex in listeners){ // For each listener that was defined in listeners array
 						var listener = listeners[individualListenerIndex]; // Define listener as the value from index of listeners

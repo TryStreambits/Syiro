@@ -95,7 +95,7 @@ namespace syiro.button {
 		else if (properties["type"] == "toggle"){ // If this is a Toggle Button that is being generated
 			var buttonToggleAttributes = { "data-syiro-minor-component" : "buttonToggle"}; // Create an Object to hold the attributes we'll pass when creating the buttonToggle
 
-			if ((typeof properties["default"] == "boolean") && (properties["default"] == true)){ // If a default state for the button is defined and is defined as true (already active)
+			if ((typeof properties["default"] == "boolean") && (properties["default"])){ // If a default state for the button is defined and is defined as true (already active)
 				buttonToggleAttributes["data-syiro-component-status"] = "true"; // Add the data-syiro-component-status attribute with "true" as the value
 				delete properties["default"]; // Remove the "content" key
 			}

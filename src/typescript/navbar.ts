@@ -70,7 +70,7 @@ namespace syiro.navbar {
 
         // #region Fixed Positioning Check
 
-        if ((typeof properties["fixed"] == "boolean") && (properties["fixed"] == true)){ // If the "fixed" property is defined and is set to true
+        if ((typeof properties["fixed"] == "boolean") && (properties["fixed"])){ // If the "fixed" property is defined and is set to true
             componentElement.setAttribute("data-syiro-position", "fixed"); // Set position attribute to fixed so we can more dynamically set CSS values without needing to use JavaScript
         }
 

@@ -604,7 +604,7 @@ namespace syiro.playercontrol {
 
 		var playerRange : any = playerControl.querySelector('input[type="range"]'); // Get the Player Control Range
 
-		if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") !== true){ // If we are NOT already actively doing a volume change
+		if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are NOT already actively doing a volume change
 			syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true); // Set the IsChangingInputValue so Tick doesn't update slider while we have the Volume Slider area showing
 			syiro.data.Write(playerComponentObject["id"] + "->IsChangingVolume", true); // Set the IsChangingVolume to true so we don't end up changing the "location" in the content
 
@@ -690,7 +690,7 @@ namespace syiro.playercontrol {
 			forceShow = null; // Set forceShow to null
 		}
 
-        if (forceShow == true){ // If we are forcing to show the Player Control
+        if (forceShow){ // If we are forcing to show the Player Control
             syiro.animation.FadeIn(component); // Fade in the Player Control
         }
         else if (forceShow == false){ // If we are forcing to hide the Player Control
@@ -782,7 +782,7 @@ namespace syiro.audioplayer {
 
             var usingExternalLibrary = false; // Declare a variable that we'll use to determine if we are using an external library and tying that into Syiro Player
 
-            if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"] == true)){ // If an external library is going to be tying into the Syiro Video Player
+            if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"])){ // If an external library is going to be tying into the Syiro Video Player
                 usingExternalLibrary = true;
             }
 
@@ -877,7 +877,7 @@ namespace syiro.videoplayer {
                 // #region Force Live User Interface
                 // This section will determine if we should force the live UX to be applied to the content
 
-                if ((typeof properties["ForceLiveUX"] == "boolean") && (properties["ForceLiveUX"] == true)){ // If Force Live UX is defined as true
+                if ((typeof properties["ForceLiveUX"] == "boolean") && (properties["ForceLiveUX"])){ // If Force Live UX is defined as true
                     syiroComponentData["ForceLiveUX"] = true; // Define the syiroComponentData ForceLiveUX as true
                 }
 
@@ -927,7 +927,7 @@ namespace syiro.videoplayer {
             // #region Third-Party Streaming Support
             // This section will determine if we are using a third-party library for live streaming support (like dashjs)
 
-            if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"] == true)){ // If an external library is going to be tied into the Syiro Video Player
+            if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"])){ // If an external library is going to be tied into the Syiro Video Player
 				syiroComponentData["UsingExternalLibrary"] = true; // Set the UsingExternalLibrary to true
             }
 

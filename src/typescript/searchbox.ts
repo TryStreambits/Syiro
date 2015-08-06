@@ -30,7 +30,7 @@ namespace syiro.searchbox {
 		var inputElement : HTMLElement = syiro.utilities.ElementCreator("input", { "aria-autocomplete" : "list", "role" : "textbox", "placeholder" : properties["content"] }); // Searchbox Inner Input Generation
 		searchboxContainerData["content"] = inputElement; // Define the inner content of the Searchbox Container to the input Element
 
-		if ((typeof properties["suggestions"] !== "undefined") && (properties["suggestions"] == true)){ // If suggestions is enabled
+		if ((typeof properties["suggestions"] !== "undefined") && (properties["suggestions"])){ // If suggestions is enabled
 			componentData["suggestions"] = "enabled"; // Define suggestions as a string "enabled" to imply suggestions are enabled
 
 			componentData["handlers"] = { // Add "handlers" to the searchboxComponentData
@@ -92,7 +92,7 @@ namespace syiro.searchbox {
 		syiro.render.Position(["below", "center"], linkedListComponent, searchboxComponent); // Position the Linked List Component below and centered in relation to the Searchbox Component
 
 		if (searchboxValue !== ""){ // If the value is not empty
-			if (syiro.data.Read(searchboxComponent["id"] + "->preseed") == true){ // If preseed is enabled
+			if (syiro.data.Read(searchboxComponent["id"] + "->preseed")){ // If preseed is enabled
 				syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Immediately ensure the Linked List of the Searchbox is visible
 
 				if (innerListItemsOfLinkedList.length > 0){ // If the Linked List of the Searchbox has List Items

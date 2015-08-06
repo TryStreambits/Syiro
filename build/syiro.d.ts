@@ -1,10 +1,4 @@
 declare var WebKitMutationObserver: any;
-declare var ontransitionend: Event;
-declare var webkitTransitionEnd: Event;
-interface Object {
-    id: string;
-    type: string;
-}
 interface Document {
     msFullscreenElement: Element;
     msExitFullscreen: Function;
@@ -15,7 +9,6 @@ interface Document {
 interface Element {
     msRequestFullscreen: Function;
     mozRequestFullScreen: Function;
-    ALLOW_KEYBOARD_INPUT: any;
 }
 interface Navigator {
     doNotTrack: string;

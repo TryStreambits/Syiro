@@ -3,33 +3,22 @@
 */
 
 var WebKitMutationObserver : any;
-var ontransitionend : Event;
-var webkitTransitionEnd : Event;
-
-// #region Extended Object Interface
-
-interface Object { // As ComponentObject is inherently an Object, extend the Object interface / type
-	id : string; // Unique Component ID. Marked as Optional since it only applies for returned Component Objects, syiro.data.storage stores the key / val differently.
-	type : string; // Component Type (ex. navbar)
-}
-
-// #endregion
 
 // #region Extended Document Interface
 
 interface Document {
 	// #region Microsoft
-	
+
 	msFullscreenElement : Element;
 	msExitFullscreen : Function;
-	
+
 	// #endregion
-	
+
 	// #region Mozilla
-	
+
 	mozFullScreenElement : Element;
 	mozCancelFullScreen : Function;
-	
+
 	// #endregion
 
 	SyiroFullscreenElement : Element;
@@ -41,18 +30,16 @@ interface Document {
 
 interface Element {
 	// #region Microsoft
-	
+
 	msRequestFullscreen : Function;
-	
+
 	// #endregion
 
 	// #region Mozilla
-	
-	mozRequestFullScreen : Function;
-	
-	// #endregion
 
-	ALLOW_KEYBOARD_INPUT : any;
+	mozRequestFullScreen : Function;
+
+	// #endregion
 }
 
 // #endregion

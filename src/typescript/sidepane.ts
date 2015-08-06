@@ -170,7 +170,7 @@ namespace syiro.sidepane {
 			syiro.component.CSS(componentElement, "transform", false); // Ensure there is no transform property
 			syiro.component.CSS(componentElement, "-webkit-transform", false); // Ensure there is no transform property
 
-			if (showSidepane == true){ // If we are going to show the Sidepane
+			if (showSidepane){ // If we are going to show the Sidepane
 				syiro.animation.Slide(component); // Slide out the Sidepane
 				syiro.component.CSS(sidepaneContentOverlay, "display", "block"); // Show the sidepaneContentOverlay under the Sidepane
 			}

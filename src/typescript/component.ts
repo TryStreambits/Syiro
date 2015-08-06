@@ -66,7 +66,7 @@ namespace syiro.component {
 				}
 			}
 
-			if (modifiedStyling == true){ // If we have modified the styling Object
+			if (modifiedStyling){ // If we have modified the styling Object
 				var updatedCSSStyle : string = ""; // Define updatedCSSStyle as the new style we will apply
 
 				for (var cssProperty in elementStylingObject){ // For each CSS property / value in the elementStylingObject
@@ -241,7 +241,7 @@ namespace syiro.component {
 	// #region Add Component function - Responsible for adding components to other components or elements
 
 	export function Add(appendOrPrepend : any, parentComponent : Object, childComponent : any) : boolean { // Returns boolean if the component adding was successful or not
-		if (appendOrPrepend == true){ // If we are appending
+		if (appendOrPrepend){ // If we are appending
 			appendOrPrepend = "append"; // Set as "append"
 		}
 		else{
@@ -291,7 +291,7 @@ namespace syiro.component {
 			allowAdding = true;
 		}
 
-		if ((allowAdding == true) && (parentElement !== null) && (childElement !== null)){ // If we are allowing the adding of the childComponent and both the parentElement and childElement exist in syiro.data.storage or DOM
+		if ((allowAdding) && (parentElement !== null) && (childElement !== null)){ // If we are allowing the adding of the childComponent and both the parentElement and childElement exist in syiro.data.storage or DOM
 			if (appendOrPrepend == "prepend"){ // If we are prepending the childElement
 				parentElement.insertBefore(childElement, parentElement.firstChild); // Insert before the first component
 			}

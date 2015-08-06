@@ -167,10 +167,10 @@ namespace syiro.toast {
 				}
 			}
 
-			if ((showAnimation == true) && ((syiro.device.width > 1024) && (toastType == "normal"))){ // If we are showing the Toast, document width is "large" and this is a Normal Toast
+			if ((showAnimation) && ((syiro.device.width > 1024) && (toastType == "normal"))){ // If we are showing the Toast, document width is "large" and this is a Normal Toast
 				syiro.animation.Slide(component); // Slide the Toast
 			}
-			else if ((showAnimation == true) && (((syiro.device.width <= 1024) && (toastType == "normal")) || (toastType == "dialog"))){ // If we are showing the Toast and it is either a Normal Toast w/ document width "small" OR a Dialog Toast
+			else if ((showAnimation) && (((syiro.device.width <= 1024) && (toastType == "normal")) || (toastType == "dialog"))){ // If we are showing the Toast and it is either a Normal Toast w/ document width "small" OR a Dialog Toast
 				 syiro.animation.FadeIn(component, // Fade In the Toast Notification
 				 	function(){
 					 	var toastElement = syiro.component.Fetch(component); // Get the Toast Element

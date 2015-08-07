@@ -1,3 +1,5 @@
+// <reference path="./syiro.js" />
+
 // #region Page Setup Functions
 
 var normalToastComponentObject; // Declare normalToastComponentObject
@@ -34,13 +36,15 @@ function generatePage(){
     generateMediaPlayers(); // Generate the Media Players
 
     syiro.events.Add("resize", window, function(){ // Add a resize event to the window
-        syiro.CSS(videoPlayerContainer, "height", (screen.height * 0.50).toString() + "px");
+        syiro.CSS(videoPlayerContainer, "height", (syiro.device.height - 112).toString() + "px");
+        var audioPlayerComponentObject = syiro.FetchComponentObject(audioPlayerContainer.querySelector('div[data-syiro-component="audio-player"]')); // Get the Component Object of the Audio Player inside audioPlayerContainer
         var videoPlayerComponentObject = syiro.FetchComponentObject(videoPlayerContainer.querySelector('div[data-syiro-component="video-player"]')); // Get the Component Object of the Video Player inside videoPlayerContainer
-        syiro.render.Scale(videoPlayerComponentObject); // Rescale the Video Player
+        syiro.render.Scale(audioPlayerComponentObject); // Rescale the Audio Player
+		syiro.render.Scale(videoPlayerComponentObject); // Rescale the Video Player
 
 		var dropdownButtonComponentObject = syiro.FetchComponentObject(document.querySelector('div[data-syiro-component="button"][data-syiro-component-type="dropdown"]'));
 
-		if (document.body.clientWidth < 1024){ // If the
+		if (syiro.device.width < 1024){ // If the device width is less than 1024px
 			syiro.button.SetText(dropdownButtonComponentObject, "");
 		}
     });

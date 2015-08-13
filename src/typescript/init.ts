@@ -13,34 +13,37 @@ namespace syiro.init {
 
 	export function Parser(componentElement : Element){
 		if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))){ // If the element is a Syiro component
-			var componentObject = syiro.component.FetchComponentObject(componentElement); // Fetch the (potential) Component Object of the componentElement
+			var component = syiro.component.FetchComponentObject(componentElement); // Fetch the (potential) Component Object of the componentElement
 
-			switch (componentObject["type"]) { // Do initialization based on Component Object type
+			switch (component["type"]) { // Do initialization based on Component Object type
 				case "button" : // If it is a Button Component
 					if (componentElement.getAttribute("data-syiro-component-type") !== "basic"){ // If it is a Dropdown or Toggle Button Component type
-						syiro.events.Add(syiro.events.eventStrings["up"], componentObject, syiro.button.Toggle); // Add the syiro.button.Toggle event to the Button types Dropdown and Toggle
+						syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.button.Toggle); // Add the syiro.button.Toggle event to the Button types Dropdown and Toggle
 					}
 
 					break;
 				case "buttongroup" : // If it is a Buttongroup Component
-					syiro.init.Buttongroup(componentObject); // Initialize the Buttongroup
+					syiro.init.Buttongroup(component); // Initialize the Buttongroup
+					break;
+				case "list" : // If the Component is a List Component
+					syiro.init.List(component); // Initialize the List if needed
 					break;
 				case "audio-player" : // If the Component is an Audio Player Component
-					syiro.init.Player(componentObject); // Initialize the Player
-					syiro.render.Scale(componentObject); // Scale  the Player
+					syiro.init.Player(component); // Initialize the Player
+					syiro.render.Scale(component); // Scale  the Player
 					break;
 				case "video-player" : // If the Component is an Video Player Component
-					syiro.init.Player(componentObject); // Initialize the Player
-					syiro.render.Scale(componentObject); // Scale  the Player
+					syiro.init.Player(component); // Initialize the Player
+					syiro.render.Scale(component); // Scale  the Player
 					break;
 				case "searchbox" : // If it is a Searchbox Component
-					syiro.init.Searchbox(componentObject); // Initialize the Searchbox
+					syiro.init.Searchbox(component); // Initialize the Searchbox
 					break;
 				case "sidepane" : // If it is a Sidepane Component
-					syiro.init.Sidepane(componentObject); // Initialize the Sidepane
+					syiro.init.Sidepane(component); // Initialize the Sidepane
 					break;
 				case "toast" : // If it is a Toast Component
-					syiro.init.Toast(componentObject); // Initialize the Toast
+					syiro.init.Toast(component); // Initialize the Toast
 					break;
 			}
 
@@ -54,7 +57,7 @@ namespace syiro.init {
 
 			// #endregion
 
-			syiro.data.Delete(componentObject["id"] + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
+			syiro.data.Delete(component["id"] + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
 		}
 	}
 
@@ -72,13 +75,26 @@ namespace syiro.init {
 
 	// #region Buttongroup Initialization
 
-	export function Buttongroup(componentObject : Object){
-		var componentElement : Element = syiro.component.Fetch(componentObject); // Fetch the Component Element
+	export function Buttongroup(component : Object){
+		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 		var innerButtons : any = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all the Button Components inside this Buttongroup
 
 		for (var innerButton of innerButtons){ // For each Button Component in the Buttongroup
 			var buttonComponentObject = syiro.component.FetchComponentObject(innerButton); // Get the buttonComponentObject
 			syiro.events.Add(syiro.events.eventStrings["up"], buttonComponentObject, syiro.buttongroup.Toggle); // Immediately enable parent toggling for this Button
+		}
+	}
+
+	// #endregion
+
+	// #region List Initialization
+
+	export function List(component : Object){
+		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
+
+		if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content"){ // If the List is nested in another List
+			var listHeader : Element = componentElement.querySelector('div[data-syiro-minor-component="list-header"]'); // Get the listHeader of the List
+			syiro.events.Add(syiro.events.eventStrings["up"], listHeader, syiro.list.Toggle.bind(this, component)); // Add an up event to Toggle the showing / hiding of the List's content
 		}
 	}
 
@@ -260,9 +276,9 @@ namespace syiro.init {
 
 	// #region Searchbox Initialization
 
-	export function Searchbox(componentObject : Object){
-		if (syiro.data.Read(componentObject["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
-			var componentElement : Element = syiro.component.Fetch(componentObject); // Fetch the Component Element
+	export function Searchbox(component : Object){
+		if (syiro.data.Read(component["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
+			var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
 			syiro.events.Add("keyup", componentElement.querySelector("input"), syiro.searchbox.Suggestions);// Add  an event with the Suggestions function to the Searchbox's inner input Element to listen on keyup value
 			syiro.events.Add("blur", componentElement.querySelector("input"),// Add an event to the Searchbox inner input Element to listen to when it loses focus
@@ -270,7 +286,7 @@ namespace syiro.init {
 					var searchboxObject : Object = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox
 					var searchboxLinkedList : Object = syiro.component.FetchLinkedListComponentObject(searchboxObject); // Define searchboxLinkedList as the fetched Linked List Component
 					syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important"); // Hide the Linked List
-				}.bind(this, componentObject)
+				}.bind(this, component)
 			);
 		}
 	}
@@ -279,8 +295,8 @@ namespace syiro.init {
 
 	// #region Sidepane Initialization
 
-	export function Sidepane(componentObject : Object){
-		var componentElement : Element = syiro.component.Fetch(componentObject); // Fetch the Component Element
+	export function Sidepane(component : Object){
+		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
 		var sidepaneContentOverlayElement : Element = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Get an existing Sidepane ContentOverlay if one exists already, no need to create unnecessary ContentOverlays
 		var innerSidepaneEdge = componentElement.querySelector('div[data-syiro-minor-component="sidepane-edge"]'); // Get the Sidepane Edge
@@ -294,7 +310,7 @@ namespace syiro.init {
 					syiro.sidepane.Toggle(arguments[0]); // Toggle the Sidepane
 					syiro.events.Remove(syiro.events.eventStrings["up"], arguments[1]); // Remove the "up" event on contentOverlay
 				}.bind(this, arguments[0]));
-			}.bind(this, componentObject));
+			}.bind(this, component));
 		}
 	}
 
@@ -302,10 +318,10 @@ namespace syiro.init {
 
 	// #region Toast Initialization
 
-	export function Toast(componentObject : Object){
-		var componentElement : Element = syiro.component.Fetch(componentObject); // Fetch the Component Element
+	export function Toast(component : Object){
+		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
-		var actionHandlers = syiro.data.Read(componentObject["id"] + "->ActionHandlers"); // Get any potential ActionHandlers for this Toast
+		var actionHandlers = syiro.data.Read(component["id"] + "->ActionHandlers"); // Get any potential ActionHandlers for this Toast
 		var toastButtons : any = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all inner Syiro Buttons
 
 		if (componentElement.getAttribute("data-syiro-component-type") == "dialog"){ // If this is a Dialog Toast
@@ -321,7 +337,7 @@ namespace syiro.init {
 
 			var dialogAction = toastButton.getAttribute("data-syiro-dialog-action"); // Get the dialog-action of this Button
 
-			syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, componentObject)); // Add to each Button the action to Toggle (force hide) the Toast
+			syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, component)); // Add to each Button the action to Toggle (force hide) the Toast
 
 			if (actionHandlers !== false){ // If there are actionHandlers
 				if (typeof actionHandlers[dialogAction] !== "undefined"){ // If there is a function for this action
@@ -331,7 +347,7 @@ namespace syiro.init {
 		}
 
 		if (actionHandlers !== false){ // If there were actionHandlers
-			syiro.data.Delete(componentObject["id"] + "->ActionHandlers"); // Delete the ActionHandlers from the data of this Toast
+			syiro.data.Delete(component["id"] + "->ActionHandlers"); // Delete the ActionHandlers from the data of this Toast
 		}
 	}
 

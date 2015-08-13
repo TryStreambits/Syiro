@@ -1,55 +1,114 @@
 @import (reference) "../core.less"; // Import Core as a reference
 
+.listItemProperties(){
+	float: left;
+	width: 100%;
+	font-size:  14px;
+	opacity : 1.0;
+	overflow: hidden;
+}
+
 // This is the core LESS of the List and List Item Components.
 
 div[data-syiro-component="list"]{
 	float: left;
 	height: auto;
 	width: auto;
-	
-	// #region Syiro List Item Component (Only applies if the List Item does not have the attribute nonstrict-formatting)
-	
-	& > div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){
+	color: contrast(@syiroBackground); // Set the text color to contrast the background color of the List
+
+	// #region List Header
+
+	& > div[data-syiro-minor-component="list-header"]{
 		float: left;
-		display: block;
 		width: 100%;
-		color: contrast(@syiroBackground); // Set the text color to contrast the background color of the List
-		font-size: 14px;
-		overflow: hidden;
-		
-		// #region Image
-		
-		& > img {
-			float: left;
-			border-radius: 50%; // Ensure icon is circular
+
+		&:not([data-syiro-nonstrict-formatting]){ // If we are not including HTML
+			font-size: 13px;
+			opacity: 0.60; // 60% opacity
 		}
-		
-		// #endregion
-		
-		// #region Link
-		
-		& > a{
-			float: left;
-			width: 100%; // Only allow the link to be in this particular List Item component (disallow secondary controls)
-			color: @syiroPrimaryColor; // Force link color (primary color)
-			font-weight: normal;
-			text-decoration: none; // No text decoration
-		}
-		
-		// #endregion
-		
-		// #region Button
-		
-		& > div[data-syiro-component="button"]{
-			float: right; // Float the component to the right
-		}
-		
-		// #endregion
-	
 	}
-	
+
 	// #endregion
-	
+
+	// #region Syiro List Content
+
+	& > div[data-syiro-minor-component="list-content"]{
+
+		// #region Syiro List Component (sub-Lists)
+
+		& > div[data-syiro-component="list"]{
+			width: 100%;
+
+			& > div[data-syiro-minor-component="list-header"]{ // List Header
+				.listItemProperties(); // Apply listItemProperties (treat the List Header as if it is just another List Item
+
+				&:after{ // Icon
+					float: right; // Flow to right
+					.icon("dropdown"); // Apply dropdown icon
+				}
+
+				&[active]:after{ // If active
+					.flip(); // Flip the Dropdown icon to point up
+				}
+			}
+
+			& > div[data-syiro-minor-component="list-content"]{ // List Content
+				&:not([active]){ // If the List Content isn't "active" (active = showing)
+					display: none; // Default to not being shown
+				}
+
+				& > div[data-syiro-component="list-item"]{ // Inner List Item
+					font-size: 12px; // Smaller font
+					opacity: 0.80; // 80% opacity
+				}
+			}
+
+		}
+
+		// #endregion
+
+		// #region Syiro List Item Component (Only applies if the List Item does not have the attribute nonstrict-formatting)
+
+		& > div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){
+			.listItemProperties(); // Apply listItemProperties()
+
+			// #region Image
+
+			& > img {
+				float: left;
+				border-radius: 50%; // Ensure icon is circular
+			}
+
+			// #endregion
+
+			// #region Link
+
+			& > a{
+				float: left;
+				width: 100%; // Only allow the link to be in this particular List Item component (disallow secondary controls)
+				color: @syiroPrimaryColor; // Force link color (primary color)
+				font-weight: normal;
+				text-decoration: none; // No text decoration
+			}
+
+			// #endregion
+
+			// #region Button
+
+			& > div[data-syiro-component="button"]{
+				float: right; // Float the component to the right
+			}
+
+			// #endregion
+
+		}
+
+		// #endregion
+
+	}
+
+	// #endregion
+
 	&[data-syiro-component-owner]{ // If this List is owned
 		background-color: darken(@syiroBackground, 2.5); // Set background to slightly darkened form of @syiroBackground
 		border-top: 2px solid darken(@syiroBackground, 20%);

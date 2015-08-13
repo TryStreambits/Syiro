@@ -27,7 +27,7 @@ We have a [document that highlights our policy](https://github.com/StroblIndustr
 
 ### Download ###
 
-You can download either our [stable 1.4.0 release](https://github.com/StroblIndustries/Syiro/releases/download/1.4.0/stable.tar.gz) or our [development releases](https://github.com/StroblIndustries/Syiro/blob/master/devel.tar.gz), which provides the necessary minified CSS, images and JS wrapped in a nice package.
+You can download either our [stable 1.5.0 release](https://github.com/StroblIndustries/Syiro/releases/download/1.5.0/stable.tar.gz) or our [development releases](https://github.com/StroblIndustries/Syiro/blob/master/devel.tar.gz), which provides the necessary minified CSS, images and JS wrapped in a nice package.
 
 The package also comes with a gzipped version of the JavaScript code, so you can easily serve the compressed content.
 
@@ -37,7 +37,7 @@ Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
 Bootstrap 3.3.5 | 145.9kb | 121.1kb | None Provided
 Polymer 1.0.5 | Varies depending on use of components | 148.3kb | None Provided
-Syiro 1.4.0 | 26.0kb | 58.2kb | 12.9kb
+Syiro 1.5.0 | 26.2kb | 59.0kb | 13.3kb
 
 Details:
 

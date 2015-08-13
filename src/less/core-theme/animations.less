@@ -10,7 +10,7 @@
 		transition: e(@properties) unit(@duration, ms); // String escape the provided properties that'll change in transform
 		-webkit-transition: e(@properties) unit(@duration, ms); // Same as above, just specific to Webkit
 	}
-	
+
 	// #endregion
 }
 
@@ -22,13 +22,13 @@
 	transform: opacity, visibility;
 	-ms-transform: opacity, visibility;
 	-webkit-transform: opacity, visibility;
-	
+
 	transition-duration: 125ms;
 	-webkit-transition-duration: 125ms;
-	
+
 	transition-timing-function: ease-in;
 	-webkit-transition-timing-function: ease-in;
-	
+
 	opacity: 1 !important;
 	visibility: visible !important;
 }
@@ -37,18 +37,28 @@
 	transform: opacity, visibility;
 	-ms-transform: opacity, visibility;
 	-webkit-transform: opacity, visibility;
-	
+
 	transition-duration: 125ms;
 	-webkit-transition-duration: 125ms;
-	
+
 	transition-timing-function: ease-in;
 	-webkit-transition-timing-function: ease-in;
-	
+
 	opacity: 0 !important;
 	visibility: hidden !important;
 }
 
 // #endregion
+
+// #region Flip Mixin
+
+.flip(){
+	transform: rotate(180deg); // Rotate by 180 degrees
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+}
 
 // #region Sliding Mixin
 // Returns properties that are used with the parent went the parent has [data-syiro-animation="slide"]
@@ -76,7 +86,7 @@
 // #endregion Pulse
 
 
-.pulse(){	
+.pulse(){
 	box-shadow: 0 0 0 0 fadeout(@syiroPrimaryColor, 25%); // No box-shadow
 	transition: box-shadow 500ms; // Set transition value of box-shadow
 

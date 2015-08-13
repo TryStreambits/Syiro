@@ -16,17 +16,39 @@ namespace syiro.list {
 		var componentId : string = syiro.component.IdGen("list"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list", "data-syiro-component-id" : componentId, "aria-live" : "polite", "id" : componentId, "role" : "listbox" }); // Generate a List Element with an ID and listbox role for ARIA purposes
 
-		if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)){ // If we are adding List Items
-			for (var individualItemIndex in properties["items"]){ // For each list item in navigationItems Object array
-				var individualItem : Object = properties["items"][individualItemIndex]; // Define individualItem as an Object
+		if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)){ // If we are adding sub-Lists or List Items
 
+			if (typeof properties["header"] !== "undefined"){ // If a List Header is defined
+				var listHeaderElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "list-header", "content" : properties["header"]}); // Generate the listHeaderElement
+				componentElement.appendChild(listHeaderElement); // Add the listHeaderElement
+			}
+
+			// #region Sub-List and List Item Adding
+
+			var listContentContainer : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "list-content" }); // Create the listContent container
+
+			for (var individualItem of properties["items"]){ // For each list item in navigationItems Object array
 				if (syiro.component.IsComponentObject(individualItem) == false){ // If the individualItem is NOT a List Item Object
-					individualItem = syiro.listitem.New(individualItem); // Generate a List Item based on the individualItem properties
+					if ((typeof individualItem["header"] !== "undefined") && (typeof individualItem["items"] !== "undefined")){ // If this is a List (with the necessary List Header and List Items properties)
+						individualItem = syiro.listitem.New(individualItem); // Create a List based on the individualItem
+					}
+					else if ((typeof individualItem["header"] == "undefined") && (typeof individualItem["items"] == "undefined")){ // If this is a List Item
+						individualItem = syiro.listitem.New(individualItem); // Generate a List Item based on the individualItem
+					}
+					else{ // If it is an incomplete List Object
+						individualItem = null; // Define as null
+					}
 				}
 
-				componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the List Item component to the List
+				if (individualItem !== null){ // If we have a valid Component Object
+					listContentContainer.appendChild(syiro.component.Fetch(individualItem)); // Append the List or List Item component to the List
+				}
 			}
+
+			componentElement.appendChild(listContentContainer); // Append the List Content Container
 		}
+
+		// #endregion
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 		return { "id" : componentId, "type" : "list" }; // Return a Component Object
@@ -35,6 +57,57 @@ namespace syiro.list {
 	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
 
 	// #endregion
+
+	// #region Set Header of List
+
+	export function SetHeader(component : Object, content : any){
+		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement of the List
+		var listHeader : any = componentElement.querySelector('div[data-syiro-minor-component="list-header"]'); // Fetch the List's Header
+
+		if (content !== ""){ // If we are adding content to the List Header (or generated a List Header)
+			if (listHeader == null){ // If the listHeader does not exist
+				listHeader = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "list-header" }); // Generate the listHeader
+				componentElement.insertBefore(listHeader, componentElement.firstChild); // Prepend the listHeader
+			}
+
+			content = syiro.utilities.SanitizeHTML(content); // Sanitize the content
+
+			if (typeof content == "string"){ // If the content is a string
+				listHeader.innerHTML = content; // Set innerHTML to content
+			}
+			else{ // If it is an Element
+				listHeader.innerHTML = ""; // Clean up the listHeader
+				listHeader.appendChild(content); // Append the Element
+			}
+		}
+		else if ((listHeader !== null) && (content == "")){ // If we are removing the List Header
+			componentElement.removeChild(listHeader); // Remove the listHeader
+		}
+
+		syiro.component.Update(component["id"], componentElement); // Update if necessary
+	}
+
+	// #endregion
+
+	// #region Toggle - Toggle visibility of List's inner content container
+
+	export function Toggle(component : Object){
+		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement of the List
+
+		if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content"){ // If this is indeed a nested List
+			var listHeader : Element = componentElement.querySelector('div[data-syiro-minor-component="list-header"]'); // Fetch the List's Header
+			var listContent : Element = componentElement.querySelector('div[data-syiro-minor-component="list-content"]'); // Fetch the List's Content Container
+
+			if (syiro.component.CSS(listContent, "display") !== "block"){ // If the listContent is currently hidden
+				listHeader.setAttribute("active", ""); // Set listHeader "active" attribute to flip the Dropdown icon
+				syiro.component.CSS(listContent, "display", "block"); // Show the List content
+			}
+			else{ // If the listContent is currently showing
+				listHeader.removeAttribute("active"); // Remove the active attribute to unflip the Dropdown icon
+				syiro.component.CSS(listContent, "display", ""); // Hide the List content
+			}
+		}
+	}
 
 	export var AddItem = syiro.component.Add; // Meta-function for adding a List Item component to a List component
 

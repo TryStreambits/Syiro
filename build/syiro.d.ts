@@ -69,18 +69,19 @@ declare module syiro.component {
     function IdGen(type: string): string;
     function IsComponentObject(component: any): boolean;
     function Update(componentId: string, componentElement: Element): void;
-    function Add(appendOrPrepend: any, parentComponent: Object, childComponent: any): boolean;
+    function Add(appendOrPrepend: any, parentComponent: any, childComponent: any): boolean;
     function Remove(componentsToRemove: any): void;
 }
 declare module syiro.init {
     function Parser(componentElement: Element): void;
     function createContentOverlay(purpose: string): Element;
-    function Buttongroup(componentObject: Object): void;
+    function Buttongroup(component: Object): void;
+    function List(component: Object): void;
     function Player(component: Object): void;
     function PlayerControl(componentObject: Object, playerControlComponentObject: Object): void;
-    function Searchbox(componentObject: Object): void;
-    function Sidepane(componentObject: Object): void;
-    function Toast(componentObject: Object): void;
+    function Searchbox(component: Object): void;
+    function Sidepane(component: Object): void;
+    function Toast(component: Object): void;
 }
 declare module syiro.device {
     var DoNotTrack: boolean;
@@ -146,6 +147,8 @@ declare module syiro.buttongroup {
 declare module syiro.list {
     function New(properties: Object): Object;
     var Generate: typeof New;
+    function SetHeader(component: Object, content: any): void;
+    function Toggle(component: Object): void;
     var AddItem: typeof component.Add;
     var RemoveItem: typeof component.Remove;
 }

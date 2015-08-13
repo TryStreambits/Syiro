@@ -240,21 +240,31 @@ namespace syiro.component {
 
 	// #region Add Component function - Responsible for adding components to other components or elements
 
-	export function Add(appendOrPrepend : any, parentComponent : Object, childComponent : any) : boolean { // Returns boolean if the component adding was successful or not
-		if (appendOrPrepend){ // If we are appending
-			appendOrPrepend = "append"; // Set as "append"
-		}
-		else{
-			appendOrPrepend = "prepend"; // Set as "prepend"
+	export function Add(appendOrPrepend : any, parentComponent : any, childComponent : any) : boolean { // Returns boolean if the component adding was successful or not
+		if (typeof appendOrPrepend == "boolean"){ // If appendOrPrepend is a boolean
+			if (appendOrPrepend){ // If we are appending
+				appendOrPrepend = "append"; // Set as "append"
+			}
+			else{
+				appendOrPrepend = "prepend"; // Set as "prepend"
+			}
 		}
 
-		var parentElement : any = syiro.component.Fetch(parentComponent); // Get the HTMLElement of the parentComponent
+		var parentElement : Element; // Define parentElement as an Element
+
+		if (syiro.component.IsComponentObject(parentComponent)){ // If the parentComponent is a Component Object
+			parentElement = syiro.component.Fetch(parentComponent); // Get the HTMLElement of the parentComponent
+		}
+		else{ // If it is an Element
+			parentElement = parentComponent; // Define parentElement as actually the parentComponent
+			parentComponent = syiro.component.FetchComponentObject(parentElement); // Redefine parentComponent as the fetched Component Object
+		}
 
 		// #region Child Component Details
 
 		var childComponentId : string; // Define childComponentId as the childComponents potential ID (may not exist IF childComponentType is (HTML)Element)
 		var childComponentType : string = (typeof childComponent).toLowerCase(); // Set childComponentType to the typeof childComponent and lower-case it to ensure it is consistent across browsers
-		var childElement : any = syiro.component.Fetch(childComponent); // Define childElement as any. In reality it is either an HTMLElement HTMLInputElement, an Element, or null
+		var childElement : Element = syiro.component.Fetch(childComponent); // Define childElement as any. In reality it is either an HTMLElement HTMLInputElement, an Element, or null
 
 		// #endregion
 
@@ -267,7 +277,8 @@ namespace syiro.component {
 				childElement = syiro.component.Fetch(childComponent); // Get the HTMLElement of the childComponent
 				allowAdding = true; // Allow adding the childComponent
 			}
-			else if ((parentComponent["type"] == "list") && (childComponent["type"] == "list-item")){ // If the parentComponent is a List and childComponent is a ListItem
+			else if ((parentComponent["type"] == "list") && (childComponent["type"].indexOf("list") !== -1)){ // If the parentComponent is a List and childComponent is a List or List Item
+				parentElement = parentElement.querySelector('div[data-syiro-minor-component="list-content"]'); // Change parentElement to listContent container for append
 				allowAdding = true; // Allow adding the childComponent
 			}
 			else if (typeof childComponent["link"] !== "undefined"){ // If a component "link" key is defined, meaning it is a link
@@ -301,6 +312,10 @@ namespace syiro.component {
 		}
 		else{ // If allowAdding is either set to false, parentElement == null OR childElement == null
 			allowAdding = false; // Reset allowAdding to false in the event it was set to true
+		}
+
+		if (parentComponent["type"] == "list"){ // If the parentComponent is a List
+			parentElement = parentElement.parentElement; // Change parentElement to the listContent container parent (the List Element)
 		}
 
 		syiro.component.Update(parentComponent["id"], parentElement); // Update the HTMLElement of parentComponent if necessary

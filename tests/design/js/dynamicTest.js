@@ -77,7 +77,7 @@ function generateNavbarAndSidepane(){
     // #endregion
 
     var backgroundColorToggler = syiro.button.New({ "type" : "toggle" }); // Generate a Toggle Button
-    var sidepaneListObject = syiro.list.New({ "items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" } ] } ); // Generate a List
+    var sidepaneListObject = syiro.list.New({ "header" : "Syiro", "items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" } ] } ); // Generate a List
     var sidepaneComponentObject = syiro.sidepane.New({ "items" : [ sidepaneListObject ]}); // Generate a List
 
     document.body.insertBefore(syiro.Fetch(sidepaneComponentObject), globalPageElement); // Prepend in body

@@ -111,20 +111,7 @@ declare module syiro.navbar {
     function AddLink(append: boolean, component: Object, elementOrProperties: any): boolean;
     function RemoveLink(component: Object, elementOrProperties: any): boolean;
     function SetLogo(component: Object, content: string): boolean;
-    function RemoveLogo(component: Object): boolean;
     function SetLabel(component: Object, content: string): boolean;
-    function RemoveLabel(component: Object): boolean;
-}
-declare module syiro.header {
-    function Generate(properties: Object): Object;
-    var SetLogo: typeof navbar.SetLogo;
-    var RemoveLogo: typeof navbar.RemoveLogo;
-}
-declare module syiro.footer {
-    function Generate(properties: Object): Object;
-    var SetLabel: typeof navbar.SetLabel;
-    var AddLink: typeof navbar.AddLink;
-    var RemoveLink: typeof navbar.RemoveLink;
 }
 declare module syiro.button {
     function New(properties: Object): Object;

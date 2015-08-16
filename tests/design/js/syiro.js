@@ -1518,10 +1518,6 @@ var syiro;
             }
         }
         navbar.SetLogo = SetLogo;
-        function RemoveLogo(component) {
-            return syiro.navbar.SetLogo(component, "");
-        }
-        navbar.RemoveLogo = RemoveLogo;
         function SetLabel(component, content) {
             if ((syiro.component.IsComponentObject(component)) && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "bottom")) {
                 var navbarElement = syiro.component.Fetch(component);
@@ -1544,38 +1540,7 @@ var syiro;
             }
         }
         navbar.SetLabel = SetLabel;
-        function RemoveLabel(component) {
-            return syiro.navbar.SetLabel(component, "");
-        }
-        navbar.RemoveLabel = RemoveLabel;
     })(navbar = syiro.navbar || (syiro.navbar = {}));
-})(syiro || (syiro = {}));
-var syiro;
-(function (syiro) {
-    var header;
-    (function (header) {
-        function Generate(properties) {
-            properties["position"] = "top";
-            return syiro.navbar.New(properties);
-        }
-        header.Generate = Generate;
-        header.SetLogo = syiro.navbar.SetLogo;
-        header.RemoveLogo = syiro.navbar.RemoveLogo;
-    })(header = syiro.header || (syiro.header = {}));
-})(syiro || (syiro = {}));
-var syiro;
-(function (syiro) {
-    var footer;
-    (function (footer) {
-        function Generate(properties) {
-            properties["position"] = "bottom";
-            return syiro.navbar.New(properties);
-        }
-        footer.Generate = Generate;
-        footer.SetLabel = syiro.navbar.SetLabel;
-        footer.AddLink = syiro.navbar.AddLink;
-        footer.RemoveLink = syiro.navbar.RemoveLink;
-    })(footer = syiro.footer || (syiro.footer = {}));
 })(syiro || (syiro = {}));
 /*
  This is the namespace for the Syiro Button, Buttongroup, and Toggle Button components.

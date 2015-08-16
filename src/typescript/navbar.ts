@@ -178,14 +178,6 @@ namespace syiro.navbar {
 
     // #endregion
 
-    // #region Meta-function for removing the top navbar's logo
-
-    export function RemoveLogo(component : Object) : boolean{
-        return syiro.navbar.SetLogo(component, ""); // Call SetLogo with an empty string
-    }
-
-    // #endregion
-
     // #endregion
 
     // #region Bottom Navbar Specific Functions
@@ -218,46 +210,6 @@ namespace syiro.navbar {
 
     // #endregion
 
-    // #region Meta-function for removing the bottom navbar label
-
-    export function RemoveLabel(component : Object){
-        return syiro.navbar.SetLabel(component, "");
-    }
-
-    // #endreigon
-
-}
-
-// #endregion
-
-// #region Faux "Header" Component
-
-namespace syiro.header {
-
-    export function Generate(properties : Object) : Object{
-        properties["position"] = "top"; // Add "position" key/val to indicate this is meant to be a top Navbar Component
-        return syiro.navbar.New(properties);
-    }
-
-    export var SetLogo = syiro.navbar.SetLogo;
-    export var RemoveLogo = syiro.navbar.RemoveLogo;
-
-}
-
-// #endregion
-
-// #region Faux "Footer" Component
-
-namespace syiro.footer {
-
-    export function Generate(properties : Object) : Object{
-        properties["position"] = "bottom"; // Add "position" key/val to indicate this is meant to be a bottom Navbar Component
-        return syiro.navbar.New(properties);
-    }
-
-    export var SetLabel = syiro.navbar.SetLabel;
-    export var AddLink = syiro.navbar.AddLink;
-    export var RemoveLink = syiro.navbar.RemoveLink;
 }
 
 // #endregion

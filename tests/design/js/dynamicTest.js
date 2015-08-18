@@ -76,15 +76,21 @@ function generateNavbarAndSidepane(){
 
     // #endregion
 
+	// #region Searchbox Generation
+
+	var searchboxGeneration = syiro.searchbox.New(); // Generate a new Searchbox
+
     var backgroundColorToggler = syiro.button.New({ "type" : "toggle" }); // Generate a Toggle Button
     var sidepaneListObject = syiro.list.New({ "header" : "Syiro", "items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" } ] } ); // Generate a List
-    var sidepaneComponentObject = syiro.sidepane.New({ "items" : [ sidepaneListObject ]}); // Generate a List
+    var sidepaneComponentObject = syiro.sidepane.New({ "items" : [ searchboxGeneration, sidepaneListObject ]}); // Generate a List
 
     document.body.insertBefore(syiro.Fetch(sidepaneComponentObject), globalPageElement); // Prepend in body
     globalPageElement.insertBefore(syiro.Fetch(navbarComponentObject), globalPageElement.firstChild); // Append the fetched Navbar Element to the main Element
 
 	syiro.events.Add(syiro.events.eventStrings["up"], toggleNormalToastListItemObject, syiro.toast.Toggle.bind(this, normalToastComponentObject)); // Listen to up event for the Normal Toast List Item Object that'll toggle the Normal Toast Component
 	syiro.events.Add(syiro.events.eventStrings["up"], toggleDialogToastListItemObject, syiro.toast.Toggle.bind(this, dialogToastComponentObject)); // Listen to up event for the Dialog Toast List Item Object that'll toggle the Dialog Toast Component
+
+	syiro.events.Add("input", searchboxGeneration, outputSearchboxContent); // Set input event of Searchbox Component to outputSearchboxContent func
     syiro.events.Add(syiro.events.eventStrings["up"], backgroundColorToggler, backgroundColorSwitcher); // Add the backgroundColorSwitcher function to the toggle button
 }
 
@@ -168,6 +174,12 @@ function changeVideoSource(){
 }
 
 // #endregion
+
+// #region Output Searchbox Content
+
+function outputSearchboxContent(){
+	console.log(arguments);
+}
 
 // #region Show Player Container
 

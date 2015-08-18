@@ -51,21 +51,21 @@
 		width: 100%; // Set width to 100%
 		text-align: center; // Center the icon
 	}
-	
+
 	&[data-syiro-component="button"][data-syiro-component-type="dropdown"]{ // If this is a Dropdown Button
 		&:after{
 			float: right;
 		}
-		
+
 		&:not(:empty):after{ // If it is NOT empty
 			margin-right: 10px;
 		}
 	}
-	
+
 	&[data-syiro-render-icon="custom"]{ // If we are using a custom icon
         background-size: 32px; // Max size of 32px
         background-repeat: no-repeat; // Do not repeat
-		
+
 		&:empty{ // If the element is empty
 			background-position-x: center; // Center horizontally
 		}
@@ -94,13 +94,13 @@
 			.icon("play", 14); // Use the play icon
 		}
 	}
-	
+
 	&[data-syiro-render-icon="search"]{ // Search Icon
 		&:after {
-			.icon("play", 14); // Use the search icon
+			.icon("search", 14); // Use the search icon
 		}
 	}
-	
+
 	&[data-syiro-render-icon="volume"]{ // Volume Icon
 		&:after {
 			.icon("volume", 14); // Use the volume icon

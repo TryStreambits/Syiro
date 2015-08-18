@@ -178,12 +178,11 @@ div[data-syiro-minor-component="player-menu"]{
         float: left;
         height: auto;
         width: 90%;
+		color: contrast(@syiroPlayerControlColor); // Contrast the Syiro Player background color
 
-        & > div[data-syiro-component="list-item"] {
-            color: inherit; // Inherit from parent Player Menu
-            cursor: pointer; // Make it obvious that the items are interactable
-            margin-bottom: 5px; // Ensure there is enough space between List Items
-        }
+		div[data-syiro-component="list-item"] {
+			margin: 0 0 5px 10px; // Set margin to be 10px on the left and 5px on bottom
+		}
     }
 }
 
@@ -234,7 +233,7 @@ div[data-syiro-component="audio-player"]{
         // #region Player Menu
 
         & > div[data-syiro-minor-component="player-menu"]{ // Menu Dialog within Audio Player
-            & > div[data-syiro-component="list"] > div[data-syiro-component="list-item"] { // Inner List Items
+            & > div[data-syiro-component="list"] div[data-syiro-component="list-item"] { // Inner List Items
                 width: 40px; // Set width to 40px
                 margin-left: 10px; // Ensure the List Item has enough space between the icons and is aligned with the Menu label
 
@@ -351,11 +350,11 @@ div[data-syiro-component="video-player"]{
 		top: 0;
     }
 
-    & > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"]{
+    & > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] div[data-syiro-component="list-item"]{
         & > img { // If there is an image within the List Item
             height: 32px; // Reduce the height of the image
             width: 32px; // Reduce the width of the image
-            margin: 4px 5px 0 10px; // Make sure the image is properly aligned with the Menu label and label text
+            margin: 4px 5px 0 0; // Make sure the image is properly aligned with the Menu label and label text
         }
     }
 

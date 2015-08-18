@@ -66,6 +66,10 @@ namespace syiro.events {
         // #region Passable Data Determination
         componentElement = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
 
+		if ((syiro.component.IsComponentObject(component)) && (component["type"] == "searchbox" )){ // If this is a Searchbox Component
+			componentElement = componentElement.firstElementChild; // Change componentElement to be the inner input
+		}
+
 		if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a Toggle Button
 			if (componentElement.hasAttribute("active")){ // If the button is active
 				passableValue = false; // Set the passable value to FALSE since that is the new status of the Toggle Button
@@ -74,7 +78,7 @@ namespace syiro.events {
 				passableValue = true; // Set the passable value to TRUE since that is the new status of the toggleButton
 			}
 		}
-        else if ((typeof component.nodeName !== "undefined") && (component.nodeName == "input")){ // If the Element is an input Element
+        else if ((typeof componentElement.nodeName !== "undefined") && (componentElement.nodeName =="INPUT")){ // If the Element is an input Element
             passableValue = componentElement.value; // Get the current value of the input
         }
         else{
@@ -113,7 +117,7 @@ namespace syiro.events {
                     }
                 }
                 else if (component["type"] == "searchbox"){ // If this Component is a Searchbox
-                    componentElement = componentElement.firstElementChild.value ; // Redefine componentElement as the inner input (first inner child's value)
+                    componentElement = componentElement.firstElementChild ; // Redefine componentElement as the inner input
                 }
             }
             else { // If the Component provided is not a Syiro Component Object

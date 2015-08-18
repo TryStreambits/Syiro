@@ -103,7 +103,7 @@ namespace syiro.navbar {
                     }
                 );
             }
-            else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")){ // If a nodeType is defined meaning it is a link Element
+            else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName == "A")){ // If a nodeType is defined meaning it is a link Element
                 generatedElement = elementOrProperties; // Define generatedElement as elementOrProperties
             }
 
@@ -130,7 +130,7 @@ namespace syiro.navbar {
 			if (typeof elementOrProperties.nodeType == "undefined"){ // If a nodeType is not defined, meaning it is not an element
 				potentialLinkElement =  navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"][title="' + elementOrProperties["title"] + '"]'); // Get the potential link element.
 			}
-			else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")){ // If a nodeType is defined meaning it is a link Element
+			else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName == "A")){ // If a nodeType is defined meaning it is a link Element
 				potentialLinkElement = elementOrProperties; // Define potentialLinkElement as elementOrProperties
 			}
 

@@ -313,6 +313,9 @@ var syiro;
             }
             var functionsForListener = syiro.data.Read(componentId + "->handlers->" + eventData.type);
             componentElement = syiro.component.Fetch(component);
+            if ((syiro.component.IsComponentObject(component)) && (component["type"] == "searchbox")) {
+                componentElement = componentElement.firstElementChild;
+            }
             if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
                 if (componentElement.hasAttribute("active")) {
                     passableValue = false;
@@ -321,7 +324,7 @@ var syiro;
                     passableValue = true;
                 }
             }
-            else if ((typeof component.nodeName !== "undefined") && (component.nodeName == "input")) {
+            else if ((typeof componentElement.nodeName !== "undefined") && (componentElement.nodeName == "INPUT")) {
                 passableValue = componentElement.value;
             }
             else {
@@ -350,7 +353,7 @@ var syiro;
                         }
                     }
                     else if (component["type"] == "searchbox") {
-                        componentElement = componentElement.firstElementChild.value;
+                        componentElement = componentElement.firstElementChild;
                     }
                 }
                 else {
@@ -1466,7 +1469,7 @@ var syiro;
                         "content": elementOrProperties["title"]
                     });
                 }
-                else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")) {
+                else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName == "A")) {
                     generatedElement = elementOrProperties;
                 }
                 if (typeof generatedElement !== "undefined") {
@@ -1485,7 +1488,7 @@ var syiro;
                 if (typeof elementOrProperties.nodeType == "undefined") {
                     potentialLinkElement = navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"][title="' + elementOrProperties["title"] + '"]');
                 }
-                else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName.toLowerCase() == "a")) {
+                else if ((typeof elementOrProperties.nodeType !== "undefined") && (elementOrProperties.nodeName == "A")) {
                     potentialLinkElement = elementOrProperties;
                 }
                 if (typeof potentialLinkElement !== "undefined") {

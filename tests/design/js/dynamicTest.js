@@ -78,7 +78,7 @@ function generateNavbarAndSidepane(){
 
 	// #region Searchbox Generation
 
-	var searchboxGeneration = syiro.searchbox.New(); // Generate a new Searchbox
+	var searchboxGeneration = syiro.searchbox.New({ "DisableInputTrigger" : true}); // Generate a new Searchbox
 
     var backgroundColorToggler = syiro.button.New({ "type" : "toggle" }); // Generate a Toggle Button
     var sidepaneListObject = syiro.list.New({ "header" : "Syiro", "items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" } ] } ); // Generate a List

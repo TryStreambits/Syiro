@@ -55,7 +55,7 @@ namespace syiro.events {
 
         // #endregion
 
-		var functionsForListener : Array<Function> = syiro.data.Read(componentId + "->handlers->" + eventData.type); // Fetch all functions for this particular listener
+		var functionsForListener : Array<Function> = syiro.data.Read(componentId + "->handlers->" + eventType); // Fetch all functions for this particular listener
 
         // #region Passable Data Determination
 
@@ -115,7 +115,10 @@ namespace syiro.events {
 
 					if (currentListenersArray.length == 0){ // If there are no functions in the Array
 						currentListenersArray = [listenerCallback]; // Define currentListenersArray as a new array containing this listenerCallback
-						componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component
+
+						if (syiro.data.Read(componentId + "->DisableInputTrigger") == false){ // If this isn't a Searchbox or is but doesn't have DisableInputTrigger set to true
+							componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component
+						}
 					}
 					else{ // If there is already functions in currentListenersArray
 						if (currentListenersArray.indexOf(listenerCallback) == -1){ // If this function isn't already in currentListenersArray

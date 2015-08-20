@@ -277,14 +277,10 @@ namespace syiro.init {
 	// #region Searchbox Initialization
 
 	export function Searchbox(component : Object){
+		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
+
 		if (syiro.data.Read(component["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
-			var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
-
 			syiro.events.Add("keyup", componentElement.querySelector("input"), syiro.searchbox.Suggestions);// Add  an event with the Suggestions function to the Searchbox's inner input Element to listen on keyup value
-
-			var innerSearchboxButton = componentElement.querySelector('div[data-syiro-component="button"]'); // Get the inner Button of the Searchbox
-			syiro.events.Add(syiro.events.eventStrings["up"], innerSearchboxButton, syiro.searchbox.Suggestions.bind(this, componentElement)); // Add an up event handler to the innerSearchbox to trigger Suggestions, binding componentElement
-
 			syiro.events.Add("blur", componentElement.querySelector("input"),// Add an event to the Searchbox inner input Element to listen to when it loses focus
 				function(){
 					var searchboxObject : Object = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox
@@ -293,6 +289,14 @@ namespace syiro.init {
 				}.bind(this, component)
 			);
 		}
+
+		var innerSearchboxButton = componentElement.querySelector('div[data-syiro-component="button"]'); // Get the inner Button of the Searchbox
+		syiro.events.Add(syiro.events.eventStrings["up"], innerSearchboxButton, function(){ // Add an up event handler to the innerSearchboxButton to trigger the input handlers of the Searchbox
+			var searchboxComponent : Object = arguments[0]; // Set searchboxComponent as the bound first argument
+			var searchboxElement : Element = syiro.component.Fetch(searchboxComponent); // Get the Searchbox's Element
+			var searchboxInput : any = searchboxElement.querySelector("input"); // Define searchboxInput as the input element we fetched
+			syiro.events.Trigger("input", arguments[0]);
+		}.bind(this, component));
 	}
 
 	// #endregion

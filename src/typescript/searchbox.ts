@@ -19,12 +19,16 @@ namespace syiro.searchbox {
 
 		var searchboxContainerData : Object = { "data-syiro-component" : "searchbox", "data-syiro-component-id" : componentId }; // Define searchboxContainerData to contain properties we should apply to the Searchbox
 
-		if (properties == undefined){ // If no properties were passed during the Generate call
+		if (typeof properties == "undefined"){ // If no properties were passed during the Generate call
 			properties = {}; // Set as an empty Object
 		}
 
-		if (properties["content"] == undefined){ // If a placeholder text is not provided
+		if (typeof properties["content"] == "undefined"){ // If a placeholder text is not provided
 			properties["content"] = "Search here..."; // Default to "Search here..." message
+		}
+
+		if ((typeof properties["DisableInputTrigger"] == "boolean") && (properties["DisableInputTrigger"] == true)){ // If we have DisableInputTrigger set to true, meaning we will prevent event handling on the input box of the Searchbox
+			componentData["DisableInputTrigger"] = true; // Set it in componentData
 		}
 
 		var inputElement : HTMLElement = syiro.utilities.ElementCreator("input", { "aria-autocomplete" : "list", "role" : "textbox", "placeholder" : properties["content"] }); // Searchbox Inner Input Generation

@@ -330,7 +330,7 @@ var syiro;
             if (component["type"] == "searchbox") {
                 componentElement = componentElement.firstElementChild;
             }
-            var functionsForListener = syiro.data.Read(componentId + "->handlers->" + eventData.type);
+            var functionsForListener = syiro.data.Read(componentId + "->handlers->" + eventType);
             if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
                 passableValue = (!componentElement.hasAttribute("active"));
             }
@@ -377,7 +377,9 @@ var syiro;
                         }
                         if (currentListenersArray.length == 0) {
                             currentListenersArray = [listenerCallback];
-                            componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component));
+                            if (syiro.data.Read(componentId + "->DisableInputTrigger") == false) {
+                                componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component));
+                            }
                         }
                         else {
                             if (currentListenersArray.indexOf(listenerCallback) == -1) {
@@ -1130,17 +1132,22 @@ var syiro;
         }
         init.PlayerControl = PlayerControl;
         function Searchbox(component) {
+            var componentElement = syiro.component.Fetch(component);
             if (syiro.data.Read(component["id"] + "->suggestions") !== false) {
-                var componentElement = syiro.component.Fetch(component);
                 syiro.events.Add("keyup", componentElement.querySelector("input"), syiro.searchbox.Suggestions);
-                var innerSearchboxButton = componentElement.querySelector('div[data-syiro-component="button"]');
-                syiro.events.Add(syiro.events.eventStrings["up"], innerSearchboxButton, syiro.searchbox.Suggestions.bind(this, componentElement));
                 syiro.events.Add("blur", componentElement.querySelector("input"), function () {
                     var searchboxObject = arguments[0];
                     var searchboxLinkedList = syiro.component.FetchLinkedListComponentObject(searchboxObject);
                     syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important");
                 }.bind(this, component));
             }
+            var innerSearchboxButton = componentElement.querySelector('div[data-syiro-component="button"]');
+            syiro.events.Add(syiro.events.eventStrings["up"], innerSearchboxButton, function () {
+                var searchboxComponent = arguments[0];
+                var searchboxElement = syiro.component.Fetch(searchboxComponent);
+                var searchboxInput = searchboxElement.querySelector("input");
+                syiro.events.Trigger("input", arguments[0]);
+            }.bind(this, component));
         }
         init.Searchbox = Searchbox;
         function Sidepane(component) {
@@ -2737,11 +2744,14 @@ var syiro;
             var componentElement;
             var componentData = {};
             var searchboxContainerData = { "data-syiro-component": "searchbox", "data-syiro-component-id": componentId };
-            if (properties == undefined) {
+            if (typeof properties == "undefined") {
                 properties = {};
             }
-            if (properties["content"] == undefined) {
+            if (typeof properties["content"] == "undefined") {
                 properties["content"] = "Search here...";
+            }
+            if ((typeof properties["DisableInputTrigger"] == "boolean") && (properties["DisableInputTrigger"] == true)) {
+                componentData["DisableInputTrigger"] = true;
             }
             var inputElement = syiro.utilities.ElementCreator("input", { "aria-autocomplete": "list", "role": "textbox", "placeholder": properties["content"] });
             var searchButton = syiro.button.New({ "data-syiro-render-icon": "search" });
@@ -2932,7 +2942,6 @@ var syiro;
             var eventData = arguments[2];
             var mousePosition;
             var updatedSidepanePosition;
-            console.log(arguments);
             if (typeof eventData.touches !== "undefined") {
                 mousePosition = eventData.touches[0].screenX;
             }

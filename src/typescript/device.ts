@@ -49,35 +49,10 @@ namespace syiro.device {
 
         // #endregion
 
-        // #region Basic Crypto Functionality
-
-        if (typeof window.crypto == "undefined"){ // If Crypto is not defined in the window Object
-            syiro.device.HasCryptography = false; // Set HasCryptography to false
-        }
-
-        // #endregion
-
-        // #region Geolocation Support
-
-        if (typeof navigator.geolocation == "undefined"){ // If Geolocation is not defined in the navigator Object
-            syiro.device.HasGeolocation = false; // Set HasGeolocation to false
-        }
-
-        // #endregion
-
-        // #region IndexedDB Support
-
-        if (typeof window.indexedDB == "undefined"){ // If IndexedDB is not defined in the window Object
-            syiro.device.HasIndexedDB = false; // Set HasIndexedDB to false
-        }
-
-        // #endregion
-
-        // #region LocalStorage Support
-
-        if (typeof window.localStorage == "undefined"){ // If LocalStorage is not defined in the window Object
-            syiro.device.HasLocalStorage = false; // Set HasLocalStorage to false
-        }
+        syiro.device.HasCryptography = (typeof window.crypto !== "undefined"); // HasCryptography is set to true if window.crypto is not undefined
+		syiro.device.HasGeolocation = (typeof navigator.geolocation !== "undefined"); // HasGeolocation is set to true if navigator.geolocation is not undefined
+		syiro.device.HasIndexedDB == (typeof window.indexedDB !== "undefined"); // HasIndexDB is set to true if window.indexedDB is not undefined
+		syiro.device.HasLocalStorage =  (typeof window.localStorage !== "undefined"); // HasLocalStorage is set to true if window.localStorage is not undefined
 
         // #endregion
 
@@ -90,7 +65,7 @@ namespace syiro.device {
 
 			syiro.device.SupportsMutationObserver = true; // Set SupportsMutationObserver support variable to true
 		}
-		
+
         // #region Online Status Support
 
         if (typeof navigator.onLine !== "undefined"){ // If the browser is online
@@ -174,9 +149,11 @@ namespace syiro.device {
             syiro.events.eventStrings["orientationchange"] = ["change"]; // Set our eventStrings orientationchange to only change
         }
         else if (typeof screen.onmsorientationchange !== "undefined"){ // If this is the Internet Explorer vendor-prefixed orientation change
+			syiro.device.OrientationObject = screen.msOrientation; // Point syiro.device.OrientationObject to screen.msOrientation rather than screen
             syiro.events.eventStrings["orientationchange"] = ["msorientationchange"]; // Set our eventStrings orientationchange to only the IE event string
         }
         else if (typeof screen.onmozorientationchange !== "undefined"){ // If this is the Gecko vendor-prefixing (Mozilla) orientation change
+			syiro.device.OrientationObject = screen.mozOrientation; // Point syiro.device.OrientationObject to screen.mozOrientation rather than screen
             syiro.events.eventStrings["orientationchange"] = ["mozorientationchange"]; // Set our eventStrings orientationchange to only the Moz event string
         }
         else{ // If orientationchange simply isn't supported
@@ -269,13 +246,7 @@ namespace syiro.device {
     export function FetchScreenOrientation() : string {
         var deviceOrientation : string = "portrait"; // Define deviceOrientation as the orientation of the device, defaulting to portrait
 
-        if ((typeof screen.orientation !== "undefined") && (screen.orientation == "landscape-primary")){
-            deviceOrientation = "landscape"; // We are in landscape mode
-        }
-        else if ((typeof screen.msOrientation !== "undefined") && (screen.msOrientation == "landscape-primary")){
-            deviceOrientation = "landscape"; // We are in landscape mode
-        }
-        else if ((typeof screen.mozOrientation !== "undefined") && (screen.mozOrientation == "landscape-primary")){
+        if (syiro.device.OrientationObject == "landscape-primary"){
             deviceOrientation = "landscape"; // We are in landscape mode
         }
         else if (screen.height < screen.width){ // If none of the Screen Orientation API is supported AND the screen width is larger than the height

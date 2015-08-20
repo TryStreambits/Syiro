@@ -13,24 +13,24 @@ namespace syiro.animation {
 	export function Animate(component : any, properties : Object){ // This function animates a particular Component or Element and calls a post-animation function if applicable
 		var element : any; // Define element as any
 
-		if (syiro.component.IsComponentObject(component)){ // If we passed a Component
+		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of this component variable
+
+		if (typeOfComponent == "ComponentObject"){ // If we passed a Component Object
 			element = syiro.component.Fetch(component); //  Define element as the fetched Syiro Component
 		}
-		else{ // If we passed an Element
+		else if (typeOfComponent == "Element") { // If we passed an Element
 			element = component; // Define element as the component provided
 			component = syiro.component.FetchComponentObject(element); // Redefine component as the newly fetched Component Object of the element
 		}
 
 		if ((element !== null) && (typeof properties["animation"] == "string")){ // If the element exists in the DOM and an animation is provided
 			if ((component["type"] == "button") && (element.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
-				var tempElement = element; // Define tempElement as the element
-				element = tempElement.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
-				tempElement = null; // Free tempElement
+				element = element.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
 			}
 
 			var postAnimationFunction : Function = properties["function"]; // Define any function passed in properties as postAnimationFunction
 
-			if (typeof postAnimationFunction !== "undefined"){ // If a postAnimationFunction is defined
+			if (typeof postAnimationFunction == "function"){ // If a postAnimationFunction is defined
 				var transitionEndUsed = false; // Default transitionEndUsed to false to indicate whether or not we should immediately trigger function or wait until transition end
 
 				if ((typeof element.style["transition"] !== "undefined") || (typeof element.style["webkitTransition"] !== "undefined")){ // If CSS3 Transitions are supported
@@ -49,7 +49,7 @@ namespace syiro.animation {
 							var transitionEndFlag= arguments[1]; // Get the second arg as the transitionEndFlag
 							var element = arguments[2]; // Get the element as the third argument
 
-							if (typeof postAnimationFunction !== "undefined"){ // If postAnimationFunction was passed (as in, it existed in the first place)
+							if (typeof postAnimationFunction == "function"){ // If postAnimationFunction was passed (as in, it existed in the first place)
 								postAnimationFunction(element); // Call the postAnimation function
 							}
 
@@ -73,7 +73,7 @@ namespace syiro.animation {
     export function Reset(component : any){
         var componentElement : Element; // Define componentElement as any
 
-        if (syiro.component.IsComponentObject(component)){ // If we passed a Component
+        if (syiro.utilities.TypeOfThing(component) == "ComponentObject"){ // If we passed a Component Object
             componentElement = syiro.component.Fetch(component); //  Define componentElement as the fetched Syiro Component
         }
         else{ // If we passed an Element
@@ -83,9 +83,7 @@ namespace syiro.animation {
 
         if (componentElement !== null){ // If the componentElement exists in the DOM
             if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
-                var tempElement = componentElement; // Define tempElement as the componentElement
-                componentElement = tempElement.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
-                tempElement = null; // Free tempElement
+                componentElement = componentElement.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
             }
 
             componentElement.removeAttribute("data-syiro-animation"); // Remove the animation attribute

@@ -12,23 +12,29 @@ div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
 	& > input{ // Syiro Searchbox (Input Element) Component
 		float: left;
 		height: 38px;
-		width: inherit; // Inherit from parent
+		width: e("calc(100% - 32px)"); // Set to calc 100% of the width of the parent minus 32px
 		line-height: 38px;
 		text-indent: 10px;
 		background-color: transparent;
 		border: 0; // No border
 		padding: 0; // No padding
 		outline: 0;
-		position: fixed; // Fixed position within Searchbox Component
 
 		&:focus{  // When the Searchbox is in focus
 			outline-offset: 0; // Disable any offsetting of the outline
 		}
 	}
 
-	&:after {
+	// #region Search Button
+
+	& > div[data-syiro-component="button"] {
 		float: right;
-		font-size: 16px; // Override default 14px with 16px
-		margin: 10px  5% 0 0;
+		height: e("calc(100% + 2px)"); // Set height of icon too 100% of Searchbox + 2px to cover border
+		min-width: 32px; // Change minimum width of button
+		line-height: 38px;
+		margin: -1px -1px 0 0; // Ensure the icon is covering the border
+		padding: 0; // Remove the button's  padding
 	}
+
+	// #endregion
 }

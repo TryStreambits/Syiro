@@ -17,7 +17,7 @@ namespace syiro.searchbox {
 		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
 		var componentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored via syiro.data
 
-		var searchboxContainerData : Object = { "data-syiro-component" : "searchbox", "data-syiro-component-id" : componentId , "data-syiro-render-icon" : "search" }; // Define searchboxContainerData to contain properties we should apply to the Searchbox
+		var searchboxContainerData : Object = { "data-syiro-component" : "searchbox", "data-syiro-component-id" : componentId }; // Define searchboxContainerData to contain properties we should apply to the Searchbox
 
 		if (properties == undefined){ // If no properties were passed during the Generate call
 			properties = {}; // Set as an empty Object
@@ -28,7 +28,9 @@ namespace syiro.searchbox {
 		}
 
 		var inputElement : HTMLElement = syiro.utilities.ElementCreator("input", { "aria-autocomplete" : "list", "role" : "textbox", "placeholder" : properties["content"] }); // Searchbox Inner Input Generation
-		searchboxContainerData["content"] = inputElement; // Define the inner content of the Searchbox Container to the input Element
+		var searchButton : Object = syiro.button.New({ "data-syiro-render-icon" : "search" }); // Create a Search icon button
+
+		// #region Suggestions Enabling
 
 		if ((typeof properties["suggestions"] !== "undefined") && (properties["suggestions"])){ // If suggestions is enabled
 			componentData["suggestions"] = "enabled"; // Define suggestions as a string "enabled" to imply suggestions are enabled
@@ -66,7 +68,12 @@ namespace syiro.searchbox {
 			}
 		}
 
+		// #endregion
+
 		componentElement = syiro.utilities.ElementCreator("div", searchboxContainerData); // Generate the Searchbox Container with the inner input as content
+		componentElement.appendChild(inputElement); // Append the input Element
+		componentElement.appendChild(syiro.component.Fetch(searchButton)); // Append the fetch Element of the searchButton
+
 		componentData["HTMLElement"] = componentElement; // Define the HTMLElement of the Searchbox as the componentElement
 		syiro.data.Write(componentId, componentData); // Add the searchboxComponentData to the syiro.data.storage for this Searchbox Component
 
@@ -80,9 +87,19 @@ namespace syiro.searchbox {
 	// #region Searchbox Suggestions Handler
 
 	export function Suggestions(...args : any[]){
-		var searchboxComponent : Object = syiro.component.FetchComponentObject(arguments[0].parentElement); // Define the Searchbox Component as the fetched Component Object based on the arg passed (input Element)
-		var searchboxElement : Element = arguments[0].parentElement; // Define searchboxElement as Searchbox inner input Element passed by the Event System
-		var searchboxValue : string = arguments[1]; // Define searchboxValue as the second argument
+		var searchboxElement : any;
+		var searchboxValue : string;
+
+		if (arguments.length == 2){ // If we were passed only two arguments (the input Element and value)
+			searchboxElement = arguments[0].parentElement; // Define searchboxElement as the input Element's parent
+			searchboxValue = arguments[1]; // Define the searchboxValue as the second argument
+		}
+		else if (arguments.length > 2){ // If we were passed more than two arguments
+			searchboxElement = arguments[0]; // Define searchboxElement as the provided Element (which was bound)
+			searchboxValue = searchboxElement.querySelector("input").value; // Define searchboxValue as the queried input Element's value
+		}
+
+		var searchboxComponent : Object = syiro.component.FetchComponentObject(searchboxElement); // Define the Searchbox Component as the fetched Component Object of searchboxElement
 
 		var linkedListComponent : Object = syiro.component.FetchLinkedListComponentObject(searchboxComponent); // Fetch the Linked List of the Searchbox Component
 		var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponent); // Fetch the Element of the List Component

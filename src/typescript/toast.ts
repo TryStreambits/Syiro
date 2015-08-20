@@ -156,15 +156,11 @@ namespace syiro.toast {
 					}
 				}
 				else if (toastType == "dialog"){ // If this is a Dialog Toast
-					if (currentAnimation == "fade-in"){ // If we did a Fade In
-						showAnimation = false; // Fade Out the Dialog Toast
-					}
+					showAnimation = !(currentAnimation == "fade-in"); // If we did a fade-in, set showAnimation to the reverse of the value (so, showAnimation should be false)
 				}
 			}
 			else{ // If an action was provided
-				if (action == "hide"){ // If we are forcing hide
-					showAnimation = false; // Set to false
-				}
+				showAnimation = !(action == "hide"); // If we are forcing hide (action would be equal to hide, which then would mean showAnimation is true, so we reverse it)
 			}
 
 			if ((showAnimation) && ((syiro.device.width > 1024) && (toastType == "normal"))){ // If we are showing the Toast, document width is "large" and this is a Normal Toast

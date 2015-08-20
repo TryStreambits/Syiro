@@ -259,17 +259,18 @@ namespace syiro.player {
 		var playerComponentElement = syiro.component.Fetch(component); // Get the Component Element of the Player
 		var innerContentElement = syiro.player.FetchInnerContentElement(component); // Get the inner audio or video Element
 
+		var typeOfPlayButtonObject : string = syiro.utilities.TypeOfThing(playButtonObjectOrElement); // Get the type of the PlayButtonObject
 		var playButton : Element; // Define playButton as an Element
 
 		if (component["type"] == "video-player"){ // If this is a Video Player
 			playerComponentElement.setAttribute("data-syiro-show-video", "true"); // Set attribute of data-syiro-show-video to true, indicating to no longer hide the innerContentElement
 		}
 
-		if ((typeof playButtonObjectOrElement == "object") && (syiro.component.IsComponentObject(playButtonObjectOrElement))){ // If what was passed is a Component Object
+		if (typeOfPlayButtonObject == "ComponentObject"){ // If what was passed is a Component Object
 			playButton = syiro.component.Fetch(playButtonObjectOrElement); // Fetch the playButton
 		}
 		else {  // If what was passed is not a Component Object
-			if ((typeof playButtonObjectOrElement == "undefined") || (playButtonObjectOrElement.getAttribute("data-syiro-render-icon") !== "play")){ // If the playButtonObjectOrElement is undefined or isn't actually the Play Button
+			if ((typeof typeOfPlayButtonObject !== "Element") || (playButtonObjectOrElement.getAttribute("data-syiro-render-icon") !== "play")){ // If the playButtonObjectOrElement is undefined or isn't actually the Play Button
 				playButton = playerComponentElement.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button Element
 			}
 			else{ // If what was passed was in fact the playButton Element

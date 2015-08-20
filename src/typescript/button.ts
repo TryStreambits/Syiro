@@ -43,7 +43,6 @@ namespace syiro.button {
 			if (typeof properties["icon"] == "string"){ // If an icon is defined and it is a string
 				componentData["style"] = 'background-image: url("' + properties["icon"] + '")'; // Add to the componentData the style attribute with background-image being set
 				componentData["data-syiro-render-icon"] = "custom"; // Set the data-syiro-render-icon to custom so we don't automatically render the default Dropdown icon or menu icon
-
 				delete properties["icon"]; // Remove the "icon" key
 			}
 
@@ -83,7 +82,7 @@ namespace syiro.button {
 
 			// #region Dropdown List Position (For the Dropdown toggling of the List)
 
-			if (properties["position"] == undefined){ // If the position information is NOT defined
+			if (typeof properties["position"] == "undefined"){ // If the position information is NOT defined
 				properties["position"] = ["below", "center"]; // Default to showing the List centered, below the Dropdown
 			}
 
@@ -122,7 +121,7 @@ namespace syiro.button {
 	// #region Function for setting the icon of a Button
 
 	export function SetIcon(component : Object, content : string) : boolean { // Returns boolean value in relation to success
-		var setSucceeded : boolean; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
+		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
 
 		var componentElement = syiro.component.Fetch(component); // Get the componentElement
 
@@ -139,9 +138,6 @@ namespace syiro.button {
 			syiro.component.Update(component["id"] + "->HTMLElement", componentElement); // Update the storedComponent (if necessary)
 			setSucceeded = true; // Define setSucceeded as true
 		}
-		else{ // If the componentElement does not exist or it is a Toggle Button
-			setSucceeded = false; // Define setSucceeded as false
-		}
 
 		return setSucceeded; // Return the boolean value
 	}
@@ -151,7 +147,7 @@ namespace syiro.button {
 	// #region Function for setting the image of a Dropdown Button
 
 	export function SetImage(component : Object, content : string) : boolean {
-		var setSucceeded : boolean; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
+		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
 		var componentElement = syiro.component.Fetch(component); // Get the componentElement
 
 		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") !== "toggle")){ // If the button exists in syiro.data.storage or DOM AND type is not a Toggle Button
@@ -172,9 +168,6 @@ namespace syiro.button {
 
 			setSucceeded = true; // Define setSucceeded as true
 		}
-		else{ // If it is NOT a Dropdown Button
-			setSucceeded = false; // Define setSucceeded as false
-		}
 
 		return setSucceeded; // Return the boolean value
 	}
@@ -184,17 +177,13 @@ namespace syiro.button {
 	// #region Function for setting the label of a Basic or Dropdown Button
 
 	export function SetText(component : Object, content : string) : boolean { // Returns boolean value in relation to success
-		var setSucceeded : boolean; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
-
+		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
 		var componentElement = syiro.component.Fetch(component); // Get the componentElement
 
 		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") !== "toggle")){ // If the button exists in syiro.data.storage or DOM AND button is "basic" rather than toggle
 			componentElement.textContent = content; // Set the button component textContent
 			syiro.component.Update(component["id"], componentElement); // Update the storedComponent (if necessary)
 			setSucceeded = true; // Define setSucceeded as true
-		}
-		else{ // If it is NOT a basic button
-			setSucceeded = false; // Define setSucceeded as false
 		}
 
 		return setSucceeded; // Return the boolean value
@@ -236,20 +225,10 @@ namespace syiro.button {
 		}
 		else if (componentElement.getAttribute("data-syiro-component-type") == "toggle"){ // If this a Toggle Button
 			if (typeof active == "undefined"){ // If is not provided
-				if (componentElement.hasAttribute("active")){ // If the status is active
-					active = true; // Is currently active
-				}
-				else { // If status is inactive
-					active = false; // Is current inactive
-				}
+				active = componentElement.hasAttribute("active"); // Define active as the boolean provided by hasAttribute
 			}
 			else { // If active is provided, flip the logic since the expected action is the FORCE the active provided
-				if (active){ // If status is active
-					active = false; // Set to false, since we want to force active
-				}
-				else{
-					active = true; // Set to true, since we want to force inactive
-				}
+				active = !active; // Reverse the boolean
 			}
 
 			if (active){ // If the status is currently active
@@ -281,10 +260,10 @@ namespace syiro.buttongroup {
 				var componentId : string = syiro.component.IdGen("buttongroup"); // Generate a component Id
 				var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "buttongroup", "data-syiro-component-id" : componentId } );
 
-				for (var buttonItemIndex in properties["items"]){
-					var buttonItem : Object = properties["items"][buttonItemIndex];
+				for (var buttonItem of properties["items"]){
+					var typeOfButton : string = syiro.utilities.TypeOfThing(buttonItem); // Get the type of the buttonItem
 
-					if (syiro.component.IsComponentObject(buttonItem) == false){ // If the buttonItem provided is NOT Syiro Component Object
+					if (typeOfButton == "Object"){ // If the buttonItem provided is an Object, just not a Syiro Object
 						buttonItem = syiro.button.New(buttonItem); // Redefine buttonItem as the provided Button Component Object when we use generate a Syiro Button with the buttonItem current content
 					}
 
@@ -318,18 +297,19 @@ namespace syiro.buttongroup {
 	// #region Buttongroup - Inner Button Width Calculation
 
 	export function CalculateInnerButtonWidth(component : any){
+		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of the variable passed
 		var componentElement : HTMLElement; // Define componentElement as the Element of the Component Object and/or is the component passed
 
-		if (syiro.component.IsComponentObject(component)){ // If this is a Component Object
-			if (component["type"] == "buttongroup"){ // If this is a Buttongroup Component
+		if (typeOfComponent == "ComponentObject"){ // If it is a Component Object
+			if (component["type"] == "buttongroup"){ // If it is a Buttongroup Component
 				componentElement = syiro.component.Fetch(component); // Fetch the Component Element
 			}
 		}
-		else if (typeof component.nodeType !== "undefined"){ // If this is an Element (has a nodeType)
+		else if (typeOfComponent == "Element"){ // If it is an Element
 			componentElement = component; // Define componentElement as the component provided
 		}
 
-		if ((typeof componentElement !== "undefined") && (typeof componentElement.nodeType !== "undefined")){ // If componentElement is defined as an actual Element
+		if (componentElement !== null){ // If componentElement is defined as an actual Element
 			var innerButtonElements = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all the inner Buttons
 			var hasOddNumberOfButtons : boolean = false; // Define hasOddNumberOfButtons as a boolean defaulting to false
 			var middleButtonNumber : number = 0; // Define middleButtonNumber as the INT-th position in innerButtonElements to declare as the middle number (if there is one) - Just default to 0

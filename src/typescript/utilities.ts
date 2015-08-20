@@ -102,6 +102,43 @@ namespace syiro.utilities {
         return timeObject;
     }
 
-// #endregion
+	// #endregion
+
+	// #region TypeOfThing - Get more clear type information about what is provided
+
+	export function TypeOfThing(thing : any, checkAgainstType ?: string) : any {
+		var thingType : any;
+
+		if ((typeof thing == "object") && (typeof thing.nodeType == "undefined")){ // If the thing is an Object and doesn't have a nodeType
+			if ((typeof thing["id"] !== "undefined") && (typeof thing["type"] !== "undefined")){ // If this Object has an id and type
+				thingType = "ComponentObject"; // Define thingType as Component Object
+			}
+			else if (typeof thing.length !== "undefined"){ // If the thing is an Array
+				thingType = "Array"; // Set as an Array
+			}
+			else{
+				thingType = thing.toString().replace("[object ", "").replace("]", ""); // Remove the surrounding [object and ]
+			}
+		}
+		else if (typeof thing.nodeType !== "undefined"){ // If this has a nodeType (it is some sort of Element)
+			if (thing.nodeType !== 9){ // If the nodeType is not 9
+				thingType = "Element"; // Assume Element for now
+			}
+			else if (thing.nodeType ==  9){  // If the nodeType is 9
+				thingType = "Document"; // Set thingType to Document
+			}
+		}
+		else{
+			thingType = (typeof thing); // Set thingType as typeof thing
+		}
+
+		if (typeof checkAgainstType == "string"){ // If checkAgainstType is defined
+			thingType = (checkAgainstType == thingType); // Define thingType as the boolean returned by the == check
+		}
+
+		return thingType;
+	}
+
+	// #endregion
 
 }

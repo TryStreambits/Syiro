@@ -281,6 +281,10 @@ namespace syiro.init {
 			var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
 			syiro.events.Add("keyup", componentElement.querySelector("input"), syiro.searchbox.Suggestions);// Add  an event with the Suggestions function to the Searchbox's inner input Element to listen on keyup value
+
+			var innerSearchboxButton = componentElement.querySelector('div[data-syiro-component="button"]'); // Get the inner Button of the Searchbox
+			syiro.events.Add(syiro.events.eventStrings["up"], innerSearchboxButton, syiro.searchbox.Suggestions.bind(this, componentElement)); // Add an up event handler to the innerSearchbox to trigger Suggestions, binding componentElement
+
 			syiro.events.Add("blur", componentElement.querySelector("input"),// Add an event to the Searchbox inner input Element to listen to when it loses focus
 				function(){
 					var searchboxObject : Object = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox

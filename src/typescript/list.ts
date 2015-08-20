@@ -28,20 +28,23 @@ namespace syiro.list {
 			var listContentContainer : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "list-content" }); // Create the listContent container
 
 			for (var individualItem of properties["items"]){ // For each list item in navigationItems Object array
-				if (syiro.component.IsComponentObject(individualItem) == false){ // If the individualItem is NOT a List Item Object
+				var individualItemComponentObject : Object; // Define individualItemComponentObject as the Component Object of the individualitem
+				var typeOfIndividualItem : string = syiro.utilities.TypeOfThing(individualItem); // Get the type of the individualItem
+
+				if (typeOfIndividualItem == "ComponentObject"){ // If this is a Component Object
+					individualItemComponentObject = individualItem; // Define individualItemComponentObject as the individualItem
+				}
+				else if (typeOfIndividualItem == "Object"){ // If this is an Object
 					if ((typeof individualItem["header"] !== "undefined") && (typeof individualItem["items"] !== "undefined")){ // If this is a List (with the necessary List Header and List Items properties)
-						individualItem = syiro.listitem.New(individualItem); // Create a List based on the individualItem
+						individualItemComponentObject = syiro.list.New(individualItem); // Create a List based on the individualItem
 					}
 					else if ((typeof individualItem["header"] == "undefined") && (typeof individualItem["items"] == "undefined")){ // If this is a List Item
-						individualItem = syiro.listitem.New(individualItem); // Generate a List Item based on the individualItem
-					}
-					else{ // If it is an incomplete List Object
-						individualItem = null; // Define as null
+						individualItemComponentObject = syiro.listitem.New(individualItem); // Generate a List Item based on the individualItem
 					}
 				}
 
-				if (individualItem !== null){ // If we have a valid Component Object
-					listContentContainer.appendChild(syiro.component.Fetch(individualItem)); // Append the List or List Item component to the List
+				if (typeof individualItemComponentObject !== "undefined"){ // If we have a valid Component Object
+					listContentContainer.appendChild(syiro.component.Fetch(individualItemComponentObject)); // Append the List or List Item component to the List
 				}
 			}
 
@@ -179,7 +182,7 @@ namespace syiro.listitem {
 		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
 			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
 
-			if ((syiro.component.IsComponentObject(control)) && (control["type"] == "button")){ // If the content is a Component Object and is a Button
+			if ((syiro.utilities.TypeOfThing(control) == "ComponentObject") && (control["type"] == "button")){ // If the content is a Component Object and is a Button
 				if (listItemElement.querySelector("div") !== null){ // If there is already a control inside the List Item
 					listItemElement.removeChild(listItemElement.querySelector("div")); // Remove the inner Control
 				}

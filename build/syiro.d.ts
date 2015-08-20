@@ -45,6 +45,7 @@ declare module syiro.utilities {
     function ElementCreator(type: string, attributes: Object): any;
     function SanitizeHTML(content: any): any;
     function SecondsToTimeFormat(seconds: number): Object;
+    function TypeOfThing(thing: any, checkAgainstType?: string): any;
 }
 declare module syiro.generator {
     var ElementCreator: typeof utilities.ElementCreator;
@@ -52,6 +53,7 @@ declare module syiro.generator {
 declare module syiro.events {
     var eventStrings: Object;
     function Handler(): void;
+    function Trigger(eventType: string, component: any, eventData?: Event): void;
     function Add(listeners: any, component: any, listenerCallback: Function): boolean;
     function Remove(...args: any[]): boolean;
 }

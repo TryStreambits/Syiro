@@ -4,6 +4,7 @@ This is the namespace for render-oriented functionality for Components, such as 
 
 /// <reference path="component.ts" />
 /// <reference path="data.ts" />
+/// <reference path="utilities.ts" />
 
 namespace syiro.render {
 
@@ -16,20 +17,20 @@ namespace syiro.render {
             var componentElement : Element; // Define componentElement as the Element (if a Component Object was passed, of the Component)
             var relativeComponentElement : Element; // Define realtiveComponentElement as an Element (if a relativeComponentObject was passed, of the Component)
 
-            if (typeof arguments[0] == "string"){ // If the first argument passed (positioning) is a string
-                positioningList = [arguments[0]]; // Define positioningList as an array of the string passed
+			var typeOfPositioningList : string = syiro.utilities.TypeOfThing(positioningList); // Get the type of the positioningList
+
+            if (typeOfPositioningList == "string"){ // If the positioningList is a string
+                positioningList = [arguments[0]]; // Redefine as an array
             }
-            else if ((typeof arguments[0] == "object") && (arguments[0].length !== 0)){ // If the positioning argument passed is an array with a length greater than zero
-                positioningList = arguments[0]; // Define positioningList as the first argument
+            else if ((typeOfPositioningList == "Array") && (positioningList.length !== 0)){ // If the positioning argument passed is an array with a length greater than zero
+                positioningList = positioningList; // Define positioningList as the first argument
             }
 
-            if (syiro.component.IsComponentObject(arguments[1])){ // If the second argument is a Syiro Component Object
-                componentObject = arguments[1]; // Define componentObject as the second argument passed
+            if (syiro.utilities.TypeOfThing(componentObject) == "ComponentObject"){ // If the componentObject passed is in fact a Syiro Component Object
                 componentElement = syiro.component.Fetch(componentObject); // Define componentElement as the Component Element that we fetch from the Component Object
             }
 
-            if (syiro.component.IsComponentObject(arguments[2])){ // If the third argument is a Syiro Component Object
-                relativeComponentObject = arguments[2]; // Define componentObject as the second argument passed
+            if (syiro.utilities.TypeOfThing(relativeComponentObject) == "ComponentObject"){ // If the relativeComponentObject passed is in fact a Syiro Component Object
                 relativeComponentElement = syiro.component.Fetch(relativeComponentObject); // Define relativeComponentElement as the Component Element that we fetch from the relativeComponentObject
             }
 

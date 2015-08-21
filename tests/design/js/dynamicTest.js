@@ -36,17 +36,11 @@ function generatePage(){
     generateMediaPlayers(); // Generate the Media Players
 
     syiro.events.Add("resize", window, function(){ // Add a resize event to the window
-        syiro.CSS(videoPlayerContainer, "height", (syiro.device.height * 0.66).toString() + "px");
+        syiro.CSS(videoPlayerContainer, "height", (syiro.device.height - 120).toString() + "px");
         var audioPlayerComponentObject = syiro.FetchComponentObject(audioPlayerContainer.querySelector('div[data-syiro-component="audio-player"]')); // Get the Component Object of the Audio Player inside audioPlayerContainer
         var videoPlayerComponentObject = syiro.FetchComponentObject(videoPlayerContainer.querySelector('div[data-syiro-component="video-player"]')); // Get the Component Object of the Video Player inside videoPlayerContainer
         syiro.render.Scale(audioPlayerComponentObject); // Rescale the Audio Player
 		syiro.render.Scale(videoPlayerComponentObject); // Rescale the Video Player
-
-		var dropdownButtonComponentObject = syiro.FetchComponentObject(document.querySelector('div[data-syiro-component="button"][data-syiro-component-type="dropdown"]'));
-
-		if (syiro.device.width < 1024){ // If the device width is less than 1024px
-			syiro.button.SetText(dropdownButtonComponentObject, "");
-		}
     });
 }
 
@@ -121,7 +115,7 @@ function generateMediaPlayers(){
             {
                 "art" : "img/video-art.png",
                 "menu" : videoMenuDialogList,
-                "fill" : [1,1],
+                "fill" : [0.8,1],
                 "sources" : ["http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v", "http://video.webmfiles.org/big-buck-bunny_trailer.webm"]
             }
     );

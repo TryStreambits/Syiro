@@ -1,7 +1,3 @@
-body {
-    overflow: hidden;
-}
-
 /* Navbar Inner Dropdown Button */
 
 div[data-syiro-component="navbar"] > div[data-syiro-component="button"][data-syiro-component-type="dropdown"]{
@@ -52,13 +48,13 @@ div[data-page-component="video-player-container"]{
 /* Scaling */
 
 @media screen and (max-width: 600px){
-	
+
 	/* Navbar Links */
-	
+
 	div[data-syiro-component="navbar"] > a {
 		min-width: 0px !important; /* No minimum width */
 	}
-	
+
 	/* End of Navbar Links */
 
     /* Shared Player Container Styling */

@@ -108,6 +108,8 @@ namespace syiro {
 		syiro.secondaryColor = window.getComputedStyle(syiroInternalColorContainer).borderColor; // Get the secondaryColor defined in CSS as border-color key/val and set it to syiro.secondaryColor
 		document.body.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
 
+		// #endregion
+
 		// #region Watch DOM For Components
 
 		if (syiro.device.SupportsMutationObserver){ // If MutationObserver is supported by the browser

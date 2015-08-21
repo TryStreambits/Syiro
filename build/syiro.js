@@ -1286,8 +1286,10 @@ var syiro;
                     }
                 }
             };
+            var orientationListener = screen;
             if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")) {
-                syiro.device.OrientationObject = screen.orientation;
+                orientationListener = screen.orientation;
+                syiro.device.OrientationObject = screen.orientation.type;
                 syiro.events.eventStrings["orientationchange"] = ["change"];
             }
             else if (typeof screen.onmsorientationchange !== "undefined") {
@@ -1302,7 +1304,7 @@ var syiro;
                 syiro.events.eventStrings["orientationchange"] = ["orientationchange-viainterval"];
             }
             if (syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval") {
-                syiro.events.Add(syiro.events.eventStrings["orientationchange"], syiro.device.OrientationObject, orientationChangeHandler);
+                syiro.events.Add(syiro.events.eventStrings["orientationchange"], orientationListener, orientationChangeHandler);
             }
             else {
                 window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000);
@@ -1312,28 +1314,29 @@ var syiro;
         }
         device.Detect = Detect;
         function FetchOperatingSystem() {
-            if (navigator.userAgent.indexOf("Android") !== -1) {
+            var userAgent = navigator.userAgent;
+            if (userAgent.indexOf("Android") !== -1) {
                 syiro.device.OperatingSystem = "Android";
             }
-            else if ((navigator.userAgent.indexOf("iPhone") !== -1) || (navigator.userAgent.indexOf("iPad") !== -1)) {
+            else if ((userAgent.indexOf("iPhone") !== -1) || (userAgent.indexOf("iPad") !== -1)) {
                 syiro.device.OperatingSystem = "iOS";
             }
-            else if ((navigator.userAgent.indexOf("Linux") !== -1) && (navigator.userAgent.indexOf("Android") == -1)) {
+            else if ((userAgent.indexOf("Linux") !== -1) && (userAgent.indexOf("Android") == -1)) {
                 syiro.device.OperatingSystem = "Linux";
-                if (navigator.userAgent.indexOf("Sailfish") !== -1) {
+                if (userAgent.indexOf("Sailfish") !== -1) {
                     syiro.device.OperatingSystem = "Sailfish";
                 }
-                else if ((navigator.userAgent.indexOf("Ubuntu") !== -1) && ((navigator.userAgent.indexOf("Mobile") !== -1) || (navigator.userAgent.indexOf("Tablet") !== -1))) {
+                else if ((userAgent.indexOf("Ubuntu") !== -1) && ((userAgent.indexOf("Mobile") !== -1) || (userAgent.indexOf("Tablet") !== -1))) {
                     syiro.device.OperatingSystem = "Ubuntu Touch";
                 }
             }
-            else if (navigator.userAgent.indexOf("Macintosh") !== -1) {
+            else if (userAgent.indexOf("Macintosh") !== -1) {
                 syiro.device.OperatingSystem = "OS X";
             }
-            else if (navigator.userAgent.indexOf("Windows Phone") !== -1) {
+            else if (userAgent.indexOf("Windows Phone") !== -1) {
                 syiro.device.OperatingSystem = "Windows Phone";
             }
-            else if (navigator.userAgent.indexOf("Windows NT") !== -1) {
+            else if (userAgent.indexOf("Windows NT") !== -1) {
                 syiro.device.OperatingSystem = "Windows";
             }
             else {

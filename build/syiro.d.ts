@@ -13,6 +13,9 @@ interface Element {
 interface Navigator {
     doNotTrack: string;
 }
+interface Console {
+    profileEnd(profile?: string): any;
+}
 interface Screen {
     orientation: any;
     mozOrientation: any;

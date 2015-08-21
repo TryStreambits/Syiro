@@ -37,7 +37,6 @@ namespace syiro.device {
     // #region Detection Function - Use to detect functionality, define variables, etc.
 
     export function Detect(){
-
         // #region Do Not Track
 
         if (typeof navigator.doNotTrack !== "undefined"){ // If DoNotTrack is defined in the navigator Object
@@ -144,8 +143,11 @@ namespace syiro.device {
             }
         }
 
+		var orientationListener : any = screen;
+
         if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")){ // If Screen Orientation API is properly supported
-            syiro.device.OrientationObject = screen.orientation; // Point syiro.device.OrientationObject to screen.orientation rather than screen
+			orientationListener = screen.orientation; // Set orientationListener as the screen.orientation Object
+            syiro.device.OrientationObject = screen.orientation.type; // Point syiro.device.OrientationObject to screen.orientation type
             syiro.events.eventStrings["orientationchange"] = ["change"]; // Set our eventStrings orientationchange to only change
         }
         else if (typeof screen.onmsorientationchange !== "undefined"){ // If this is the Internet Explorer vendor-prefixed orientation change
@@ -161,7 +163,7 @@ namespace syiro.device {
         }
 
         if (syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval"){ // If orientation change is supported on the device
-            syiro.events.Add(syiro.events.eventStrings["orientationchange"], syiro.device.OrientationObject, orientationChangeHandler); // Add an orientation change event for the screen with our orientationChangeHandler
+            syiro.events.Add(syiro.events.eventStrings["orientationchange"], orientationListener, orientationChangeHandler); // Add an orientation change event for the screen with our orientationChangeHandler
         }
         else{ // If the device does not support orientation change
             window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000); // Set a timer for every two seconds to check for change in device orientation. We are using this due to the lack of full orientationchange event support in major browsers.
@@ -179,29 +181,31 @@ namespace syiro.device {
     // #region Fetch Operating System
 
     export function FetchOperatingSystem(){
-        if (navigator.userAgent.indexOf("Android") !== -1){ // If the userAgent is set to claim the device is Android
+		var userAgent : string = navigator.userAgent; // Get the userAgent
+
+        if (userAgent.indexOf("Android") !== -1){ // If the userAgent is set to claim the device is Android
             syiro.device.OperatingSystem = "Android"; // Set device to Android
         }
-        else if ((navigator.userAgent.indexOf("iPhone") !== -1) || (navigator.userAgent.indexOf("iPad") !== -1)){ // If the userAgent is set to claim the device is an iPhone or iPad
+        else if ((userAgent.indexOf("iPhone") !== -1) || (userAgent.indexOf("iPad") !== -1)){ // If the userAgent is set to claim the device is an iPhone or iPad
             syiro.device.OperatingSystem = "iOS"; // Set device to iOS
         }
-        else if ((navigator.userAgent.indexOf("Linux") !== -1) && (navigator.userAgent.indexOf("Android") == -1)){ // If the userAgent is set to claim the device is Linux (but not Android)
+        else if ((userAgent.indexOf("Linux") !== -1) && (userAgent.indexOf("Android") == -1)){ // If the userAgent is set to claim the device is Linux (but not Android)
             syiro.device.OperatingSystem = "Linux"; // Set device to Linux
 
-            if (navigator.userAgent.indexOf("Sailfish") !== -1){ // If the userAgent is set to claim the device is a Sailfish OS device
+            if (userAgent.indexOf("Sailfish") !== -1){ // If the userAgent is set to claim the device is a Sailfish OS device
                 syiro.device.OperatingSystem = "Sailfish"; // Set device to Sailfish OS
             }
-            else if ((navigator.userAgent.indexOf("Ubuntu") !== -1) && ((navigator.userAgent.indexOf("Mobile") !== -1) || (navigator.userAgent.indexOf("Tablet") !== -1))){ // IF the userAgent is claiming the device is running Ubuntu Touch
+            else if ((userAgent.indexOf("Ubuntu") !== -1) && ((userAgent.indexOf("Mobile") !== -1) || (userAgent.indexOf("Tablet") !== -1))){ // IF the userAgent is claiming the device is running Ubuntu Touch
                 syiro.device.OperatingSystem = "Ubuntu Touch"; // Set device to Ubuntu Touch
             }
         }
-        else if (navigator.userAgent.indexOf("Macintosh") !== -1){ // If the userAgent is set to claim the device is a Macintosh
+        else if (userAgent.indexOf("Macintosh") !== -1){ // If the userAgent is set to claim the device is a Macintosh
             syiro.device.OperatingSystem = "OS X"; // Set device to OS X
         }
-        else if (navigator.userAgent.indexOf("Windows Phone") !== -1){ // If the userAgent is set to claim the device is a Windows Phone
+        else if (userAgent.indexOf("Windows Phone") !== -1){ // If the userAgent is set to claim the device is a Windows Phone
             syiro.device.OperatingSystem = "Windows Phone"; // Set device to Windows Phone
         }
-        else if (navigator.userAgent.indexOf("Windows NT") !== -1){ // If the userAgent is set to claim the device is Windows
+        else if (userAgent.indexOf("Windows NT") !== -1){ // If the userAgent is set to claim the device is Windows
             syiro.device.OperatingSystem = "Windows"; // Set device to Windows
         }
         else{ // If something else

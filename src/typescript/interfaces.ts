@@ -48,6 +48,10 @@ interface Navigator { // Implementation of valid spec not found in lib.d.ts
 	doNotTrack : string; // Define doNotTrack as a string
 }
 
+interface Console { // Implement Mozilla Console Profile spec.
+	profileEnd(profile ?: string);
+}
+
 // #region Extended Screen Interface
 
 interface Screen {

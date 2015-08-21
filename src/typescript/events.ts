@@ -107,14 +107,10 @@ namespace syiro.events {
 
 			if (allowListening){ // If allowListening is TRUE
 				for (var listener of listeners){ // For each listener in the listeners array
-					var currentListenersArray : any = syiro.data.Read(component["id"] + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
+					var currentListenersArray : any = syiro.data.Read(componentId + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
 
-					if (currentListenersArray == false){ // If there are no listeners for this Component
-						currentListenersArray = []; // Define as a new Array
-					}
-
-					if (currentListenersArray.length == 0){ // If there are no functions in the Array
-						currentListenersArray = [listenerCallback]; // Define currentListenersArray as a new array containing this listenerCallback
+					if (typeof currentListenersArray == "boolean"){ // If there are no functions in the Array
+						currentListenersArray = [listenerCallback]; // Define as a new Array
 
 						if (syiro.data.Read(componentId + "->DisableInputTrigger") == false){ // If this isn't a Searchbox or is but doesn't have DisableInputTrigger set to true
 							componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component

@@ -371,11 +371,8 @@ var syiro;
                 if (allowListening) {
                     for (var _i = 0; _i < listeners.length; _i++) {
                         var listener = listeners[_i];
-                        var currentListenersArray = syiro.data.Read(component["id"] + "->handlers->" + listener);
-                        if (currentListenersArray == false) {
-                            currentListenersArray = [];
-                        }
-                        if (currentListenersArray.length == 0) {
+                        var currentListenersArray = syiro.data.Read(componentId + "->handlers->" + listener);
+                        if (typeof currentListenersArray == "boolean") {
                             currentListenersArray = [listenerCallback];
                             if (syiro.data.Read(componentId + "->DisableInputTrigger") == false) {
                                 componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component));
@@ -1040,7 +1037,10 @@ var syiro;
             var componentElement = syiro.component.Fetch(component);
             if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content") {
                 var listHeader = componentElement.querySelector('div[data-syiro-minor-component="list-header"]');
-                syiro.events.Add(syiro.events.eventStrings["up"], listHeader, syiro.list.Toggle.bind(this, component));
+                if (syiro.data.Read(component["id"] + "->HeaderBound") !== true) {
+                    syiro.data.Write(component["id"] + "->HeaderBound", true);
+                    syiro.events.Add(syiro.events.eventStrings["up"], listHeader, syiro.list.Toggle.bind(this, component));
+                }
             }
         }
         init.List = List;

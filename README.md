@@ -43,7 +43,7 @@ Details:
 
 1. Bootstrap's size is also calculating in jQuery `2.1.4`, jQuery being a requirement of Bootstrap.
 2. Polymer's minified calculation is based on using: `[CustomElement.min.js, HTMLImports.min.js, MutationObserver.min.js, ShadowDOM.min.js, webcomponents-lite.min.js]`
-3. All gzipped  JavaScript was done using [Google's Closure Comopiler](https://developers.google.com/closure/compiler/) at "simple" optimizations level.
+3. All gzipped  JavaScript was done using [Google's Closure Compiler](https://developers.google.com/closure/compiler/) at "simple" optimizations level.
 4. Syiro numbers are updated for stable releases.
 
 ### Using Syiro ###

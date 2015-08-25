@@ -94,11 +94,7 @@ namespace syiro.init {
 
 		if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content"){ // If the List is nested in another List
 			var listHeader : Element = componentElement.querySelector('div[data-syiro-minor-component="list-header"]'); // Get the listHeader of the List
-
-			if (syiro.data.Read(component["id"] + "->HeaderBound") !== true){ // If we haven't bound this header already (temporary workaround for listHeader func issue
-				syiro.data.Write(component["id"] + "->HeaderBound", true); // Apply HeaderBound as true
-				syiro.events.Add(syiro.events.eventStrings["up"], listHeader, syiro.list.Toggle.bind(this, component)); // Add an up event to Toggle the showing / hiding of the List's content
-			}
+			syiro.events.Add(syiro.events.eventStrings["up"], listHeader, syiro.list.Toggle); // Add an up event to Toggle the showing / hiding of the List's content
 		}
 	}
 

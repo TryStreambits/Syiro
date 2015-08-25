@@ -1037,10 +1037,7 @@ var syiro;
             var componentElement = syiro.component.Fetch(component);
             if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content") {
                 var listHeader = componentElement.querySelector('div[data-syiro-minor-component="list-header"]');
-                if (syiro.data.Read(component["id"] + "->HeaderBound") !== true) {
-                    syiro.data.Write(component["id"] + "->HeaderBound", true);
-                    syiro.events.Add(syiro.events.eventStrings["up"], listHeader, syiro.list.Toggle.bind(this, component));
-                }
+                syiro.events.Add(syiro.events.eventStrings["up"], listHeader, syiro.list.Toggle);
             }
         }
         init.List = List;
@@ -1862,17 +1859,25 @@ var syiro;
         }
         list.SetHeader = SetHeader;
         function Toggle(component) {
-            var componentElement = syiro.component.Fetch(component);
-            if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content") {
-                var listHeader = componentElement.querySelector('div[data-syiro-minor-component="list-header"]');
-                var listContent = componentElement.querySelector('div[data-syiro-minor-component="list-content"]');
-                if (syiro.component.CSS(listContent, "display") !== "block") {
-                    listHeader.setAttribute("active", "");
-                    syiro.component.CSS(listContent, "display", "block");
-                }
-                else {
-                    listHeader.removeAttribute("active");
-                    syiro.component.CSS(listContent, "display", "");
+            var componentElement;
+            if (syiro.utilities.TypeOfThing(component, "ComponentObject")) {
+                componentElement = syiro.component.Fetch(component);
+            }
+            else if (syiro.utilities.TypeOfThing(component, "Element")) {
+                componentElement = component.parentElement;
+            }
+            if ((typeof componentElement !== "undefined") && (componentElement !== null) && (componentElement !== false)) {
+                if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content") {
+                    var listHeader = componentElement.querySelector('div[data-syiro-minor-component="list-header"]');
+                    var listContent = componentElement.querySelector('div[data-syiro-minor-component="list-content"]');
+                    if (syiro.component.CSS(listContent, "display") !== "block") {
+                        listHeader.setAttribute("active", "");
+                        syiro.component.CSS(listContent, "display", "block");
+                    }
+                    else {
+                        listHeader.removeAttribute("active");
+                        syiro.component.CSS(listContent, "display", "");
+                    }
                 }
             }
         }

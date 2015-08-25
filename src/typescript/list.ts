@@ -94,20 +94,29 @@ namespace syiro.list {
 
 	// #region Toggle - Toggle visibility of List's inner content container
 
-	export function Toggle(component : Object){
-		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement of the List
+	export function Toggle(component : any){
+		var componentElement : any; // Define componentElement as the Element of the List Component
 
-		if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content"){ // If this is indeed a nested List
-			var listHeader : Element = componentElement.querySelector('div[data-syiro-minor-component="list-header"]'); // Fetch the List's Header
-			var listContent : Element = componentElement.querySelector('div[data-syiro-minor-component="list-content"]'); // Fetch the List's Content Container
+		if (syiro.utilities.TypeOfThing(component, "ComponentObject")){ // If this is a Component Object (List) that is provided
+			componentElement = syiro.component.Fetch(component); // Fetch the componentElement of the List
+		}
+		else if (syiro.utilities.TypeOfThing(component, "Element")){ // If we were provided an Element
+			componentElement = component.parentElement; // Set as the parentElement of the List Header
+		}
 
-			if (syiro.component.CSS(listContent, "display") !== "block"){ // If the listContent is currently hidden
-				listHeader.setAttribute("active", ""); // Set listHeader "active" attribute to flip the Dropdown icon
-				syiro.component.CSS(listContent, "display", "block"); // Show the List content
-			}
-			else{ // If the listContent is currently showing
-				listHeader.removeAttribute("active"); // Remove the active attribute to unflip the Dropdown icon
-				syiro.component.CSS(listContent, "display", ""); // Hide the List content
+		if ((typeof componentElement !== "undefined") && (componentElement !== null) && (componentElement !== false)){ // If componentElement is defined and is not false (from Fetch) or null (parentElement)
+			if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content"){ // If this is indeed a nested List
+				var listHeader : Element = componentElement.querySelector('div[data-syiro-minor-component="list-header"]'); // Fetch the List's Header
+				var listContent : Element = componentElement.querySelector('div[data-syiro-minor-component="list-content"]'); // Fetch the List's Content Container
+
+				if (syiro.component.CSS(listContent, "display") !== "block"){ // If the listContent is currently hidden
+					listHeader.setAttribute("active", ""); // Set listHeader "active" attribute to flip the Dropdown icon
+					syiro.component.CSS(listContent, "display", "block"); // Show the List content
+				}
+				else{ // If the listContent is currently showing
+					listHeader.removeAttribute("active"); // Remove the active attribute to unflip the Dropdown icon
+					syiro.component.CSS(listContent, "display", ""); // Hide the List content
+				}
 			}
 		}
 	}

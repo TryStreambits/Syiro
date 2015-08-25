@@ -140,7 +140,7 @@ declare module syiro.list {
     function New(properties: Object): Object;
     var Generate: typeof New;
     function SetHeader(component: Object, content: any): void;
-    function Toggle(component: Object): void;
+    function Toggle(component: any): void;
     var AddItem: typeof component.Add;
     var RemoveItem: typeof component.Remove;
 }

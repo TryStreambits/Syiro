@@ -183,7 +183,7 @@ var syiro;
                         generatedElement.setAttribute(attributeKey, syiro.utilities.SanitizeHTML(attributeValue));
                     }
                     else {
-                        if ((typeof attributeValue == "string") || ((typeof attributeValue.nodeType !== "undefined") && (attributeValue.nodeType == 1))) {
+                        if ((typeof attributeValue == "string") || (syiro.utilities.TypeOfThing(attributeValue, "Element"))) {
                             var sanitizedContent = syiro.utilities.SanitizeHTML(attributeValue);
                             if (typeof attributeValue == "string") {
                                 generatedElement.innerHTML = sanitizedContent;
@@ -203,7 +203,7 @@ var syiro;
             if (typeof content == "string") {
                 updatedContent = content.replace(/<*[^]script*>/g, "");
             }
-            else if (typeof content.nodeType !== "undefined") {
+            else if (syiro.utilities.TypeOfThing(content, "Element")) {
                 if (content.tagName.toLowerCase() !== "script") {
                     var innerScriptElements = content.getElementsByTagName("script");
                     if (innerScriptElements.length !== 0) {

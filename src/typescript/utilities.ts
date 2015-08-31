@@ -21,7 +21,7 @@ namespace syiro.utilities {
                     generatedElement.setAttribute(attributeKey, syiro.utilities.SanitizeHTML(attributeValue)); // Set the attribute to a sanitized form of the attributeValue
                 }
                 else{ // If the attributeKey IS "content"
-                    if ((typeof attributeValue == "string") || ((typeof attributeValue.nodeType !== "undefined") && (attributeValue.nodeType == 1))){ // If the attributeValue we passed is a string or an appropriate Element
+                    if ((typeof attributeValue == "string") || (syiro.utilities.TypeOfThing(attributeValue, "Element"))){ // If the attributeValue we passed is a string or an appropriate Element
                         var sanitizedContent = syiro.utilities.SanitizeHTML(attributeValue); // Set sanitizedContent to sanitized HTML (whether it is a string or Element)
 
                         if (typeof attributeValue == "string"){ // If the attributeValue we passed is a string
@@ -48,7 +48,7 @@ namespace syiro.utilities {
         if (typeof content == "string"){ // If the content we passed is a string
             updatedContent = content.replace(/<*[^]script*>/g, ""); // Replace all <script> and </script> tags
         }
-        else if (typeof content.nodeType !== "undefined"){ // If this is an Element
+        else if (syiro.utilities.TypeOfThing(content, "Element")){ // If this is an Element
             if (content.tagName.toLowerCase() !== "script"){ // If we are not including a singular script tag
                 var innerScriptElements = content.getElementsByTagName("script"); // Get all inner JavaScript tags
 

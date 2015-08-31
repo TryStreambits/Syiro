@@ -247,27 +247,32 @@ var syiro;
         utilities.SecondsToTimeFormat = SecondsToTimeFormat;
         function TypeOfThing(thing, checkAgainstType) {
             var thingType;
-            if ((typeof thing == "object") && (typeof thing.nodeType == "undefined")) {
-                if ((typeof thing["id"] !== "undefined") && (typeof thing["type"] !== "undefined")) {
-                    thingType = "ComponentObject";
+            if (typeof thing !== "undefined") {
+                if ((typeof thing == "object") && (typeof thing.nodeType == "undefined")) {
+                    if ((typeof thing["id"] !== "undefined") && (typeof thing["type"] !== "undefined")) {
+                        thingType = "ComponentObject";
+                    }
+                    else if (typeof thing.length !== "undefined") {
+                        thingType = "Array";
+                    }
+                    else {
+                        thingType = thing.toString().replace("[object ", "").replace("]", "");
+                    }
                 }
-                else if (typeof thing.length !== "undefined") {
-                    thingType = "Array";
+                else if (typeof thing.nodeType !== "undefined") {
+                    if (thing.nodeType !== 9) {
+                        thingType = "Element";
+                    }
+                    else if (thing.nodeType == 9) {
+                        thingType = "Document";
+                    }
                 }
                 else {
-                    thingType = thing.toString().replace("[object ", "").replace("]", "");
-                }
-            }
-            else if (typeof thing.nodeType !== "undefined") {
-                if (thing.nodeType !== 9) {
-                    thingType = "Element";
-                }
-                else if (thing.nodeType == 9) {
-                    thingType = "Document";
+                    thingType = (typeof thing);
                 }
             }
             else {
-                thingType = (typeof thing);
+                thingType = "undefined";
             }
             if (typeof checkAgainstType == "string") {
                 thingType = (checkAgainstType == thingType);

@@ -9,14 +9,14 @@ div[data-syiro-component="sidepane"]{
     -ms-touch-action: pan-y;
     position: fixed; // Fixed positioning
     z-index : 9;
-    
+
     // #region Disable Slow-Transition Dragging
-    
+
     &[data-syiro-render-transition="false"]{
 	    transition: ""; // Set empty transition so it doesn't apply transition and therefore cause slow dragging
 	    -webkit-transition: ""; // WebKit equivelant..
     }
-    
+
     // #endregion
 
     // #region Sidepane Content
@@ -26,9 +26,9 @@ div[data-syiro-component="sidepane"]{
         height: 100%;
         background-color: #f4f4f4; // Set a fixed hex background color
 
-        // #region Logo
+        // #region Logo and Searchbox
 
-        & > img:first-child, & > picture:first-child { // Select any img or picture that is the first child of the Sidepane
+        & > img:first-child, & > picture:first-child, div[data-syiro-component="searchbox"] { // Select any img or picture that is the first child of the Sidepane, as well as any Searchbox
             float: left;
             width: 90%;
             margin: 5%;
@@ -36,21 +36,46 @@ div[data-syiro-component="sidepane"]{
 
         // #endregion
 
-        // #region Lists and Searchbox
+        // #region Lists
 
-        & > div[data-syiro-component="list"], & > div[data-syiro-component="searchbox"]{
-            float: left;
-            width: 90%;
-            margin: 5%;
+        & > div[data-syiro-minor-component="sidepane-lists"] { // Lists Container
+			float: left;
+			width: 90%;
+			margin: 5%;
+			overflow-y: auto; // Scroll if needed
 
-            // #region Inner List Items
+			& > div[data-syiro-component="list"]{
+				float: left;
+				width: 100%;
+				margin: 0;
 
-            &[data-syiro-component="list"] > div[data-syiro-component="list-item"]{
-                text-indent: 0; // Eliminate text indentation
-            }
+				// #region Inner List Items
 
-            // #endregion
+				&[data-syiro-component="list"] > div[data-syiro-component="list-item"]{
+					text-indent: 0; // Eliminate text indentation
+				}
+
+				// #endregion
+			}
         }
+
+		// #region Lists Container Height Tweak
+
+		& > img + div[data-syiro-minor-component="sidepane-lists"]:nth-child(2){ // If the Sidepane Lists is the second child, where the first is the logo
+			height: e("calc(100% - 150px)"); // Set to calc(100% - 150px)
+		}
+
+		& > picture + div[data-syiro-minor-component="sidepane-lists"]:nth-child(2){ // If the Sidepane Lists is the second child, where the first is the logo
+			height: e("calc(100% - 150px)"); // Set to calc(100% - 150px)
+		}
+
+		& > div[data-syiro-component="searchbox"]:nth-child(1) + div[data-syiro-minor-component="sidepane-lists"] { // If the Sidepane Lists is the second child, where the first is the Searchbox
+			height: e("calc(100% - 50px)"); // Set to calc(100% - 50px)
+		}
+
+		& > div[data-syiro-component="searchbox"]:nth-child(2) + div[data-syiro-minor-component="sidepane-lists"] { // If the Sidepane Lists is the third child, where the second is the Searchbox
+			height: e("calc(100% - 200px)"); // Set to calc(100% - 200px)
+		}
 
         // #endregion
     }

@@ -2928,9 +2928,22 @@ var syiro;
             var componentId = syiro.component.IdGen("sidepane");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": componentId, "data-syiro-component": "sidepane" });
             var sidepaneContentElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "sidepane-content" });
+            var sidepaneInnerListContent = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "sidepane-lists" });
             var sidepaneEdge = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "sidepane-edge" });
             componentElement.appendChild(sidepaneContentElement);
+            sidepaneContentElement.appendChild(sidepaneInnerListContent);
             componentElement.appendChild(sidepaneEdge);
+            if (syiro.utilities.TypeOfThing(properties["logo"], "Element") || (typeof properties["logo"] == "string")) {
+                var logoElement = properties["logo"];
+                if (typeof properties["logo"] == "string") {
+                    logoElement = syiro.utilities.ElementCreator("img", { "src": properties["logo"] });
+                }
+                sidepaneContentElement.insertBefore(logoElement, sidepaneInnerListContent);
+            }
+            if (syiro.utilities.TypeOfThing(properties["searchbox"], "ComponentObject")) {
+                var searchboxElement = syiro.component.Fetch(properties["searchbox"]);
+                sidepaneContentElement.insertBefore(searchboxElement, sidepaneInnerListContent);
+            }
             for (var _i = 0, _a = properties["items"]; _i < _a.length; _i++) {
                 var item = _a[_i];
                 var typeOfItem = syiro.utilities.TypeOfThing(item);
@@ -2941,24 +2954,7 @@ var syiro;
                 else if (typeOfItem == "Element") {
                     appendableElement = syiro.utilities.SanitizeHTML(item);
                 }
-                if (typeof appendableElement !== "undefined") {
-                    if ((typeOfItem == "ComponentObject") && (item["type"] == "searchbox")) {
-                        if (sidepaneContentElement.querySelector('img:first-child') !== null) {
-                            sidepaneContentElement.insertBefore(appendableElement, sidepaneContentElement.childNodes[1]);
-                        }
-                        else {
-                            sidepaneContentElement.insertBefore(appendableElement, sidepaneContentElement.firstChild);
-                        }
-                    }
-                    else {
-                        if ((appendableElement.nodeName == "IMG") || (appendableElement.nodeName == "PICTURE") && (sidepaneContentElement.childNodes.length !== 0)) {
-                            sidepaneContentElement.insertBefore(appendableElement, sidepaneContentElement.firstChild);
-                        }
-                        else {
-                            sidepaneContentElement.appendChild(appendableElement);
-                        }
-                    }
-                }
+                sidepaneInnerListContent.appendChild(appendableElement);
             }
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "sidepane" };

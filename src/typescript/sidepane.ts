@@ -16,10 +16,38 @@ namespace syiro.sidepane {
         var componentId : string = syiro.component.IdGen("sidepane"); // Generate a Sidepane Component Id
         var componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : componentId, "data-syiro-component" : "sidepane"}); // Generate an empty Sidepane
         var sidepaneContentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-content"}); // Generate an empty Sidepane Content div
+		var sidepaneInnerListContent : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-lists" }); // Generate an empty Sidepane Lists Container div
         var sidepaneEdge : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-edge"}); // Generate an empty Sidepane Edge div
 
         componentElement.appendChild(sidepaneContentElement); // Append the content Element
+		sidepaneContentElement.appendChild(sidepaneInnerListContent); // Append the Lists container to the Sidepane Content container
+
         componentElement.appendChild(sidepaneEdge); // Append the edge Element
+
+		// #region Sidepane Logo
+
+		if (syiro.utilities.TypeOfThing(properties["logo"], "Element") || (typeof properties["logo"] == "string")){ // If the logo is an Element or string
+			var logoElement : Element = properties["logo"]; // Define logoElement as the Element. Default to the logo (assuming it is an Element)
+
+			if (typeof properties["logo"] == "string"){ // If the logo is a string
+				logoElement = syiro.utilities.ElementCreator("img", { "src" : properties["logo"] }); // Change logoElement to a newly generated img Element
+			}
+
+			sidepaneContentElement.insertBefore(logoElement, sidepaneInnerListContent); // Insert the logo image before the Sidepane Inner Lists Content container
+		}
+
+		// #endregion
+
+		// #region SIdepane Searchbox
+
+		if (syiro.utilities.TypeOfThing(properties["searchbox"], "ComponentObject")){ // If there is a Searchbox Component Object
+			var searchboxElement : Element = syiro.component.Fetch(properties["searchbox"]); // Fetch the Searchbox
+			sidepaneContentElement.insertBefore(searchboxElement, sidepaneInnerListContent); // Insert the Searchbox before the Sidepane Inner Lists Content container
+		}
+
+		// #endregion
+
+		// #region Items for Lists Container
 
         for (var item of properties["items"]){ // For each item in items
 			var typeOfItem : string = syiro.utilities.TypeOfThing(item); // Get the type of this item
@@ -32,25 +60,10 @@ namespace syiro.sidepane {
                 appendableElement = syiro.utilities.SanitizeHTML(item); // Set appendableElement as the sanitized Element provided
             }
 
-            if (typeof appendableElement !== "undefined"){ // If the appendableElement is in fact an Element rather than undefined
-                if ((typeOfItem == "ComponentObject") && (item["type"] == "searchbox")){ // If this is a Searchbox
-                    if (sidepaneContentElement.querySelector('img:first-child') !== null){ // If there is a logo at the "top" of the Sidepane
-                        sidepaneContentElement.insertBefore(appendableElement, sidepaneContentElement.childNodes[1]); // Append before the second child
-                    }
-                    else{
-                        sidepaneContentElement.insertBefore(appendableElement, sidepaneContentElement.firstChild); // Prepend the Searchbox
-                    }
-                }
-                else { // If appendableElement is not the Element of a Searchbox
-                    if ((appendableElement.nodeName == "IMG") || (appendableElement.nodeName == "PICTURE") && (sidepaneContentElement.childNodes.length !== 0)){ // If this is an img or picture Element and the Sidepane is not currently empty
-                        sidepaneContentElement.insertBefore(appendableElement, sidepaneContentElement.firstChild); // Prepend the img / logo Element
-                    }
-                    else{ // If it is not an img or picture Element
-                        sidepaneContentElement.appendChild(appendableElement);
-                    }
-                }
-            }
+			sidepaneInnerListContent.appendChild(appendableElement);
         }
+
+		// #endregion
 
         syiro.data.Write(componentId + "->HTMLElement", componentElement);
         return { "id" : componentId, "type" : "sidepane"}; // Return a Sidepane Component Object

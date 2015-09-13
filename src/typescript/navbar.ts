@@ -15,7 +15,7 @@ namespace syiro.navbar {
     // #region Generator
     // Used for generating both "top" navbars (previously referred to as Header) and "bottom" navbars (previously referred to as Footer)
 
-    export function New(properties : Object) : Object {
+    export function New(properties : Object) : ComponentObject {
         var navbarType : string; // Define navbarType as either "top" or "bottom"
 
         if ((typeof properties["position"] !== "string") || ((properties["position"] !== "top") && (properties["position"] !== "bottom"))){ // If position is not defined as a string or is defined as neither top or bottom
@@ -33,15 +33,8 @@ namespace syiro.navbar {
 				for (var individualItem of properties["items"]){ // For each individualItem in navigationItems Object array
 					var typeOfItem : string = syiro.utilities.TypeOfThing(individualItem); // Get the type of the individualItem
 
-					if (typeOfItem == "Object"){ // If we are adding a link
-						var generatedElement : HTMLElement = syiro.utilities.ElementCreator("a", // Generate a generic link element
-							{
-							"href" : individualItem["link"], // Set the href (link)
-							"title" : individualItem["title"], // Set the title of the link to the one passed
-							"content" : individualItem["title"] // Also set the inner content of the <a> tag to title
-							}
-						);
-
+					if (typeOfItem == "LinkPropertiesObject"){ // If we are adding a link
+						var generatedElement  : HTMLElement = syiro.utilities.ElementCreator("a", { "href" : individualItem["link"], "content" : individualItem["title"] }); // Generate a generic Link
 						componentElement.appendChild(generatedElement); // Append the component to the parent component element
 					}
 					else if ((typeOfItem == "ComponentObject") && (navbarType == "top")){ // If we are adding a Syiro Component (whether it be a Dropdown Button or a Searchbox) and the navbarType is top
@@ -88,21 +81,15 @@ namespace syiro.navbar {
 
     // #region Function to add a link to the Navbar based on properties of that link
 
-    export function AddLink(append : boolean, component : Object, elementOrProperties : any) : boolean { // Returns boolean if it was successful or not
+    export function AddLink(append : boolean, component : ComponentObject, elementOrProperties : any) : boolean { // Returns boolean if it was successful or not
         var componentAddingSucceeded : boolean = false; // Variable to store the determination of success (default to false)
 
         if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")){ // If this is a Navbar Component and elementOrProperties is defined
 			var typeOfElementOrProperties : string = syiro.utilities.TypeOfThing(elementOrProperties); // Get the type of elementOrProperties
             var generatedElement : HTMLElement; // Define generatedElement as the element we will be appending
 
-            if (typeOfElementOrProperties == "Object"){ // If elementOrProperties is an Object
-                generatedElement = syiro.utilities.ElementCreator("a", // Generate a generic link element
-                    {
-                        "href" : elementOrProperties["href"], // Set the href (link)
-                        "title" : elementOrProperties["title"], // Also set title of the <a> tag to title provided
-                        "content" : elementOrProperties["title"] // Also set the inner content of the <a> tag to title
-                    }
-                );
+            if (typeOfElementOrProperties == "LinkPropertiesObject"){ // If elementOrProperties is a LinkPropertiesObject
+                generatedElement = syiro.utilities.ElementCreator("a", { "href" : elementOrProperties["link"], "content" : elementOrProperties["title"] }); // Generate a generic Link
             }
             else if ((typeOfElementOrProperties == "Element") && (elementOrProperties.nodeName == "A")){ // If this is a link Element
                 generatedElement = elementOrProperties; // Define generatedElement as elementOrProperties
@@ -121,7 +108,7 @@ namespace syiro.navbar {
 
     // #region Function to remove a link from the Navbar based on the properties of that link
 
-	export function RemoveLink(component : Object, elementOrProperties : any) : boolean { // Return boolean if it was successful or not
+	export function RemoveLink(component : ComponentObject, elementOrProperties : any) : boolean { // Return boolean if it was successful or not
 		var componentRemovingSucceed : boolean = false; // Variable to store the determination of success
 
 		if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")){ // If this is a Navbar Component
@@ -129,8 +116,8 @@ namespace syiro.navbar {
 			var typeOfElementOrProperties : string = syiro.utilities.TypeOfThing(elementOrProperties); // Get the type of elementOrProperties
 			var potentialLinkElement : Element; // Get the potential link element.
 
-			if (typeOfElementOrProperties == "Object"){ // If this is an Object
-				potentialLinkElement =  navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"][title="' + elementOrProperties["title"] + '"]'); // Get the potential link element.
+			if (typeOfElementOrProperties == "LinkPropertiesObject"){ // If this is an Object
+				potentialLinkElement =  navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"]'); // Get the potential link element.
 			}
 			else if ((typeOfElementOrProperties == "Element") && (elementOrProperties.nodeName == "A")){ // If this is a link Element
 				potentialLinkElement = elementOrProperties; // Define potentialLinkElement as elementOrProperties
@@ -153,7 +140,7 @@ namespace syiro.navbar {
 
     // #region Function for setting the top Navbar's logo
 
-	export function SetLogo(component : Object, content : string) : boolean{ // Requires the component object and string of the image URL
+	export function SetLogo(component : ComponentObject, content : string) : boolean{ // Requires the component object and string of the image URL
 		if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "top")){ // If this is a "top" Navbar Component
 			var navbarElement : Element = syiro.component.Fetch(component); // Get the HTMLElement
 			var imageElement : Element = navbarElement.querySelector('img[data-syiro-minor-component="logo"]'); // Set imageElement as the IMG element we will either fetch or generate
@@ -186,7 +173,7 @@ namespace syiro.navbar {
 
     // #region Function to set the bottom navbar label (typically something like a Copyright notice)
 
-	export function SetLabel(component : Object, content : string) : boolean{ // Set the label text of the footer component to the labelText defined
+	export function SetLabel(component : ComponentObject, content : string) : boolean{ // Set the label text of the footer component to the labelText defined
 		if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "bottom")){ // If this is a "bottom" Navbar Component
 			var navbarElement = syiro.component.Fetch(component); // Get the Element of the Navbar component
 			var labelComponent : Element = navbarElement.querySelector("label"); // Fetch the labelComponent if it exists

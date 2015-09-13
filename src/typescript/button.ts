@@ -12,7 +12,7 @@ namespace syiro.button {
 
 	// #region Basic, Dropdown, Toggle Button Generator
 
-	export function New(properties : Object) : Object { // Generate a Button Component and return a Component Object
+	export function New(properties : Object) : ComponentObject { // Generate a Button Component and return a Component Object
 		if (typeof properties["type"] == "undefined"){ // If the type is undefined
 			if ((typeof properties["list"] == "undefined") && (typeof properties["items"] == "undefined")){ // If there is no List or Items provided in properties
 				properties["type"] = "basic"; // Default to a basic button
@@ -61,7 +61,7 @@ namespace syiro.button {
 		if (properties["type"] == "dropdown"){ // If this is a Dropdown Button that is being generated
 			// #region List Creation and Linking
 
-			var listComponent : Object; // Define listComponent as the Component Object of the List
+			var listComponent : ComponentObject; // Define listComponent as the Component Object of the List
 
 			if (typeof properties["items"] !== "undefined"){ // If List Items are provided in the properties
 				listComponent = syiro.list.New({ "items" : properties["items"]}); // Simply generate a new List component from the provided list items and set the listComponent Object to the one provided by Generate
@@ -120,7 +120,7 @@ namespace syiro.button {
 
 	// #region Function for setting the icon of a Button
 
-	export function SetIcon(component : Object, content : string) : boolean { // Returns boolean value in relation to success
+	export function SetIcon(component : ComponentObject, content : string) : boolean { // Returns boolean value in relation to success
 		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
 
 		var componentElement = syiro.component.Fetch(component); // Get the componentElement
@@ -146,7 +146,7 @@ namespace syiro.button {
 
 	// #region Function for setting the image of a Dropdown Button
 
-	export function SetImage(component : Object, content : string) : boolean {
+	export function SetImage(component : ComponentObject, content : string) : boolean {
 		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
 		var componentElement = syiro.component.Fetch(component); // Get the componentElement
 
@@ -176,7 +176,7 @@ namespace syiro.button {
 
 	// #region Function for setting the label of a Basic or Dropdown Button
 
-	export function SetText(component : Object, content : string) : boolean { // Returns boolean value in relation to success
+	export function SetText(component : ComponentObject, content : string) : boolean { // Returns boolean value in relation to success
 		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
 		var componentElement = syiro.component.Fetch(component); // Get the componentElement
 
@@ -195,12 +195,12 @@ namespace syiro.button {
 
 	// #region Function for toggling either a Dropdown Button or Toggle Button
 
-	export function Toggle(component ?: Object, active ?: boolean){ // Function that will handle toggling the Dropdown
-		var component : Object = arguments[0]; // Get the component that was passed to this function as a bound argument
+	export function Toggle(component ?: ComponentObject, active ?: boolean){ // Function that will handle toggling the Dropdown
+		var component : ComponentObject = arguments[0]; // Get the component that was passed to this function as a bound argument
 		var componentElement : any = syiro.component.Fetch(component); // Get the componentElement based on the component Object
 
 		if (componentElement.getAttribute("data-syiro-component-type") == "dropdown"){ // If this is a Dropdown Button
-			var linkedListComponentObject : Object = syiro.component.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown Button
+			var linkedListComponentObject : ComponentObject = syiro.component.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown Button
 			var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponentObject); // Get the List Component's Element
 
 			if (syiro.component.CSS(linkedListComponentElement, "visibility") !== ""){ // If the CSS of the linked List Component is stating the List is active (visibility is visible)
@@ -254,7 +254,7 @@ namespace syiro.buttongroup {
 
 	// #region Buttongroup Generator
 
-	export function New(properties : Object){
+	export function New(properties : Object) : ComponentObject {
 		if (typeof properties["items"] !== "undefined"){ // If items is defined
 			if (properties["items"].length >= 2){ // If the length of items is equal to or greater than 2
 				var componentId : string = syiro.component.IdGen("buttongroup"); // Generate a component Id
@@ -339,8 +339,8 @@ namespace syiro.buttongroup {
 
 	// #region Buttongroup Active Button Toggling
 
-	export function Toggle(buttonComponent ?: Object){
-		var buttonComponent : Object = arguments[0]; // Define buttonComponent as the first argument passed
+	export function Toggle(buttonComponent ?: ComponentObject){
+		var buttonComponent : ComponentObject = arguments[0]; // Define buttonComponent as the first argument passed
 		var buttonElement : Element = syiro.component.Fetch(buttonComponent); // Fetch the buttonElement
 
 		var parentButtongroup = buttonElement.parentElement; // Define parentButtongroup as the parent of this buttonElement

@@ -246,11 +246,14 @@ var syiro;
         }
         utilities.SecondsToTimeFormat = SecondsToTimeFormat;
         function TypeOfThing(thing, checkAgainstType) {
-            var thingType;
-            if (typeof thing !== "undefined") {
-                if ((typeof thing == "object") && (typeof thing.nodeType == "undefined")) {
+            var thingType = (typeof thing);
+            if (thingType !== "undefined") {
+                if ((thingType == "object") && (typeof thing.nodeType == "undefined")) {
                     if ((typeof thing["id"] !== "undefined") && (typeof thing["type"] !== "undefined")) {
                         thingType = "ComponentObject";
+                    }
+                    else if ((typeof thing["link"] !== "undefined") && (typeof thing["title"] !== "undefined")) {
+                        thingType = "LinkPropertiesObject";
                     }
                     else if (typeof thing.length !== "undefined") {
                         thingType = "Array";
@@ -267,12 +270,6 @@ var syiro;
                         thingType = "Document";
                     }
                 }
-                else {
-                    thingType = (typeof thing);
-                }
-            }
-            else {
-                thingType = "undefined";
             }
             if (typeof checkAgainstType == "string") {
                 thingType = (checkAgainstType == thingType);
@@ -777,7 +774,7 @@ var syiro;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i - 0] = arguments[_i];
             }
-            var component = {};
+            var component = { "id": "", "type": "" };
             var variableProvided;
             var previouslyDefined = false;
             if (arguments.length == 1) {
@@ -822,12 +819,7 @@ var syiro;
                 component["id"] = lowercasedType;
                 component["type"] = lowercasedType;
             }
-            if (typeof component["id"] == "string") {
-                return component;
-            }
-            else {
-                return false;
-            }
+            return component;
         }
         component_1.FetchComponentObject = FetchComponentObject;
         function FetchDimensionsAndPosition(component) {
@@ -892,7 +884,7 @@ var syiro;
                 parentElement = parentComponent;
                 parentComponent = syiro.component.FetchComponentObject(parentElement);
             }
-            var childElement = syiro.component.Fetch(childComponent);
+            var childElement;
             var allowAdding = false;
             if (syiro.utilities.TypeOfThing(childComponent) == "ComponentObject") {
                 if ((parentComponent["type"] == "navbar") && (syiro.data.Read(parentComponent["id"] + "->Position") == "top") && ((childComponent["type"] == "button") || (childComponent["type"] == "searchbox"))) {
@@ -915,7 +907,7 @@ var syiro;
                     allowAdding = true;
                 }
             }
-            else if (typeof childComponent.nodeType !== "undefined") {
+            else if (syiro.utilities.TypeOfThing(childComponent, "Element")) {
                 childElement = childComponent;
                 allowAdding = true;
             }
@@ -1408,12 +1400,8 @@ var syiro;
                     for (var _i = 0, _a = properties["items"]; _i < _a.length; _i++) {
                         var individualItem = _a[_i];
                         var typeOfItem = syiro.utilities.TypeOfThing(individualItem);
-                        if (typeOfItem == "Object") {
-                            var generatedElement = syiro.utilities.ElementCreator("a", {
-                                "href": individualItem["link"],
-                                "title": individualItem["title"],
-                                "content": individualItem["title"]
-                            });
+                        if (typeOfItem == "LinkPropertiesObject") {
+                            var generatedElement = syiro.utilities.ElementCreator("a", { "href": individualItem["link"], "content": individualItem["title"] });
                             componentElement.appendChild(generatedElement);
                         }
                         else if ((typeOfItem == "ComponentObject") && (navbarType == "top")) {
@@ -1451,12 +1439,8 @@ var syiro;
             if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")) {
                 var typeOfElementOrProperties = syiro.utilities.TypeOfThing(elementOrProperties);
                 var generatedElement;
-                if (typeOfElementOrProperties == "Object") {
-                    generatedElement = syiro.utilities.ElementCreator("a", {
-                        "href": elementOrProperties["href"],
-                        "title": elementOrProperties["title"],
-                        "content": elementOrProperties["title"]
-                    });
+                if (typeOfElementOrProperties == "LinkPropertiesObject") {
+                    generatedElement = syiro.utilities.ElementCreator("a", { "href": elementOrProperties["link"], "content": elementOrProperties["title"] });
                 }
                 else if ((typeOfElementOrProperties == "Element") && (elementOrProperties.nodeName == "A")) {
                     generatedElement = elementOrProperties;
@@ -1475,8 +1459,8 @@ var syiro;
                 var navbarElement = syiro.component.Fetch(component);
                 var typeOfElementOrProperties = syiro.utilities.TypeOfThing(elementOrProperties);
                 var potentialLinkElement;
-                if (typeOfElementOrProperties == "Object") {
-                    potentialLinkElement = navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"][title="' + elementOrProperties["title"] + '"]');
+                if (typeOfElementOrProperties == "LinkPropertiesObject") {
+                    potentialLinkElement = navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"]');
                 }
                 else if ((typeOfElementOrProperties == "Element") && (elementOrProperties.nodeName == "A")) {
                     potentialLinkElement = elementOrProperties;
@@ -1808,8 +1792,8 @@ var syiro;
         function New(properties) {
             var componentId = syiro.component.IdGen("list");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "list", "data-syiro-component-id": componentId, "aria-live": "polite", "id": componentId, "role": "listbox" });
-            if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)) {
-                if (typeof properties["header"] !== "undefined") {
+            if ((syiro.utilities.TypeOfThing(properties["items"], "Array")) && (properties["items"].length > 0)) {
+                if (syiro.utilities.TypeOfThing(properties["header"], "string")) {
                     var listHeaderElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "list-header", "content": properties["header"] });
                     componentElement.appendChild(listHeaderElement);
                 }
@@ -1822,14 +1806,16 @@ var syiro;
                         individualItemComponentObject = individualItem;
                     }
                     else if (typeOfIndividualItem == "Object") {
-                        if ((typeof individualItem["header"] !== "undefined") && (typeof individualItem["items"] !== "undefined")) {
+                        var typeOfHeader = syiro.utilities.TypeOfThing(individualItem["header"]);
+                        var typeOfItems = syiro.utilities.TypeOfThing(individualItem["item"]);
+                        if ((typeOfHeader == "string") && (typeOfItems == "Array")) {
                             individualItemComponentObject = syiro.list.New(individualItem);
                         }
-                        else if ((typeof individualItem["header"] == "undefined") && (typeof individualItem["items"] == "undefined")) {
+                        else if ((typeOfHeader == "undefined") && (typeOfItems == "undefined")) {
                             individualItemComponentObject = syiro.listitem.New(individualItem);
                         }
                     }
-                    if (typeof individualItemComponentObject !== "undefined") {
+                    if (syiro.utilities.TypeOfThing(individualItemComponentObject, "ComponentObject")) {
                         listContentContainer.appendChild(syiro.component.Fetch(individualItemComponentObject));
                     }
                 }
@@ -1843,22 +1829,25 @@ var syiro;
         function SetHeader(component, content) {
             var componentElement = syiro.component.Fetch(component);
             var listHeader = componentElement.querySelector('div[data-syiro-minor-component="list-header"]');
-            if (content !== "") {
+            var typeOfContent = syiro.utilities.TypeOfThing(content);
+            if ((typeOfContent == "string") || (typeOfContent == "Element")) {
                 if (listHeader == null) {
                     listHeader = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "list-header" });
                     componentElement.insertBefore(listHeader, componentElement.firstChild);
                 }
                 content = syiro.utilities.SanitizeHTML(content);
-                if (typeof content == "string") {
-                    listHeader.innerHTML = content;
+                if (typeOfContent == "string") {
+                    if (content !== "") {
+                        listHeader.innerHTML = content;
+                    }
+                    else {
+                        componentElement.removeChild(listHeader);
+                    }
                 }
                 else {
                     listHeader.innerHTML = "";
                     listHeader.appendChild(content);
                 }
-            }
-            else if ((listHeader !== null) && (content == "")) {
-                componentElement.removeChild(listHeader);
             }
             syiro.component.Update(component["id"], componentElement);
         }
@@ -1898,37 +1887,42 @@ var syiro;
         function New(properties) {
             var componentId = syiro.component.IdGen("list-item");
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "list-item", "data-syiro-component-id": componentId, "role": "option" });
-            if (typeof properties["html"] == "undefined") {
+            var generatedElement;
+            if (syiro.utilities.TypeOfThing(properties["html"], "Element") == false) {
                 for (var propertyKey in properties) {
-                    if (propertyKey == "control") {
-                        if (properties["image"] == undefined) {
-                            var controlComponentObject = properties[propertyKey];
-                            if (controlComponentObject["type"] == "button") {
-                                var controlComponentElement = syiro.component.Fetch(controlComponentObject);
-                                componentElement.appendChild(controlComponentElement);
-                            }
+                    var append = false;
+                    var thing = properties[propertyKey];
+                    if ((propertyKey == "control") && (typeof properties["image"] == "undefined")) {
+                        if (thing["type"] == "button") {
+                            generatedElement = syiro.component.Fetch(thing);
+                            append = true;
                         }
                     }
-                    else if (propertyKey == "image") {
-                        if (properties["control"] == undefined) {
-                            var imageComponent = syiro.utilities.ElementCreator("img", { "src": properties["image"] });
-                            componentElement.insertBefore(imageComponent, componentElement.firstChild);
+                    else if ((propertyKey == "image") && (typeof properties["control"] == "undefined")) {
+                        generatedElement = syiro.utilities.ElementCreator("img", { "src": thing });
+                    }
+                    else if ((propertyKey == "label") && (typeof properties["link"] == "undefined")) {
+                        generatedElement = syiro.utilities.ElementCreator("label", { "content": thing });
+                        if (componentElement.querySelector("img") !== null) {
+                            append = true;
                         }
                     }
-                    else if (propertyKey == "label") {
-                        var labelComponent = syiro.utilities.ElementCreator("label", { "content": properties["label"] });
-                        if (componentElement.querySelector("img") == null) {
-                            componentElement.insertBefore(labelComponent, componentElement.firstChild);
-                        }
-                        else {
-                            componentElement.appendChild(labelComponent);
-                        }
+                    else if ((propertyKey == "link") && (typeof properties["control"] == "undefined") && (typeof properties["label"] == "undefined")) {
+                        append = true;
+                        generatedElement = syiro.utilities.ElementCreator("a", { "href": thing["link"], "content": thing["title"] });
+                    }
+                    if (append) {
+                        componentElement.appendChild(generatedElement);
+                    }
+                    else {
+                        componentElement.insertBefore(generatedElement, componentElement.firstChild);
                     }
                 }
             }
             else {
                 componentElement.setAttribute("data-syiro-nonstrict-formatting", "");
-                componentElement.appendChild(properties["html"]);
+                generatedElement = properties["html"];
+                componentElement.innerHTML = syiro.utilities.SanitizeHTML(generatedElement).outerHTML;
             }
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "list-item" };
@@ -1937,20 +1931,22 @@ var syiro;
         listitem.Generate = New;
         function SetControl(component, control) {
             var setControlSucceeded = false;
-            if (component["type"] == "list-item") {
-                var listItemElement = syiro.component.Fetch(component);
+            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")) {
                 if ((syiro.utilities.TypeOfThing(control) == "ComponentObject") && (control["type"] == "button")) {
+                    var listItemElement = syiro.component.Fetch(component);
                     if (listItemElement.querySelector("div") !== null) {
                         listItemElement.removeChild(listItemElement.querySelector("div"));
                     }
-                    if ((listItemElement.querySelector("label") !== null) && (listItemElement.querySelector("img") !== null)) {
-                        var innerListImage = listItemElement.querySelector("img");
+                    var innerListImage = listItemElement.querySelector("img");
+                    if (innerListImage !== null) {
                         syiro.component.Remove(innerListImage);
                     }
-                    var innerControlElement = syiro.component.Fetch(control);
-                    listItemElement.appendChild(innerControlElement);
+                    var innerLink = listItemElement.querySelector("a");
+                    if (listItemElement.querySelector("a") !== null) {
+                        syiro.component.Remove(innerLink);
+                    }
                     syiro.events.Remove(syiro.events.eventStrings["up"], component);
-                    syiro.component.Update(component["id"], listItemElement);
+                    syiro.component.Add("append", component, control);
                     setControlSucceeded = true;
                 }
             }
@@ -1959,16 +1955,16 @@ var syiro;
         listitem.SetControl = SetControl;
         function SetImage(component, content) {
             var setImageSucceeded = false;
-            if (component["type"] == "list-item") {
-                var listItemElement = syiro.component.Fetch(component);
+            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")) {
                 if (typeof content == "string") {
+                    var listItemElement = syiro.component.Fetch(component);
                     var listItemLabel = listItemElement.querySelector("label");
-                    var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]');
                     var listItemImage = listItemElement.querySelector('img');
-                    if ((listItemLabel !== null) && (listItemControl !== null)) {
-                        syiro.component.Remove(listItemControl);
-                    }
                     if (content !== "") {
+                        var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]');
+                        if (listItemControl !== null) {
+                            syiro.component.Remove(listItemControl);
+                        }
                         if (listItemImage == null) {
                             listItemImage = document.createElement("img");
                             syiro.component.Add("prepend", component, listItemImage);
@@ -1987,20 +1983,24 @@ var syiro;
         listitem.SetImage = SetImage;
         function SetLabel(component, content) {
             var setLabelSucceeded = false;
-            if (component["type"] == "list-item") {
-                var listItemElement = syiro.component.Fetch(component);
+            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")) {
                 if (typeof content == "string") {
+                    var listItemElement = syiro.component.Fetch(component);
                     var listItemLabelElement = listItemElement.querySelector("label");
-                    var listItemImage = listItemElement.querySelector("img");
-                    var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]');
-                    if ((listItemImage !== null) && (listItemControl !== null)) {
-                        syiro.component.Remove(listItemControl);
-                    }
                     if (content !== "") {
+                        var listItemImage = listItemElement.querySelector("img");
+                        var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]');
+                        if ((listItemImage !== null) && (listItemControl !== null)) {
+                            syiro.component.Remove(listItemControl);
+                        }
+                        var innerLink = listItemElement.querySelector("a");
+                        if (innerLink !== null) {
+                            syiro.component.Remove(innerLink);
+                        }
                         if (listItemLabelElement == null) {
                             listItemLabelElement = document.createElement("label");
                             if (listItemImage !== null) {
-                                syiro.component.Add("prepend", component, listItemLabelElement);
+                                syiro.component.Add("append", component, listItemLabelElement);
                             }
                             else {
                                 syiro.component.Add("prepend", component, listItemLabelElement);
@@ -2018,6 +2018,38 @@ var syiro;
             return setLabelSucceeded;
         }
         listitem.SetLabel = SetLabel;
+        function SetLink(component, properties) {
+            var setSucceeded = false;
+            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")) {
+                var componentElement = syiro.component.Fetch(component);
+                var innerLink = componentElement.querySelector("a");
+                if (syiro.utilities.TypeOfThing(properties, "LinkPropertiesObject")) {
+                    setSucceeded = true;
+                    if (innerLink !== null) {
+                        innerLink.setAttribute("href", properties["link"]);
+                        innerLink.setAttribute("title", properties["title"]);
+                    }
+                    else {
+                        var innerControl = componentElement.querySelector('div[data-syiro-component]');
+                        if (innerControl !== null) {
+                            syiro.component.Remove(innerControl);
+                        }
+                        var innerLabel = componentElement.querySelector("label");
+                        if (innerLabel !== null) {
+                            syiro.component.Remove(innerLabel);
+                        }
+                        innerLink = syiro.utilities.ElementCreator("a", { "href": properties["link"], "content": properties["title"] });
+                        syiro.component.Add("append", component, innerLink);
+                    }
+                }
+                else if (properties == "") {
+                    setSucceeded = true;
+                    syiro.component.Remove(innerLink);
+                }
+            }
+            return setSucceeded;
+        }
+        listitem.SetLink = SetLink;
     })(listitem = syiro.listitem || (syiro.listitem = {}));
 })(syiro || (syiro = {}));
 /*

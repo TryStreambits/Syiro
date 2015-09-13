@@ -10,7 +10,7 @@ namespace syiro.render {
 
     // #region Positioning of Components or Elements
 
-    export function Position(positioningList : (string | Array<string>), componentObject : (Object | Element), relativeComponentObject : (Object | Element)) : boolean {
+    export function Position(positioningList : (string | Array<string>), componentObject : any, relativeComponentObject : any) : boolean {
         var positioningAllowed : boolean = false; // Define positioningAllowed as a boolean, defaulting to false
 
         if (arguments.length == 3){ // If three arguments were passed
@@ -152,7 +152,7 @@ namespace syiro.render {
     // #region Scale Components
 	// This function is responsible for scaling Components based on screen information, their initialDimensions data (if any) and scaling of any inner Components or Elements
 
-    export function Scale(component : Object, data ?: Object){
+    export function Scale(component : ComponentObject, data ?: Object){
         // #region Variable Setup
 
 		var componentId = component["id"]; // Get the Component Id of the Component
@@ -304,10 +304,10 @@ namespace syiro.render {
 
             // #endregion
 
-            var componentChildren : Array<Object> = syiro.data.Read(component["id"] + "->scaling->children"); // Define componentChildren as the children in component->scaling->children
+            var componentChildren : Array<ComponentObject> = syiro.data.Read(component["id"] + "->scaling->children"); // Define componentChildren as the children in component->scaling->children
 
             for (var childComponentIndex = 0; childComponentIndex < componentChildren.length; childComponentIndex++){ // For each childComponent in the Children scaling Object
-                var childComponentObject : Object = componentChildren[childComponentIndex]; // Define childComponentObject as the index of the Object from key / val children
+                var childComponentObject : ComponentObject = componentChildren[childComponentIndex]; // Define childComponentObject as the index of the Object from key / val children
                 syiro.render.Scale(childComponentObject); // Scale the child Component
             }
         }

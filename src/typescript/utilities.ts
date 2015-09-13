@@ -107,12 +107,15 @@ namespace syiro.utilities {
 	// #region TypeOfThing - Get more clear type information about what is provided
 
 	export function TypeOfThing(thing : any, checkAgainstType ?: string) : any {
-		var thingType : any;
+		var thingType : any = (typeof thing); // Initially set thingType as the typeof
 
-		if (typeof thing !== "undefined"){ //  If the thing provided is not undefined
-			if ((typeof thing == "object") && (typeof thing.nodeType == "undefined")){ // If the thing is an Object and doesn't have a nodeType
+		if (thingType !== "undefined"){ //  If the thing provided is not undefined
+			if ((thingType == "object") && (typeof thing.nodeType == "undefined")){ // If the thing is an Object and doesn't have a nodeType
 				if ((typeof thing["id"] !== "undefined") && (typeof thing["type"] !== "undefined")){ // If this Object has an id and type
 					thingType = "ComponentObject"; // Define thingType as Component Object
+				}
+				else if ((typeof thing["link"] !== "undefined") && (typeof thing["title"] !== "undefined")){ // If this Object has href and title properties
+					thingType = "LinkPropertiesObject"; // Define as Link Properties Object
 				}
 				else if (typeof thing.length !== "undefined"){ // If the thing is an Array
 					thingType = "Array"; // Set as an Array
@@ -129,12 +132,6 @@ namespace syiro.utilities {
 					thingType = "Document"; // Set thingType to Document
 				}
 			}
-			else{
-				thingType = (typeof thing); // Set thingType as typeof thing
-			}
-		}
-		else{ // If thing is undefined
-			thingType = "undefined"; // Set to undefined
 		}
 
 		if (typeof checkAgainstType == "string"){ // If checkAgainstType is defined

@@ -12,13 +12,12 @@ namespace syiro.list {
 
 	// #region List Generator
 
-	export function New(properties : Object) : Object { // Generate a List Component and return a Component Object
+	export function New(properties : Object) : ComponentObject { // Generate a List Component and return a Component Object
 		var componentId : string = syiro.component.IdGen("list"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list", "data-syiro-component-id" : componentId, "aria-live" : "polite", "id" : componentId, "role" : "listbox" }); // Generate a List Element with an ID and listbox role for ARIA purposes
 
-		if ((typeof properties["items"] !== "undefined") && (properties["items"].length > 0)){ // If we are adding sub-Lists or List Items
-
-			if (typeof properties["header"] !== "undefined"){ // If a List Header is defined
+		if ((syiro.utilities.TypeOfThing(properties["items"], "Array")) && (properties["items"].length > 0)){ // If we are adding sub-Lists or List Items
+			if (syiro.utilities.TypeOfThing(properties["header"], "string")){ // If a List Header is defined
 				var listHeaderElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "list-header", "content" : properties["header"]}); // Generate the listHeaderElement
 				componentElement.appendChild(listHeaderElement); // Add the listHeaderElement
 			}
@@ -28,22 +27,25 @@ namespace syiro.list {
 			var listContentContainer : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "list-content" }); // Create the listContent container
 
 			for (var individualItem of properties["items"]){ // For each list item in navigationItems Object array
-				var individualItemComponentObject : Object; // Define individualItemComponentObject as the Component Object of the individualitem
+				var individualItemComponentObject : ComponentObject; // Define individualItemComponentObject as the Component Object of the individualitem
 				var typeOfIndividualItem : string = syiro.utilities.TypeOfThing(individualItem); // Get the type of the individualItem
 
 				if (typeOfIndividualItem == "ComponentObject"){ // If this is a Component Object
 					individualItemComponentObject = individualItem; // Define individualItemComponentObject as the individualItem
 				}
 				else if (typeOfIndividualItem == "Object"){ // If this is an Object
-					if ((typeof individualItem["header"] !== "undefined") && (typeof individualItem["items"] !== "undefined")){ // If this is a List (with the necessary List Header and List Items properties)
+					var typeOfHeader : string = syiro.utilities.TypeOfThing(individualItem["header"]); // Get the type of the header key/val
+					var typeOfItems : string = syiro.utilities.TypeOfThing(individualItem["item"]); // Get the type of items /key/val
+
+					if ((typeOfHeader == "string") && (typeOfItems == "Array")){ // If this is a List (with the necessary List Header and List Items properties)
 						individualItemComponentObject = syiro.list.New(individualItem); // Create a List based on the individualItem
 					}
-					else if ((typeof individualItem["header"] == "undefined") && (typeof individualItem["items"] == "undefined")){ // If this is a List Item
+					else if ((typeOfHeader == "undefined") && (typeOfItems == "undefined")){ // If this is a List Item
 						individualItemComponentObject = syiro.listitem.New(individualItem); // Generate a List Item based on the individualItem
 					}
 				}
 
-				if (typeof individualItemComponentObject !== "undefined"){ // If we have a valid Component Object
+				if (syiro.utilities.TypeOfThing(individualItemComponentObject, "ComponentObject")){ // If we have a valid Component Object
 					listContentContainer.appendChild(syiro.component.Fetch(individualItemComponentObject)); // Append the List or List Item component to the List
 				}
 			}
@@ -63,11 +65,12 @@ namespace syiro.list {
 
 	// #region Set Header of List
 
-	export function SetHeader(component : Object, content : any){
+	export function SetHeader(component : ComponentObject, content : any){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement of the List
 		var listHeader : any = componentElement.querySelector('div[data-syiro-minor-component="list-header"]'); // Fetch the List's Header
+		var typeOfContent : string = syiro.utilities.TypeOfThing(content); // Get the type of the content
 
-		if (content !== ""){ // If we are adding content to the List Header (or generated a List Header)
+		if ((typeOfContent == "string") || (typeOfContent == "Element")){ // If the content is a string or Element
 			if (listHeader == null){ // If the listHeader does not exist
 				listHeader = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "list-header" }); // Generate the listHeader
 				componentElement.insertBefore(listHeader, componentElement.firstChild); // Prepend the listHeader
@@ -75,16 +78,18 @@ namespace syiro.list {
 
 			content = syiro.utilities.SanitizeHTML(content); // Sanitize the content
 
-			if (typeof content == "string"){ // If the content is a string
-				listHeader.innerHTML = content; // Set innerHTML to content
+			if (typeOfContent == "string"){ // If the content is a string
+				if (content !== ""){ // If the content is not an empty string
+					listHeader.innerHTML = content; // Set innerHTML to content
+				}
+				else { // If the content is empty
+					componentElement.removeChild(listHeader); // Remove the listHeader
+				}
 			}
 			else{ // If it is an Element
 				listHeader.innerHTML = ""; // Clean up the listHeader
 				listHeader.appendChild(content); // Append the Element
 			}
-		}
-		else if ((listHeader !== null) && (content == "")){ // If we are removing the List Header
-			componentElement.removeChild(listHeader); // Remove the listHeader
 		}
 
 		syiro.component.Update(component["id"], componentElement); // Update if necessary
@@ -135,43 +140,50 @@ namespace syiro.listitem {
 
 	// #region List Item Generator
 
-	export function New(properties : Object) : Object { // Generate a ListItem Component and return a Component Object
+	export function New(properties : Object) : ComponentObject { // Generate a ListItem Component and return a Component Object
 		var componentId : string = syiro.component.IdGen("list-item"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list-item", "data-syiro-component-id" : componentId, "role" : "option" }); // Generate a List Item Element with the role as "option" for ARIA
 
-		if (typeof properties["html"] == "undefined"){ // If we are not adding ANY HTML code to the List Item (therefore not needing nonstrict formatting)
+		var generatedElement : Element; // Define generatedElement as an Element we'll assign generated content to
+
+		if (syiro.utilities.TypeOfThing(properties["html"], "Element") == false){ // If we are not adding ANY HTML code to the List Item (therefore not needing nonstrict formatting)
 			for (var propertyKey in properties){ // Recursive go through each propertyKey
-				if (propertyKey == "control"){ // If we are adding a control
-					if (properties["image"] == undefined){ // If we are not adding an image, then allow for adding a control
-						var controlComponentObject = properties[propertyKey]; // Get the Syiro component's Object
+				var append : boolean = false; // Define append as boolean defaulting to false
+				var thing : any = properties[propertyKey]; // Define thing
 
-						if (controlComponentObject["type"] == "button"){ // If the component is either a basic or toggle button
-							var controlComponentElement : Element= syiro.component.Fetch(controlComponentObject); // Get the component's (HTML)Element
-							componentElement.appendChild(controlComponentElement); // Append the component to the List Item
-						}
+				if ((propertyKey == "control") && (typeof properties["image"] == "undefined")){ // If we are adding a control and image is not defined
+					if (thing["type"] == "button"){ // If the component is either a basic or toggle button
+						generatedElement= syiro.component.Fetch(thing); // Get the component's (HTML)Element
+						append = true; // Define append as true
 					}
 				}
-				else if (propertyKey == "image"){ // If we are adding an image
-					if (properties["control"] == undefined){ // If we are not adding a control, then allow for adding an image
-						var imageComponent : HTMLElement = syiro.utilities.ElementCreator("img", { "src" : properties["image"]} ); // Create an image with the source set the properties["image"]
-						componentElement.insertBefore(imageComponent, componentElement.firstChild); // Prepend the label to the List Item component
+				else if ((propertyKey == "image") && (typeof properties["control"] == "undefined")){ // If we are adding an image and a control is NOT defined
+					generatedElement = syiro.utilities.ElementCreator("img", { "src" : thing } ); // Create an image with the source set the properties["image"]
+				}
+				else if ((propertyKey == "label") && (typeof properties["link"] == "undefined")){ // If we are adding a label (and link is undefined)
+					generatedElement = syiro.utilities.ElementCreator("label", { "content" : thing }); // Create a label within the "label" (labelception) to hold the defined text.
+
+					if (componentElement.querySelector("img") !== null){ // If we have added an image to the List Item
+						append = true; // Define append as true
 					}
 				}
-				else if (propertyKey == "label"){ // If we are adding a label
-					var labelComponent : HTMLElement = syiro.utilities.ElementCreator("label", { "content" : properties["label"] }); // Create a label within the "label" (labelception) to hold the defined text.
+				else if ((propertyKey == "link") && (typeof properties["control"] == "undefined") && (typeof properties["label"] == "undefined")){ // If we are adding a link (and no control or label)
+					append = true; // Define append as true
+					generatedElement  = syiro.utilities.ElementCreator("a", { "href" : thing["link"], "content" : thing["title"] }); // Generate a generic Link
+				}
 
-					if (componentElement.querySelector("img") == null){ // If we have not added an image to the List Item
-						componentElement.insertBefore(labelComponent, componentElement.firstChild); // Prepend the label to the List Item component
-					}
-					else{ // If an image does exist
-						componentElement.appendChild(labelComponent); // Append the label after the image
-					}
+				if (append){ // If we are appending the generatedElement
+					componentElement.appendChild(generatedElement); // Append the generatedElement
+				}
+				else{ // If we are prepending the generatedElement
+					componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the generated Element
 				}
 			}
 		}
 		else{ // If HTML is being added to the List Item
 			componentElement.setAttribute("data-syiro-nonstrict-formatting", ""); // Add the nonstrict-formatting attribute to the List Item so we know not to apply any styling
-			componentElement.appendChild(properties["html"]); // Insert the HTML (which should be an Element)
+			generatedElement = properties["html"];
+			componentElement.innerHTML = syiro.utilities.SanitizeHTML(generatedElement).outerHTML; // Set the innerHTML of the componentElement to the outerHTML of the sanitized HTML
 		}
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
@@ -185,27 +197,29 @@ namespace syiro.listitem {
 
 	// #region Set Control in List Item
 
-	export function SetControl(component : Object, control : Object) : boolean {
+	export function SetControl(component : ComponentObject, control : ComponentObject) : boolean {
 		var setControlSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
 
-		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
-
+		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")){ // Make sure the component is in fact a List Item
 			if ((syiro.utilities.TypeOfThing(control) == "ComponentObject") && (control["type"] == "button")){ // If the content is a Component Object and is a Button
+				var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
+
 				if (listItemElement.querySelector("div") !== null){ // If there is already a control inside the List Item
 					listItemElement.removeChild(listItemElement.querySelector("div")); // Remove the inner Control
 				}
 
-				if ((listItemElement.querySelector("label") !== null) && (listItemElement.querySelector("img") !== null)){ // If there already is an image and a label
-					var innerListImage : Element = listItemElement.querySelector("img"); // Get this inner image and set it to innerlistImage
+				var innerListImage : Element = listItemElement.querySelector("img"); // Get the inner image if it exists
+				if (innerListImage !== null){ // If there already is an image
 					syiro.component.Remove(innerListImage); // Remove the innerListImage
 				}
 
-				var innerControlElement = syiro.component.Fetch(control); // Get the Element of the inner control Component
+				var innerLink : Element = listItemElement.querySelector("a"); // Get the inner link if it exists
+				if (listItemElement.querySelector("a") !== null){ // If there is a link
+					syiro.component.Remove(innerLink); // Remove the innerLink
+				}
 
-				listItemElement.appendChild(innerControlElement); // Append the control Component
 				syiro.events.Remove(syiro.events.eventStrings["up"], component); // Ensure the List Item has no up listeners after adding the new Control
-				syiro.component.Update(component["id"], listItemElement); // Update the storedComponent HTMLElement if necessary
+				syiro.component.Add("append", component, control); // Append the control to the List Item
 
 				setControlSucceeded = true; // Set setLabelSucceeded to true
 			}
@@ -218,22 +232,23 @@ namespace syiro.listitem {
 
 	// #region Set Image in List Item
 
-	export function SetImage(component : Object, content : string) : boolean {
+	export function SetImage(component : ComponentObject, content : string) : boolean {
 		var setImageSucceeded : boolean = false; // Variable we return with a boolean value, defaulint to false.
 
-		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
-
+		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")){ // Make sure the component is in fact a List Item
 			if (typeof content == "string"){ // Make sure the content is a string
+				var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
+
 				var listItemLabel = listItemElement.querySelector("label"); // Define listItemLabel as the potential label within the List Item Element
-				var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]'); // Define listItemControl as the potential control within the List Item Element
 				var listItemImage = listItemElement.querySelector('img'); // Get any existing image within the List Item
 
-				if ((listItemLabel !== null) && (listItemControl !== null)){ // If there is already a label and control in the List Item
-					syiro.component.Remove(listItemControl); // Remove this inner control
-				}
-
 				if (content !== ""){ // If content is not empty (adding an image source)
+					var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]'); // Define listItemControl as the potential control within the List Item Element
+
+					if (listItemControl !== null){ // If there is already a control in the List Item
+						syiro.component.Remove(listItemControl); // Remove this inner control
+					}
+
 					 if (listItemImage == null){ // If listItemImage does not exist
 						listItemImage = document.createElement("img"); // Create an image tag
 						syiro.component.Add("prepend", component, listItemImage); // Prepend the img tag
@@ -257,28 +272,33 @@ namespace syiro.listitem {
 
 	// #region Set Label in List Item
 
-	export function SetLabel(component : Object, content : string) : boolean {
+	export function SetLabel(component : ComponentObject, content : string) : boolean {
 		var setLabelSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
 
-		if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
-			var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
-
+		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")){ // Make sure the component is in fact a List Item
 			if (typeof content == "string"){ // If the content is of type string
+				var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
+
 				var listItemLabelElement : Element = listItemElement.querySelector("label"); // Get any label if it exists
 
-				var listItemImage = listItemElement.querySelector("img"); // Define listItemImage as the potential image within the List Item Element
-				var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]'); // Define listItemControl as the potential control within the List Item Element
-
-				if ((listItemImage !== null) && (listItemControl !== null)){ // If there is already an image and control in the List Item
-					syiro.component.Remove(listItemControl); // Remove this inner control
-				}
-
 				if (content !== ""){ // If the content is not empty
+					var listItemImage = listItemElement.querySelector("img"); // Define listItemImage as the potential image within the List Item Element
+					var listItemControl = listItemElement.querySelector('div[data-syiro-component="button"]'); // Define listItemControl as the potential control within the List Item Element
+
+					if ((listItemImage !== null) && (listItemControl !== null)){ // If there is already an image and control in the List Item
+						syiro.component.Remove(listItemControl); // Remove this inner control
+					}
+
+					var innerLink = listItemElement.querySelector("a"); // Get any innerLink
+					if (innerLink !== null){ // If there is a link in the List Item
+						syiro.component.Remove(innerLink); // Remove the innerLink
+					}
+
 					if (listItemLabelElement == null){ // If the label Element does not exist
 						listItemLabelElement = document.createElement("label"); // Create a label and assign it to the listItemLabelElement
 
 						if (listItemImage !== null){ // If there is an image in this List Item
-							syiro.component.Add("prepend", component, listItemLabelElement); // Prepend the label
+							syiro.component.Add("append", component, listItemLabelElement); // Append the label
 						}
 						else { // If there is not an image in this List Item
 							syiro.component.Add("prepend", component, listItemLabelElement); // Prepend the label
@@ -297,6 +317,49 @@ namespace syiro.listitem {
 		}
 
 		return setLabelSucceeded;
+	}
+
+	// #endregion
+
+	// #region Set Link in List Item
+
+	export function SetLink(component : ComponentObject, properties : any) : boolean {
+		var setSucceeded : boolean = false;
+
+		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")){ // Make sure the component is in fact a List Item
+			var componentElement : HTMLElement = syiro.component.Fetch(component); // Fetch the componentElement of the List Item Component
+			var innerLink : Element = componentElement.querySelector("a"); // Get the innerLink if it doesn't exist already
+
+			if (syiro.utilities.TypeOfThing(properties, "LinkPropertiesObject")){ // If the properties is a LinkPropertiesObject
+				setSucceeded = true;
+
+				if (innerLink !== null){ // If there is already an innerLink here
+					innerLink.setAttribute("href", properties["link"]); // Change the href attribute
+					innerLink.setAttribute("title", properties["title"]); // Change the title attribute
+				}
+				else { // If there is NOT an innerLink already
+					var innerControl : Element = componentElement.querySelector('div[data-syiro-component]'); // Get any innerControl
+					if (innerControl !== null){ // If there is an innerControl
+						syiro.component.Remove(innerControl); // Remove the control
+					}
+
+					var innerLabel : Element = componentElement.querySelector("label"); // Get any innerLabel
+					if (innerLabel !== null){ // If there is an innerLabel
+						syiro.component.Remove(innerLabel); // Remove the label
+					}
+
+					innerLink = syiro.utilities.ElementCreator("a", { "href" : properties["link"], "content" : properties["title"] }); // Set the innerHTML of the List Item to to the outerHTML of the link Element
+					syiro.component.Add("append", component, innerLink); // Append the innerLink to the List Item
+				}
+			}
+			else if (properties == ""){ // If the properties is an empty string
+				setSucceeded = true;
+				syiro.component.Remove(innerLink); // Remove the link
+			}
+
+		}
+
+		return setSucceeded;
 	}
 
 	// #endregion

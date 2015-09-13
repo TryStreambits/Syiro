@@ -75,7 +75,7 @@ namespace syiro.init {
 
 	// #region Buttongroup Initialization
 
-	export function Buttongroup(component : Object){
+	export function Buttongroup(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 		var innerButtons : any = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all the Button Components inside this Buttongroup
 
@@ -89,7 +89,7 @@ namespace syiro.init {
 
 	// #region List Initialization
 
-	export function List(component : Object){
+	export function List(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
 		if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content"){ // If the List is nested in another List
@@ -102,7 +102,7 @@ namespace syiro.init {
 
 	// #region Player Initialization
 
-	export function Player(component : Object){
+	export function Player(component : ComponentObject){
 		if (syiro.data.Read(component["id"] + "->NoUX") == false){ // If we are apply UX to events to the Player
 			var componentElement : Element = syiro.component.Fetch(component); // Fetch the ComponentElement of the Audio / Video Player
             var innerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Fetch the Audio or Video Player Element
@@ -110,7 +110,7 @@ namespace syiro.init {
 			// #region Player Controls List
 
 			var playerControlArea = componentElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control section
-			var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlArea); // Get the Player Control Component Object
+			var playerControlComponent : ComponentObject = syiro.component.FetchComponentObject(playerControlArea); // Get the Player Control Component Object
 
 			// #endregion
 
@@ -185,7 +185,7 @@ namespace syiro.init {
 
 	// #region Player Control Initialization
 
-	export function PlayerControl(componentObject : Object, playerControlComponentObject : Object){
+	export function PlayerControl(componentObject : ComponentObject, playerControlComponentObject : ComponentObject){
 		var playerControlElement : Element = syiro.component.Fetch(playerControlComponentObject); // Fetch the Player Control Element
 
 		// #region Player Range Initialization
@@ -194,7 +194,7 @@ namespace syiro.init {
 
 		syiro.events.Add(syiro.events.eventStrings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
 			function(){
-				var playerComponentObject : Object = arguments[0]; // Get the Player Component Object passed as bound argument
+				var playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
 				syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true); // Set the ChangingInputValue to true to infer we are changing the input value of the playerRange
 
 				if ((syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) && (syiro.player.IsPlaying(playerComponentObject))){ // If we are not changing the volume and the video is playing
@@ -205,7 +205,7 @@ namespace syiro.init {
 
 		syiro.events.Add(syiro.events.eventStrings["up"], playerRange, // Add mouseup / touchend events to the playerRange, which calls a function to indicate we are no longer changing the input value
 			function(){
-				var playerComponentObject : Object = arguments[0]; // Get the Player Component Object passed as bound argument
+				var playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
 				var playerRange = arguments[1]; // Get the playerRange passed as the second argument
 
 				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
@@ -217,7 +217,7 @@ namespace syiro.init {
 
 		syiro.events.Add("input", playerRange, // Add input event to the playerRange, which updates either the time or volume whenever the input is changed
 			function(){
-				var playerComponentObject : Object = arguments[0]; // Get the Player Component Object passed as bound argument
+				var playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
 				var playerRange : HTMLInputElement = arguments[1]; // Define playerRangeElement as the Element passed as the second arg
 
 				var valueNum : number = Number(playerRange.value); // Define valueNum as the converted string-to-number, where the value was the playerRange value
@@ -243,7 +243,7 @@ namespace syiro.init {
 		// #region Volume Button Listener
 
 		var volumeButton : Element = playerControlElement.querySelector('div[data-syiro-render-icon="volume"]'); // Get the Volume Button Element
-		var volumeButtonComponent : Object = syiro.component.FetchComponentObject(volumeButton); // Fetch the Component Object of the Volume Button so we may bind it during event adding
+		var volumeButtonComponent : ComponentObject = syiro.component.FetchComponentObject(volumeButton); // Fetch the Component Object of the Volume Button so we may bind it during event adding
 		syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, syiro.playercontrol.ShowVolumeSlider.bind(this, playerControlComponentObject)); // Listen to up events on the volumeButton Component to ShowVolumeSlider (binding the Player Component Object)
 
 		// #endregion
@@ -253,7 +253,7 @@ namespace syiro.init {
 		var menuButton = playerControlElement.querySelector('div[data-syiro-render-icon="menu"]'); // Get the menuButton if it exists
 
 		if (menuButton !== null){ // If the menu button exists
-			var menuButtonObject : Object = syiro.component.FetchComponentObject(menuButton); // Fetch the Component object of the Menu Button
+			var menuButtonObject : ComponentObject = syiro.component.FetchComponentObject(menuButton); // Fetch the Component object of the Menu Button
 			syiro.events.Add(syiro.events.eventStrings["up"], menuButtonObject, syiro.player.ToggleMenuDialog.bind(this, componentObject)); // Add an event listener to the button that calls ToggleMenuDialog, binding to the Player Component
 		}
 
@@ -276,15 +276,15 @@ namespace syiro.init {
 
 	// #region Searchbox Initialization
 
-	export function Searchbox(component : Object){
+	export function Searchbox(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
 		if (syiro.data.Read(component["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
 			syiro.events.Add("keyup", componentElement.querySelector("input"), syiro.searchbox.Suggestions);// Add  an event with the Suggestions function to the Searchbox's inner input Element to listen on keyup value
 			syiro.events.Add("blur", componentElement.querySelector("input"),// Add an event to the Searchbox inner input Element to listen to when it loses focus
 				function(){
-					var searchboxObject : Object = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox
-					var searchboxLinkedList : Object = syiro.component.FetchLinkedListComponentObject(searchboxObject); // Define searchboxLinkedList as the fetched Linked List Component
+					var searchboxObject : ComponentObject = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox
+					var searchboxLinkedList : ComponentObject = syiro.component.FetchLinkedListComponentObject(searchboxObject); // Define searchboxLinkedList as the fetched Linked List Component
 					syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important"); // Hide the Linked List
 				}.bind(this, component)
 			);
@@ -292,7 +292,7 @@ namespace syiro.init {
 
 		var innerSearchboxButton = componentElement.querySelector('div[data-syiro-component="button"]'); // Get the inner Button of the Searchbox
 		syiro.events.Add(syiro.events.eventStrings["up"], innerSearchboxButton, function(){ // Add an up event handler to the innerSearchboxButton to trigger the input handlers of the Searchbox
-			var searchboxComponent : Object = arguments[0]; // Set searchboxComponent as the bound first argument
+			var searchboxComponent : ComponentObject = arguments[0]; // Set searchboxComponent as the bound first argument
 			var searchboxElement : Element = syiro.component.Fetch(searchboxComponent); // Get the Searchbox's Element
 			var searchboxInput : any = searchboxElement.querySelector("input"); // Define searchboxInput as the input element we fetched
 			syiro.events.Trigger("input", arguments[0]);
@@ -303,7 +303,7 @@ namespace syiro.init {
 
 	// #region Sidepane Initialization
 
-	export function Sidepane(component : Object){
+	export function Sidepane(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
 		var sidepaneContentOverlayElement : Element = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Get an existing Sidepane ContentOverlay if one exists already, no need to create unnecessary ContentOverlays
@@ -326,7 +326,7 @@ namespace syiro.init {
 
 	// #region Toast Initialization
 
-	export function Toast(component : Object){
+	export function Toast(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
 		var actionHandlers = syiro.data.Read(component["id"] + "->ActionHandlers"); // Get any potential ActionHandlers for this Toast
@@ -341,7 +341,7 @@ namespace syiro.init {
 		}
 
 		for (var toastButton of toastButtons){ // For each toastButton in toastbuttons
-			var toastButtonObject : Object = syiro.component.FetchComponentObject(toastButton); // Get the Component Object of this Syiro Button
+			var toastButtonObject : ComponentObject = syiro.component.FetchComponentObject(toastButton); // Get the Component Object of this Syiro Button
 
 			var dialogAction = toastButton.getAttribute("data-syiro-dialog-action"); // Get the dialog-action of this Button
 

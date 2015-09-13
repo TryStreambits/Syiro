@@ -129,7 +129,7 @@ namespace syiro.device {
                     syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
 
                     if (thisPlayer.getAttribute("data-syiro-component") == "audioplayer"){ // If it is an audio player
-                        var audioPlayerComponent : Object = syiro.component.FetchComponentObject(thisPlayer);
+                        var audioPlayerComponent : ComponentObject = syiro.component.FetchComponentObject(thisPlayer);
                         syiro.audioplayer.CenterInformation(audioPlayerComponent); // Recenter the Audio Player Component information
                     }
                 }

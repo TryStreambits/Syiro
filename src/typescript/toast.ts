@@ -13,7 +13,7 @@ namespace syiro.toast {
 
 	// #region Generate Function
 
-	export function New(properties : Object){
+	export function New(properties : Object) : ComponentObject {
 		if ((typeof properties["type"] == "undefined") || ((properties["type"] !== "normal") && (properties["type"] !== "dialog"))){ // If no "type" is defined or it was defined as NOT normal or dialog
 			properties["type"] = "normal"; // Define as a "normal" Toast
 		}
@@ -79,7 +79,7 @@ namespace syiro.toast {
 					futureButtonHandlers[toastButtonProperties["action"]] =  toastButtonProperties["function"]; // Push to the futureButtonHandlers Object a key/val where the action is the key and value is the func
 				}
 
-				var toastButtonObject : Object = syiro.button.New({ "type" : "basic", "content" : toastButtonProperties["content"] });
+				var toastButtonObject : ComponentObject = syiro.button.New({ "type" : "basic", "content" : toastButtonProperties["content"] });
 				var toastButtonElement : Element = syiro.component.Fetch(toastButtonObject); // Fetch the Button Element
 				toastButtonElement.setAttribute("data-syiro-dialog-action", toastButtonProperties["action"]); // Set the dialog-action of attribute of the toastButtonElement
 
@@ -93,7 +93,7 @@ namespace syiro.toast {
 			}
 		}
 		else{ // If just a message is provided
-			var closeIconButtonObject : Object = syiro.button.New({ "type" : "basic", "content": "x" }); // TEMP "x" LABEL
+			var closeIconButtonObject : ComponentObject = syiro.button.New({ "type" : "basic", "content": "x" }); // TEMP "x" LABEL
 			componentElement.appendChild(syiro.component.Fetch(closeIconButtonObject)); // Append the closeIconButton (that we fetch from closeIconButtonObject) to the Toast
 		}
 
@@ -109,7 +109,7 @@ namespace syiro.toast {
 
 	// #region Clear - This function will remove a specific Toasts from DOM
 
-	export function Clear(component : Object){
+	export function Clear(component : ComponentObject){
 		var componentElement = syiro.component.Fetch(component); // Fetch the componentElement
 
 		if (componentElement !== null){ // If the componentElement exists
@@ -127,7 +127,7 @@ namespace syiro.toast {
 
 		if (toasts.length !== 0){ // If there are Toasts in the DOM
 			for (var i = 0; i < toasts.length; i++){ // For each toast in toasts
-				var toastComponentObject : Object = syiro.component.FetchComponentObject(toasts[i]); // Get the Component Object of this Toast
+				var toastComponentObject : ComponentObject = syiro.component.FetchComponentObject(toasts[i]); // Get the Component Object of this Toast
 				syiro.toast.Clear(toastComponentObject); // Clear this Toast
 			}
 		}
@@ -137,7 +137,7 @@ namespace syiro.toast {
 
 	// #region Toggle - This function will show or hide a particular Toast
 
-	export function Toggle(component : Object, action ?: string){
+	export function Toggle(component : ComponentObject, action ?: string){
 		var componentElement = syiro.component.Fetch(component); // Fetch the componentElement
 
 		if (componentElement !== null){ // If the componentElement exists

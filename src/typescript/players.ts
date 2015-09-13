@@ -17,11 +17,11 @@ namespace syiro.player {
 
 	// #region DurationChange - Triggered on durationchange of innerContentElement
 
-	export function DurationChange(component : Object){
+	export function DurationChange(component : ComponentObject){
         if (syiro.data.Read(component["id"] + "->IsStreaming") == false){ // If the Player is NOT streaming content
 			var componentElement = syiro.component.Fetch(component); // Fetch the Player Element
         	var playerControlElement  = componentElement.querySelector('div[data-syiro-component="player-control"]');
-        	var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Player Control Component
+        	var playerControlComponent : ComponentObject = syiro.component.FetchComponentObject(playerControlElement); // Get the Player Control Component
         	var playerRange : Element = playerControlElement.querySelector('input[type="range"]'); // Get the input range
 
             var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(component); // Get information about the appropriate settings for the input range
@@ -37,7 +37,7 @@ namespace syiro.player {
 
     // #region Fetch Internal Audio or Video Element of Player container Component
 
-    export function FetchInnerContentElement(component : Object) : HTMLMediaElement {
+    export function FetchInnerContentElement(component : ComponentObject) : HTMLMediaElement {
         var componentElement = syiro.component.Fetch(component); // Get the Player Component
         return componentElement.querySelector(component["type"].replace("-player", "")); // Return the Element fetched from querySelector (audio or video)
     }
@@ -46,7 +46,7 @@ namespace syiro.player {
 
     // #region Fetch Audio or Video Element Sources
 
-	export function FetchSources(component : Object) : Array<Object> { // Return an array of source types (string)
+	export function FetchSources(component : ComponentObject) : Array<Object> { // Return an array of source types (string)
 		var innerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Fetch the inner audio or video Element from the Audio Player or Video Player Component
 		var sourceTags : any = innerContentElement.getElementsByTagName("source"); // Get all source tags within the innerContentElement
 		var sourcesArray : Array<Object> = []; // Define sourcesArray as an empty Array to hold source information
@@ -69,7 +69,7 @@ namespace syiro.player {
 
     // #region Get Information about the Player's Length and reasonable step intervals
 
-    export function GetPlayerLengthInfo(component : Object) : Object{
+    export function GetPlayerLengthInfo(component : ComponentObject) : Object{
         var playerLengthInfo : Object = {}; // Define playerLengthInfo as an empty Object to hold length information about the audio or video
 
         var contentDuration : any = syiro.player.FetchInnerContentElement(component).duration; // Get the Player's internal audio or video Element and its duration property
@@ -106,7 +106,7 @@ namespace syiro.player {
 
 	// #region Fetch information about whether content in player is playable
 
-	export function IsPlayable(component : Object) : boolean {
+	export function IsPlayable(component : ComponentObject) : boolean {
 		var componentElement : Element = syiro.component.Fetch(component); // Define componentElement as the fetched Element of the Component
 		var innerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Fetch the inner content Element
 		var playerErrorNotice : Element = componentElement.querySelector('div[data-syiro-minor-component="player-error"]'); // Define playerErrorNotice as any error notice on this Player
@@ -155,7 +155,7 @@ namespace syiro.player {
 
 	// #region Get Information about if the Player is playing
 
-	export function IsPlaying(component : Object) : boolean {
+	export function IsPlaying(component : ComponentObject) : boolean {
 		var componentElement = syiro.component.Fetch(component); // Fetch the Player Element
 		var isPaused = componentElement.querySelector(component["type"].replace("-player", "")).paused; // Get the value of paused on the Player (opposite of what we will return)
 
@@ -166,7 +166,7 @@ namespace syiro.player {
 
 	// #region Fetch information about whether or not the content is streamable
 
-	export function IsStreamable(component : Object) : boolean {
+	export function IsStreamable(component : ComponentObject) : boolean {
 		var componentElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerControlElement  = componentElement.querySelector('div[data-syiro-component="player-control"]');
 		var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement); // Fetch the Player Control Component Object
@@ -255,7 +255,7 @@ namespace syiro.player {
 
 	// #region Play or Pause Audio or Video based on current state
 
-	export function PlayOrPause(component : Object, playButtonObjectOrElement ?: any) {
+	export function PlayOrPause(component : ComponentObject, playButtonObjectOrElement ?: any) {
 		var playerComponentElement = syiro.component.Fetch(component); // Get the Component Element of the Player
 		var innerContentElement = syiro.player.FetchInnerContentElement(component); // Get the inner audio or video Element
 
@@ -292,7 +292,7 @@ namespace syiro.player {
 
 	// #region Reset Player - Function for resetting the player state to default (except for volume). Handy for source changing
 
-	export function Reset(component : Object){
+	export function Reset(component : ComponentObject){
 		var playerElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerInnerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Get the associated audio or video player
 		var playerControl = playerElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control
@@ -333,7 +333,7 @@ namespace syiro.player {
 
 	// #region Set Source - Function for easily setting the source(s) of an Audio or Video Player Component
 
-	export function SetSources(component : Object, sources : any){
+	export function SetSources(component : ComponentObject, sources : any){
 		var playerElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerControlElement  = playerElement.querySelector('div[data-syiro-component="player-control"]');
 		var playerInnerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Get the associated audio or video player
@@ -360,7 +360,7 @@ namespace syiro.player {
 	// #region Set Time - Function for easily setting the time location of an Audio or Video Player Component
 
 	export function SetTime(... args : any[]){
-		var component : Object = arguments[0]; // Component Object is always passed on the first argument
+		var component : ComponentObject = arguments[0]; // Component Object is always passed on the first argument
 		var componentElement = syiro.component.Fetch(component); // Define componentElement as the fetched Component Element
 		var playerInnerContentElement : HTMLMediaElement; // Define playerInnerContentElement as the HTMLMediaElement we'll be assigning passed arg or fetched component to
 		var time : number;
@@ -387,7 +387,7 @@ namespace syiro.player {
 		// #region Player Control Component & Element Defining
 
 		var playerControlElement = componentElement.querySelector('div[data-syiro-component="player-control"]'); // Fetch the Player Control Element
-		var playerControlComponent : Object = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
+		var playerControlComponent : ComponentObject = syiro.component.FetchComponentObject(playerControlElement); // Get the Component Object of the Player Control
 		var playerRange = playerControlElement.querySelector("input"); // Get the input range of the Player Control
 
 		// #endregion
@@ -420,7 +420,7 @@ namespace syiro.player {
 
 	// #region Set Volume - Function for easily setting the volume of an Audio or Video Player
 
-	export function SetVolume(component : Object, volume : number, fromEvent ?: string){
+	export function SetVolume(component : ComponentObject, volume : number, fromEvent ?: string){
 		var playerElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerInnerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Get the associated audio or video player
 		var playerRange : HTMLInputElement = playerElement.querySelector('input[type="range"]'); // Get the Player Control Range
@@ -452,7 +452,7 @@ namespace syiro.player {
 
 	// #region Toggle Fullscreen
 
-	export function ToggleFullscreen(component : Object){
+	export function ToggleFullscreen(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Define componentElement as the fetched Element of the Video Player
 
 		if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement){ // If we are currently NOT fullscreen
@@ -489,7 +489,7 @@ namespace syiro.player {
 
 	// #region Toggle Menu Dialog
 
-	export function ToggleMenuDialog(component : Object){
+	export function ToggleMenuDialog(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Player Element
 
 		var menuDialog : Element = componentElement.querySelector('div[data-syiro-minor-component="player-menu"]'); // Get the Menu Dialog
@@ -531,7 +531,7 @@ namespace syiro.playercontrol {
 
     // #region Player Control Generator
 
-    export function New(properties : Object) : Object {
+    export function New(properties : Object) : ComponentObject {
         var componentId : string = syiro.component.IdGen("player-control"); // Generate an ID for the Player Control
         var componentElement = syiro.utilities.ElementCreator("div",  { "data-syiro-component" : "player-control", "data-syiro-component-id" : componentId }); // Generate the basic playerControl container
 
@@ -596,11 +596,11 @@ namespace syiro.playercontrol {
 
 	// #region Show Volume Slider
 
-	export function ShowVolumeSlider(playerControlComponent : Object, volumeButtonComponent : Object){
+	export function ShowVolumeSlider(playerControlComponent : ComponentObject, volumeButtonComponent : ComponentObject){
 		var playerControl : Element = syiro.component.Fetch(playerControlComponent); // Fetch the Player Control Element
 		var volumeButton : Element = syiro.component.Fetch(volumeButtonComponent); // Fetch the Volume Button Element
 
-		var playerComponentObject : Object = syiro.component.FetchComponentObject(playerControl.parentElement); // Get the Component Object of the parent Player Component
+		var playerComponentObject : ComponentObject = syiro.component.FetchComponentObject(playerControl.parentElement); // Get the Component Object of the parent Player Component
 		var playerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(playerComponentObject); // Get the audio or video Element of the parent Player Component
 
 		var playerRange : any = playerControl.querySelector('input[type="range"]'); // Get the Player Control Range
@@ -640,7 +640,7 @@ namespace syiro.playercontrol {
 
     // #region Player Time Label Updating
 
-    export function TimeLabelUpdater(component : Object, timePart : number, value : any){
+    export function TimeLabelUpdater(component : ComponentObject, timePart : number, value : any){
         var playerControlElement : HTMLElement = syiro.component.Fetch(component); // Get the Player Control's Element
         var playerTimeElement = playerControlElement.querySelector("time"); // Get the time Element
 
@@ -679,7 +679,7 @@ namespace syiro.playercontrol {
 
     // #region Toggle Player Control
 
-    export function Toggle(component : Object, forceShow ?: boolean){
+    export function Toggle(component : ComponentObject, forceShow ?: boolean){
         var playerControlElement : Element = syiro.component.Fetch(component); // Fetch the Syiro Player Control Component Element
         var currentAnimationStored : string; // Define currentAnimationStored as an undefined string
 
@@ -716,7 +716,7 @@ namespace syiro.audioplayer {
 
     // #region Audio Player Generator
 
-    export function New(properties : Object) : Object { // Generate a Audio Player Component and return a Component Object
+    export function New(properties : Object) : any { // Generate a Audio Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the audio property is defined
             var componentId : string = syiro.component.IdGen("audio-player"); // Generate a component Id
             var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "audio-player", "data-syiro-component-id" : componentId, "id" : componentId, "name" : componentId });
@@ -762,7 +762,7 @@ namespace syiro.audioplayer {
 
             syiro.component.CSS(componentElement, "width", properties["width"].toString() + "px"); // Set the width of the Audio Player Component Element
 
-            var playerControlComponent : Object = syiro.playercontrol.New(properties);
+            var playerControlComponent : ComponentObject = syiro.playercontrol.New(properties);
             var playerControlElement : Element = syiro.component.Fetch(playerControlComponent); // Fetch the HTMLElement
 
             // #region Player Menu Element Creation (If Applicable)
@@ -814,7 +814,7 @@ namespace syiro.audioplayer {
 
     // #region Audio Information Center
 
-    export function CenterInformation(component : Object){
+    export function CenterInformation(component : ComponentObject){
         var componentElement : Element = syiro.component.Fetch(component); // Fetch the Element
         var playerControlElement : Element = componentElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control Element
         var audioInformation : Element = playerControlElement.querySelector("section"); // Audio Information section (if it exists)
@@ -837,7 +837,7 @@ namespace syiro.videoplayer {
 
     // #region Video Player Generator
 
-    export function New(properties : Object) : Object { // Generate a Video Player Component and return a Component Object
+    export function New(properties : Object) : any { // Generate a Video Player Component and return a Component Object
         if (properties["sources"] !== undefined){ // If the video property is defined
             var componentId : string = syiro.component.IdGen("video-player"); // Generate a component Id
             var syiroComponentData : Object = { "scaling" : {}}; // Define syiroComponentData as an Object to hold data we'll be writing to the Syiro Data System
@@ -870,7 +870,7 @@ namespace syiro.videoplayer {
                 // #region Player Control Creation
 
                 properties["is-video-player"] = true; // Add "is-video-player" key before calling playercontrol Generate so it'll generate the fullscreen button
-                var playerControlComponent : Object = syiro.playercontrol.New(properties);
+                var playerControlComponent : ComponentObject = syiro.playercontrol.New(properties);
                 componentElement.appendChild(syiro.component.Fetch(playerControlComponent)); // Fetch the HTMLElement and append the player control
 
                 // #endregion

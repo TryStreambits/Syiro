@@ -95,7 +95,7 @@ namespace syiro.component {
 
 	// #region Fetch - Function for fetching the HTMLElement of a Component object
 
-	export function Fetch(component : Object) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
+	export function Fetch(component : ComponentObject) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
 		var componentElement : Element = document.querySelector('div[data-syiro-component-id="' + component["id"] + '"]'); // The (HTML)Element of the Syiro component we'll be returning (default to fetching Element via querySelector)
 
 		if (componentElement == null){ // If an HTMLElement is defined, meaning this is a new component that has not been put in the DOM yet
@@ -109,8 +109,8 @@ namespace syiro.component {
 
 	// #region Fetch or Generate Component Object based on arguments provided
 
-	export function FetchComponentObject( ...args : any[]) : Object {
-		var component : Object = {}; // Define component as the Object we'll return
+	export function FetchComponentObject( ...args : any[]) : ComponentObject {
+		var component : ComponentObject = { "id" : "", "type" : "" }; // Define component as the Object we'll return
 		var variableProvided : any; // Define variableProvided as either what was provided as the first argument or what we fetch from the selector
 		var previouslyDefined : boolean = false; // Define previouslyDefined as a boolean that defaults to true. We use this to determine whether to immediately add event listeners to a Dropdown Button
 
@@ -162,12 +162,7 @@ namespace syiro.component {
 			component["type"] = lowercasedType; // Set the type of the Component Object to lowercasedType
 		}
 
-		if (typeof component["id"] == "string"){ // If the Id is defined
-			return component; // Return the Component
-		}
-		else{ // If the componentElement is null
-			return false;
-		}
+		return component; // Return the Component
 	}
 
 	// #endregion
@@ -199,7 +194,7 @@ namespace syiro.component {
 
 	// #region Function for fetching the Linked List component of the Dropdown Button or a Searchbox.
 
-	export function FetchLinkedListComponentObject(component) : Object {
+	export function FetchLinkedListComponentObject(component) : ComponentObject {
 		var listSelector : string = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]'; // Generate a List CSS selector with the owner set to the Component's Id
 		return syiro.component.FetchComponentObject(document.querySelector(listSelector)); // Get the Linked Component Object
 	}
@@ -268,7 +263,7 @@ namespace syiro.component {
 
 		// #region Child Component Details
 
-		var childElement : Element = syiro.component.Fetch(childComponent); // Define childElement as any. In reality it is either an HTMLElement HTMLInputElement, an Element, or null
+		var childElement : Element; // Define childElement as an Element
 
 		// #endregion
 
@@ -298,7 +293,7 @@ namespace syiro.component {
 				allowAdding = true; // Allow adding the childComponent
 			}
 		}
-		else if (typeof childComponent.nodeType !== "undefined"){ // If the childComponentType is an (HTML)Element
+		else if (syiro.utilities.TypeOfThing(childComponent, "Element")){ // If the childComponentType is an (HTML)Element
 			childElement = childComponent; // Set the childElement to the childComponent
 			allowAdding = true;
 		}
@@ -337,7 +332,7 @@ namespace syiro.component {
 
 		for (var component of componentList){ // For each Component and Sub-Component in componentList
 			var typeOfComponent : string = syiro.utilities.TypeOfThing(component); // Define typeOfComponent
-			var componentObject : Object; // Define componentObject as an Object
+			var componentObject : ComponentObject; // Define componentObject as an Object
 			var componentElement : Element; // Define componentElement as an Element
 
 			if (typeOfComponent == "ComponentObject"){ // If the individual Component is a Syiro Component Object

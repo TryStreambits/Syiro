@@ -17,7 +17,7 @@ namespace syiro.dropdown {
 
 	// #region Generator Meta Function
 
-	export function Generate(properties : Object) : Object { // Generate a Dropdown Component and return a Component Object
+	export function Generate(properties : Object) : any { // Generate a Dropdown Component and return a Component Object
 		if ((typeof properties["items"] !== "undefined") || (typeof properties["list"] !== "undefined")){ // If the necessary List or List Item(s) Object(s) are provided
 			properties["type"] = "dropdown"; // Set Button Type to Dropdown
 
@@ -39,7 +39,7 @@ namespace syiro.dropdown {
 
 	// #region Set Dropdown Label Text - Meta function for syiro.button.SetLabel
 
-	export function SetText(component : Object, content : any) : boolean {
+	export function SetText(component : ComponentObject, content : any) : boolean {
 		if (content == false){ // If the content is set to FALSE
 			content = ""; // Change to empty string
 		}
@@ -53,7 +53,7 @@ namespace syiro.dropdown {
 
 	// #region Set Dropdown Label Image - Meta function for syiro.button.SetImage
 
-	export function SetImage(component : Object, content : any) : boolean {
+	export function SetImage(component : ComponentObject, content : any) : boolean {
 		if (content == false){ // If the content is set to FALSE
 			content = ""; // Change to an empty string
 		}
@@ -66,7 +66,7 @@ namespace syiro.dropdown {
 	// #region Function for adding an List Item component to the Dropdown's linked List, where component equals the Dropdown component
 	// Planned deprecation around 1.8
 
-	export function AddItem(component : Object, listItemComponent : Object) : void {
+	export function AddItem(component : ComponentObject, listItemComponent : ComponentObject) : void {
 		var listComponentObject = syiro.component.FetchLinkedListComponentObject(component); // Fetch the internal List component from the Dropdown
 		syiro.component.Add("append", listComponentObject, listItemComponent); // Add the List Item component to the inner List
 	}
@@ -76,7 +76,7 @@ namespace syiro.dropdown {
 	// #region Function for removing a List Item component from the Dropdown's linked List, where component equals the Dropdown component
 	// Planned deprecation around 1.8
 
-	export function RemoveItem(component : Object, listItemComponent : Object) : void {
+	export function RemoveItem(component : ComponentObject, listItemComponent : ComponentObject) : void {
 		syiro.component.Remove(listItemComponent); // Remove the List Item component from the List Component
 	}
 

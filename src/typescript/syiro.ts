@@ -38,7 +38,7 @@ namespace syiro {
 				var dropdownButtons : any = document.querySelectorAll('div[data-syiro-component="button"][data-syiro-component-type="dropdown"][active]'); // Get all of the Dropdown Buttons that are active
 
 				for (var dropdownButtonIndex = 0; dropdownButtonIndex < dropdownButtons.length; dropdownButtonIndex++){ // For each of those Dropdown Button Components that are active
-					var thisDropdownButtonObject : Object = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]); // Get the Component Object of the Dropdown Button
+					var thisDropdownButtonObject : ComponentObject = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]); // Get the Component Object of the Dropdown Button
 					syiro.dropdown.Toggle(thisDropdownButtonObject); // Toggle the Dropdown Button
 				}
 			}

@@ -6,29 +6,39 @@ interface Document {
     mozCancelFullScreen: Function;
     SyiroFullscreenElement: Element;
 }
-interface Element {
-    msRequestFullscreen: Function;
-    mozRequestFullScreen: Function;
-}
-interface Navigator {
-    doNotTrack: string;
+interface ComponentObject extends Object {
 }
 interface Console {
     profileEnd(profile?: string): any;
 }
-interface Screen {
-    orientation: any;
-    mozOrientation: any;
-    onorientationchange: any;
-    onmozorientationchange: any;
+interface Element {
+    msRequestFullscreen: Function;
+    mozRequestFullScreen: Function;
+}
+interface ComponentObject extends Object {
+    id: string;
+    type: string;
+}
+interface LinkPropertiesObject extends Object {
+    link: string;
+    title: string;
+}
+interface MutationObserver {
+    observe(target: HTMLElement, options: MutationObserverInit): void;
+}
+interface Navigator {
+    doNotTrack: string;
 }
 interface Node {
     appendChild(newChild: (Element | HTMLElement)): Node;
     insertBefore(newChild: (Element | HTMLElement), refChild?: (Element | HTMLElement | Node)): Node;
     removeChild(newChild: (Element | HTMLElement)): Node;
 }
-interface MutationObserver {
-    observe(target: HTMLElement, options: MutationObserverInit): void;
+interface Screen {
+    orientation: any;
+    mozOrientation: any;
+    onorientationchange: any;
+    onmozorientationchange: any;
 }
 declare module syiro.data {
     var storage: Object;
@@ -61,16 +71,16 @@ declare module syiro.events {
     function Remove(...args: any[]): boolean;
 }
 declare module syiro.render {
-    function Position(positioningList: (string | Array<string>), componentObject: (Object | Element), relativeComponentObject: (Object | Element)): boolean;
-    function Scale(component: Object, data?: Object): void;
+    function Position(positioningList: (string | Array<string>), componentObject: any, relativeComponentObject: any): boolean;
+    function Scale(component: ComponentObject, data?: Object): void;
 }
 declare module syiro.component {
     var lastUniqueIds: Object;
     function CSS(component: any, property: string, newValue?: (string | boolean)): any;
-    function Fetch(component: Object): any;
-    function FetchComponentObject(...args: any[]): Object;
+    function Fetch(component: ComponentObject): any;
+    function FetchComponentObject(...args: any[]): ComponentObject;
     function FetchDimensionsAndPosition(component: any): Object;
-    function FetchLinkedListComponentObject(component: any): Object;
+    function FetchLinkedListComponentObject(component: any): ComponentObject;
     function IdGen(type: string): string;
     function IsComponentObject(component: any): boolean;
     function Update(componentId: string, componentElement: Element): void;
@@ -80,13 +90,13 @@ declare module syiro.component {
 declare module syiro.init {
     function Parser(componentElement: Element): void;
     function createContentOverlay(purpose: string): Element;
-    function Buttongroup(component: Object): void;
-    function List(component: Object): void;
-    function Player(component: Object): void;
-    function PlayerControl(componentObject: Object, playerControlComponentObject: Object): void;
-    function Searchbox(component: Object): void;
-    function Sidepane(component: Object): void;
-    function Toast(component: Object): void;
+    function Buttongroup(component: ComponentObject): void;
+    function List(component: ComponentObject): void;
+    function Player(component: ComponentObject): void;
+    function PlayerControl(componentObject: ComponentObject, playerControlComponentObject: ComponentObject): void;
+    function Searchbox(component: ComponentObject): void;
+    function Sidepane(component: ComponentObject): void;
+    function Toast(component: ComponentObject): void;
 }
 declare module syiro.device {
     var DoNotTrack: boolean;
@@ -111,112 +121,107 @@ declare module syiro.device {
     function FetchScreenOrientation(): string;
 }
 declare module syiro.navbar {
-    function New(properties: Object): Object;
+    function New(properties: Object): ComponentObject;
     var Generate: typeof New;
-    function AddLink(append: boolean, component: Object, elementOrProperties: any): boolean;
-    function RemoveLink(component: Object, elementOrProperties: any): boolean;
-    function SetLogo(component: Object, content: string): boolean;
-    function SetLabel(component: Object, content: string): boolean;
+    function AddLink(append: boolean, component: ComponentObject, elementOrProperties: any): boolean;
+    function RemoveLink(component: ComponentObject, elementOrProperties: any): boolean;
+    function SetLogo(component: ComponentObject, content: string): boolean;
+    function SetLabel(component: ComponentObject, content: string): boolean;
 }
 declare module syiro.button {
-    function New(properties: Object): Object;
+    function New(properties: Object): ComponentObject;
     var Generate: typeof New;
-    function SetIcon(component: Object, content: string): boolean;
-    function SetImage(component: Object, content: string): boolean;
-    function SetText(component: Object, content: string): boolean;
+    function SetIcon(component: ComponentObject, content: string): boolean;
+    function SetImage(component: ComponentObject, content: string): boolean;
+    function SetText(component: ComponentObject, content: string): boolean;
     var SetLabel: Function;
-    function Toggle(component?: Object, active?: boolean): void;
+    function Toggle(component?: ComponentObject, active?: boolean): void;
 }
 declare module syiro.buttongroup {
-    function New(properties: Object): {
-        "id": string;
-        "type": string;
-    };
+    function New(properties: Object): ComponentObject;
     var Generate: typeof New;
     function CalculateInnerButtonWidth(component: any): HTMLElement;
-    function Toggle(buttonComponent?: Object): void;
+    function Toggle(buttonComponent?: ComponentObject): void;
 }
 declare module syiro.list {
-    function New(properties: Object): Object;
+    function New(properties: Object): ComponentObject;
     var Generate: typeof New;
-    function SetHeader(component: Object, content: any): void;
+    function SetHeader(component: ComponentObject, content: any): void;
     function Toggle(component: any): void;
     var AddItem: typeof component.Add;
     var RemoveItem: typeof component.Remove;
 }
 declare module syiro.listitem {
-    function New(properties: Object): Object;
+    function New(properties: Object): ComponentObject;
     var Generate: typeof New;
-    function SetControl(component: Object, control: Object): boolean;
-    function SetImage(component: Object, content: string): boolean;
-    function SetLabel(component: Object, content: string): boolean;
+    function SetControl(component: ComponentObject, control: ComponentObject): boolean;
+    function SetImage(component: ComponentObject, content: string): boolean;
+    function SetLabel(component: ComponentObject, content: string): boolean;
+    function SetLink(component: ComponentObject, properties: any): boolean;
 }
 declare module syiro.dropdown {
     var FetchLinkedListComponentObject: Function;
-    function Generate(properties: Object): Object;
+    function Generate(properties: Object): any;
     var Toggle: Function;
-    function SetText(component: Object, content: any): boolean;
+    function SetText(component: ComponentObject, content: any): boolean;
     var SetIcon: Function;
-    function SetImage(component: Object, content: any): boolean;
-    function AddItem(component: Object, listItemComponent: Object): void;
-    function RemoveItem(component: Object, listItemComponent: Object): void;
+    function SetImage(component: ComponentObject, content: any): boolean;
+    function AddItem(component: ComponentObject, listItemComponent: ComponentObject): void;
+    function RemoveItem(component: ComponentObject, listItemComponent: ComponentObject): void;
 }
 declare module syiro.player {
-    function DurationChange(component: Object): void;
-    function FetchInnerContentElement(component: Object): HTMLMediaElement;
-    function FetchSources(component: Object): Array<Object>;
-    function GetPlayerLengthInfo(component: Object): Object;
-    function IsPlayable(component: Object): boolean;
-    function IsPlaying(component: Object): boolean;
-    function IsStreamable(component: Object): boolean;
+    function DurationChange(component: ComponentObject): void;
+    function FetchInnerContentElement(component: ComponentObject): HTMLMediaElement;
+    function FetchSources(component: ComponentObject): Array<Object>;
+    function GetPlayerLengthInfo(component: ComponentObject): Object;
+    function IsPlayable(component: ComponentObject): boolean;
+    function IsPlaying(component: ComponentObject): boolean;
+    function IsStreamable(component: ComponentObject): boolean;
     function GenerateSources(type: string, sources: Array<string>): Array<HTMLElement>;
-    function PlayOrPause(component: Object, playButtonObjectOrElement?: any): void;
-    function Reset(component: Object): void;
-    function SetSources(component: Object, sources: any): void;
+    function PlayOrPause(component: ComponentObject, playButtonObjectOrElement?: any): void;
+    function Reset(component: ComponentObject): void;
+    function SetSources(component: ComponentObject, sources: any): void;
     function SetTime(...args: any[]): void;
-    function SetVolume(component: Object, volume: number, fromEvent?: string): void;
-    function ToggleFullscreen(component: Object): void;
-    function ToggleMenuDialog(component: Object): void;
+    function SetVolume(component: ComponentObject, volume: number, fromEvent?: string): void;
+    function ToggleFullscreen(component: ComponentObject): void;
+    function ToggleMenuDialog(component: ComponentObject): void;
 }
 declare module syiro.playercontrol {
-    function New(properties: Object): Object;
+    function New(properties: Object): ComponentObject;
     var Generate: typeof New;
-    function ShowVolumeSlider(playerControlComponent: Object, volumeButtonComponent: Object): void;
-    function TimeLabelUpdater(component: Object, timePart: number, value: any): void;
-    function Toggle(component: Object, forceShow?: boolean): void;
+    function ShowVolumeSlider(playerControlComponent: ComponentObject, volumeButtonComponent: ComponentObject): void;
+    function TimeLabelUpdater(component: ComponentObject, timePart: number, value: any): void;
+    function Toggle(component: ComponentObject, forceShow?: boolean): void;
 }
 declare module syiro.audioplayer {
-    function New(properties: Object): Object;
+    function New(properties: Object): any;
     var Generate: typeof New;
-    function CenterInformation(component: Object): void;
+    function CenterInformation(component: ComponentObject): void;
 }
 declare module syiro.videoplayer {
-    function New(properties: Object): Object;
+    function New(properties: Object): any;
     var Generate: typeof New;
 }
 declare module syiro.searchbox {
-    function New(properties: Object): Object;
+    function New(properties: Object): ComponentObject;
     var Generate: typeof New;
     function Suggestions(...args: any[]): void;
-    function SetText(component: Object, content: any): void;
+    function SetText(component: ComponentObject, content: any): void;
 }
 declare module syiro.sidepane {
-    function New(properties: Object): Object;
+    function New(properties: Object): ComponentObject;
     var Generate: typeof New;
     function GestureInit(): void;
     function Drag(): void;
     function Release(): void;
-    function Toggle(component: Object, eventData?: any): void;
+    function Toggle(component: ComponentObject, eventData?: any): void;
 }
 declare module syiro.toast {
-    function New(properties: Object): {
-        "id": string;
-        "type": string;
-    };
+    function New(properties: Object): ComponentObject;
     var Generate: typeof New;
-    function Clear(component: Object): void;
+    function Clear(component: ComponentObject): void;
     function ClearAll(): void;
-    function Toggle(component: Object, action?: string): void;
+    function Toggle(component: ComponentObject, action?: string): void;
 }
 declare module syiro {
     var backgroundColor: string;

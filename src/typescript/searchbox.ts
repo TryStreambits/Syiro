@@ -12,7 +12,7 @@ namespace syiro.searchbox {
 
 	// #region Searchbox Generator
 
-	export function New(properties : Object) : Object { // Generate a Searchbox Component and return a Component Object
+	export function New(properties : Object) : ComponentObject { // Generate a Searchbox Component and return a Component Object
 		var componentId : string = syiro.component.IdGen("searchbox"); // Generate a component Id
 		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
 		var componentData : any = {}; // Define searchboxComponentData as the intended Component Data of the Searchbox that'll be stored via syiro.data
@@ -32,7 +32,7 @@ namespace syiro.searchbox {
 		}
 
 		var inputElement : HTMLElement = syiro.utilities.ElementCreator("input", { "aria-autocomplete" : "list", "role" : "textbox", "placeholder" : properties["content"] }); // Searchbox Inner Input Generation
-		var searchButton : Object = syiro.button.New({ "data-syiro-render-icon" : "search" }); // Create a Search icon button
+		var searchButton : ComponentObject = syiro.button.New({ "data-syiro-render-icon" : "search" }); // Create a Search icon button
 
 		// #region Suggestions Enabling
 
@@ -57,7 +57,7 @@ namespace syiro.searchbox {
 				componentData["preseed"] = false; // Define preseed value in searchboxComponentData as false
 			}
 
-			var searchSuggestionsList : Object = syiro.list.New( { "items" : listItems }); // Generate a List with the items provided (if any)
+			var searchSuggestionsList : ComponentObject = syiro.list.New( { "items" : listItems }); // Generate a List with the items provided (if any)
 			var searchSuggestionsListElement : Element = syiro.component.Fetch(searchSuggestionsList); // Get the List Component Element
 
 			searchboxContainerData["aria-owns"] = searchSuggestionsList["id"]; // Define the aria-owns, setting it to the List Component to declare for ARIA that the Searchbox Component "owns" the List Component
@@ -103,9 +103,9 @@ namespace syiro.searchbox {
 			searchboxValue = searchboxElement.querySelector("input").value; // Define searchboxValue as the queried input Element's value
 		}
 
-		var searchboxComponent : Object = syiro.component.FetchComponentObject(searchboxElement); // Define the Searchbox Component as the fetched Component Object of searchboxElement
+		var searchboxComponent : ComponentObject = syiro.component.FetchComponentObject(searchboxElement); // Define the Searchbox Component as the fetched Component Object of searchboxElement
 
-		var linkedListComponent : Object = syiro.component.FetchLinkedListComponentObject(searchboxComponent); // Fetch the Linked List of the Searchbox Component
+		var linkedListComponent : ComponentObject = syiro.component.FetchLinkedListComponentObject(searchboxComponent); // Fetch the Linked List of the Searchbox Component
 		var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponent); // Fetch the Element of the List Component
 		var innerListItemsOfLinkedList : any = linkedListComponentElement.querySelectorAll('div[data-syiro-component="list-item"]'); // Fetch a NodeList of Elements of all the List Items in the List
 
@@ -147,7 +147,7 @@ namespace syiro.searchbox {
 					}
 
 					for (var suggestionIndex in suggestions){ // For each suggestion in suggestions
-						var suggestionListItem : Object = syiro.listitem.New({ "label" : suggestions[suggestionIndex] }); // Create a List Item with the label being the suggestion
+						var suggestionListItem : ComponentObject = syiro.listitem.New({ "label" : suggestions[suggestionIndex] }); // Create a List Item with the label being the suggestion
 						syiro.list.AddItem(true, linkedListComponent, suggestionListItem); // Append the List Item to the Linked List
 						syiro.events.Add(syiro.events.eventStrings["up"], suggestionListItem, syiro.data.Read(searchboxComponent["id"] + "handlers->list-item-handler")); // Add the list-item-handler we have stored from syiro.data to the suggestionListItem
 					}
@@ -165,7 +165,7 @@ namespace syiro.searchbox {
 
 	// #region Setting Searchbox Text / Placeholder
 
-	export function SetText(component : Object, content : any) : void {
+	export function SetText(component : ComponentObject, content : any) : void {
 		var searchboxElement : Element = syiro.component.Fetch(component); // Get the Searchbox Syiro component element
 
 		if (searchboxElement !== null){ // If the searchboxElement exists in syiro.data.storage or DOM

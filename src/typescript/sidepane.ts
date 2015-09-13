@@ -12,7 +12,7 @@ namespace syiro.sidepane {
 
     // #region Generation
 
-    export function New(properties : Object) : Object {
+    export function New(properties : Object) : ComponentObject {
         var componentId : string = syiro.component.IdGen("sidepane"); // Generate a Sidepane Component Id
         var componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : componentId, "data-syiro-component" : "sidepane"}); // Generate an empty Sidepane
         var sidepaneContentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-content"}); // Generate an empty Sidepane Content div
@@ -112,7 +112,7 @@ namespace syiro.sidepane {
 
     export function Release(){
 		var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
-		var component : Object = syiro.component.FetchComponentObject(arguments[0].parentElement); // Define component as the fetched Component Object
+		var component : ComponentObject = syiro.component.FetchComponentObject(arguments[0].parentElement); // Define component as the fetched Component Object
 		var moveElement = arguments[1]; // Define moveElement as the third argument passed, the actual Element we are listening to
 		var eventData : any = arguments[2]; // Define eventData as the event data passed
 
@@ -130,7 +130,7 @@ namespace syiro.sidepane {
 
 	// #region Toggle - This function will toggle the Sidepane and the content overlay
 
-	export function Toggle(component : Object, eventData ?: any){
+	export function Toggle(component : ComponentObject, eventData ?: any){
 		if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "sidepane")){ // If this is a Component Object and indeed a Sidepane
 			var componentElement = syiro.component.Fetch(component); // Fetch the Sidepane Element
 			var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Fetch the sidepaneContentOverlay Element

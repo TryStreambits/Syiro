@@ -144,8 +144,19 @@ namespace syiro.component {
 					component["type"] = arguments[0]; // Define the type of the component as the type passed as the first arg
 				}
 				else if (arguments.length == 1){
-					component["id"] = syiro.component.IdGen(variableProvided.tagName.toLowerCase()); // Generate a unique id for this component based on the component Element's tagName
-					component["type"] = variableProvided.tagName.toLowerCase(); // Set the component "type" simple as the lowercased tagName
+					var idBase : string = ""; // Define idBase as the base that the Component ID will be based on
+					var potentialExistingType : string = variableProvided.getAttribute("data-syiro-component"); // Get any existing type if it has one
+
+					if (potentialExistingType !== null){ // If a type is defined but not an Id (like the page)
+						idBase = potentialExistingType; // Set idBase to potentialExistingType
+						component["type"] = potentialExistingType; // Set the type to the same type
+					}
+					else{ // If no type is defined
+						idBase = variableProvided.tagName.toLowerCase(); // Set idBase to the tagName lowercased
+						component["type"] = idBase; // Set type to whatever the tag is
+					}
+
+					component["id"] = syiro.component.IdGen(idBase); // Generate the Id
 				}
 
 				variableProvided.setAttribute("data-syiro-component-id", component["id"] ); // Set this component's Id

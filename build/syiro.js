@@ -804,8 +804,17 @@ var syiro;
                         component["type"] = arguments[0];
                     }
                     else if (arguments.length == 1) {
-                        component["id"] = syiro.component.IdGen(variableProvided.tagName.toLowerCase());
-                        component["type"] = variableProvided.tagName.toLowerCase();
+                        var idBase = "";
+                        var potentialExistingType = variableProvided.getAttribute("data-syiro-component");
+                        if (potentialExistingType !== null) {
+                            idBase = potentialExistingType;
+                            component["type"] = potentialExistingType;
+                        }
+                        else {
+                            idBase = variableProvided.tagName.toLowerCase();
+                            component["type"] = idBase;
+                        }
+                        component["id"] = syiro.component.IdGen(idBase);
                     }
                     variableProvided.setAttribute("data-syiro-component-id", component["id"]);
                     variableProvided.setAttribute("data-syiro-component", component["type"]);

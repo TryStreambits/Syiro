@@ -4,21 +4,19 @@
 
 div[data-syiro-component="button"]{
 
-	// #region Icon-Only Button
-
-	&:empty { // If the Button is icon-only
-		min-width: 40px;
-	}
-
-	// #endregion
-
 	// #region "Basic" Button Component
 
 	&[data-syiro-component-type="basic"]{
 		height: 40px;
-		min-width: 115px;
 		line-height: 40px;
-		margin: 5px;
+
+		&:empty { // If the Button is icon-only
+			min-width: 40px;
+		}
+
+		&:not(:empty){ // If the Button is not empty
+			min-width: 115px;
+		}
 	}
 
 	// #endregion
@@ -42,7 +40,7 @@ div[data-syiro-component="button"]{
 				box-shadow: 0 1px 1px 0 darken(@syiroBackground, 10%); // Slight box shadowing
 				margin-left: -1px; // Margin left of -1 so left border aligns
 			}
-			
+
 			&[data-syiro-animation]{ // When the button has been toggled
 				border: 1px solid #4bd663; // Set same as active background
 			}

@@ -6,25 +6,24 @@
 
 div[data-syiro-component="button"]{ // Syiro Button Component
 
-	// #region Icon-Only Button
-
-	&:empty { // If the Button is icon-only
-		min-width: 36px;
-	}
-
-	// #endregion
-
 	// #region "Basic" Button Component
 
 	&[data-syiro-component-type="basic"]{
 		height: 36px;
-		min-width: 65px;
 		line-height: 36px;
-	        text-transform: uppercase; // Uppercase text
-	
-	        &:focus { // If the button is focused
-	            outline: -webkit-focus-ring-color auto 5px; // Webkit specific outlining
-	        }
+		text-transform: uppercase; // Uppercase text
+
+		&:empty { // If the Button is icon-only
+			min-width: 36px;
+		}
+
+		&:not(:empty){ // If the Button is not empty
+			min-width: 65px;
+		}
+
+		&:focus { // If the button is focused
+			outline: -webkit-focus-ring-color auto 5px; // Webkit specific outlining
+		}
 	}
 
 	// #endregion

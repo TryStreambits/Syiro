@@ -4,21 +4,19 @@
 
 div[data-syiro-component="button"]{
 
-	// #region Icon-Only Button
-
-	&:empty { // If the Button is icon-only
-		min-width: 40px;
-	}
-
-	// #endregion
-
 	// #region "Basic" Button Component
 
 	&[data-syiro-component-type="basic"]{
 		height: 40px;
-		min-width: 115px;
 		line-height: 40px;
-		margin: 5px;
+
+		&:empty { // If the Button is icon-only
+			min-width: 40px;
+		}
+
+		&:not(:empty){ // If the Button is not empty
+			min-width: 115px;
+		}
 	}
 
 	// #endregion
@@ -36,12 +34,12 @@ div[data-syiro-component="button"]{
 			width: 18px;
 			background-color: @syiroBackground;
 			margin-top: 1px;
-			
+
 			&:not([data-syiro-animation]){ // If there is no applied animation
 				border: 1px solid darken(@syiroBackground, 20%);
 				margin-left: 1px;
 			}
-			
+
 			&[data-syiro-animation]{ // When the Toggle Button is active
 				border: 1px solid @syiroPrimaryColor; // Set to same color as active Toggle Button background
 			}

@@ -13,16 +13,24 @@ div[data-syiro-component="navbar"]{
 
     // #endregion
 
+	// #region Basic Button Modification
+
+	& > div[data-syiro-component="button"][data-syiro-component-type="basic"]{
+		margin-top: 12px; // Change margin on top to 12px
+	}
+
+	// #endregion
+
     // #region Scaling
 
-    // #region For resolutions with a max of 1280 in width
+		// #region For resolutions with a max of 1280 in width
 
-    @media (max-width: 1280px){
-        height: 56px; // Change the height of the Navbar
-        line-height: 56px; // Change the line-height as well
-    }
+		@media (max-width: 1280px){
+			height: 56px; // Change the height of the Navbar
+			line-height: 56px; // Change the line-height as well
+		}
 
-    // #endregion
+		// #endregion
 
     // #endregion
 }

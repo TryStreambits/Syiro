@@ -220,9 +220,8 @@ namespace syiro.device {
     // #region Screen Dimension Details
 
     export function FetchScreenDetails(){
-		var documentElementClientRect : ClientRect = document.documentElement.getClientRects()[0]; // Define documentElementClientRect as the ClientRect of the fetched documentElement ClientRects
-		syiro.device.height = documentElementClientRect.height; // Define syiro.device.height as the actual height of the document
-		syiro.device.width = documentElementClientRect.width; // Define syiro.device.width as the actual width of the document
+		syiro.device.height = screen.height;
+		syiro.device.width = screen.width;
 
         if (syiro.device.height < 720){ // If the document height is less than 720px
             syiro.device.IsSubHD = true; // Set IsSubHD to true

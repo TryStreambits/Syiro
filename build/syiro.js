@@ -1349,9 +1349,8 @@ var syiro;
         }
         device.FetchOperatingSystem = FetchOperatingSystem;
         function FetchScreenDetails() {
-            var documentElementClientRect = document.documentElement.getClientRects()[0];
-            syiro.device.height = documentElementClientRect.height;
-            syiro.device.width = documentElementClientRect.width;
+            syiro.device.height = screen.height;
+            syiro.device.width = screen.width;
             if (syiro.device.height < 720) {
                 syiro.device.IsSubHD = true;
                 syiro.device.IsHD = false;

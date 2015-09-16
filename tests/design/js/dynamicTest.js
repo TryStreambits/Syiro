@@ -75,7 +75,12 @@ function generateNavbarAndSidepane(){
 	var searchboxComponent= syiro.searchbox.New({ "DisableInputTrigger" : true}); // Generate a new Searchbox
 
     var backgroundColorToggler = syiro.button.New({ "type" : "toggle" }); // Generate a Toggle Button
-    var sidepaneListObject = syiro.list.New({ "header" : "Syiro", "items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" } ] } ); // Generate a List
+    var sidepaneListObject = syiro.list.New(  // Generate a List
+		{
+			"header" : "Syiro",
+			"items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" }, { "link" : { "link" : "http://syiro.com", "title" : "Syiro Website" } } ]
+		}
+	)
     var sidepaneComponentObject = syiro.sidepane.New({ "searchbox" : searchboxComponent, "items" : [ sidepaneListObject ]}); // Generate a List
 
     document.body.insertBefore(syiro.Fetch(sidepaneComponentObject), globalPageElement); // Prepend in body

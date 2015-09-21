@@ -26,6 +26,19 @@ div[data-syiro-component="sidepane"]{
         height: 100%;
         background-color: #f4f4f4; // Set a fixed hex background color
 
+		// #region Scaling
+
+		@media (max-width: 1279px){ // For displays with a resolution that is not HD
+			width: 95%; // 95% of the Sidepane
+		}
+
+    	@media (min-width: 1280px){ // For displays with a resolution that is HD or greater
+            width: 100%; // Use 100% of the parent Sidepane
+            border-right: 1px solid lighten(@syiroSecondaryColor, 25%); // Set border-right to the secondary color, lightened by 25%
+        }
+
+		// #endregion
+
         // #region Logo and Searchbox
 
         & > img:first-child, & > picture:first-child, div[data-syiro-component="searchbox"] { // Select any img or picture that is the first child of the Sidepane, as well as any Searchbox
@@ -85,51 +98,30 @@ div[data-syiro-component="sidepane"]{
     // #region Sidepane Edge
 
     & > div[data-syiro-minor-component="sidepane-edge"]{
-		display: none;
 		float: right;
 		height: inherit;
 		width: 5%;
+
+		// #region Scaling
+
+    	@media (min-width: 1280px){ // For displays with a resolution that is HD or greater
+			display: none;
+        }
+
+		// #endregion
     }
 
     // #endregion
 
-    // #region For resolutions with a resolution lower than 1280
+    // #region Scaling
 
-    @media (max-width: 1279px){
+    @media (max-width: 1279px){ // For displays with a resolution that is not HD
         width: 80%; // 80% of page (75% for actual content, 5% for Edge)
         transform: translateX(-95%); // Default to only showing the edge of the Sidepane (-100% of the Sidepane, +5% for edge)
 		-webkit-transform: translateX(-95%); // Default to only showing the edge of the Sidepane (-100% of the Sidepane, +5% for edge)
 
         .slide(0, 250); // Enable slide animation for Sidepane so it slides to left position of 0 in 250ms
-
-        // #region Sidepane Content
-
-        & > div[data-syiro-minor-component="sidepane-content"]{
-            width: 95%; // 95% of the Sidepane
-        }
-
-        // #endregion
-
-        & > div[data-syiro-minor-component="sidepane-edge"]{ // Edge of Sidepane
-            display: block; // Display
-        }
     }
-
-    // #endregion
-
-    // #region For resolutions greater than 1280
-
-    @media (min-width: 1280px){
-        // #region Sidepane Content
-
-        & > div[data-syiro-minor-component="sidepane-content"]{
-            width: 100%; // Use 100% of the parent Sidepane
-            border-right: 1px solid lighten(@syiroSecondaryColor, 25%); // Set border-right to the secondary color, lightened by 25%
-        }
-
-        // #endregion
-    }
-
 
     // #endregion
 }

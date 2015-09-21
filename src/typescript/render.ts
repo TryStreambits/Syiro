@@ -163,17 +163,6 @@ namespace syiro.render {
 
 		// #endregion
 
-        // #region Scaling Data Definition
-
-        var storedScalingData : any = syiro.data.Read(componentId + "->scaling"); // Check if we have any scaling data
-
-        if ((typeof data == "object") && (storedScalingData == false)){ // If data has been defined (passed as second arg) and there is no stored scalingData
-            syiro.data.Write(componentId + "->scaling", data); // Write the data to the componentId scaling key/val
-            storedScalingData = data; // Define storedScalingData as the data based
-        }
-
-        // #endregion
-
         // #region Initial Dimension Checking
 
         var initialDimensions : any = syiro.data.Read(componentId + "->scaling->initialDimensions"); // Define initialDimensions as an array of numbers, defaulting to any value (which can technically be false) from componentId->scaling->initialDimensions via syiro.data APIs
@@ -204,7 +193,7 @@ namespace syiro.render {
         var fill : any = syiro.data.Read(componentId + "->scaling->fill"); // Define ratios as an array of numbers <height, width> or false (whatever is initially provided by syiro.data.Read)
 
         if (ratios !== false){ // If ratios is defined
-            var scalingState = storedScalingData["state"]; // Get the current scaling state if any
+            var scalingState = syiro.data.Read(componentId + "->scaling->state"); // Get the current scaling state if any
 
             if ((typeof scalingState == "undefined") || (scalingState == false)){ // If no scaling state defined
                 syiro.data.Write(componentId + "->scaling->state", "no-scaling"); // Define our scalingState as initial
@@ -293,8 +282,12 @@ namespace syiro.render {
                 for (var childSelector in potentialComponentScalableChildren){ // For each childSelector in the children section of scaling
                     var childElement : Element = componentElement.querySelector(childSelector); // Get the childElement from componentElement based on the querySelector of the componentElement
                     var childComponent : Object = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
+					var childScalingData : Object = syiro.data.Read(component["id"] + "->scaling->children->" + childSelector + "->scaling"); // Get the scalingData for the child
 
-                    syiro.data.Write(childComponent["id"] + "->scaling", syiro.data.Read(component["id"] + "->scaling->children->" + childSelector + "->scaling")); // Write the scaling information from component->scaling->children ETC to the childComponent scaling key/val
+					syiro.data.Write(childComponent["id"] + "->scaling->initialDimensions", childScalingData["iniitalDimensions"]); // Write any initialDimensions that exist
+					syiro.data.Write(childComponent["id"] + "->scaling->ratios", childScalingData["ratios"]); // Write any ratios that exist
+					syiro.data.Write(childComponent["id"] + "->scaling->fill", childScalingData["fill"]); // Write any fill data that exist
+
                     childComponentsArray.push(childComponent); // Push the childComponent to the childComponentsArray Array of Objects
                     syiro.data.Delete(component["id"] + "->scaling->children->" + childSelector); // Delete the childSelector from scaling children in component
                 }

@@ -117,7 +117,7 @@ namespace syiro.utilities {
 				else if ((typeof thing["link"] !== "undefined") && (typeof thing["title"] !== "undefined")){ // If this Object has href and title properties
 					thingType = "LinkPropertiesObject"; // Define as Link Properties Object
 				}
-				else if (typeof thing.length !== "undefined"){ // If the thing is an Array
+				else if (Array.isArray(thing) == true){ // If the thing is an Array
 					thingType = "Array"; // Set as an Array
 				}
 				else{

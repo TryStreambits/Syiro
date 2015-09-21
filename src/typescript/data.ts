@@ -11,54 +11,64 @@ namespace syiro.data {
     // Returns a boolean success value or the value (if read)
 
     export function Manage(modificationType : string, keyList : string, data ?: any) : any {
-        var dataLocation : Object = syiro.data.storage; // Define dataLocation as the location within syiro.data.storage to storage the data
-        var keyHeirarchy : Array<string> = keyList.split("->"); // Define the keyHeirarchy as the keyList split by the -> delimiter
-        var returnableValue = true; // Default to returnableValue as a boolean true
+        var componentId : string; // Define componentId as a string
+        var returnableValue : any; // Default to returnableValue as any value
+		var keyToApply : string; // Define keyToApply as a string that'll be equivelant to undefined or a proper key/val after -> parsing
 
-        for (var keyHeirarchyIndex = 0; keyHeirarchyIndex < keyHeirarchy.length; keyHeirarchyIndex++){ // For each key defined in the keyHeirarchy
-            var key : string = keyHeirarchy[keyHeirarchyIndex]; // Define the key as the index in keyHeirarchy
+		if (keyList.indexOf("->") !== -1){ // If we are applying data to a key/val in the Component's data
+			componentId= keyList.slice(0, keyList.indexOf("->")); // Define componentId as the first string before the first ->
+			keyToApply = keyList.replace(componentId + "->", ""); // Set keyToApply to be keyList but without the Component Id
+		}
+		else{ // If we are applying the data itself to the key/val of syiro.data.storage, such as create the initial Object during creation of the Component
+			componentId = keyList; // Define componentId as the actual keyList
+		}
 
-            if (keyHeirarchyIndex !== (keyHeirarchy.length - 1)){ // If we are not finished with building or traversing the keyHeirarchy (we determine that by checking if the length and current index match, reducing keyHeirarchy.length by one to match the index which starts at 0)
-                if (typeof dataLocation[key] == "undefined"){ // If this key in the keyHeirarchy is not defined in syiro.data.storage.any_applicable_keys
-                    if (modificationType == "write"){ // If we are writing a key/val from syiro.data.storage
-                        dataLocation[key] = {}; // Create an empty Object in this dataLocation key/val
-                    }
-                    else{ // If we are reading or deleting a key/val from syiro.data.storage, but a key along the way is not defined
-                        returnableValue = false; // Define modificationSuccessful as false
-                        break; // Break the loop
-                    }
-                }
+		if (typeof syiro.data.storage[componentId] == "undefined"){ // If the Component does not have a specific section yet
+			if (modificationType == "write"){ // If we are doing a write
+				if (typeof keyToApply =="string"){ // If there are sub-keys to apply on this write operation
+					syiro.data.storage[componentId] = {}; // Define as a new Object
+				}
+				else { // If no keyToApply exists, meaning whatever is in data is the entire Object for initial write
+					syiro.data.storage[componentId] = data; // Apply the data
+					returnableValue = true; // Immediately set returnableValue to true
+				}
+			}
+			else{ // If we are not doing a write operation
+				returnableValue = false; // Define as false (the value doesn't exist)
+			}
+		}
 
-                dataLocation = dataLocation[key]; // Redefine the dataLocation as dataLocation[key] so we can continue building the tree (only is reached if dataLocation undefined is handled properly or the key is defined)
-            }
-            else{ // If we are finished with traversing or building the heirarchy
-                if (modificationType == "read"){ // If the modificationType is read
-                    if (typeof dataLocation[key] !== "undefined"){ // If the key is defined
-                        returnableValue = dataLocation[key]; // Define returnableValue as the key/val stored
-                    }
-                    else{ // If the key is not defined
-                        returnableValue = false; // Define returnableValue as false (failed to read)
-                    }
-                }
-                else if (modificationType == "write"){ // If we are writing data
-                    if (typeof data !== "undefined"){ // If data is defined
-                        dataLocation[key] = data; // Define the key/val as key = data passed
-                    }
-                    else{ // If data is not defined
-                        returnableValue = false; // Define returnableValue as false (failed to apply any content since none was passed)
-                    }
-                }
-                else if (modificationType == "delete"){ // If we are deleting data in syiro.data.storage
-                    delete dataLocation[key]; // Delete the key from this dataLocation
-                }
-                else{ // If the modificationType provided is not a valid type
-                    returnableValue = false; // Define returnableValue as false (failed action)
-                }
-            }
-        }
+		if ((returnableValue !== false) && (typeof keyToApply == "string")){ // If the returnableValue isn't already false
+			returnableValue = true; // Change to true, change to a different value only if the operation would succeed (or delete)
 
-        return returnableValue; // Return the value (if read -> any, etlse -> boolean)
-    }
+			if (modificationType == "read"){ // If the modificationType is read
+				if (typeof syiro.data.storage[componentId][keyToApply] !== "undefined"){ // If the keyToApply is defined
+					returnableValue = syiro.data.storage[componentId][keyToApply]; // Define returnableValue as the keyToApply/val stored
+				}
+				else{ // If the value does not exist
+					returnableValue = false; // Set returnableValue to false
+				}
+			}
+			else if (modificationType == "write"){ // If we are writing data
+				if (typeof data !== "undefined"){ // If data is defined
+					syiro.data.storage[componentId][keyToApply] = data; // Define the keyToApply/val as key + data passed
+				}
+			}
+			else if (modificationType == "delete"){ // If we are deleting data in syiro.data.storage
+				if (typeof syiro.data.storage[componentId][keyToApply] !== "undefined"){ // If the keyToApply exists (or for that matter, the Component-specific storage exists)
+					delete syiro.data.storage[componentId][keyToApply]; // Delete the key from this componentId
+				}
+			}
+		}
+
+		if ((returnableValue) && (modificationType == "delete") && (Object.keys(syiro.data.storage[componentId]).length == 0)){ // If the Component no longer has any key/vals after a delete operation (and it was a successful operation)
+			delete syiro.data.storage[componentId]; // Delete the empty Object from storage
+		}
+
+		return returnableValue; // Return the values
+	}
+
+	// #endregion
 
     // #region Meta-function for reading data from syiro.data.storage
 

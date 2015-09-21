@@ -167,7 +167,7 @@ namespace syiro.component {
 				}
 			}
 		}
-		else if ((typeOfVariableProvided == "Document") || (typeOfVariableProvided == "Screen") || typeOfVariableProvided == "Window"){ // If this is a valid alternative variable to do event handling on
+		else if ((typeOfVariableProvided == "Document") || (typeOfVariableProvided.indexOf("Screen") == 0) || typeOfVariableProvided == "Window"){ // If this is a valid alternative variable to do event handling on
 			var lowercasedType : string = typeOfVariableProvided.toLowerCase(); // Lowercase the type of the varaible
 			component["id"] = lowercasedType; // Set the Id of the Component Object to lowercasedType
 			component["type"] = lowercasedType; // Set the type of the Component Object to lowercasedType

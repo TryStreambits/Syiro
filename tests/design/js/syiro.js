@@ -12,47 +12,53 @@ var syiro;
     (function (data_1) {
         data_1.storage = {};
         function Manage(modificationType, keyList, data) {
-            var dataLocation = syiro.data.storage;
-            var keyHeirarchy = keyList.split("->");
-            var returnableValue = true;
-            for (var keyHeirarchyIndex = 0; keyHeirarchyIndex < keyHeirarchy.length; keyHeirarchyIndex++) {
-                var key = keyHeirarchy[keyHeirarchyIndex];
-                if (keyHeirarchyIndex !== (keyHeirarchy.length - 1)) {
-                    if (typeof dataLocation[key] == "undefined") {
-                        if (modificationType == "write") {
-                            dataLocation[key] = {};
-                        }
-                        else {
-                            returnableValue = false;
-                            break;
-                        }
+            var componentId;
+            var returnableValue;
+            var keyToApply;
+            if (keyList.indexOf("->") !== -1) {
+                componentId = keyList.slice(0, keyList.indexOf("->"));
+                keyToApply = keyList.replace(componentId + "->", "");
+            }
+            else {
+                componentId = keyList;
+            }
+            if (typeof syiro.data.storage[componentId] == "undefined") {
+                if (modificationType == "write") {
+                    if (typeof keyToApply == "string") {
+                        syiro.data.storage[componentId] = {};
                     }
-                    dataLocation = dataLocation[key];
+                    else {
+                        syiro.data.storage[componentId] = data;
+                        returnableValue = true;
+                    }
                 }
                 else {
-                    if (modificationType == "read") {
-                        if (typeof dataLocation[key] !== "undefined") {
-                            returnableValue = dataLocation[key];
-                        }
-                        else {
-                            returnableValue = false;
-                        }
-                    }
-                    else if (modificationType == "write") {
-                        if (typeof data !== "undefined") {
-                            dataLocation[key] = data;
-                        }
-                        else {
-                            returnableValue = false;
-                        }
-                    }
-                    else if (modificationType == "delete") {
-                        delete dataLocation[key];
+                    returnableValue = false;
+                }
+            }
+            if ((returnableValue !== false) && (typeof keyToApply == "string")) {
+                returnableValue = true;
+                if (modificationType == "read") {
+                    if (typeof syiro.data.storage[componentId][keyToApply] !== "undefined") {
+                        returnableValue = syiro.data.storage[componentId][keyToApply];
                     }
                     else {
                         returnableValue = false;
                     }
                 }
+                else if (modificationType == "write") {
+                    if (typeof data !== "undefined") {
+                        syiro.data.storage[componentId][keyToApply] = data;
+                    }
+                }
+                else if (modificationType == "delete") {
+                    if (typeof syiro.data.storage[componentId][keyToApply] !== "undefined") {
+                        delete syiro.data.storage[componentId][keyToApply];
+                    }
+                }
+            }
+            if ((returnableValue) && (modificationType == "delete") && (Object.keys(syiro.data.storage[componentId]).length == 0)) {
+                delete syiro.data.storage[componentId];
             }
             return returnableValue;
         }
@@ -255,7 +261,7 @@ var syiro;
                     else if ((typeof thing["link"] !== "undefined") && (typeof thing["title"] !== "undefined")) {
                         thingType = "LinkPropertiesObject";
                     }
-                    else if (typeof thing.length !== "undefined") {
+                    else if (Array.isArray(thing) == true) {
                         thingType = "Array";
                     }
                     else {
@@ -580,11 +586,6 @@ var syiro;
             var componentElement = syiro.component.Fetch(component);
             var parentHeight = componentElement.parentElement.clientHeight;
             var parentWidth = componentElement.parentElement.clientWidth;
-            var storedScalingData = syiro.data.Read(componentId + "->scaling");
-            if ((typeof data == "object") && (storedScalingData == false)) {
-                syiro.data.Write(componentId + "->scaling", data);
-                storedScalingData = data;
-            }
             var initialDimensions = syiro.data.Read(componentId + "->scaling->initialDimensions");
             if ((initialDimensions.length !== 2) || (initialDimensions == false)) {
                 if (initialDimensions == false) {
@@ -604,7 +605,7 @@ var syiro;
             var ratios = syiro.data.Read(componentId + "->scaling->ratios");
             var fill = syiro.data.Read(componentId + "->scaling->fill");
             if (ratios !== false) {
-                var scalingState = storedScalingData["state"];
+                var scalingState = syiro.data.Read(componentId + "->scaling->state");
                 if ((typeof scalingState == "undefined") || (scalingState == false)) {
                     syiro.data.Write(componentId + "->scaling->state", "no-scaling");
                     scalingState = "no-scaling";
@@ -668,7 +669,10 @@ var syiro;
                     for (var childSelector in potentialComponentScalableChildren) {
                         var childElement = componentElement.querySelector(childSelector);
                         var childComponent = syiro.component.FetchComponentObject(childElement);
-                        syiro.data.Write(childComponent["id"] + "->scaling", syiro.data.Read(component["id"] + "->scaling->children->" + childSelector + "->scaling"));
+                        var childScalingData = syiro.data.Read(component["id"] + "->scaling->children->" + childSelector + "->scaling");
+                        syiro.data.Write(childComponent["id"] + "->scaling->initialDimensions", childScalingData["iniitalDimensions"]);
+                        syiro.data.Write(childComponent["id"] + "->scaling->ratios", childScalingData["ratios"]);
+                        syiro.data.Write(childComponent["id"] + "->scaling->fill", childScalingData["fill"]);
                         childComponentsArray.push(childComponent);
                         syiro.data.Delete(component["id"] + "->scaling->children->" + childSelector);
                     }
@@ -823,7 +827,7 @@ var syiro;
                     }
                 }
             }
-            else if ((typeOfVariableProvided == "Document") || (typeOfVariableProvided == "Screen") || typeOfVariableProvided == "Window") {
+            else if ((typeOfVariableProvided == "Document") || (typeOfVariableProvided.indexOf("Screen") == 0) || typeOfVariableProvided == "Window") {
                 var lowercasedType = typeOfVariableProvided.toLowerCase();
                 component["id"] = lowercasedType;
                 component["type"] = lowercasedType;
@@ -2690,10 +2694,8 @@ var syiro;
                 syiro.data.Write(componentId, {
                     "UsingExternalLibrary": usingExternalLibrary,
                     "HTMLElement": componentElement,
-                    "scaling": {
-                        "initialDimensions": [150, properties["width"]],
-                        "ratio": [0, 0]
-                    }
+                    "scaling->initialDimensions": [150, properties["width"]],
+                    "scaling->ratio": [0, 0]
                 });
                 return { "id": componentId, "type": "audio-player" };
             }
@@ -2759,14 +2761,14 @@ var syiro;
                 componentElement.insertBefore(videoPlayer, componentElement.lastChild);
                 syiroComponentData["HTMLElement"] = componentElement;
                 if (typeof properties["ratio"] !== "undefined") {
-                    syiroComponentData["scaling"]["ratio"] = properties["ratio"];
-                    syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]];
+                    syiroComponentData["scaling->ratio"] = properties["ratio"];
+                    syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]];
                 }
                 else if (typeof properties["fill"] !== "undefined") {
-                    syiroComponentData["scaling"]["fill"] = properties["fill"];
+                    syiroComponentData["scaling->fill"] = properties["fill"];
                 }
                 else {
-                    syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]];
+                    syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]];
                 }
                 if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"])) {
                     syiroComponentData["UsingExternalLibrary"] = true;

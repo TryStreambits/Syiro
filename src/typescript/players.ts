@@ -793,10 +793,8 @@ namespace syiro.audioplayer {
                 {
                     "UsingExternalLibrary" : usingExternalLibrary, // Define whether we are using an external library with the player or not
                     "HTMLElement" : componentElement, // Set the HTMLElement to the componentElement
-                    "scaling" : { // Create a scaling details Object
-                        "initialDimensions" : [150, properties["width"]], // Set the initialDimensions to 150px height and width as properties[width]
-                        "ratio" : [0,0] // Do not scale (unless forced)
-                    }
+					"scaling->initialDimensions" : [150, properties["width"]], // Set the initialDimensions to 150px height and width as properties[width]
+					"scaling->ratio" : [0,0] // Do not scale (unless forced)
                 }
             );
 
@@ -913,14 +911,14 @@ namespace syiro.videoplayer {
             // #region Scaling Check
 
             if (typeof properties["ratio"] !== "undefined"){ // If ratio is defined
-                syiroComponentData["scaling"]["ratio"] = properties["ratio"]; // Define the ratio properties in syiroComponentData->scaling as the provided ratio property
-                syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]]; // Define initialDimensions as [height, width]
+                syiroComponentData["scaling->ratio"] = properties["ratio"]; // Define the ratio properties in syiroComponentData->scaling as the provided ratio property
+                syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]]; // Define initialDimensions as [height, width]
             }
             else if (typeof properties["fill"] !== "undefined"){ // If fill is defined
-                syiroComponentData["scaling"]["fill"] = properties["fill"]; // Define the fill properties in syiroComponentData->scaling as the provided fill property
+                syiroComponentData["scaling->fill"] = properties["fill"]; // Define the fill properties in syiroComponentData->scaling as the provided fill property
             }
             else{ // If neither ratio nor fill are defined
-                syiroComponentData["scaling"]["initialDimensions"] = [properties["height"], properties["width"]]; // Define initialDimensions as [height, width]
+                syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]]; // Define initialDimensions as [height, width]
             }
 
             // #endregion

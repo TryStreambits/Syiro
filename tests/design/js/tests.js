@@ -10,7 +10,7 @@ function RunBenchmarks(){
 		"function" : function(){
 			syiro.Init();
 		}
-	})
+	});
 
 	syiroInitPerfilyInstance.Run(); // Run syiroInitPerfilyInstance
 
@@ -31,7 +31,7 @@ function RunBenchmarks(){
 
 	// #endregion
 
-	// #region Syiro Remove() Benchmark
+	// #region Syiro SecondsToTimeFormat Benchmark
 
 	var timeValidObject = syiro.utilities.SecondsToTimeFormat(4523); // Create a "valid" time Object to use with the Perfily instance
 
@@ -44,7 +44,7 @@ function RunBenchmarks(){
 		}
 	})
 
-	syiroSecondsToTimeFormatPerfilyInstance.Run(); // Run syiroRemovePerfilyInstance
+	syiroSecondsToTimeFormatPerfilyInstance.Run(); // Run syiroSecondsToTimeFormatPerfilyInstance
 
 	// #endregion
 
@@ -55,7 +55,7 @@ function RunBenchmarks(){
 		"function" : function(){
 			syiro.component.Add("append", document.body, generatedSyiroElement);
 		}
-	})
+	});
 
 	syiroAddPerfilyInstance.Run(); // Run syiroAddPerfilyInstance
 
@@ -68,9 +68,143 @@ function RunBenchmarks(){
 		"function" : function(){
 			syiro.component.Remove(generatedSyiroElement);
 		}
-	})
+	});
 
 	syiroRemovePerfilyInstance.Run(); // Run syiroRemovePerfilyInstance
 
 	// #endregion
+
+	BenchmarkComponents(); // Generate and Benchmark Components
+}
+
+function BenchmarkComponents(){
+	// #region Syiro New Basic Button Benchmark
+
+	var syiroGeneratedBasicButton;
+
+	var syiroNewBasicButtonPerfilyInstance = new Perfily({ // Create a Perfily instance for creating a new Basic Button
+		"name" : "Syiro New Basic Button",
+		"function" : function(){
+			syiroGeneratedBasicButton = syiro.button.New({"type" : "basic", "content" : "Basic Button"});
+		}
+	});
+
+	syiroNewBasicButtonPerfilyInstance.Run(); // Run syiroNewBasicButtonPerfilyInstance
+
+	// #endregion
+
+	// #region Syiro New Toggle Button Benchmark
+
+	var syiroNewToggleButtonPerfilyInstance = new Perfily({ // Create a Perfily instance for creating a new Toggle Button
+		"name" : "Syiro New Toggle Button",
+		"function" : function(){
+			syiro.button.New({"type" : "toggle", "default" : true});
+		}
+	});
+
+	syiroNewToggleButtonPerfilyInstance.Run(); // Run syiroNewToggleButtonPerfilyInstance
+
+	// #endregion
+
+	// #region Syiro New Toggle Button Benchmark
+
+	var syiroButtongroupPerfilyInstance = new Perfily({ // Create a Perfily instance for creating a new Buttongroup
+		"name" : "Syiro New Buttongroup",
+		"function" : function(){
+			syiro.buttongroup.New({
+				"items" : [ syiroGeneratedBasicButton, { "content" : "Button2" }, { "content" : "Button3" } ],
+				"active" : 2
+			});
+		}
+	});
+
+	syiroButtongroupPerfilyInstance.Run(); // Run syiroButtongroupPerfilyInstance
+
+	// #endregion
+
+	// #region Syiro New List Item Benchmark
+
+	var syiroGeneratedListItem;
+
+	var syiroListItemPerfilyInstance = new Perfily({ // Create a Perfily instance for creating a new List Item
+		"name" : "Syiro New List Item",
+		"function" : function(){
+			syiroGeneratedListItem = syiro.listitem.New({ "label" : "List Item" });
+		}
+	});
+
+	syiroListItemPerfilyInstance.Run(); // Run syiroListItemPerfilyInstance
+
+	// #endregion
+
+	// #region Syiro New List Benchmark
+
+	var syiroGeneratedList;
+
+	var syiroListPerfilyInstance = new Perfily({ // Create a Perfily instance for creating a new List
+		"name" : "Syiro New List",
+		"function" : function(){
+			syiroGeneratedList = syiro.list.New({ "items" : [syiroGeneratedListItem] });
+		}
+	});
+
+	syiroListPerfilyInstance.Run(); // Run syiroListPerfilyInstance
+
+	// #endregion
+
+	// #region Syiro New Navbar Benchmark
+
+	var syiroNavbarPerfilyInstance = new Perfily({ // Create a Perfily instance for creating a new Navbar
+		"name" : "Syiro New Navbar",
+		"function" : function(){
+			syiro.navbar.New({ "items" : [{ "link" : "http://syiro.com", "title" : "Syiro"}], "position" : "fixed" });
+		}
+	});
+
+	syiroNavbarPerfilyInstance.Run(); // Run syiroNavbarPerfilyInstance
+
+	// #endregion
+
+	// #region Syiro New Searchbox Benchmark
+
+	var syiroSearchboxPerfilyInstance = new Perfily({ // Create a Perfily instance for creating a new Searchbox
+		"name" : "Syiro New Searchbox",
+		"function" : function(){
+			syiro.searchbox.New({ "content" : "Type your things..." });
+		}
+	});
+
+	syiroSearchboxPerfilyInstance.Run(); // Run syiroSearchboxPerfilyInstance
+
+	// #endregion
+
+	// #region Syiro New Sidepane Benchmark
+
+	var syiroSidepanePerfilyInstance = new Perfily({ // Create a Perfily instance for creating a new Sidepane
+		"name" : "Syiro New Sidepane",
+		"function" : function(){
+			syiro.sidepane.New({ "header" : "Sidepane Header", "items" : [ syiroGeneratedList ] });
+		}
+	});
+
+	syiroSidepanePerfilyInstance.Run(); // Run syiroSearchboxPerfilyInstance
+
+	// #endregion
+
+	// #region Syiro New Toast Benchmark
+
+	var syiroToastPerfilyInstance = new Perfily({ // Create a Perfily instance for creating a new Toast
+		"name" : "Syiro New Toast",
+		"function" : function(){
+			syiro.toast.New({ "type" : "normal", "title" : "This is a Toast!", "message" : "This is a message!" });
+		}
+	});
+
+	syiroToastPerfilyInstance.Run(); // Run syiroToastPerfilyInstance
+
+	// #endregion
+}
+
+function TestPlayerFunctionality(){
+
 }

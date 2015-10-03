@@ -2448,7 +2448,9 @@ var syiro;
             }
             var currentPlayerTime = playerInnerContentElement.currentTime;
             if ((typeof time == "number") && (currentPlayerTime !== time)) {
-                playerInnerContentElement.currentTime = time;
+                if (time <= playerInnerContentElement.duration) {
+                    playerInnerContentElement.currentTime = time;
+                }
             }
             else if ((typeof fromEvent == "string") && (fromEvent == "tick")) {
                 time = currentPlayerTime;
@@ -2588,7 +2590,7 @@ var syiro;
                     componentElement.appendChild(timeStamp);
                 }
             }
-            if (properties["menu"] !== undefined) {
+            if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")) {
                 if (properties["menu"]["type"] == "list") {
                     var menuButton = syiro.button.New({ "data-syiro-render-icon": "menu" });
                     componentElement.appendChild(syiro.component.Fetch(menuButton));
@@ -2723,11 +2725,13 @@ var syiro;
                 syiro.component.CSS(componentElement, "width", properties["width"].toString() + "px");
                 var playerControlComponent = syiro.playercontrol.New(properties);
                 var playerControlElement = syiro.component.Fetch(playerControlComponent);
-                if ((typeof properties["menu"]["type"] == "string") && (properties["menu"]["type"] == "list")) {
-                    var playerMenuDialog = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "player-menu" });
-                    playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content": "Menu" }));
-                    playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"]));
-                    componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
+                if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")) {
+                    if (properties["menu"]["type"] == "list") {
+                        var playerMenuDialog = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "player-menu" });
+                        playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content": "Menu" }));
+                        playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"]));
+                        componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
+                    }
                 }
                 componentElement.appendChild(playerControlElement);
                 var usingExternalLibrary = false;
@@ -2775,11 +2779,13 @@ var syiro;
                     if (typeof properties["art"] !== "undefined") {
                         syiro.component.CSS(componentElement, "background-image", 'url("' + properties["art"] + '")');
                     }
-                    if ((typeof properties["menu"]["type"] == "string") && (properties["menu"]["type"] == "list")) {
-                        var playerMenuDialog = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "player-menu" });
-                        playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content": "Menu" }));
-                        playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"]));
-                        componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
+                    if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")) {
+                        if (properties["menu"]["type"] == "list") {
+                            var playerMenuDialog = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "player-menu" });
+                            playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content": "Menu" }));
+                            playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"]));
+                            componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
+                        }
                     }
                     properties["is-video-player"] = true;
                     var playerControlComponent = syiro.playercontrol.New(properties);

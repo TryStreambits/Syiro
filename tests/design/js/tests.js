@@ -71,6 +71,7 @@ function RunBenchmarks(){
 
 	TestButtongroupAndButtons(); // Run the benchmarking of Buttongroup and Buttons
 	TestListAndListItem(); // Run the benchmarking of List and List Items
+	TestMediaPlayers(); // Run the benchmarking of the Media Players
 	TestNavbar(); // Run the benchmarking of Navbar
 	TestSearchbox(); // Run the benchmarking of Searchbox
 	TestSidepane(); // Run the benchmarking of Sidepane
@@ -80,6 +81,8 @@ function RunBenchmarks(){
 // #region Buttongroup and Buttons Testing
 
 function TestButtongroupAndButtons(){
+	console.log("----- Buttongroup and Buttons Testing -----");
+
 	// #region Syiro New Basic Button Benchmark
 
 	perfilyInstance.SetName("New Basic Button");
@@ -153,6 +156,8 @@ function TestButtongroupAndButtons(){
 // #region List and List Item Testing
 
 function TestListAndListItem(){
+	console.log("----- List and List Item Testing -----");
+
 	// #region Syiro New List Item Benchmark
 
 	perfilyInstance.SetName("New List Item");
@@ -200,9 +205,100 @@ function TestListAndListItem(){
 
 // #endregion
 
+// #region Media Players Testing
+
+function TestMediaPlayers(){
+	console.log("----- Media Players Testing -----");
+
+	// #region Syiro New Audio Player Benchmark
+
+	perfilyInstance.SetName("New Audio Player");
+	perfilyInstance.SetFunction(function(){
+		syiroGeneratedAudioPlayer = syiro.audioplayer.New(
+		{
+			"sources": ["http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg", "http://www.noiseaddicts.com/samples/55.mp3" ],
+			"art" : "https://c2.staticflickr.com/6/5134/5518988345_9df9892bb2_b.jpg",
+			"title" : "Example OGG File",
+			"artist" : "JesseW"
+		}
+    	);
+	});
+
+	// #endregion
+
+	// #region Syiro New Video Player Benchmark
+
+	perfilyInstance.SetName("New Video Player");
+	perfilyInstance.SetFunction(function(){
+		syiroGeneratedVideoPlayer = syiro.videoplayer.New(
+			{
+				"art" : "img/video-art.png",
+				"height" : 200,
+				"width" : (200 * (16 / 9)),
+				"sources" : ["http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v", "http://video.webmfiles.org/big-buck-bunny_trailer.webm"]
+			}
+    	);
+	});
+
+	syiro.component.Add("append", syiro.page, syiroGeneratedVideoPlayer); // Add the video player to the DOM
+
+	perfilyInstance.SetName("Media Player FetchInnerContentElement");
+	perfilyInstance.SetFunction(function(){
+		syiro.player.FetchInnerContentElement(syiroGeneratedVideoPlayer);
+	});
+
+	perfilyInstance.SetName("Media Player FetchSources");
+	perfilyInstance.SetFunction(function(){
+		syiro.player.FetchSources(syiroGeneratedVideoPlayer);
+	});
+
+	perfilyInstance.SetName("Media Player IsPlayable");
+	perfilyInstance.SetExpecting(true); // Expect to be playable
+	perfilyInstance.SetFunction(function(){
+		syiro.player.IsPlayable(syiroGeneratedVideoPlayer);
+	});
+
+	perfilyInstance.SetName("Media Player IsPlaying");
+	perfilyInstance.SetExpecting(false); // Expect to be not playing
+	perfilyInstance.SetFunction(function(){
+		syiro.player.IsPlaying(syiroGeneratedVideoPlayer);
+	});
+
+	perfilyInstance.SetName("Media Player IsStreamable");
+	perfilyInstance.SetExpecting(false); // Expect to be not streamable
+	perfilyInstance.SetFunction(function(){
+		syiro.player.IsStreamable(syiroGeneratedVideoPlayer);
+	});
+
+	perfilyInstance.SetName("Media Player PlayOrPause");
+	perfilyInstance.SetFunction(function(){
+		syiro.player.PlayOrPause(syiroGeneratedVideoPlayer);
+	});
+
+	perfilyInstance.SetName("Media Player SetTime");
+	perfilyInstance.SetFunction(function(){
+		syiro.player.SetTime(syiroGeneratedVideoPlayer, 7);
+	});
+
+	perfilyInstance.SetName("Media Player SetVolume");
+	perfilyInstance.SetFunction(function(){
+		syiro.player.SetVolume(syiroGeneratedVideoPlayer, 0.5);
+	});
+
+	perfilyInstance.SetName("Media Player Reset");
+	perfilyInstance.SetFunction(function(){
+		syiro.player.Reset(syiroGeneratedVideoPlayer);
+	});
+
+}
+
+// #endregion
+
 // #region Navbar Testing
 
 function TestNavbar(){
+	console.log("----- Navbar Testing -----");
+
 	// #region Syiro New Navbar Benchmark
 
 	perfilyInstance.SetName("New Navbar");
@@ -239,6 +335,8 @@ function TestNavbar(){
 // #region Searchbox Testing
 
 function TestSearchbox(){
+	console.log("----- Searchbox Testing -----");
+
 	// #region Syiro New Searchbox Benchmark
 
 	perfilyInstance.SetName("New Searchbox");
@@ -259,6 +357,8 @@ function TestSearchbox(){
 // #region Sidepane Testing
 
 function TestSidepane(){
+	console.log("----- Sidepane Testing -----");
+
 	// #region Syiro New Sidepane Benchmark
 
 	perfilyInstance.SetName("New Sidepane");
@@ -274,6 +374,8 @@ function TestSidepane(){
 // #region Toast Testing
 
 function TestToast(){
+	console.log("----- Toast Testing -----");
+
 	// #region Syiro New Toast Benchmark
 
 	perfilyInstance.SetName("New Toast");

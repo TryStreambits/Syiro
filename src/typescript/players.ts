@@ -378,7 +378,9 @@ namespace syiro.player {
 		var currentPlayerTime : number = playerInnerContentElement.currentTime; // Define currentPlayerTime as the currentTime provided by the content Element
 
 		if ((typeof time == "number") && (currentPlayerTime !== time)){ // If we are not setting the time to what it already is (for instance 0, which would cause an InvalidStateError)
-			playerInnerContentElement.currentTime = time; // Set the playerInnerContentElement's currentTime to the time provided
+			if (time <= playerInnerContentElement.duration){ // If the time we want to set is not greater than the actual duration
+				playerInnerContentElement.currentTime = time; // Set the playerInnerContentElement's currentTime to the time provided
+			}
 		}
 		else if ((typeof fromEvent == "string") && (fromEvent == "tick")){ // If this is called from event listener
 			time = currentPlayerTime; // Set time to currentPlayerTime
@@ -563,7 +565,7 @@ namespace syiro.playercontrol {
 
         // #region Player Menu Element Creation (If Applicable)
 
-        if (properties["menu"] !== undefined){ // If the menu attribute is defined
+		if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")){ // If the menu defined is a ComponentObject (List)
             if (properties["menu"]["type"] == "list"){ // If the component provided is a List
                 var menuButton = syiro.button.New( { "data-syiro-render-icon" : "menu"} ); // Generate a Menu Button
                 componentElement.appendChild(syiro.component.Fetch(menuButton)); // Append the menuButton to the playerControlElement
@@ -767,12 +769,14 @@ namespace syiro.audioplayer {
 
             // #region Player Menu Element Creation (If Applicable)
 
-            if ((typeof properties["menu"]["type"] == "string") && (properties["menu"]["type"] == "list")){ // If the component provided is a List
-                var playerMenuDialog : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
-                playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
-                playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
-                componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
-            }
+			if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")){ // If the menu defined is a ComponentObject (List)
+				if (properties["menu"]["type"] == "list"){ // If the component provided is a List
+					var playerMenuDialog : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
+					playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
+					playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
+					componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
+				}
+			}
 
             // #endregion
 
@@ -856,12 +860,14 @@ namespace syiro.videoplayer {
 
 	            // #region Player Menu Element Creation (If Applicable)
 
-	            if ((typeof properties["menu"]["type"] == "string") && (properties["menu"]["type"] == "list")){ // If the component provided is a List
-	                var playerMenuDialog : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
-	                playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
-	                playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
-	                componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
-	            }
+				if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")){ // If the menu defined is a ComponentObject (List)
+					if (properties["menu"]["type"] == "list"){ // If the component provided is a List
+						var playerMenuDialog : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
+						playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
+						playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
+						componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
+					}
+				}
 
 	            // #endregion
 

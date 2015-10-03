@@ -1,0 +1,5 @@
+/* Grid Item */
+
+div[data-syiro-component="grid-item"]{
+	width: 150px; /* Set width of each Grid Item to 150px */
+}

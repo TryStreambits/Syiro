@@ -3,14 +3,14 @@
 */
 /// <reference path="init.ts" />
 /// <reference path="animation.ts" />
+/// <reference path="button.ts" />
 /// <reference path="component.ts" />
 /// <reference path="data.ts" />
 /// <reference path="device.ts" />
 /// <reference path="events.ts" />
 /// <reference path="generator.ts" />
+/// <reference path="grid.ts" />
 /// <reference path="navbar.ts" />
-/// <reference path="button.ts" />
-/// <reference path="dropdown.ts" />
 /// <reference path="list.ts" />
 /// <reference path="players.ts" />
 /// <reference path="render.ts" />
@@ -39,7 +39,7 @@ namespace syiro {
 
 				for (var dropdownButtonIndex = 0; dropdownButtonIndex < dropdownButtons.length; dropdownButtonIndex++){ // For each of those Dropdown Button Components that are active
 					var thisDropdownButtonObject : ComponentObject = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]); // Get the Component Object of the Dropdown Button
-					syiro.dropdown.Toggle(thisDropdownButtonObject); // Toggle the Dropdown Button
+					syiro.button.Toggle(thisDropdownButtonObject); // Toggle the Dropdown Button
 				}
 			}
 		);

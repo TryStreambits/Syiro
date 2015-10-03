@@ -1,0 +1,12 @@
+@import (reference) "../core.less"; // Import Core as a reference
+
+// This is the core LESS of the Grid & Grid Item Components.
+
+div[data-syiro-component="grid"] { // Grid Component
+	float: left;
+
+	& > div[data-syiro-component="grid-item"] { // Grid Item
+		float: left;
+		padding: 1.5%;
+	}
+}

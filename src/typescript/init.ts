@@ -25,6 +25,9 @@ namespace syiro.init {
 				case "buttongroup" : // If it is a Buttongroup Component
 					syiro.init.Buttongroup(component); // Initialize the Buttongroup
 					break;
+				case "grid" : // If this is a Grid Component
+					syiro.init.Grid(component);
+					break;
 				case "list" : // If the Component is a List Component
 					syiro.init.List(component); // Initialize the List if needed
 					break;
@@ -83,6 +86,17 @@ namespace syiro.init {
 			var buttonComponentObject = syiro.component.FetchComponentObject(innerButton); // Get the buttonComponentObject
 			syiro.events.Add(syiro.events.eventStrings["up"], buttonComponentObject, syiro.buttongroup.Toggle); // Immediately enable parent toggling for this Button
 		}
+	}
+
+	// #endregion
+
+	// #region Grid Initialization
+
+	export function Grid(component : ComponentObject){
+		syiro.events.Add(syiro.events.eventStrings["orientationchange"], syiro.device.OrientationObject, syiro.grid.Scale.bind(this, component)); // Add an event listener on orientationchange to scale this Grid
+		syiro.events.Add("resize", window, syiro.grid.Scale.bind(this, component)); // Add an event listener on window resize to scale this Grid
+
+		syiro.grid.Scale(component); // Do an initial Grid scaling
 	}
 
 	// #endregion

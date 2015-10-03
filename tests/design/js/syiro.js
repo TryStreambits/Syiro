@@ -997,6 +997,9 @@ var syiro;
                     case "buttongroup":
                         syiro.init.Buttongroup(component);
                         break;
+                    case "grid":
+                        syiro.init.Grid(component);
+                        break;
                     case "list":
                         syiro.init.List(component);
                         break;
@@ -1043,6 +1046,12 @@ var syiro;
             }
         }
         init.Buttongroup = Buttongroup;
+        function Grid(component) {
+            syiro.events.Add(syiro.events.eventStrings["orientationchange"], syiro.device.OrientationObject, syiro.grid.Scale.bind(this, component));
+            syiro.events.Add("resize", window, syiro.grid.Scale.bind(this, component));
+            syiro.grid.Scale(component);
+        }
+        init.Grid = Grid;
         function List(component) {
             var componentElement = syiro.component.Fetch(component);
             if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content") {
@@ -1200,336 +1209,6 @@ var syiro;
         }
         init.Toast = Toast;
     })(init = syiro.init || (syiro.init = {}));
-})(syiro || (syiro = {}));
-/*
- This is the namespace for information and functionality Syiro provides regarding the device using Syiro.
-*/
-/// <reference path="events.ts" />
-/// <reference path="interfaces.ts" />
-var syiro;
-(function (syiro) {
-    var device;
-    (function (device) {
-        device.DoNotTrack;
-        device.HasCryptography = true;
-        device.HasGeolocation = true;
-        device.HasIndexedDB = true;
-        device.HasLocalStorage = true;
-        device.IsOnline = true;
-        device.OperatingSystem;
-        device.SupportsMutationObserver = false;
-        device.SupportsTouch = false;
-        device.IsSubHD;
-        device.IsHD;
-        device.IsFullHDOrAbove;
-        device.Orientation;
-        device.OrientationObject = screen;
-        device.height;
-        device.width;
-        function Detect() {
-            // #region Do Not Track
-            if (typeof navigator.doNotTrack !== "undefined") {
-                syiro.device.DoNotTrack = Boolean(navigator.doNotTrack);
-            }
-            else {
-                syiro.device.DoNotTrack = true;
-            }
-            syiro.device.HasCryptography = (typeof window.crypto !== "undefined");
-            syiro.device.HasGeolocation = (typeof navigator.geolocation !== "undefined");
-            syiro.device.HasIndexedDB == (typeof window.indexedDB !== "undefined");
-            syiro.device.HasLocalStorage = (typeof window.localStorage !== "undefined");
-            if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")) {
-                if (typeof WebKitMutationObserver !== "undefined") {
-                    MutationObserver = WebKitMutationObserver;
-                }
-                syiro.device.SupportsMutationObserver = true;
-            }
-            if (typeof navigator.onLine !== "undefined") {
-                syiro.device.IsOnline = navigator.onLine;
-                syiro.events.Add("online", document, function () {
-                    syiro.device.IsOnline = true;
-                });
-                syiro.events.Add("offline", document, function () {
-                    syiro.device.IsOnline = false;
-                });
-            }
-            syiro.device.FetchOperatingSystem();
-            var eventsToRemove;
-            if ((navigator.userAgent.indexOf("Firefox/") == -1) && (syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Sailfish") && (syiro.device.OperatingSystem !== "Windows")) {
-                syiro.device.SupportsTouch = true;
-                syiro.events.eventStrings["down"] = ["touchstart"];
-                syiro.events.eventStrings["up"] = ["touchend"];
-                syiro.events.eventStrings["move"] = ["touchmove"];
-            }
-            else {
-                syiro.events.eventStrings["down"] = ["mousedown"];
-                syiro.events.eventStrings["up"] = ["mouseup"];
-                syiro.events.eventStrings["move"] = ["mousemove"];
-            }
-            Object.freeze(syiro.events.eventStrings["down"]);
-            Object.freeze(syiro.events.eventStrings["up"]);
-            Object.freeze(syiro.events.eventStrings["move"]);
-            syiro.device.FetchScreenDetails();
-            syiro.device.Orientation = syiro.device.FetchScreenOrientation();
-            syiro.events.Add("resize", window, syiro.device.FetchScreenDetails);
-            var orientationChangeHandler = function () {
-                var currentOrientation = syiro.device.FetchScreenOrientation();
-                if (currentOrientation !== syiro.device.Orientation) {
-                    syiro.device.Orientation = currentOrientation;
-                    var allPlayers = document.querySelectorAll('div[data-syiro-component$="player"]');
-                    for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++) {
-                        var thisPlayer = allPlayers[allPlayersIndex];
-                        syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer));
-                        if (thisPlayer.getAttribute("data-syiro-component") == "audioplayer") {
-                            var audioPlayerComponent = syiro.component.FetchComponentObject(thisPlayer);
-                            syiro.audioplayer.CenterInformation(audioPlayerComponent);
-                        }
-                    }
-                    if (arguments[0] == "interval") {
-                        var orientationChangeViaIntervalHanders = syiro.data.Read("screen->handlers->orientationchange-viainterval");
-                        for (var orientationChangeIndex in orientationChangeViaIntervalHanders) {
-                            orientationChangeViaIntervalHanders[orientationChangeIndex]();
-                        }
-                    }
-                }
-            };
-            var orientationListener = screen;
-            if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")) {
-                orientationListener = screen.orientation;
-                syiro.device.OrientationObject = screen.orientation.type;
-                syiro.events.eventStrings["orientationchange"] = ["change"];
-            }
-            else if (typeof screen.onmsorientationchange !== "undefined") {
-                syiro.device.OrientationObject = screen.msOrientation;
-                syiro.events.eventStrings["orientationchange"] = ["msorientationchange"];
-            }
-            else if (typeof screen.onmozorientationchange !== "undefined") {
-                syiro.device.OrientationObject = screen.mozOrientation;
-                syiro.events.eventStrings["orientationchange"] = ["mozorientationchange"];
-            }
-            else {
-                syiro.events.eventStrings["orientationchange"] = ["orientationchange-viainterval"];
-            }
-            if (syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval") {
-                syiro.events.Add(syiro.events.eventStrings["orientationchange"], orientationListener, orientationChangeHandler);
-            }
-            else {
-                window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000);
-            }
-            Object.freeze(syiro.events.eventStrings["orientationchange"]);
-            Object.freeze(syiro.events.eventStrings);
-        }
-        device.Detect = Detect;
-        function FetchOperatingSystem() {
-            var userAgent = navigator.userAgent;
-            if (userAgent.indexOf("Android") !== -1) {
-                syiro.device.OperatingSystem = "Android";
-            }
-            else if ((userAgent.indexOf("iPhone") !== -1) || (userAgent.indexOf("iPad") !== -1)) {
-                syiro.device.OperatingSystem = "iOS";
-            }
-            else if ((userAgent.indexOf("Linux") !== -1) && (userAgent.indexOf("Android") == -1)) {
-                syiro.device.OperatingSystem = "Linux";
-                if (userAgent.indexOf("Sailfish") !== -1) {
-                    syiro.device.OperatingSystem = "Sailfish";
-                }
-                else if ((userAgent.indexOf("Ubuntu") !== -1) && ((userAgent.indexOf("Mobile") !== -1) || (userAgent.indexOf("Tablet") !== -1))) {
-                    syiro.device.OperatingSystem = "Ubuntu Touch";
-                }
-            }
-            else if (userAgent.indexOf("Macintosh") !== -1) {
-                syiro.device.OperatingSystem = "OS X";
-            }
-            else if (userAgent.indexOf("Windows Phone") !== -1) {
-                syiro.device.OperatingSystem = "Windows Phone";
-            }
-            else if (userAgent.indexOf("Windows NT") !== -1) {
-                syiro.device.OperatingSystem = "Windows";
-            }
-            else {
-                syiro.device.OperatingSystem = "Other";
-            }
-            return syiro.device.OperatingSystem;
-        }
-        device.FetchOperatingSystem = FetchOperatingSystem;
-        function FetchScreenDetails() {
-            syiro.device.height = screen.height;
-            syiro.device.width = screen.width;
-            if (syiro.device.height < 720) {
-                syiro.device.IsSubHD = true;
-                syiro.device.IsHD = false;
-                syiro.device.IsFullHDOrAbove = false;
-            }
-            else {
-                if (((syiro.device.height >= 720) && (syiro.device.height < 1080)) && (syiro.device.width >= 1280)) {
-                    syiro.device.IsSubHD = false;
-                    syiro.device.IsHD = true;
-                    syiro.device.IsFullHDOrAbove = false;
-                }
-                else if ((syiro.device.height >= 1080) && (syiro.device.width >= 1920)) {
-                    syiro.device.IsSubHD = false;
-                    syiro.device.IsHD = true;
-                    syiro.device.IsFullHDOrAbove = true;
-                }
-            }
-        }
-        device.FetchScreenDetails = FetchScreenDetails;
-        function FetchScreenOrientation() {
-            var deviceOrientation = "portrait";
-            if (syiro.device.OrientationObject == "landscape-primary") {
-                deviceOrientation = "landscape";
-            }
-            else if (screen.height < screen.width) {
-                deviceOrientation = "landscape";
-            }
-            return deviceOrientation;
-        }
-        device.FetchScreenOrientation = FetchScreenOrientation;
-    })(device = syiro.device || (syiro.device = {}));
-})(syiro || (syiro = {}));
-/*
-    This is the namespace for Syiro Navbar component (previously referred to as Header and Footer Components).
-*/
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="utilities.ts" />
-var syiro;
-(function (syiro) {
-    var navbar;
-    (function (navbar) {
-        function New(properties) {
-            var navbarType;
-            if ((typeof properties["position"] !== "string") || ((properties["position"] !== "top") && (properties["position"] !== "bottom"))) {
-                navbarType = "top";
-            }
-            else {
-                navbarType = properties["position"];
-            }
-            var componentId = syiro.component.IdGen("navbar");
-            var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "navbar", "data-syiro-component-id": componentId, "role": "navigation", "data-syiro-component-type": navbarType });
-            for (var propertyKey in properties) {
-                if (propertyKey == "items") {
-                    for (var _i = 0, _a = properties["items"]; _i < _a.length; _i++) {
-                        var individualItem = _a[_i];
-                        var typeOfItem = syiro.utilities.TypeOfThing(individualItem);
-                        if (typeOfItem == "LinkPropertiesObject") {
-                            var generatedElement = syiro.utilities.ElementCreator("a", { "href": individualItem["link"], "content": individualItem["title"] });
-                            componentElement.appendChild(generatedElement);
-                        }
-                        else if ((typeOfItem == "ComponentObject") && (navbarType == "top")) {
-                            componentElement.appendChild(syiro.component.Fetch(individualItem));
-                        }
-                    }
-                }
-                else if ((propertyKey == "logo") && (navbarType == "top")) {
-                    var generatedElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component": "logo", "src": properties["logo"] });
-                    componentElement.appendChild(generatedElement);
-                }
-                else if ((propertyKey == "content") && (navbarType == "bottom")) {
-                    var labelContent = "";
-                    if (typeof properties["content"] !== "undefined") {
-                        labelContent = properties["content"];
-                    }
-                    else {
-                        labelContent = properties["label"];
-                    }
-                    var generatedElement = syiro.utilities.ElementCreator("label", { "content": labelContent });
-                    componentElement.insertBefore(generatedElement, componentElement.firstChild);
-                }
-            }
-            if ((typeof properties["fixed"] == "boolean") && (properties["fixed"])) {
-                componentElement.setAttribute("data-syiro-position", "fixed");
-            }
-            syiro.data.Write(componentId + "->Position", navbarType);
-            syiro.data.Write(componentId + "->HTMLElement", componentElement);
-            return { "id": componentId, "type": "navbar" };
-        }
-        navbar.New = New;
-        navbar.Generate = New;
-        function AddLink(append, component, elementOrProperties) {
-            var componentAddingSucceeded = false;
-            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")) {
-                var typeOfElementOrProperties = syiro.utilities.TypeOfThing(elementOrProperties);
-                var generatedElement;
-                if (typeOfElementOrProperties == "LinkPropertiesObject") {
-                    generatedElement = syiro.utilities.ElementCreator("a", { "href": elementOrProperties["link"], "content": elementOrProperties["title"] });
-                }
-                else if ((typeOfElementOrProperties == "Element") && (elementOrProperties.nodeName == "A")) {
-                    generatedElement = elementOrProperties;
-                }
-                if (typeof generatedElement !== "undefined") {
-                    componentAddingSucceeded = true;
-                    syiro.component.Add(append, component, generatedElement);
-                }
-            }
-            return componentAddingSucceeded;
-        }
-        navbar.AddLink = AddLink;
-        function RemoveLink(component, elementOrProperties) {
-            var componentRemovingSucceed = false;
-            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")) {
-                var navbarElement = syiro.component.Fetch(component);
-                var typeOfElementOrProperties = syiro.utilities.TypeOfThing(elementOrProperties);
-                var potentialLinkElement;
-                if (typeOfElementOrProperties == "LinkPropertiesObject") {
-                    potentialLinkElement = navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"]');
-                }
-                else if ((typeOfElementOrProperties == "Element") && (elementOrProperties.nodeName == "A")) {
-                    potentialLinkElement = elementOrProperties;
-                }
-                if (typeof potentialLinkElement !== "undefined") {
-                    componentRemovingSucceed = true;
-                    syiro.component.Remove(potentialLinkElement);
-                }
-            }
-            return componentRemovingSucceed;
-        }
-        navbar.RemoveLink = RemoveLink;
-        function SetLogo(component, content) {
-            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "top")) {
-                var navbarElement = syiro.component.Fetch(component);
-                var imageElement = navbarElement.querySelector('img[data-syiro-minor-component="logo"]');
-                if (content !== "") {
-                    if (imageElement == null) {
-                        imageElement = document.createElement("img");
-                        navbarElement.insertBefore(imageElement, navbarElement.firstChild);
-                    }
-                    imageElement.setAttribute("src", syiro.utilities.SanitizeHTML(content));
-                    syiro.component.Update(component["id"], navbarElement);
-                }
-                else if ((content == "") && (imageElement !== null)) {
-                    syiro.component.Remove(imageElement);
-                }
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        navbar.SetLogo = SetLogo;
-        function SetLabel(component, content) {
-            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "bottom")) {
-                var navbarElement = syiro.component.Fetch(component);
-                var labelComponent = navbarElement.querySelector("label");
-                if (content !== "") {
-                    if (labelComponent == null) {
-                        labelComponent = document.createElement("label");
-                        navbarElement.insertBefore(labelComponent, navbarElement.firstChild);
-                    }
-                    labelComponent.textContent = syiro.utilities.SanitizeHTML(content);
-                    syiro.component.Update(component["id"], navbarElement);
-                }
-                else if ((content == "") && (labelComponent !== null)) {
-                    syiro.component.Remove(labelComponent);
-                }
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        navbar.SetLabel = SetLabel;
-    })(navbar = syiro.navbar || (syiro.navbar = {}));
 })(syiro || (syiro = {}));
 /*
  This is the namespace for the Syiro Button, Buttongroup, and Toggle Button components.
@@ -1790,6 +1469,415 @@ var syiro;
         }
         buttongroup.Toggle = Toggle;
     })(buttongroup = syiro.buttongroup || (syiro.buttongroup = {}));
+})(syiro || (syiro = {}));
+/*
+ This is the namespace for information and functionality Syiro provides regarding the device using Syiro.
+*/
+/// <reference path="events.ts" />
+/// <reference path="interfaces.ts" />
+var syiro;
+(function (syiro) {
+    var device;
+    (function (device) {
+        device.HasCryptography = true;
+        device.HasGeolocation = true;
+        device.HasIndexedDB = true;
+        device.HasLocalStorage = true;
+        device.IsOnline = true;
+        device.SupportsMutationObserver = false;
+        device.SupportsTouch = false;
+        device.OrientationObject = screen;
+        function Detect() {
+            // #region Do Not Track
+            if (typeof navigator.doNotTrack !== "undefined") {
+                syiro.device.DoNotTrack = Boolean(navigator.doNotTrack);
+            }
+            else {
+                syiro.device.DoNotTrack = true;
+            }
+            syiro.device.HasCryptography = (typeof window.crypto !== "undefined");
+            syiro.device.HasGeolocation = (typeof navigator.geolocation !== "undefined");
+            syiro.device.HasIndexedDB == (typeof window.indexedDB !== "undefined");
+            syiro.device.HasLocalStorage = (typeof window.localStorage !== "undefined");
+            if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")) {
+                if (typeof WebKitMutationObserver !== "undefined") {
+                    MutationObserver = WebKitMutationObserver;
+                }
+                syiro.device.SupportsMutationObserver = true;
+            }
+            if (typeof navigator.onLine !== "undefined") {
+                syiro.device.IsOnline = navigator.onLine;
+                syiro.events.Add("online", document, function () {
+                    syiro.device.IsOnline = true;
+                });
+                syiro.events.Add("offline", document, function () {
+                    syiro.device.IsOnline = false;
+                });
+            }
+            syiro.device.FetchOperatingSystem();
+            var eventsToRemove;
+            if ((navigator.userAgent.indexOf("Firefox/") == -1) && (syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Sailfish") && (syiro.device.OperatingSystem !== "Windows")) {
+                syiro.device.SupportsTouch = true;
+                syiro.events.eventStrings["down"] = ["touchstart"];
+                syiro.events.eventStrings["up"] = ["touchend"];
+                syiro.events.eventStrings["move"] = ["touchmove"];
+            }
+            else {
+                syiro.events.eventStrings["down"] = ["mousedown"];
+                syiro.events.eventStrings["up"] = ["mouseup"];
+                syiro.events.eventStrings["move"] = ["mousemove"];
+            }
+            Object.freeze(syiro.events.eventStrings["down"]);
+            Object.freeze(syiro.events.eventStrings["up"]);
+            Object.freeze(syiro.events.eventStrings["move"]);
+            syiro.device.FetchScreenDetails();
+            syiro.device.Orientation = syiro.device.FetchScreenOrientation();
+            syiro.events.Add("resize", window, syiro.device.FetchScreenDetails);
+            var orientationChangeHandler = function () {
+                var currentOrientation = syiro.device.FetchScreenOrientation();
+                if (currentOrientation !== syiro.device.Orientation) {
+                    syiro.device.Orientation = currentOrientation;
+                    var allPlayers = document.querySelectorAll('div[data-syiro-component$="player"]');
+                    for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++) {
+                        var thisPlayer = allPlayers[allPlayersIndex];
+                        syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer));
+                        if (thisPlayer.getAttribute("data-syiro-component") == "audioplayer") {
+                            var audioPlayerComponent = syiro.component.FetchComponentObject(thisPlayer);
+                            syiro.audioplayer.CenterInformation(audioPlayerComponent);
+                        }
+                    }
+                    if (arguments[0] == "interval") {
+                        var orientationChangeViaIntervalHanders = syiro.data.Read("screen->handlers->orientationchange-viainterval");
+                        for (var orientationChangeIndex in orientationChangeViaIntervalHanders) {
+                            orientationChangeViaIntervalHanders[orientationChangeIndex]();
+                        }
+                    }
+                }
+            };
+            if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")) {
+                syiro.device.OrientationObject = screen.orientation;
+                syiro.events.eventStrings["orientationchange"] = ["change"];
+            }
+            else if (typeof screen.onmsorientationchange !== "undefined") {
+                syiro.device.OrientationObject = screen;
+                syiro.events.eventStrings["orientationchange"] = ["msorientationchange"];
+            }
+            else if (typeof screen.onmozorientationchange !== "undefined") {
+                syiro.device.OrientationObject = screen;
+                syiro.events.eventStrings["orientationchange"] = ["mozorientationchange"];
+            }
+            else {
+                syiro.events.eventStrings["orientationchange"] = ["orientationchange-viainterval"];
+            }
+            if (syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval") {
+                syiro.events.Add(syiro.events.eventStrings["orientationchange"], syiro.device.OrientationObject, orientationChangeHandler);
+            }
+            else {
+                window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000);
+            }
+            Object.freeze(syiro.events.eventStrings["orientationchange"]);
+            Object.freeze(syiro.events.eventStrings);
+        }
+        device.Detect = Detect;
+        function FetchOperatingSystem() {
+            var userAgent = navigator.userAgent;
+            if (userAgent.indexOf("Android") !== -1) {
+                syiro.device.OperatingSystem = "Android";
+            }
+            else if ((userAgent.indexOf("iPhone") !== -1) || (userAgent.indexOf("iPad") !== -1)) {
+                syiro.device.OperatingSystem = "iOS";
+            }
+            else if ((userAgent.indexOf("Linux") !== -1) && (userAgent.indexOf("Android") == -1)) {
+                syiro.device.OperatingSystem = "Linux";
+                if (userAgent.indexOf("Sailfish") !== -1) {
+                    syiro.device.OperatingSystem = "Sailfish";
+                }
+                else if ((userAgent.indexOf("Ubuntu") !== -1) && ((userAgent.indexOf("Mobile") !== -1) || (userAgent.indexOf("Tablet") !== -1))) {
+                    syiro.device.OperatingSystem = "Ubuntu Touch";
+                }
+            }
+            else if (userAgent.indexOf("Macintosh") !== -1) {
+                syiro.device.OperatingSystem = "OS X";
+            }
+            else if (userAgent.indexOf("Windows Phone") !== -1) {
+                syiro.device.OperatingSystem = "Windows Phone";
+            }
+            else if (userAgent.indexOf("Windows NT") !== -1) {
+                syiro.device.OperatingSystem = "Windows";
+            }
+            else {
+                syiro.device.OperatingSystem = "Other";
+            }
+            return syiro.device.OperatingSystem;
+        }
+        device.FetchOperatingSystem = FetchOperatingSystem;
+        function FetchScreenDetails() {
+            syiro.device.height = screen.height;
+            syiro.device.width = screen.width;
+            if (syiro.device.height < 720) {
+                syiro.device.IsSubHD = true;
+                syiro.device.IsHD = false;
+                syiro.device.IsFullHDOrAbove = false;
+            }
+            else {
+                if (((syiro.device.height >= 720) && (syiro.device.height < 1080)) && (syiro.device.width >= 1280)) {
+                    syiro.device.IsSubHD = false;
+                    syiro.device.IsHD = true;
+                    syiro.device.IsFullHDOrAbove = false;
+                }
+                else if ((syiro.device.height >= 1080) && (syiro.device.width >= 1920)) {
+                    syiro.device.IsSubHD = false;
+                    syiro.device.IsHD = true;
+                    syiro.device.IsFullHDOrAbove = true;
+                }
+            }
+        }
+        device.FetchScreenDetails = FetchScreenDetails;
+        function FetchScreenOrientation() {
+            var deviceOrientation = "portrait";
+            if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")) {
+                deviceOrientation = screen.orientation;
+            }
+            else if (typeof screen.onmsorientationchange !== "undefined") {
+                deviceOrientation = screen.msOrientation;
+            }
+            else if (typeof screen.onmozorientationchange !== "undefined") {
+                deviceOrientation = screen.mozOrientation;
+            }
+            if (deviceOrientation == "landscape-primary") {
+                deviceOrientation = "landscape";
+            }
+            else if (screen.height < screen.width) {
+                deviceOrientation = "landscape";
+            }
+            return deviceOrientation;
+        }
+        device.FetchScreenOrientation = FetchScreenOrientation;
+    })(device = syiro.device || (syiro.device = {}));
+})(syiro || (syiro = {}));
+/*
+ This is the namespace for Syiro Grid component and it's sub-component, Grid Item
+ */
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
+/// <reference path="utilities.ts" />
+var syiro;
+(function (syiro) {
+    var grid;
+    (function (grid) {
+        function New(properties) {
+            var component = { "id": syiro.component.IdGen("grid"), "type": "grid" };
+            var renderItems;
+            if (syiro.utilities.TypeOfThing(properties["columns"], "number")) {
+                renderItems = properties["columns"].toString();
+            }
+            else {
+                renderItems = "dynamic";
+            }
+            var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": component["id"], "data-syiro-component": "grid", "data-syiro-render-columns": renderItems });
+            if (syiro.utilities.TypeOfThing(properties["items"], "Array")) {
+                for (var _i = 0, _a = properties["items"]; _i < _a.length; _i++) {
+                    var gridItemProperties = _a[_i];
+                    var gridItem = syiro.griditem.New(gridItemProperties);
+                    var gridItemElement = syiro.component.Fetch(gridItem);
+                    componentElement.appendChild(gridItemElement);
+                }
+            }
+            syiro.data.Write(component["id"] + "->HTMLElement", componentElement);
+            return component;
+        }
+        grid.New = New;
+        function Scale(component) {
+            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "grid")) {
+                var componentElement = syiro.component.Fetch(component);
+                var componentDimensions = syiro.component.FetchDimensionsAndPosition(componentElement);
+                var componentWidth = componentDimensions["width"];
+                var gridItemWidth;
+                var renderColumns = componentElement.getAttribute("data-syiro-render-columns");
+                var firstGridItem = componentElement.querySelector('div[data-syiro-component="grid-item"]:first-of-type');
+                var hasInnerGridItems = (firstGridItem !== null);
+                if (hasInnerGridItems) {
+                    if (renderColumns !== "dynamic") {
+                        renderColumns = Number(renderColumns);
+                        var innerGridItems = componentElement.querySelectorAll('div[data-syiro-component="grid-item"]');
+                        var gridItemPaddingCalculation = (componentWidth * 0.03);
+                        gridItemWidth = ((componentWidth / renderColumns) - gridItemPaddingCalculation);
+                        for (var innerGridItemIndex = 0; innerGridItemIndex < innerGridItems.length; innerGridItemIndex++) {
+                            var gridItem = innerGridItems[innerGridItemIndex];
+                            syiro.component.CSS(gridItem, "width", gridItemWidth.toString() + "px");
+                        }
+                    }
+                }
+            }
+        }
+        grid.Scale = Scale;
+    })(grid = syiro.grid || (syiro.grid = {}));
+})(syiro || (syiro = {}));
+var syiro;
+(function (syiro) {
+    var griditem;
+    (function (griditem) {
+        function New(properties) {
+            if ((syiro.utilities.TypeOfThing(properties["html"], "Element")) || (syiro.utilities.TypeOfThing(properties["html"], "string"))) {
+                var component = { "id": syiro.component.IdGen("grid-item"), "type": "grid-item" };
+                var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": component["id"], "data-syiro-component": "grid-item" });
+                properties["html"] = syiro.utilities.SanitizeHTML(properties["html"]);
+                if (syiro.utilities.TypeOfThing(properties["html"], "Element")) {
+                    componentElement.appendChild(properties["html"]);
+                }
+                else {
+                    componentElement.innerHTML = properties["html"];
+                }
+                syiro.data.Write(component["id"] + "->HTMLElement", componentElement);
+                return component;
+            }
+        }
+        griditem.New = New;
+    })(griditem = syiro.griditem || (syiro.griditem = {}));
+})(syiro || (syiro = {}));
+/*
+    This is the namespace for Syiro Navbar component (previously referred to as Header and Footer Components).
+*/
+/// <reference path="component.ts" />
+/// <reference path="generator.ts" />
+/// <reference path="utilities.ts" />
+var syiro;
+(function (syiro) {
+    var navbar;
+    (function (navbar) {
+        function New(properties) {
+            var navbarType;
+            if ((typeof properties["position"] !== "string") || ((properties["position"] !== "top") && (properties["position"] !== "bottom"))) {
+                navbarType = "top";
+            }
+            else {
+                navbarType = properties["position"];
+            }
+            var componentId = syiro.component.IdGen("navbar");
+            var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "navbar", "data-syiro-component-id": componentId, "role": "navigation", "data-syiro-component-type": navbarType });
+            for (var propertyKey in properties) {
+                if (propertyKey == "items") {
+                    for (var _i = 0, _a = properties["items"]; _i < _a.length; _i++) {
+                        var individualItem = _a[_i];
+                        var typeOfItem = syiro.utilities.TypeOfThing(individualItem);
+                        if (typeOfItem == "LinkPropertiesObject") {
+                            var generatedElement = syiro.utilities.ElementCreator("a", { "href": individualItem["link"], "content": individualItem["title"] });
+                            componentElement.appendChild(generatedElement);
+                        }
+                        else if ((typeOfItem == "ComponentObject") && (navbarType == "top")) {
+                            componentElement.appendChild(syiro.component.Fetch(individualItem));
+                        }
+                    }
+                }
+                else if ((propertyKey == "logo") && (navbarType == "top")) {
+                    var generatedElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component": "logo", "src": properties["logo"] });
+                    componentElement.appendChild(generatedElement);
+                }
+                else if ((propertyKey == "content") && (navbarType == "bottom")) {
+                    var labelContent = "";
+                    if (typeof properties["content"] !== "undefined") {
+                        labelContent = properties["content"];
+                    }
+                    else {
+                        labelContent = properties["label"];
+                    }
+                    var generatedElement = syiro.utilities.ElementCreator("label", { "content": labelContent });
+                    componentElement.insertBefore(generatedElement, componentElement.firstChild);
+                }
+            }
+            if ((typeof properties["fixed"] == "boolean") && (properties["fixed"])) {
+                componentElement.setAttribute("data-syiro-position", "fixed");
+            }
+            syiro.data.Write(componentId + "->Position", navbarType);
+            syiro.data.Write(componentId + "->HTMLElement", componentElement);
+            return { "id": componentId, "type": "navbar" };
+        }
+        navbar.New = New;
+        navbar.Generate = New;
+        function AddLink(append, component, elementOrProperties) {
+            var componentAddingSucceeded = false;
+            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")) {
+                var typeOfElementOrProperties = syiro.utilities.TypeOfThing(elementOrProperties);
+                var generatedElement;
+                if (typeOfElementOrProperties == "LinkPropertiesObject") {
+                    generatedElement = syiro.utilities.ElementCreator("a", { "href": elementOrProperties["link"], "content": elementOrProperties["title"] });
+                }
+                else if ((typeOfElementOrProperties == "Element") && (elementOrProperties.nodeName == "A")) {
+                    generatedElement = elementOrProperties;
+                }
+                if (typeof generatedElement !== "undefined") {
+                    componentAddingSucceeded = true;
+                    syiro.component.Add(append, component, generatedElement);
+                }
+            }
+            return componentAddingSucceeded;
+        }
+        navbar.AddLink = AddLink;
+        function RemoveLink(component, elementOrProperties) {
+            var componentRemovingSucceed = false;
+            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")) {
+                var navbarElement = syiro.component.Fetch(component);
+                var typeOfElementOrProperties = syiro.utilities.TypeOfThing(elementOrProperties);
+                var potentialLinkElement;
+                if (typeOfElementOrProperties == "LinkPropertiesObject") {
+                    potentialLinkElement = navbarElement.querySelector('a[href="' + elementOrProperties["link"] + '"]');
+                }
+                else if ((typeOfElementOrProperties == "Element") && (elementOrProperties.nodeName == "A")) {
+                    potentialLinkElement = elementOrProperties;
+                }
+                if (typeof potentialLinkElement !== "undefined") {
+                    componentRemovingSucceed = true;
+                    syiro.component.Remove(potentialLinkElement);
+                }
+            }
+            return componentRemovingSucceed;
+        }
+        navbar.RemoveLink = RemoveLink;
+        function SetLogo(component, content) {
+            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "top")) {
+                var navbarElement = syiro.component.Fetch(component);
+                var imageElement = navbarElement.querySelector('img[data-syiro-minor-component="logo"]');
+                if (content !== "") {
+                    if (imageElement == null) {
+                        imageElement = document.createElement("img");
+                        navbarElement.insertBefore(imageElement, navbarElement.firstChild);
+                    }
+                    imageElement.setAttribute("src", syiro.utilities.SanitizeHTML(content));
+                    syiro.component.Update(component["id"], navbarElement);
+                }
+                else if ((content == "") && (imageElement !== null)) {
+                    syiro.component.Remove(imageElement);
+                }
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        navbar.SetLogo = SetLogo;
+        function SetLabel(component, content) {
+            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "bottom")) {
+                var navbarElement = syiro.component.Fetch(component);
+                var labelComponent = navbarElement.querySelector("label");
+                if (content !== "") {
+                    if (labelComponent == null) {
+                        labelComponent = document.createElement("label");
+                        navbarElement.insertBefore(labelComponent, navbarElement.firstChild);
+                    }
+                    labelComponent.textContent = syiro.utilities.SanitizeHTML(content);
+                    syiro.component.Update(component["id"], navbarElement);
+                }
+                else if ((content == "") && (labelComponent !== null)) {
+                    syiro.component.Remove(labelComponent);
+                }
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        navbar.SetLabel = SetLabel;
+    })(navbar = syiro.navbar || (syiro.navbar = {}));
 })(syiro || (syiro = {}));
 /*
  This is the namespace for Syiro List component and it's sub-component, List Item
@@ -2063,59 +2151,6 @@ var syiro;
         }
         listitem.SetLink = SetLink;
     })(listitem = syiro.listitem || (syiro.listitem = {}));
-})(syiro || (syiro = {}));
-/*
- This is the namespace for Syiro Dropdown component.
- */
-/// <reference path="button.ts" />
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="list.ts" />
-var syiro;
-(function (syiro) {
-    var dropdown;
-    (function (dropdown) {
-        dropdown.FetchLinkedListComponentObject = syiro.component.FetchLinkedListComponentObject;
-        function Generate(properties) {
-            if ((typeof properties["items"] !== "undefined") || (typeof properties["list"] !== "undefined")) {
-                properties["type"] = "dropdown";
-                if (properties["label"] !== undefined) {
-                    properties["content"] = properties["label"];
-                    delete properties["label"];
-                }
-                return syiro.button.New(properties);
-            }
-            else {
-                return false;
-            }
-        }
-        dropdown.Generate = Generate;
-        dropdown.Toggle = syiro.button.Toggle;
-        function SetText(component, content) {
-            if (content == false) {
-                content = "";
-            }
-            return syiro.button.SetText(component, content);
-        }
-        dropdown.SetText = SetText;
-        dropdown.SetIcon = syiro.button.SetIcon;
-        function SetImage(component, content) {
-            if (content == false) {
-                content = "";
-            }
-            return syiro.button.SetImage(component, content);
-        }
-        dropdown.SetImage = SetImage;
-        function AddItem(component, listItemComponent) {
-            var listComponentObject = syiro.component.FetchLinkedListComponentObject(component);
-            syiro.component.Add("append", listComponentObject, listItemComponent);
-        }
-        dropdown.AddItem = AddItem;
-        function RemoveItem(component, listItemComponent) {
-            syiro.component.Remove(listItemComponent);
-        }
-        dropdown.RemoveItem = RemoveItem;
-    })(dropdown = syiro.dropdown || (syiro.dropdown = {}));
 })(syiro || (syiro = {}));
 /*
     This is a file containing the namespace for the Syiro Audio Player and Video Player, as well as shared player functionality.
@@ -3206,14 +3241,14 @@ var syiro;
 */
 /// <reference path="init.ts" />
 /// <reference path="animation.ts" />
+/// <reference path="button.ts" />
 /// <reference path="component.ts" />
 /// <reference path="data.ts" />
 /// <reference path="device.ts" />
 /// <reference path="events.ts" />
 /// <reference path="generator.ts" />
+/// <reference path="grid.ts" />
 /// <reference path="navbar.ts" />
-/// <reference path="button.ts" />
-/// <reference path="dropdown.ts" />
 /// <reference path="list.ts" />
 /// <reference path="players.ts" />
 /// <reference path="render.ts" />
@@ -3223,17 +3258,13 @@ var syiro;
 /// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
-    syiro.backgroundColor;
-    syiro.primaryColor;
-    syiro.secondaryColor;
-    syiro.legacyDimensionsDetection;
     function Init() {
         syiro.device.Detect();
         syiro.events.Add("scroll", document, function () {
             var dropdownButtons = document.querySelectorAll('div[data-syiro-component="button"][data-syiro-component-type="dropdown"][active]');
             for (var dropdownButtonIndex = 0; dropdownButtonIndex < dropdownButtons.length; dropdownButtonIndex++) {
                 var thisDropdownButtonObject = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]);
-                syiro.dropdown.Toggle(thisDropdownButtonObject);
+                syiro.button.Toggle(thisDropdownButtonObject);
             }
         });
         syiro.events.Add(syiro.events.eventStrings["fullscreenchange"], document, function () {

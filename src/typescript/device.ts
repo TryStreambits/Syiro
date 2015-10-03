@@ -143,19 +143,16 @@ namespace syiro.device {
             }
         }
 
-		var orientationListener : any = screen;
-
         if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")){ // If Screen Orientation API is properly supported
-			orientationListener = screen.orientation; // Set orientationListener as the screen.orientation Object
-            syiro.device.OrientationObject = screen.orientation.type; // Point syiro.device.OrientationObject to screen.orientation type
+            syiro.device.OrientationObject = screen.orientation; // Point syiro.device.OrientationObject to screen.orientation type
             syiro.events.eventStrings["orientationchange"] = ["change"]; // Set our eventStrings orientationchange to only change
         }
         else if (typeof screen.onmsorientationchange !== "undefined"){ // If this is the Internet Explorer vendor-prefixed orientation change
-			syiro.device.OrientationObject = screen.msOrientation; // Point syiro.device.OrientationObject to screen.msOrientation rather than screen
+			syiro.device.OrientationObject = screen; // Point syiro.device.OrientationObject to screen.msOrientation rather than screen
             syiro.events.eventStrings["orientationchange"] = ["msorientationchange"]; // Set our eventStrings orientationchange to only the IE event string
         }
         else if (typeof screen.onmozorientationchange !== "undefined"){ // If this is the Gecko vendor-prefixing (Mozilla) orientation change
-			syiro.device.OrientationObject = screen.mozOrientation; // Point syiro.device.OrientationObject to screen.mozOrientation rather than screen
+			syiro.device.OrientationObject = screen; // Point syiro.device.OrientationObject to screen.mozOrientation rather than screen
             syiro.events.eventStrings["orientationchange"] = ["mozorientationchange"]; // Set our eventStrings orientationchange to only the Moz event string
         }
         else{ // If orientationchange simply isn't supported
@@ -163,7 +160,7 @@ namespace syiro.device {
         }
 
         if (syiro.events.eventStrings["orientationchange"][0] !== "orientationchange-viainterval"){ // If orientation change is supported on the device
-            syiro.events.Add(syiro.events.eventStrings["orientationchange"], orientationListener, orientationChangeHandler); // Add an orientation change event for the screen with our orientationChangeHandler
+            syiro.events.Add(syiro.events.eventStrings["orientationchange"], syiro.device.OrientationObject, orientationChangeHandler); // Add an orientation change event for the screen with our orientationChangeHandler
         }
         else{ // If the device does not support orientation change
             window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000); // Set a timer for every two seconds to check for change in device orientation. We are using this due to the lack of full orientationchange event support in major browsers.
@@ -249,7 +246,17 @@ namespace syiro.device {
     export function FetchScreenOrientation() : string {
         var deviceOrientation : string = "portrait"; // Define deviceOrientation as the orientation of the device, defaulting to portrait
 
-        if (syiro.device.OrientationObject == "landscape-primary"){
+        if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")){ // If Screen Orientation API is properly supported
+            deviceOrientation = screen.orientation; // Set deviceOrientation to screen.orientation type
+        }
+        else if (typeof screen.onmsorientationchange !== "undefined"){ // If this is the Internet Explorer vendor-prefixed orientation change
+			deviceOrientation = screen.msOrientation; // Set deviceOrientation to screen.msOrientation
+        }
+        else if (typeof screen.onmozorientationchange !== "undefined"){ // If this is the Gecko vendor-prefixing (Mozilla) orientation change
+			deviceOrientation = screen.mozOrientation; // Set deviceOrientation to screen.mozOrientation
+        }
+
+        if (deviceOrientation == "landscape-primary"){
             deviceOrientation = "landscape"; // We are in landscape mode
         }
         else if (screen.height < screen.width){ // If none of the Screen Orientation API is supported AND the screen width is larger than the height

@@ -81,7 +81,15 @@ namespace syiro.navbar {
 
     // #region Function to add a link to the Navbar based on properties of that link
 
-    export function AddLink(append : boolean, component : ComponentObject, elementOrProperties : any) : boolean { // Returns boolean if it was successful or not
+    export function AddLink(append : any, component : ComponentObject, elementOrProperties : any) : boolean { // Returns boolean if it was successful or not
+		if (typeof append == "boolean"){ // If append was passed as a boolean
+			if (append){ // If we are appending
+				append = "append"; // Set as append
+			} else { // If we are not appending
+				append = "prepend"; // Set as prepend
+			}
+		}
+		
         var componentAddingSucceeded : boolean = false; // Variable to store the determination of success (default to false)
 
         if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")){ // If this is a Navbar Component and elementOrProperties is defined

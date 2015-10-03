@@ -1,5 +1,6 @@
 declare class Perfily {
     autoclearExpecting: boolean;
+    autorun: boolean;
     duration: number;
     expecting: any;
     iterations: number;

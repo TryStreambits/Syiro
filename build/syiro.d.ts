@@ -146,7 +146,7 @@ declare module syiro.griditem {
 declare namespace syiro.navbar {
     function New(properties: Object): ComponentObject;
     var Generate: typeof New;
-    function AddLink(append: boolean, component: ComponentObject, elementOrProperties: any): boolean;
+    function AddLink(append: any, component: ComponentObject, elementOrProperties: any): boolean;
     function RemoveLink(component: ComponentObject, elementOrProperties: any): boolean;
     function SetLogo(component: ComponentObject, content: string): boolean;
     function SetLabel(component: ComponentObject, content: string): boolean;

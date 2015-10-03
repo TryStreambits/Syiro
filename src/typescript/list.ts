@@ -306,12 +306,12 @@ namespace syiro.listitem {
 					}
 
 					listItemLabelElement.textContent = syiro.utilities.SanitizeHTML(content); // Set the textContent to a sanitized form of the content
-					syiro.component.Update(component["id"], listItemElement); // Update the List Item Element if necessary in syiro.data
 				}
 				else if ((content == "") && (listItemLabelElement !== null)){ // If content is empty, meaning delete the label, and the label exists
 					syiro.component.Remove(listItemLabelElement); // Remove the label
 				}
 
+				syiro.component.Update(component["id"], listItemElement); // Update the List Item Element if necessary in syiro.data
 				setLabelSucceeded = true; // Set setLabelSucceeded to true
 			}
 		}

@@ -1795,6 +1795,14 @@ var syiro;
         navbar.New = New;
         navbar.Generate = New;
         function AddLink(append, component, elementOrProperties) {
+            if (typeof append == "boolean") {
+                if (append) {
+                    append = "append";
+                }
+                else {
+                    append = "prepend";
+                }
+            }
             var componentAddingSucceeded = false;
             if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")) {
                 var typeOfElementOrProperties = syiro.utilities.TypeOfThing(elementOrProperties);
@@ -2107,11 +2115,11 @@ var syiro;
                             }
                         }
                         listItemLabelElement.textContent = syiro.utilities.SanitizeHTML(content);
-                        syiro.component.Update(component["id"], listItemElement);
                     }
                     else if ((content == "") && (listItemLabelElement !== null)) {
                         syiro.component.Remove(listItemLabelElement);
                     }
+                    syiro.component.Update(component["id"], listItemElement);
                     setLabelSucceeded = true;
                 }
             }

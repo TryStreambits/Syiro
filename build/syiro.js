@@ -3294,14 +3294,24 @@ var syiro;
             documentHeadSection = document.createElement("head");
             document.querySelector("html").insertBefore(documentHeadSection, document.body);
         }
-        if (documentHeadSection.querySelector('meta[http-equiv="X-UA-Compatible"]') == null) {
-            var compatMetaTag = syiro.utilities.ElementCreator("meta", { "http-equiv": "X-UA-Compatible", "content-attr": "IE=edge" });
-            documentHeadSection.appendChild(compatMetaTag);
+        var metaTagsToCheck = {
+            "ie-compat": { "http-equiv": "X-UA-Compatible", "content-attr": "IE=edge" },
+            "utf8": { "charset": "utf-8" },
+            "viewport": { "name": "viewport", "content-attr": "width=device-width, maximum-scale=1.0, initial-scale=1,user-scalable=no" }
+        };
+        for (var metaAttributeKey in metaTagsToCheck) {
+            var metaAttributeObject = metaTagsToCheck[metaAttributeKey];
+            var firstKey = Object.keys(metaAttributeObject)[0];
+            if (documentHeadSection.querySelector('meta[' + firstKey + '="' + metaAttributeObject[firstKey] + '"]') == null) {
+                var metaElement = syiro.utilities.ElementCreator("meta", metaAttributeObject);
+                syiro.component.Add("append", documentHeadSection, metaElement);
+            }
         }
-        if (documentHeadSection.querySelector('meta[name="viewport"]') == null) {
-            var viewportMetaTag = syiro.utilities.ElementCreator("meta", { "name": "viewport", "content-attr": "width=device-width, maximum-scale=1.0, initial-scale=1,user-scalable=no" });
-            documentHeadSection.appendChild(viewportMetaTag);
+        if (document.body.querySelector('div[data-syiro-component="page"]') == null) {
+            var pageElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "page", "role": "main" });
+            syiro.component.Add("prepend", document.body, pageElement);
         }
+        syiro.page = document.body.querySelector('div[data-syiro-component="page"]');
         var syiroInternalColorContainer = syiro.utilities.ElementCreator("div", { "data-syiro-component": "internalColorContainer" });
         document.body.appendChild(syiroInternalColorContainer);
         syiro.backgroundColor = window.getComputedStyle(syiroInternalColorContainer).backgroundColor;

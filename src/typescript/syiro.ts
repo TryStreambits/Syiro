@@ -21,6 +21,7 @@
 
 namespace syiro {
 
+	export var page : Element; // Define page as the Syiro page component
 	export var backgroundColor : string; // Define backgroundColor as the rgba value we get from the CSS of the Syiro Background Color
 	export var primaryColor : string; // Define primaryColor as the rgba value we get from the CSS of the Syiro Primary Color
 	export var secondaryColor : string; // Define secondaryColor as the rgba value we get from the CSS of the Syiro Secondary Color
@@ -78,7 +79,7 @@ namespace syiro {
 
 		// #endregion
 
-		// #region Head IE Compatibility && Viewport Scaling
+		// #region Page Heading
 
 		var documentHeadSection : Element = document.querySelector("head"); // Get the head tag from the document
 
@@ -87,15 +88,32 @@ namespace syiro {
 			document.querySelector("html").insertBefore(documentHeadSection, document.body); // Insert the head tag before the body
 		}
 
-		if (documentHeadSection.querySelector('meta[http-equiv="X-UA-Compatible"]') == null){ // If the IE compat meta doesn't exist
-			var compatMetaTag : HTMLElement = syiro.utilities.ElementCreator("meta", { "http-equiv" : "X-UA-Compatible", "content-attr" : "IE=edge"} ); // Create a meta tag, setting X-UA-Compatible to be IE edge
-			documentHeadSection.appendChild(compatMetaTag); // Append the meta tag
+		var metaTagsToCheck : Object = { // Create an Object we'll recurse over that contains the meta tags + attributes we want to check
+			"ie-compat" : { "http-equiv" : "X-UA-Compatible", "content-attr" : "IE=edge" }, // IE Compat Enforcement
+			"utf8" : { "charset" : "utf-8" }, // Enforce UTF-8 Charset if page doesn't have charset defined already
+			"viewport" : { "name" : "viewport", "content-attr" : "width=device-width, maximum-scale=1.0, initial-scale=1,user-scalable=no" } // VIewporting: Enable scaling and disable zooming
+		};
+
+		for (var metaAttributeKey in metaTagsToCheck){ // For headAttributeObject in headAttributesToCheck
+			var metaAttributeObject = metaTagsToCheck[metaAttributeKey]; // Get the Object related to the key
+			var firstKey : string = Object.keys(metaAttributeObject)[0]; // Get the first key in headAttributeObject
+
+			if (documentHeadSection.querySelector('meta[' + firstKey + '="' + metaAttributeObject[firstKey] + '"]') == null){ // If this particular meta tag (constructed using the first key/val as the selector)
+				var metaElement : HTMLElement = syiro.utilities.ElementCreator("meta", metaAttributeObject); // Create this meta  Element
+				syiro.component.Add("append", documentHeadSection, metaElement); // Append this meta Element
+			}
 		}
 
-		if (documentHeadSection.querySelector('meta[name="viewport"]') == null){ // If the viewportMetaTag does NOT exist
-			var viewportMetaTag : HTMLElement = syiro.utilities.ElementCreator("meta", { "name" : "viewport", "content-attr" : "width=device-width, maximum-scale=1.0, initial-scale=1,user-scalable=no"} ); // Create a meta tag, setting attributes to enable scaling and disable zooming
-			documentHeadSection.appendChild(viewportMetaTag); // Append the meta tag
+		// #endregion
+
+		// #region Main Page Creation
+
+		if (document.body.querySelector('div[data-syiro-component="page"]') == null){ // If the page Component doesn't exist
+			var pageElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "page", "role" : "main" }); // Create the page Element
+			syiro.component.Add("prepend", document.body, pageElement); // Prepend the pageElement
 		}
+
+		syiro.page = document.body.querySelector('div[data-syiro-component="page"]'); // Set syiro.page to the page Component
 
 		// #endregion
 

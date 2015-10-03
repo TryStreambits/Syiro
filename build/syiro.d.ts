@@ -222,6 +222,7 @@ declare namespace syiro.toast {
     function Toggle(component: ComponentObject, action?: string): void;
 }
 declare namespace syiro {
+    var page: Element;
     var backgroundColor: string;
     var primaryColor: string;
     var secondaryColor: string;

@@ -271,7 +271,6 @@ namespace syiro.buttongroup {
 
 					if (buttonElement.getAttribute("data-syiro-component-type") == "basic"){ // Ensure this is a Basic Button
 						componentElement.appendChild(buttonElement); // Append the buttonElement
-						syiro.data.Delete(buttonItem["id"] + "->HTMLElement"); // Delete the Button HTMLElement from storage to eliminate unnecessary calls with the MutationObserver
 					}
 				}
 
@@ -339,11 +338,11 @@ namespace syiro.buttongroup {
 
 	// #region Buttongroup Active Button Toggling
 
-	export function Toggle(buttonComponent ?: ComponentObject){
-		var buttonComponent : ComponentObject = arguments[0]; // Define buttonComponent as the first argument passed
+	export function Toggle(buttonComponent : ComponentObject){
 		var buttonElement : Element = syiro.component.Fetch(buttonComponent); // Fetch the buttonElement
 
 		var parentButtongroup = buttonElement.parentElement; // Define parentButtongroup as the parent of this buttonElement
+		var parentButtongroupComponentObject : ComponentObject = syiro.component.FetchComponentObject(parentButtongroup); // Fetch the ComponentObject of the parent Buttongroup
 		var potentialActiveButton = parentButtongroup.querySelector('div[data-syiro-component="button"][active]'); // Get any potential button that is active in the Buttongroup already
 
 		if (potentialActiveButton !== null){ // If there is an already active Buttongroup
@@ -351,6 +350,8 @@ namespace syiro.buttongroup {
 		}
 
 		buttonElement.setAttribute("active", ""); // Set the buttonElement that was clicked to active
+
+		syiro.component.Update(parentButtongroupComponentObject["id"], parentButtongroup); // Update the parentButtongroup if necessary
 	}
 
 	// #endregion

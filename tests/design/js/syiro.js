@@ -768,7 +768,7 @@ var syiro;
         function Fetch(component) {
             var componentElement = document.querySelector('div[data-syiro-component-id="' + component["id"] + '"]');
             if (componentElement == null) {
-                componentElement = syiro.data.Read(component["id"] + "->" + "HTMLElement");
+                componentElement = syiro.data.Read(component["id"] + "->HTMLElement");
             }
             return componentElement;
         }
@@ -1406,7 +1406,6 @@ var syiro;
                         var buttonElement = syiro.component.Fetch(buttonItem);
                         if (buttonElement.getAttribute("data-syiro-component-type") == "basic") {
                             componentElement.appendChild(buttonElement);
-                            syiro.data.Delete(buttonItem["id"] + "->HTMLElement");
                         }
                     }
                     componentElement = syiro.buttongroup.CalculateInnerButtonWidth(componentElement);
@@ -1458,14 +1457,15 @@ var syiro;
         }
         buttongroup.CalculateInnerButtonWidth = CalculateInnerButtonWidth;
         function Toggle(buttonComponent) {
-            var buttonComponent = arguments[0];
             var buttonElement = syiro.component.Fetch(buttonComponent);
             var parentButtongroup = buttonElement.parentElement;
+            var parentButtongroupComponentObject = syiro.component.FetchComponentObject(parentButtongroup);
             var potentialActiveButton = parentButtongroup.querySelector('div[data-syiro-component="button"][active]');
             if (potentialActiveButton !== null) {
                 potentialActiveButton.removeAttribute("active");
             }
             buttonElement.setAttribute("active", "");
+            syiro.component.Update(parentButtongroupComponentObject["id"], parentButtongroup);
         }
         buttongroup.Toggle = Toggle;
     })(buttongroup = syiro.buttongroup || (syiro.buttongroup = {}));

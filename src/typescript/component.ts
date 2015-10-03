@@ -99,7 +99,7 @@ namespace syiro.component {
 		var componentElement : Element = document.querySelector('div[data-syiro-component-id="' + component["id"] + '"]'); // The (HTML)Element of the Syiro component we'll be returning (default to fetching Element via querySelector)
 
 		if (componentElement == null){ // If an HTMLElement is defined, meaning this is a new component that has not been put in the DOM yet
-			componentElement = syiro.data.Read(component["id"] + "->" + "HTMLElement"); // Get the HTMLElement via syiro.data APIs
+			componentElement = syiro.data.Read(component["id"] + "->HTMLElement"); // Get the HTMLElement via syiro.data APIs
 		}
 
 		return componentElement;

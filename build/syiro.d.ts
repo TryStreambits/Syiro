@@ -112,7 +112,7 @@ declare namespace syiro.buttongroup {
     function New(properties: Object): ComponentObject;
     var Generate: typeof New;
     function CalculateInnerButtonWidth(component: any): HTMLElement;
-    function Toggle(buttonComponent?: ComponentObject): void;
+    function Toggle(buttonComponent: ComponentObject): void;
 }
 declare namespace syiro.device {
     var DoNotTrack: boolean;

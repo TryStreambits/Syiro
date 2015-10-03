@@ -78,13 +78,13 @@ function generateNavbarAndSidepane(){
     var sidepaneListObject = syiro.list.New(  // Generate a List
 		{
 			"header" : "Syiro",
-			"items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" }, { "link" : { "link" : "http://syiro.com", "title" : "Syiro Website" } } ]
+			"items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" }, { "link" : { "link" : "http://syiro.com", "title" : "Syiro Website" } } ]
 		}
 	)
     var sidepaneComponentObject = syiro.sidepane.New({ "searchbox" : searchboxComponent, "items" : [ sidepaneListObject ]}); // Generate a List
 
-    document.body.insertBefore(syiro.Fetch(sidepaneComponentObject), globalPageElement); // Prepend in body
-    globalPageElement.insertBefore(syiro.Fetch(navbarComponentObject), globalPageElement.firstChild); // Append the fetched Navbar Element to the main Element
+    document.body.insertBefore(syiro.Fetch(sidepaneComponentObject), syiro.page); // Prepend in body
+    syiro.page.insertBefore(syiro.Fetch(navbarComponentObject), syiro.page.firstChild); // Append the fetched Navbar Element to the main Element
 
 	syiro.events.Add(syiro.events.eventStrings["up"], toggleNormalToastListItemObject, syiro.toast.Toggle.bind(this, normalToastComponentObject)); // Listen to up event for the Normal Toast List Item Object that'll toggle the Normal Toast Component
 	syiro.events.Add(syiro.events.eventStrings["up"], toggleDialogToastListItemObject, syiro.toast.Toggle.bind(this, dialogToastComponentObject)); // Listen to up event for the Dialog Toast List Item Object that'll toggle the Dialog Toast Component

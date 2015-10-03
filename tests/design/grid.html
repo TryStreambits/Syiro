@@ -9,8 +9,6 @@
 	<body>
 		<script>
 			syiro.Init(); // Initialize Syiro
-			var globalPageElement = document.querySelector('div[data-syiro-component="page"]');
-
 			var gridItems = [];
 
 			for (var gridItemInsert = 0; gridItemInsert < 10; gridItemInsert++){ // Insert 10 Grid Item Properties into gridItems array
@@ -18,7 +16,7 @@
 			}
 
 			var gridComponent = syiro.grid.New({ "columns" : 4, "items" : gridItems }); // Generate a new Grid
-			syiro.component.Add("append", globalPageElement, syiro.component.Fetch(gridComponent)); // Insert into DOM
+			syiro.component.Add("append", syiro.page, syiro.component.Fetch(gridComponent)); // Insert into DOM
 		</script>
 	</body>
 </html>

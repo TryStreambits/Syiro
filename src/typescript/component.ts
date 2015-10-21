@@ -90,10 +90,10 @@ namespace syiro.component {
 	// #region Fetch - Function for fetching the HTMLElement of a Component object
 
 	export function Fetch(component : ComponentObject) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
-		var componentElement : Element = document.querySelector('div[data-syiro-component-id="' + component["id"] + '"]'); // The (HTML)Element of the Syiro component we'll be returning (default to fetching Element via querySelector)
+		var componentElement : Element = document.querySelector('div[data-syiro-component-id="' + component.id + '"]'); // The (HTML)Element of the Syiro component we'll be returning (default to fetching Element via querySelector)
 
 		if (componentElement == null){ // If an HTMLElement is defined, meaning this is a new component that has not been put in the DOM yet
-			componentElement = syiro.data.Read(component["id"] + "->HTMLElement"); // Get the HTMLElement via syiro.data APIs
+			componentElement = syiro.data.Read(component.id + "->HTMLElement"); // Get the HTMLElement via syiro.data APIs
 		}
 
 		return componentElement;
@@ -127,38 +127,38 @@ namespace syiro.component {
 
 			if (possibleExistingId !== null){ // If this variable has already been defined
 				previouslyDefined = true; // Set previouslyDefined as true
-				component["id"] = possibleExistingId;
-				component["type"] = variableProvided.getAttribute("data-syiro-component"); // Get the Component type
+				component.id = possibleExistingId;
+				component.type = variableProvided.getAttribute("data-syiro-component"); // Get the Component type
 			} else { // If an id has not been previously defined
 				if ((arguments.length == 2) && (typeof arguments[0] == "string")){ // If the first argument is a string and the args length is two
-					component["id"] = syiro.component.IdGen(arguments[0]); // Define componentId as Id generated based on the type provided
-					component["type"] = arguments[0]; // Define the type of the component as the type passed as the first arg
+					component.id = syiro.component.IdGen(arguments[0]); // Define componentId as Id generated based on the type provided
+					component.type = arguments[0]; // Define the type of the component as the type passed as the first arg
 				} else if (arguments.length == 1){
 					var idBase : string = ""; // Define idBase as the base that the Component ID will be based on
 					var potentialExistingType : string = variableProvided.getAttribute("data-syiro-component"); // Get any existing type if it has one
 
 					if (potentialExistingType !== null){ // If a type is defined but not an Id (like the page)
 						idBase = potentialExistingType; // Set idBase to potentialExistingType
-						component["type"] = potentialExistingType; // Set the type to the same type
+						component.type = potentialExistingType; // Set the type to the same type
 					} else { // If no type is defined
 						idBase = variableProvided.tagName.toLowerCase(); // Set idBase to the tagName lowercased
-						component["type"] = idBase; // Set type to whatever the tag is
+						component.type = idBase; // Set type to whatever the tag is
 					}
 
-					component["id"] = syiro.component.IdGen(idBase); // Generate the Id
+					component.id = syiro.component.IdGen(idBase); // Generate the Id
 				}
 
-				variableProvided.setAttribute("data-syiro-component-id", component["id"] ); // Set this component's Id
-				variableProvided.setAttribute("data-syiro-component", component["type"]); // Set the component's type
+				variableProvided.setAttribute("data-syiro-component-id", component.id ); // Set this component's Id
+				variableProvided.setAttribute("data-syiro-component", component.type); // Set the component's type
 
-				if ((component["type"] == "button") && (variableProvided.getAttribute("data-syiro-component-type") == "dropdown") && (previouslyDefined == false)){ // If we are defining a Syiro Dropdown Button component for the first time
+				if ((component.type == "button") && (variableProvided.getAttribute("data-syiro-component-type") == "dropdown") && (previouslyDefined == false)){ // If we are defining a Syiro Dropdown Button component for the first time
 					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.button.Toggle); // Immediately listen to the Dropdown Button
 				}
 			}
 		} else if ((typeOfVariableProvided == "Document") || (typeOfVariableProvided.indexOf("Screen") == 0) || typeOfVariableProvided == "Window"){ // If this is a valid alternative variable to do event handling on
 			var lowercasedType : string = typeOfVariableProvided.toLowerCase(); // Lowercase the type of the varaible
-			component["id"] = lowercasedType; // Set the Id of the Component Object to lowercasedType
-			component["type"] = lowercasedType; // Set the type of the Component Object to lowercasedType
+			component.id = lowercasedType; // Set the Id of the Component Object to lowercasedType
+			component.type = lowercasedType; // Set the type of the Component Object to lowercasedType
 		}
 
 		return component; // Return the Component
@@ -193,7 +193,7 @@ namespace syiro.component {
 	// #region Function for fetching the Linked List component of the Dropdown Button or a Searchbox.
 
 	export function FetchLinkedListComponentObject(component) : ComponentObject {
-		var listSelector : string = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]'; // Generate a List CSS selector with the owner set to the Component's Id
+		var listSelector : string = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component.id + '"]'; // Generate a List CSS selector with the owner set to the Component's Id
 		return syiro.component.FetchComponentObject(document.querySelector(listSelector)); // Get the Linked Component Object
 	}
 
@@ -336,8 +336,8 @@ namespace syiro.component {
 				var parentElement : Element = componentElement.parentElement; // Get the componentElement's parentElement
 				parentElement.removeChild(componentElement); // Remove this Component from the DOM, if it exists
 
-				if (syiro.data.Read(componentObject["id"]) !== false){ // It there is data regarding individualComponentObject in syiro.data.storage
-					syiro.data.Delete(componentObject["id"]); // Delete the Component's data
+				if (syiro.data.Read(componentObject.id) !== false){ // It there is data regarding individualComponentObject in syiro.data.storage
+					syiro.data.Delete(componentObject.id); // Delete the Component's data
 				}
 
 				if (parentElement.hasAttribute("data-syiro-component-id")){ // If the parentElement has a Component Id

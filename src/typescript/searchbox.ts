@@ -172,7 +172,7 @@ namespace syiro.searchbox {
 				searchboxInputElement.removeAttribute("placeholder"); // Remove the placeholder attribute
 			}
 
-			syiro.component.Update(component["id"], searchboxElement); // Update the Searchbox Component HTMLElement if necessary
+			syiro.component.Update(component.id, searchboxElement); // Update the Searchbox Component HTMLElement if necessary
 		}
 	}
 

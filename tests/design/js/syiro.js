@@ -97,7 +97,7 @@ var syiro;
                 component = syiro.component.FetchComponentObject(element);
             }
             if ((element !== null) && (typeof properties["animation"] == "string")) {
-                if ((component["type"] == "button") && (element.getAttribute("data-syiro-component-type") == "toggle")) {
+                if ((component.type == "button") && (element.getAttribute("data-syiro-component-type") == "toggle")) {
                     element = element.querySelector('div[data-syiro-minor-component="buttonToggle"]');
                 }
                 var postAnimationFunction = properties["function"];
@@ -139,7 +139,7 @@ var syiro;
                 component = syiro.component.FetchComponentObject(componentElement);
             }
             if (componentElement !== null) {
-                if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
+                if ((component.type == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
                     componentElement = componentElement.querySelector('div[data-syiro-minor-component="buttonToggle"]');
                 }
                 componentElement.removeAttribute("data-syiro-animation");
@@ -328,18 +328,18 @@ var syiro;
             var passableValue = null;
             var typeOfComponent = syiro.utilities.TypeOfThing(component);
             if (syiro.utilities.TypeOfThing(component, "ComponentObject")) {
-                componentId = component["id"];
+                componentId = component.id;
                 componentElement = syiro.component.Fetch(component);
             }
             else {
                 componentId = syiro.component.FetchComponentObject(component)["id"];
                 componentElement = component;
             }
-            if (component["type"] == "searchbox") {
+            if (component.type == "searchbox") {
                 componentElement = componentElement.firstElementChild;
             }
             var functionsForListener = syiro.data.Read(componentId + "->handlers->" + eventType);
-            if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
+            if ((component.type == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
                 passableValue = (!componentElement.hasAttribute("active"));
             }
             else if (componentElement.nodeName == "INPUT") {
@@ -363,12 +363,12 @@ var syiro;
                 }
                 var componentElement;
                 if (syiro.utilities.TypeOfThing(component, "ComponentObject")) {
-                    componentId = component["id"];
+                    componentId = component.id;
                     componentElement = syiro.component.Fetch(component);
-                    if (component["type"] == "list-item") {
+                    if (component.type == "list-item") {
                         allowListening = !(componentElement.querySelector("div") !== null);
                     }
-                    else if (component["type"] == "searchbox") {
+                    else if (component.type == "searchbox") {
                         componentElement = componentElement.firstElementChild;
                     }
                 }
@@ -439,18 +439,18 @@ var syiro;
                             var listener = listeners[_a];
                             var componentListeners = null;
                             if (typeof specFunc == "function") {
-                                componentListeners = syiro.data.Read(component["id"] + "->handlers->" + listener);
+                                componentListeners = syiro.data.Read(component.id + "->handlers->" + listener);
                                 var componentListenersFunctionIndex = componentListeners.indexOf(specFunc);
                                 if (componentListenersFunctionIndex !== -1) {
                                     componentListeners.splice(componentListenersFunctionIndex, 1);
                                 }
                             }
                             if ((componentListeners == null) || (componentListeners.length == 0)) {
-                                syiro.data.Delete(component["id"] + "->handlers->" + listener);
+                                syiro.data.Delete(component.id + "->handlers->" + listener);
                                 componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component));
                             }
                             else {
-                                syiro.data.Write(component["id"] + "->handlers->" + listener, componentListeners);
+                                syiro.data.Write(component.id + "->handlers->" + listener, componentListeners);
                             }
                         }
                         successfulRemoval = true;
@@ -582,7 +582,7 @@ var syiro;
         render.Position = Position;
         function Scale(component, data) {
             // #region Variable Setup
-            var componentId = component["id"];
+            var componentId = component.id;
             var componentElement = syiro.component.Fetch(component);
             var parentHeight = componentElement.parentElement.clientHeight;
             var parentWidth = componentElement.parentElement.clientWidth;
@@ -662,23 +662,23 @@ var syiro;
             }
             syiro.component.CSS(componentElement, "height", componentHeight.toString() + "px");
             syiro.component.CSS(componentElement, "width", componentWidth.toString() + "px");
-            var potentialComponentScalableChildren = syiro.data.Read(component["id"] + "->scaling->children");
+            var potentialComponentScalableChildren = syiro.data.Read(component.id + "->scaling->children");
             if (potentialComponentScalableChildren !== false) {
                 if (typeof potentialComponentScalableChildren.pop == "undefined") {
                     var childComponentsArray = [];
                     for (var childSelector in potentialComponentScalableChildren) {
                         var childElement = componentElement.querySelector(childSelector);
                         var childComponent = syiro.component.FetchComponentObject(childElement);
-                        var childScalingData = syiro.data.Read(component["id"] + "->scaling->children->" + childSelector + "->scaling");
+                        var childScalingData = syiro.data.Read(component.id + "->scaling->children->" + childSelector + "->scaling");
                         syiro.data.Write(childComponent["id"] + "->scaling->initialDimensions", childScalingData["iniitalDimensions"]);
                         syiro.data.Write(childComponent["id"] + "->scaling->ratios", childScalingData["ratios"]);
                         syiro.data.Write(childComponent["id"] + "->scaling->fill", childScalingData["fill"]);
                         childComponentsArray.push(childComponent);
-                        syiro.data.Delete(component["id"] + "->scaling->children->" + childSelector);
+                        syiro.data.Delete(component.id + "->scaling->children->" + childSelector);
                     }
-                    syiro.data.Write(component["id"] + "->scaling->children", childComponentsArray);
+                    syiro.data.Write(component.id + "->scaling->children", childComponentsArray);
                 }
-                var componentChildren = syiro.data.Read(component["id"] + "->scaling->children");
+                var componentChildren = syiro.data.Read(component.id + "->scaling->children");
                 for (var childComponentIndex = 0; childComponentIndex < componentChildren.length; childComponentIndex++) {
                     var childComponentObject = componentChildren[childComponentIndex];
                     syiro.render.Scale(childComponentObject);
@@ -766,9 +766,9 @@ var syiro;
         }
         component_1.CSS = CSS;
         function Fetch(component) {
-            var componentElement = document.querySelector('div[data-syiro-component-id="' + component["id"] + '"]');
+            var componentElement = document.querySelector('div[data-syiro-component-id="' + component.id + '"]');
             if (componentElement == null) {
-                componentElement = syiro.data.Read(component["id"] + "->HTMLElement");
+                componentElement = syiro.data.Read(component.id + "->HTMLElement");
             }
             return componentElement;
         }
@@ -799,38 +799,38 @@ var syiro;
                 var possibleExistingId = variableProvided.getAttribute("data-syiro-component-id");
                 if (possibleExistingId !== null) {
                     previouslyDefined = true;
-                    component["id"] = possibleExistingId;
-                    component["type"] = variableProvided.getAttribute("data-syiro-component");
+                    component.id = possibleExistingId;
+                    component.type = variableProvided.getAttribute("data-syiro-component");
                 }
                 else {
                     if ((arguments.length == 2) && (typeof arguments[0] == "string")) {
-                        component["id"] = syiro.component.IdGen(arguments[0]);
-                        component["type"] = arguments[0];
+                        component.id = syiro.component.IdGen(arguments[0]);
+                        component.type = arguments[0];
                     }
                     else if (arguments.length == 1) {
                         var idBase = "";
                         var potentialExistingType = variableProvided.getAttribute("data-syiro-component");
                         if (potentialExistingType !== null) {
                             idBase = potentialExistingType;
-                            component["type"] = potentialExistingType;
+                            component.type = potentialExistingType;
                         }
                         else {
                             idBase = variableProvided.tagName.toLowerCase();
-                            component["type"] = idBase;
+                            component.type = idBase;
                         }
-                        component["id"] = syiro.component.IdGen(idBase);
+                        component.id = syiro.component.IdGen(idBase);
                     }
-                    variableProvided.setAttribute("data-syiro-component-id", component["id"]);
-                    variableProvided.setAttribute("data-syiro-component", component["type"]);
-                    if ((component["type"] == "button") && (variableProvided.getAttribute("data-syiro-component-type") == "dropdown") && (previouslyDefined == false)) {
+                    variableProvided.setAttribute("data-syiro-component-id", component.id);
+                    variableProvided.setAttribute("data-syiro-component", component.type);
+                    if ((component.type == "button") && (variableProvided.getAttribute("data-syiro-component-type") == "dropdown") && (previouslyDefined == false)) {
                         syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.button.Toggle);
                     }
                 }
             }
             else if ((typeOfVariableProvided == "Document") || (typeOfVariableProvided.indexOf("Screen") == 0) || typeOfVariableProvided == "Window") {
                 var lowercasedType = typeOfVariableProvided.toLowerCase();
-                component["id"] = lowercasedType;
-                component["type"] = lowercasedType;
+                component.id = lowercasedType;
+                component.type = lowercasedType;
             }
             return component;
         }
@@ -853,7 +853,7 @@ var syiro;
         }
         component_1.FetchDimensionsAndPosition = FetchDimensionsAndPosition;
         function FetchLinkedListComponentObject(component) {
-            var listSelector = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component["id"] + '"]';
+            var listSelector = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component.id + '"]';
             return syiro.component.FetchComponentObject(document.querySelector(listSelector));
         }
         component_1.FetchLinkedListComponentObject = FetchLinkedListComponentObject;
@@ -964,8 +964,8 @@ var syiro;
                 if (typeof componentElement !== "undefined") {
                     var parentElement = componentElement.parentElement;
                     parentElement.removeChild(componentElement);
-                    if (syiro.data.Read(componentObject["id"]) !== false) {
-                        syiro.data.Delete(componentObject["id"]);
+                    if (syiro.data.Read(componentObject.id) !== false) {
+                        syiro.data.Delete(componentObject.id);
                     }
                     if (parentElement.hasAttribute("data-syiro-component-id")) {
                         syiro.component.Update(parentElement.getAttribute("data-syiro-component-id"), parentElement);
@@ -988,7 +988,7 @@ var syiro;
         function Parser(componentElement) {
             if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))) {
                 var component = syiro.component.FetchComponentObject(componentElement);
-                switch (component["type"]) {
+                switch (component.type) {
                     case "button":
                         if (componentElement.getAttribute("data-syiro-component-type") !== "basic") {
                             syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.button.Toggle);
@@ -1022,7 +1022,7 @@ var syiro;
                     var childComponentElement = innerComponentElements[_i];
                     syiro.init.Parser(childComponentElement);
                 }
-                syiro.data.Delete(component["id"] + "->HTMLElement");
+                syiro.data.Delete(component.id + "->HTMLElement");
             }
         }
         init.Parser = Parser;
@@ -1057,7 +1057,7 @@ var syiro;
         }
         init.List = List;
         function MediaPlayer(component) {
-            if (syiro.data.Read(component["id"] + "->NoUX") == false) {
+            if (syiro.data.Read(component.id + "->NoUX") == false) {
                 var componentElement = syiro.component.Fetch(component);
                 var innerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
                 var mediaPlayerType = componentElement.getAttribute("data-syiro-component-type");
@@ -1149,7 +1149,7 @@ var syiro;
         init.MediaControl = MediaControl;
         function Searchbox(component) {
             var componentElement = syiro.component.Fetch(component);
-            if (syiro.data.Read(component["id"] + "->suggestions") !== false) {
+            if (syiro.data.Read(component.id + "->suggestions") !== false) {
                 syiro.events.Add("keyup", componentElement.querySelector("input"), syiro.searchbox.Suggestions);
                 syiro.events.Add("blur", componentElement.querySelector("input"), function () {
                     var searchboxObject = arguments[0];
@@ -1184,7 +1184,7 @@ var syiro;
         init.Sidepane = Sidepane;
         function Toast(component) {
             var componentElement = syiro.component.Fetch(component);
-            var actionHandlers = syiro.data.Read(component["id"] + "->ActionHandlers");
+            var actionHandlers = syiro.data.Read(component.id + "->ActionHandlers");
             var toastButtons = componentElement.querySelectorAll('div[data-syiro-component="button"]');
             if (componentElement.getAttribute("data-syiro-component-type") == "dialog") {
                 var toastContentOverlayElement = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="toast"]');
@@ -1204,7 +1204,7 @@ var syiro;
                 }
             }
             if (actionHandlers !== false) {
-                syiro.data.Delete(component["id"] + "->ActionHandlers");
+                syiro.data.Delete(component.id + "->ActionHandlers");
             }
         }
         init.Toast = Toast;
@@ -1306,7 +1306,7 @@ var syiro;
                     syiro.component.CSS(componentElement, "background-image", "");
                     componentElement.removeAttribute("data-syiro-render-icon");
                 }
-                syiro.component.Update(component["id"] + "->HTMLElement", componentElement);
+                syiro.component.Update(component.id + "->HTMLElement", componentElement);
                 setSucceeded = true;
             }
             return setSucceeded;
@@ -1323,7 +1323,7 @@ var syiro;
                         componentElement.insertBefore(innerImage, componentElement.firstChild);
                     }
                     innerImage.setAttribute("src", content);
-                    syiro.component.Update(component["id"], componentElement);
+                    syiro.component.Update(component.id, componentElement);
                 }
                 else if ((content == "") && (innerImage !== null)) {
                     syiro.component.Remove(innerImage);
@@ -1338,7 +1338,7 @@ var syiro;
             var componentElement = syiro.component.Fetch(component);
             if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") !== "toggle")) {
                 componentElement.textContent = content;
-                syiro.component.Update(component["id"], componentElement);
+                syiro.component.Update(component.id, componentElement);
                 setSucceeded = true;
             }
             return setSucceeded;
@@ -1426,7 +1426,7 @@ var syiro;
             var typeOfComponent = syiro.utilities.TypeOfThing(component);
             var componentElement;
             if (typeOfComponent == "ComponentObject") {
-                if (component["type"] == "buttongroup") {
+                if (component.type == "buttongroup") {
                     componentElement = syiro.component.Fetch(component);
                 }
             }
@@ -1674,7 +1674,7 @@ var syiro;
             else {
                 renderItems = "dynamic";
             }
-            var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": component["id"], "data-syiro-component": "grid", "data-syiro-render-columns": renderItems });
+            var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": component.id, "data-syiro-component": "grid", "data-syiro-render-columns": renderItems });
             if (syiro.utilities.TypeOfThing(properties["items"], "Array")) {
                 for (var _i = 0, _a = properties["items"]; _i < _a.length; _i++) {
                     var gridItemProperties = _a[_i];
@@ -1683,12 +1683,12 @@ var syiro;
                     componentElement.appendChild(gridItemElement);
                 }
             }
-            syiro.data.Write(component["id"] + "->HTMLElement", componentElement);
+            syiro.data.Write(component.id + "->HTMLElement", componentElement);
             return component;
         }
         grid.New = New;
         function Scale(component) {
-            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "grid")) {
+            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "grid")) {
                 var componentElement = syiro.component.Fetch(component);
                 var componentDimensions = syiro.component.FetchDimensionsAndPosition(componentElement);
                 var componentWidth = componentDimensions["width"];
@@ -1720,7 +1720,7 @@ var syiro;
         function New(properties) {
             if ((syiro.utilities.TypeOfThing(properties["html"], "Element")) || (syiro.utilities.TypeOfThing(properties["html"], "string"))) {
                 var component = { "id": syiro.component.IdGen("grid-item"), "type": "grid-item" };
-                var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": component["id"], "data-syiro-component": "grid-item" });
+                var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": component.id, "data-syiro-component": "grid-item" });
                 properties["html"] = syiro.utilities.SanitizeHTML(properties["html"]);
                 if (syiro.utilities.TypeOfThing(properties["html"], "Element")) {
                     componentElement.appendChild(properties["html"]);
@@ -1728,7 +1728,7 @@ var syiro;
                 else {
                     componentElement.innerHTML = properties["html"];
                 }
-                syiro.data.Write(component["id"] + "->HTMLElement", componentElement);
+                syiro.data.Write(component.id + "->HTMLElement", componentElement);
                 return component;
             }
         }
@@ -1804,7 +1804,7 @@ var syiro;
                 }
             }
             var componentAddingSucceeded = false;
-            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")) {
+            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component.type == "navbar")) {
                 var typeOfElementOrProperties = syiro.utilities.TypeOfThing(elementOrProperties);
                 var generatedElement;
                 if (typeOfElementOrProperties == "LinkPropertiesObject") {
@@ -1823,7 +1823,7 @@ var syiro;
         navbar.AddLink = AddLink;
         function RemoveLink(component, elementOrProperties) {
             var componentRemovingSucceed = false;
-            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar")) {
+            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component.type == "navbar")) {
                 var navbarElement = syiro.component.Fetch(component);
                 var typeOfElementOrProperties = syiro.utilities.TypeOfThing(elementOrProperties);
                 var potentialLinkElement;
@@ -1842,7 +1842,7 @@ var syiro;
         }
         navbar.RemoveLink = RemoveLink;
         function SetLogo(component, content) {
-            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "top")) {
+            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component.type == "navbar") && (syiro.data.Read(component.id + "->Position") == "top")) {
                 var navbarElement = syiro.component.Fetch(component);
                 var imageElement = navbarElement.querySelector('img[data-syiro-minor-component="logo"]');
                 if (content !== "") {
@@ -1851,7 +1851,7 @@ var syiro;
                         navbarElement.insertBefore(imageElement, navbarElement.firstChild);
                     }
                     imageElement.setAttribute("src", syiro.utilities.SanitizeHTML(content));
-                    syiro.component.Update(component["id"], navbarElement);
+                    syiro.component.Update(component.id, navbarElement);
                 }
                 else if ((content == "") && (imageElement !== null)) {
                     syiro.component.Remove(imageElement);
@@ -1864,7 +1864,7 @@ var syiro;
         }
         navbar.SetLogo = SetLogo;
         function SetLabel(component, content) {
-            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "navbar") && (syiro.data.Read(component["id"] + "->Position") == "bottom")) {
+            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component.type == "navbar") && (syiro.data.Read(component.id + "->Position") == "bottom")) {
                 var navbarElement = syiro.component.Fetch(component);
                 var labelComponent = navbarElement.querySelector("label");
                 if (content !== "") {
@@ -1873,7 +1873,7 @@ var syiro;
                         navbarElement.insertBefore(labelComponent, navbarElement.firstChild);
                     }
                     labelComponent.textContent = syiro.utilities.SanitizeHTML(content);
-                    syiro.component.Update(component["id"], navbarElement);
+                    syiro.component.Update(component.id, navbarElement);
                 }
                 else if ((content == "") && (labelComponent !== null)) {
                     syiro.component.Remove(labelComponent);
@@ -1957,7 +1957,7 @@ var syiro;
                     listHeader.appendChild(content);
                 }
             }
-            syiro.component.Update(component["id"], componentElement);
+            syiro.component.Update(component.id, componentElement);
         }
         list.SetHeader = SetHeader;
         function Toggle(component) {
@@ -2039,7 +2039,7 @@ var syiro;
         listitem.Generate = New;
         function SetControl(component, control) {
             var setControlSucceeded = false;
-            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")) {
+            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "list-item")) {
                 if ((syiro.utilities.TypeOfThing(control) == "ComponentObject") && (control["type"] == "button")) {
                     var listItemElement = syiro.component.Fetch(component);
                     if (listItemElement.querySelector("div") !== null) {
@@ -2063,7 +2063,7 @@ var syiro;
         listitem.SetControl = SetControl;
         function SetImage(component, content) {
             var setImageSucceeded = false;
-            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")) {
+            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "list-item")) {
                 if (typeof content == "string") {
                     var listItemElement = syiro.component.Fetch(component);
                     var listItemLabel = listItemElement.querySelector("label");
@@ -2078,7 +2078,7 @@ var syiro;
                             syiro.component.Add("prepend", component, listItemImage);
                         }
                         listItemImage.setAttribute("src", syiro.utilities.SanitizeHTML(content));
-                        syiro.component.Update(component["id"], listItemElement);
+                        syiro.component.Update(component.id, listItemElement);
                     }
                     else if ((content == "") && (listItemImage !== null)) {
                         syiro.component.Remove(listItemImage);
@@ -2091,7 +2091,7 @@ var syiro;
         listitem.SetImage = SetImage;
         function SetLabel(component, content) {
             var setLabelSucceeded = false;
-            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")) {
+            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "list-item")) {
                 if (typeof content == "string") {
                     var listItemElement = syiro.component.Fetch(component);
                     var listItemLabelElement = listItemElement.querySelector("label");
@@ -2119,7 +2119,7 @@ var syiro;
                     else if ((content == "") && (listItemLabelElement !== null)) {
                         syiro.component.Remove(listItemLabelElement);
                     }
-                    syiro.component.Update(component["id"], listItemElement);
+                    syiro.component.Update(component.id, listItemElement);
                     setLabelSucceeded = true;
                 }
             }
@@ -2128,7 +2128,7 @@ var syiro;
         listitem.SetLabel = SetLabel;
         function SetLink(component, properties) {
             var setSucceeded = false;
-            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")) {
+            if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "list-item")) {
                 var componentElement = syiro.component.Fetch(component);
                 var innerLink = componentElement.querySelector("a");
                 if (syiro.utilities.TypeOfThing(properties, "LinkPropertiesObject")) {
@@ -2277,7 +2277,7 @@ var syiro;
             var componentElement = syiro.component.Fetch(component);
             var playerInnerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
             var mediaControl = componentElement.querySelector('div[data-syiro-component="media-control"]');
-            if (syiro.data.Read(component["id"] + "->NoUX") == false) {
+            if (syiro.data.Read(component.id + "->NoUX") == false) {
                 if (componentElement.getAttribute("data-syiro-component-type") == "video") {
                     componentElement.removeAttribute("data-syiro-show-video");
                 }
@@ -2303,7 +2303,7 @@ var syiro;
                 var innerTimeLabel = mediaControl.querySelector("time");
                 if ((isPlayableOrStreamable == true) || (isPlayableOrStreamable == "streamable")) {
                     if (isPlayableOrStreamable == "streamable") {
-                        syiro.data.Write(component["id"] + "->IsStreaming", true);
+                        syiro.data.Write(component.id + "->IsStreaming", true);
                         mediaControl.setAttribute("data-syiro-component-streamstyling", "");
                         if (innerTimeLabel !== null) {
                             innerTimeLabel.setAttribute("data-syiro-component-live", "");
@@ -2311,7 +2311,7 @@ var syiro;
                         }
                     }
                     else if (isPlayableOrStreamable == true) {
-                        syiro.data.Delete(component["id"] + "->IsStreaming");
+                        syiro.data.Delete(component.id + "->IsStreaming");
                         mediaControl.removeAttribute("data-syiro-component-streamstyling");
                         if (innerTimeLabel !== null) {
                             innerTimeLabel.removeAttribute("data-syiro-component-live");
@@ -2332,7 +2332,7 @@ var syiro;
         }
         mediaplayer.Configure = Configure;
         function DurationChange(component) {
-            if (syiro.data.Read(component["id"] + "->IsStreaming") == false) {
+            if (syiro.data.Read(component.id + "->IsStreaming") == false) {
                 var componentElement = syiro.component.Fetch(component);
                 var mediaControlElement = componentElement.querySelector('div[data-syiro-component="media-control"]');
                 var mediaControlComponent = syiro.component.FetchComponentObject(mediaControlElement);
@@ -2428,7 +2428,7 @@ var syiro;
             var innerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
             var isPlayable = false;
             var isStreamable = false;
-            if (syiro.data.Read(component["id"] + "->UsingExternalLibrary")) {
+            if (syiro.data.Read(component.id + "->UsingExternalLibrary")) {
                 isPlayable = true;
                 isStreamable = true;
             }
@@ -2541,9 +2541,9 @@ var syiro;
             var mediaControlComponent = syiro.component.FetchComponentObject(mediaControlElement);
             var playerRange = mediaControlElement.querySelector("input");
             syiro.mediacontrol.TimeLabelUpdater(mediaControlComponent, 0, time);
-            if (syiro.data.Read(component["id"] + "->IsStreaming") == false) {
+            if (syiro.data.Read(component.id + "->IsStreaming") == false) {
                 var allowInputChange = false;
-                var isChangingInputValue = syiro.data.Read(component["id"] + "->IsChangingInputValue");
+                var isChangingInputValue = syiro.data.Read(component.id + "->IsChangingInputValue");
                 if ((!fromEvent) && (isChangingInputValue)) {
                     allowInputChange = true;
                 }
@@ -2624,7 +2624,7 @@ var syiro;
             var menuButton = componentElement.querySelector('div[data-syiro-render-icon="menu"]');
             if (syiro.component.CSS(menuDialog, "visibility") !== "visible") {
                 var playerMenuHeight;
-                if (component["type"] == "audio-player") {
+                if (component.type == "audio-player") {
                     playerMenuHeight = 100;
                 }
                 else {
@@ -2977,7 +2977,7 @@ var syiro;
                 else if (content == "") {
                     searchboxInputElement.removeAttribute("placeholder");
                 }
-                syiro.component.Update(component["id"], searchboxElement);
+                syiro.component.Update(component.id, searchboxElement);
             }
         }
         searchbox.SetText = SetText;
@@ -3077,7 +3077,7 @@ var syiro;
         }
         sidepane.Release = Release;
         function Toggle(component, eventData) {
-            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component["type"] == "sidepane")) {
+            if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component.type == "sidepane")) {
                 var componentElement = syiro.component.Fetch(component);
                 var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]');
                 var showSidepane = false;

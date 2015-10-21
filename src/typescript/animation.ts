@@ -23,7 +23,7 @@ namespace syiro.animation {
 		}
 
 		if ((element !== null) && (typeof properties["animation"] == "string")){ // If the element exists in the DOM and an animation is provided
-			if ((component["type"] == "button") && (element.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
+			if ((component.type == "button") && (element.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
 				element = element.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
 			}
 
@@ -79,7 +79,7 @@ namespace syiro.animation {
 		}
 
 		if (componentElement !== null){ // If the componentElement exists in the DOM
-			if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
+			if ((component.type == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
 				componentElement = componentElement.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
 			}
 

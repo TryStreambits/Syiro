@@ -22,7 +22,7 @@ module syiro.grid {
 			renderItems = "dynamic"; // Set to dynamically set column amount
 		}
 
-		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : component["id"], "data-syiro-component" : "grid", "data-syiro-render-columns" : renderItems }); // Generate the Grid container
+		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : component.id, "data-syiro-component" : "grid", "data-syiro-render-columns" : renderItems }); // Generate the Grid container
 
 		if (syiro.utilities.TypeOfThing(properties["items"], "Array")){ // If there are items defined
 			for (var gridItemProperties of properties["items"]){ // For each item
@@ -32,7 +32,7 @@ module syiro.grid {
 			}
 		}
 
-		syiro.data.Write(component["id"] + "->HTMLElement", componentElement); // Set the HTMLElement of the Component as componentElement
+		syiro.data.Write(component.id + "->HTMLElement", componentElement); // Set the HTMLElement of the Component as componentElement
 		return component;
 	}
 
@@ -41,7 +41,7 @@ module syiro.grid {
 	// #region Scale Grid and inner Grid Items
 
 	export function Scale(component : ComponentObject){
-		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "grid")){ // If this is a Grid Component
+		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "grid")){ // If this is a Grid Component
 			var componentElement : HTMLElement = syiro.component.Fetch(component); // Fetch the componentElement of this Grid Component
 			var componentDimensions : Object = syiro.component.FetchDimensionsAndPosition(componentElement); // Get the dimensions of the componentElement
 
@@ -84,7 +84,7 @@ module syiro.griditem {
 	export function New(properties : Object) : ComponentObject {
 		if ((syiro.utilities.TypeOfThing(properties["html"], "Element")) || (syiro.utilities.TypeOfThing(properties["html"], "string"))){ // If the only valid property, HTML, is defined, as an Element or string
 			var component : ComponentObject = { "id" : syiro.component.IdGen("grid-item"), "type" : "grid-item" }; // Define componentObject as the generated ComponentObject with the unique Id as well as type to grid-item
-			var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : component["id"], "data-syiro-component" : "grid-item" }); // Create the Grid Item container
+			var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : component.id, "data-syiro-component" : "grid-item" }); // Create the Grid Item container
 
 			properties["html"] = syiro.utilities.SanitizeHTML(properties["html"]); // Sanitize the HTML, whether it be a string or an Element of some sort
 
@@ -94,7 +94,7 @@ module syiro.griditem {
 				componentElement.innerHTML = properties["html"]; // Set the innerHTML of the componentElement to the HTML
 			}
 
-			syiro.data.Write(component["id"] + "->HTMLElement", componentElement); // Write the Grid Item HTMLELement
+			syiro.data.Write(component.id + "->HTMLElement", componentElement); // Write the Grid Item HTMLELement
 
 			return component;
 		}

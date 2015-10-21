@@ -131,7 +131,7 @@ namespace syiro.button {
 				componentElement.removeAttribute("data-syiro-render-icon"); // Remove the render-icon property
 			}
 
-			syiro.component.Update(component["id"] + "->HTMLElement", componentElement); // Update the storedComponent (if necessary)
+			syiro.component.Update(component.id + "->HTMLElement", componentElement); // Update the storedComponent (if necessary)
 			setSucceeded = true; // Define setSucceeded as true
 		}
 
@@ -156,7 +156,7 @@ namespace syiro.button {
 				}
 
 				innerImage.setAttribute("src", content); // Set the Button image source
-				syiro.component.Update(component["id"], componentElement); // Update the storedComponent (if necessary)
+				syiro.component.Update(component.id, componentElement); // Update the storedComponent (if necessary)
 			} else if ((content == "") && (innerImage !== null)){ // If the content is set to an empty string and innerImage exists
 				syiro.component.Remove(innerImage); // Remove the image
 			}
@@ -177,7 +177,7 @@ namespace syiro.button {
 
 		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") !== "toggle")){ // If the button exists in syiro.data.storage or DOM AND button is "basic" rather than toggle
 			componentElement.textContent = content; // Set the button component textContent
-			syiro.component.Update(component["id"], componentElement); // Update the storedComponent (if necessary)
+			syiro.component.Update(component.id, componentElement); // Update the storedComponent (if necessary)
 			setSucceeded = true; // Define setSucceeded as true
 		}
 
@@ -291,7 +291,7 @@ namespace syiro.buttongroup {
 		var componentElement : HTMLElement; // Define componentElement as the Element of the Component Object and/or is the component passed
 
 		if (typeOfComponent == "ComponentObject"){ // If it is a Component Object
-			if (component["type"] == "buttongroup"){ // If it is a Buttongroup Component
+			if (component.type == "buttongroup"){ // If it is a Buttongroup Component
 				componentElement = syiro.component.Fetch(component); // Fetch the Component Element
 			}
 		} else if (typeOfComponent == "Element"){ // If it is an Element

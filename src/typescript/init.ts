@@ -15,7 +15,7 @@ namespace syiro.init {
 		if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))){ // If the element is a Syiro component
 			var component = syiro.component.FetchComponentObject(componentElement); // Fetch the (potential) Component Object of the componentElement
 
-			switch (component["type"]) { // Do initialization based on Component Object type
+			switch (component.type) { // Do initialization based on Component Object type
 				case "button" : // If it is a Button Component
 					if (componentElement.getAttribute("data-syiro-component-type") !== "basic"){ // If it is a Dropdown or Toggle Button Component type
 						syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.button.Toggle); // Add the syiro.button.Toggle event to the Button types Dropdown and Toggle
@@ -56,7 +56,7 @@ namespace syiro.init {
 
 			// #endregion
 
-			syiro.data.Delete(component["id"] + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
+			syiro.data.Delete(component.id + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
 		}
 	}
 
@@ -113,7 +113,7 @@ namespace syiro.init {
 	// #region Media Player Initialization
 
 	export function MediaPlayer(component : ComponentObject){
-		if (syiro.data.Read(component["id"] + "->NoUX") == false){ // If we are apply UX to events to the Player
+		if (syiro.data.Read(component.id + "->NoUX") == false){ // If we are apply UX to events to the Player
 			var componentElement : Element = syiro.component.Fetch(component); // Fetch the ComponentElement of the Media Player
 			var innerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Fetch the Player content Element
 			var mediaPlayerType : string = componentElement.getAttribute("data-syiro-component-type"); // Get the type of Media Player
@@ -286,7 +286,7 @@ namespace syiro.init {
 	export function Searchbox(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
-		if (syiro.data.Read(component["id"] + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
+		if (syiro.data.Read(component.id + "->suggestions") !== false){ // If suggestions is enabled on this Searchbox
 			syiro.events.Add("keyup", componentElement.querySelector("input"), syiro.searchbox.Suggestions);// Add  an event with the Suggestions function to the Searchbox's inner input Element to listen on keyup value
 			syiro.events.Add("blur", componentElement.querySelector("input"),// Add an event to the Searchbox inner input Element to listen to when it loses focus
 				function(){
@@ -336,7 +336,7 @@ namespace syiro.init {
 	export function Toast(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
-		var actionHandlers = syiro.data.Read(component["id"] + "->ActionHandlers"); // Get any potential ActionHandlers for this Toast
+		var actionHandlers = syiro.data.Read(component.id + "->ActionHandlers"); // Get any potential ActionHandlers for this Toast
 		var toastButtons : any = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all inner Syiro Buttons
 
 		if (componentElement.getAttribute("data-syiro-component-type") == "dialog"){ // If this is a Dialog Toast
@@ -362,7 +362,7 @@ namespace syiro.init {
 		}
 
 		if (actionHandlers !== false){ // If there were actionHandlers
-			syiro.data.Delete(component["id"] + "->ActionHandlers"); // Delete the ActionHandlers from the data of this Toast
+			syiro.data.Delete(component.id + "->ActionHandlers"); // Delete the ActionHandlers from the data of this Toast
 		}
 	}
 

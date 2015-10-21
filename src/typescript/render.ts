@@ -144,7 +144,7 @@ namespace syiro.render {
 	export function Scale(component : ComponentObject, data ?: Object){
 		// #region Variable Setup
 
-		var componentId = component["id"]; // Get the Component Id of the Component
+		var componentId = component.id; // Get the Component Id of the Component
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement
 
 		var parentHeight : number = componentElement.parentElement.clientHeight; // Set the parentHeight to the parent Element's clientHeight of the Component Element
@@ -251,7 +251,7 @@ namespace syiro.render {
 
 		// #region Children Scaling
 
-		var potentialComponentScalableChildren : any = syiro.data.Read(component["id"] + "->scaling->children"); // Get any children that need scaling in this Component
+		var potentialComponentScalableChildren : any = syiro.data.Read(component.id + "->scaling->children"); // Get any children that need scaling in this Component
 
 		if (potentialComponentScalableChildren !== false){ // If we are scaling child Components or Elements
 
@@ -264,22 +264,22 @@ namespace syiro.render {
 				for (var childSelector in potentialComponentScalableChildren){ // For each childSelector in the children section of scaling
 					var childElement : Element = componentElement.querySelector(childSelector); // Get the childElement from componentElement based on the querySelector of the componentElement
 					var childComponent : Object = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
-					var childScalingData : Object = syiro.data.Read(component["id"] + "->scaling->children->" + childSelector + "->scaling"); // Get the scalingData for the child
+					var childScalingData : Object = syiro.data.Read(component.id + "->scaling->children->" + childSelector + "->scaling"); // Get the scalingData for the child
 
 					syiro.data.Write(childComponent["id"] + "->scaling->initialDimensions", childScalingData["iniitalDimensions"]); // Write any initialDimensions that exist
 					syiro.data.Write(childComponent["id"] + "->scaling->ratios", childScalingData["ratios"]); // Write any ratios that exist
 					syiro.data.Write(childComponent["id"] + "->scaling->fill", childScalingData["fill"]); // Write any fill data that exist
 
 					childComponentsArray.push(childComponent); // Push the childComponent to the childComponentsArray Array of Objects
-					syiro.data.Delete(component["id"] + "->scaling->children->" + childSelector); // Delete the childSelector from scaling children in component
+					syiro.data.Delete(component.id + "->scaling->children->" + childSelector); // Delete the childSelector from scaling children in component
 				}
 
-				syiro.data.Write(component["id"] + "->scaling->children", childComponentsArray); // Set the childComponentsArray to the component->scaling->children via syiro.data.Write
+				syiro.data.Write(component.id + "->scaling->children", childComponentsArray); // Set the childComponentsArray to the component->scaling->children via syiro.data.Write
 			}
 
 			// #endregion
 
-			var componentChildren : Array<ComponentObject> = syiro.data.Read(component["id"] + "->scaling->children"); // Define componentChildren as the children in component->scaling->children
+			var componentChildren : Array<ComponentObject> = syiro.data.Read(component.id + "->scaling->children"); // Define componentChildren as the children in component->scaling->children
 
 			for (var childComponentIndex = 0; childComponentIndex < componentChildren.length; childComponentIndex++){ // For each childComponent in the Children scaling Object
 				var childComponentObject : ComponentObject = componentChildren[childComponentIndex]; // Define childComponentObject as the index of the Object from key / val children

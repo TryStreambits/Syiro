@@ -41,14 +41,14 @@ namespace syiro.events {
 		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of this Component
 
 		if (syiro.utilities.TypeOfThing(component, "ComponentObject")){ // If this is a Component Object
-			componentId = component["id"]; // Define componentId as the component's Id
+			componentId = component.id; // Define componentId as the component's Id
 			componentElement = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
 		} else { // If the Component is either an Element or another interface like screen
 			componentId = syiro.component.FetchComponentObject(component)["id"]; // Fetch the Component Object of the component and assign the Id to component Id
 			componentElement = component; // Define componentElement as the Component
 		}
 
-		if (component["type"] == "searchbox"){ // If this is a Searchbox Component
+		if (component.type == "searchbox"){ // If this is a Searchbox Component
 			componentElement = componentElement.firstElementChild; // Change componentElement to be the inner input
 		}
 
@@ -58,7 +58,7 @@ namespace syiro.events {
 
 		// #region Passable Data Determination
 
-		if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a Toggle Button
+		if ((component.type == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a Toggle Button
 			passableValue = (!componentElement.hasAttribute("active")); // Define passableValue as the reversed boolean of hasAttribute active, since it will be the new status of the Toggle Button
 		} else if (componentElement.nodeName =="INPUT"){ // If the Element is an input Element
 			passableValue = componentElement.value; // Get the current value of the input
@@ -89,12 +89,12 @@ namespace syiro.events {
 			var componentElement : any; // Define componentElement as an Element
 
 			if (syiro.utilities.TypeOfThing(component, "ComponentObject")){ // If the Component provided is a Syiro Component Object
-				componentId = component["id"];
+				componentId = component.id;
 				componentElement = syiro.component.Fetch(component); // Get the Component Element
 
-				if (component["type"] == "list-item"){ // Make sure the component is in fact a List Item
+				if (component.type == "list-item"){ // Make sure the component is in fact a List Item
 					allowListening = !(componentElement.querySelector("div") !== null); // If there is a div defined in the List Item, meaning there is a control within the list item (the query would return a non-null value), set allowListening to false
-				} else if (component["type"] == "searchbox"){ // If this Component is a Searchbox
+				} else if (component.type == "searchbox"){ // If this Component is a Searchbox
 					componentElement = componentElement.firstElementChild ; // Redefine componentElement as the inner input
 				}
 			} else { // If the Component provided is not a Syiro Component Object
@@ -170,7 +170,7 @@ namespace syiro.events {
 						var componentListeners : any = null; // Define componentListeners as an array of functions specific to that listener, only for specFunc, or null (default) if all functions should be removed
 
 						if (typeof specFunc == "function") { // If a specific function is defined
-							componentListeners = syiro.data.Read(component["id"] + "->handlers->" + listener); // Define componentListeners as the array of functions specific to that listener
+							componentListeners = syiro.data.Read(component.id + "->handlers->" + listener); // Define componentListeners as the array of functions specific to that listener
 							var componentListenersFunctionIndex : number = componentListeners.indexOf(specFunc); // Get the index of this function
 
 							if (componentListenersFunctionIndex !== -1){ // If the function exists as a listener
@@ -179,10 +179,10 @@ namespace syiro.events {
 						}
 
 						if ((componentListeners == null) || (componentListeners.length == 0)){ // If the componentListeners is null or does NOT have a length (essentially null)
-							syiro.data.Delete(component["id"] + "->handlers->" + listener); // Remove the specific listener from this handler from the particular Component
+							syiro.data.Delete(component.id + "->handlers->" + listener); // Remove the specific listener from this handler from the particular Component
 							componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component)); // Remove the event listener (specific to the listener and func)
 						} else { // If componentListeners.length is still not zero after removing the specFunc
-							syiro.data.Write(component["id"] + "->handlers->" + listener, componentListeners); // Update the listener functions array for this handler
+							syiro.data.Write(component.id + "->handlers->" + listener, componentListeners); // Update the listener functions array for this handler
 						}
 					}
 

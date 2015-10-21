@@ -176,7 +176,7 @@ module syiro.mediaplayer{
 		var playerInnerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Get the associated audio or video player
 		var mediaControl = componentElement.querySelector('div[data-syiro-component="media-control"]'); // Get the Media Control
 
-		if (syiro.data.Read(component["id"] + "->NoUX") == false){ // If this player has UX
+		if (syiro.data.Read(component.id + "->NoUX") == false){ // If this player has UX
 			if (componentElement.getAttribute("data-syiro-component-type") == "video"){ // If this is a video-type Media Player
 				componentElement.removeAttribute("data-syiro-show-video"); // Remove data-syiro-show-video attribute so the video Element is now hidden
 			}
@@ -218,7 +218,7 @@ module syiro.mediaplayer{
 
 			if ((isPlayableOrStreamable == true) || (isPlayableOrStreamable == "streamable")){ // If the content is playable or streamable
 				if (isPlayableOrStreamable == "streamable"){ // If the content is streamable
-					syiro.data.Write(component["id"] + "->IsStreaming", true); // Declare that we are streaming by recording it in the Syiro Data System
+					syiro.data.Write(component.id + "->IsStreaming", true); // Declare that we are streaming by recording it in the Syiro Data System
 					mediaControl.setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
 
 					if (innerTimeLabel !== null){ // If there is a time Element
@@ -226,7 +226,7 @@ module syiro.mediaplayer{
 						innerTimeLabel.textContent = "Live"; // Set the time label to "Live"
 					}
 				} else if (isPlayableOrStreamable == true){ // If the content is playable
-					syiro.data.Delete(component["id"] + "->IsStreaming"); // Delete the IsStreaming key if it exists already to ensure we are changing it to non-streaming UX
+					syiro.data.Delete(component.id + "->IsStreaming"); // Delete the IsStreaming key if it exists already to ensure we are changing it to non-streaming UX
 					mediaControl.removeAttribute("data-syiro-component-streamstyling"); // Remove Stream Styling if it exists in the Media Control
 
 					if (innerTimeLabel !== null){ // If there is a time Element
@@ -254,7 +254,7 @@ module syiro.mediaplayer{
 	// #region DurationChange - Triggered on durationchange of innerContentElement
 
 	export function DurationChange(component : ComponentObject){
-		if (syiro.data.Read(component["id"] + "->IsStreaming") == false){ // If the Player is NOT streaming content
+		if (syiro.data.Read(component.id + "->IsStreaming") == false){ // If the Player is NOT streaming content
 			var componentElement = syiro.component.Fetch(component); // Fetch the Player Element
 			var mediaControlElement  = componentElement.querySelector('div[data-syiro-component="media-control"]');
 			var mediaControlComponent : ComponentObject = syiro.component.FetchComponentObject(mediaControlElement); // Get the Media Control Component
@@ -378,7 +378,7 @@ module syiro.mediaplayer{
 		var isPlayable : boolean = false; // Set isPlayable as a boolean default to false
 		var isStreamable : boolean = false; // Set isStreamable as the returned boolean
 
-		if (syiro.data.Read(component["id"] + "->UsingExternalLibrary")){ // If we are using an external library
+		if (syiro.data.Read(component.id + "->UsingExternalLibrary")){ // If we are using an external library
 			isPlayable = true; // Set to being playable by default
 			isStreamable = true; // Set to being streamable by default
 		} else { // If we are not using an external library
@@ -531,9 +531,9 @@ module syiro.mediaplayer{
 
 		syiro.mediacontrol.TimeLabelUpdater(mediaControlComponent, 0, time); // Update the label
 
-		if (syiro.data.Read(component["id"] + "->IsStreaming") == false){ // If we are not streaming
+		if (syiro.data.Read(component.id + "->IsStreaming") == false){ // If we are not streaming
 			var allowInputChange : boolean = false; // Default to not allowing input value changing
-			var isChangingInputValue : boolean = syiro.data.Read(component["id"] + "->IsChangingInputValue"); // Get the boolean value if we are changing the input value or not
+			var isChangingInputValue : boolean = syiro.data.Read(component.id + "->IsChangingInputValue"); // Get the boolean value if we are changing the input value or not
 
 			if ((!fromEvent) && (isChangingInputValue)){ // If the SetTime call did not come from timeupdate and we are changing the input value
 				allowInputChange = true; // Allow input change
@@ -632,7 +632,7 @@ module syiro.mediaplayer{
 		if (syiro.component.CSS(menuDialog, "visibility") !== "visible"){ // If the Menu Dialog is currently not showing
 			var playerMenuHeight : number; // Define playerMenuHeight as a number (height that the dialog should be)
 
-			if (component["type"] == "audio-player"){ // If we are showing a menu dialog for an Audio Player
+			if (component.type == "audio-player"){ // If we are showing a menu dialog for an Audio Player
 				playerMenuHeight = 100; // Set to 100 since the Audio Player has a fixed height of 100px
 			} else { // If we are showing a menu dialog for the Video Player
 				playerMenuHeight = syiro.mediaplayer.FetchInnerContentElement(component).clientHeight; // Set to the height of the inner video (content) Element

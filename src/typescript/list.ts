@@ -88,7 +88,7 @@ namespace syiro.list {
 			}
 		}
 
-		syiro.component.Update(component["id"], componentElement); // Update if necessary
+		syiro.component.Update(component.id, componentElement); // Update if necessary
 	}
 
 	// #endregion
@@ -189,7 +189,7 @@ namespace syiro.listitem {
 	export function SetControl(component : ComponentObject, control : ComponentObject) : boolean {
 		var setControlSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
 
-		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")){ // Make sure the component is in fact a List Item
+		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "list-item")){ // Make sure the component is in fact a List Item
 			if ((syiro.utilities.TypeOfThing(control) == "ComponentObject") && (control["type"] == "button")){ // If the content is a Component Object and is a Button
 				var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
 
@@ -224,7 +224,7 @@ namespace syiro.listitem {
 	export function SetImage(component : ComponentObject, content : string) : boolean {
 		var setImageSucceeded : boolean = false; // Variable we return with a boolean value, defaulint to false.
 
-		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")){ // Make sure the component is in fact a List Item
+		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "list-item")){ // Make sure the component is in fact a List Item
 			if (typeof content == "string"){ // Make sure the content is a string
 				var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
 
@@ -244,7 +244,7 @@ namespace syiro.listitem {
 					}
 
 					listItemImage.setAttribute("src", syiro.utilities.SanitizeHTML(content)); // Set the src to a sanitized form of the content provided
-					syiro.component.Update(component["id"], listItemElement); // Update the List Item Element if necessary in syiro.data
+					syiro.component.Update(component.id, listItemElement); // Update the List Item Element if necessary in syiro.data
 				} else if ((content == "") && (listItemImage !== null)){ // If content is empty (removing the image) and listItemImage exists
 					syiro.component.Remove(listItemImage); // Remove the List Item Image
 				}
@@ -263,7 +263,7 @@ namespace syiro.listitem {
 	export function SetLabel(component : ComponentObject, content : string) : boolean {
 		var setLabelSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
 
-		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")){ // Make sure the component is in fact a List Item
+		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "list-item")){ // Make sure the component is in fact a List Item
 			if (typeof content == "string"){ // If the content is of type string
 				var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
 
@@ -297,7 +297,7 @@ namespace syiro.listitem {
 					syiro.component.Remove(listItemLabelElement); // Remove the label
 				}
 
-				syiro.component.Update(component["id"], listItemElement); // Update the List Item Element if necessary in syiro.data
+				syiro.component.Update(component.id, listItemElement); // Update the List Item Element if necessary in syiro.data
 				setLabelSucceeded = true; // Set setLabelSucceeded to true
 			}
 		}
@@ -312,7 +312,7 @@ namespace syiro.listitem {
 	export function SetLink(component : ComponentObject, properties : any) : boolean {
 		var setSucceeded : boolean = false;
 
-		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component["type"] == "list-item")){ // Make sure the component is in fact a List Item
+		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "list-item")){ // Make sure the component is in fact a List Item
 			var componentElement : HTMLElement = syiro.component.Fetch(component); // Fetch the componentElement of the List Item Component
 			var innerLink : Element = componentElement.querySelector("a"); // Get the innerLink if it doesn't exist already
 

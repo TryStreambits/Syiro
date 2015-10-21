@@ -25,9 +25,21 @@ div[data-syiro-component="media-player"]{
     // #region Shared Attributes
 
     float: left;
+    background-color: black;
+    background-repeat: no-repeat; // Do not repeat any Video Art
+    background-size: 100%; // Ensure Video Art is full container
 
     & > audio, video { // Audio and Video Elements
+        float: left;
+        height: inherit; // Inherit from parent Video Player container
+        width: inherit; // Inherit from parent Video Player container
+        background-color: black; // Set background color of video to black in the event it doesn't have the proper aspect ratio, to make any letterboxing less jarring
         visibility: hidden; // Default to being hidden
+
+        &:focus { // When the video is focused, typically on right-click, disable the border / outline
+            border: 0;
+            outline: 0;
+        }
     }
 
     // #endregion
@@ -36,7 +48,6 @@ div[data-syiro-component="media-player"]{
 
     &[data-syiro-component-type="audio"]{
         height: auto;
-        background-color: @syiroPlayerControlColor; // Set a default background color in the event art is not added.
 
         // #region Mini Player
 
@@ -69,7 +80,6 @@ div[data-syiro-component="media-player"]{
         &:not([data-syiro-audio-player="mini"]){ // Not Mini
             height: 150px;
             background-position-y: 33%; // Offset by 1/3 (most album art main content takes up 2/3 to 1/2 of entire album art)
-            background-size: 100% auto; // Set background-size to 100% width, automatic height
 
             // #region Player Menu
 
@@ -79,8 +89,6 @@ div[data-syiro-component="media-player"]{
                     margin-left: 10px; // Ensure the List Item has enough space between the icons and is aligned with the Menu label
 
                     & > img { // If there is an image within the List Item
-                        height: 32px; // Reduce the height of the image
-                        width: 32px; // Reduce the width of the image
                         margin: 4px 0 0 0; // Ensure the img looks good in the Audio Player's Menu Dialog "Grid View"
                     }
 
@@ -95,7 +103,7 @@ div[data-syiro-component="media-player"]{
             // #region Media Controls
 
             & > div[data-syiro-component="media-control"]{
-                background-color: fade(@syiroPlayerControlColor, 75%); // Set background-color to transparent
+                background-color: fade(@syiroPlayerControlColor, 75%); // Set background-color to nearly transparent
 
                 &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Media Control
                     margin-top: 100px; // 100px top margin (since 150px - 50px is 100)
@@ -111,7 +119,7 @@ div[data-syiro-component="media-player"]{
 
         // #endregion
 
-        // #region General Audio Player - Media Control - Styling
+        // #region Media Control - Styling
 
         & > div[data-syiro-component="media-control"]{
 
@@ -130,10 +138,6 @@ div[data-syiro-component="media-player"]{
             }
 
             // #endregion
-
-            & > div[data-syiro-component="button"]:after{ // Inner Button Content
-                color: contrast(@syiroPlayerControlColor);
-            }
 
     		& > section { // Audio Information
     			float: left;
@@ -170,10 +174,6 @@ div[data-syiro-component="media-player"]{
     // #region Video-Type Media Player
 
     &[data-syiro-component-type="video"]{
-        background-color: black; // Set the Video Player Component to have a black background to match video letterboxing color
-        background-repeat: no-repeat; // Do not repeat any Video Art
-        background-size: 100%; // Ensure Video Art is full container
-
         // #region Show Video
 
         &[data-syiro-show-video="true"]{
@@ -191,27 +191,11 @@ div[data-syiro-component="media-player"]{
     		top: 0;
         }
 
-        & > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] div[data-syiro-component="list-item"]{
+        & > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] > div[data-syiro-component="list-item"]{
             & > img { // If there is an image within the List Item
-                height: 32px; // Reduce the height of the image
-                width: 32px; // Reduce the width of the image
                 margin: 4px 5px 0 0; // Make sure the image is properly aligned with the Menu label and label text
             }
         }
-
-        & > video { // Inner video
-            float: left;
-            height: inherit; // Inherit from parent Video Player container
-            width: inherit; // Inherit from parent Video Player container
-            background-color: black; // Set background color of video to black in the event it doesn't have the proper aspect ratio, to make any letterboxing less jarring
-            visibility: hidden; // Default to being hidden
-
-            &:focus { // When the video is focused, typically on right-click, disable the border / outline
-                border: 0;
-                outline: 0;
-            }
-        }
-
 
         & > div[data-syiro-component="media-control"] { // Overrides for Video Player's Media Control
             background-color: fadeout(@syiroPlayerControlColor, 10%);
@@ -388,8 +372,6 @@ div[data-syiro-component="media-player"]{
         float: left;
         color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the background color
         background-color: fade(@syiroPlayerControlColor, 80%); // Set the background color to the syiroBackgroundColor, faded (transparency) to 80%
-        margin: 0;
-        padding: 0;
         position: absolute;
         z-index: 6; // Force above the video and video poster
         visibility: hidden; // Default to not being visible
@@ -409,7 +391,12 @@ div[data-syiro-component="media-player"]{
             width: 90%;
     		color: contrast(@syiroPlayerControlColor); // Contrast the Syiro Player background color
 
-    		div[data-syiro-component="list-item"] {
+    		& div[data-syiro-component="list-item"] {
+                & > img { // Inner Image
+                    height: 32px;
+                    width: 32px;
+                }
+
     			margin: 0 0 5px 10px; // Set margin to be 10px on the left and 5px on bottom
     		}
         }

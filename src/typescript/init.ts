@@ -12,7 +12,7 @@ namespace syiro.init {
 	// #region Parser - Determines what the Component is and does the correct initialization
 
 	export function Parser(componentElement : Element){
-		if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))){ // If the element is a Syiro component
+		if ((componentElement.localName !== null) && (syiro.utilities.TypeOfThing(componentElement.hasAttribute, "function")) && (componentElement.hasAttribute("data-syiro-component"))){ // If the element is a Syiro component
 			var component = syiro.component.FetchComponentObject(componentElement); // Fetch the (potential) Component Object of the componentElement
 
 			switch (component.type) { // Do initialization based on Component Object type

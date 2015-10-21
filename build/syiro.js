@@ -986,7 +986,7 @@ var syiro;
     var init;
     (function (init) {
         function Parser(componentElement) {
-            if ((componentElement.localName !== null) && (componentElement.hasAttribute("data-syiro-component"))) {
+            if ((componentElement.localName !== null) && (syiro.utilities.TypeOfThing(componentElement.hasAttribute, "function")) && (componentElement.hasAttribute("data-syiro-component"))) {
                 var component = syiro.component.FetchComponentObject(componentElement);
                 switch (component.type) {
                     case "button":

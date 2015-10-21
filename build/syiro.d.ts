@@ -6,8 +6,6 @@ interface Document {
     mozCancelFullScreen: Function;
     SyiroFullscreenElement: Element;
 }
-interface ComponentObject extends Object {
-}
 interface Console {
     profileEnd(profile?: string): any;
 }
@@ -93,8 +91,8 @@ declare namespace syiro.init {
     function Buttongroup(component: ComponentObject): void;
     function Grid(component: ComponentObject): void;
     function List(component: ComponentObject): void;
-    function Player(component: ComponentObject): void;
-    function PlayerControl(componentObject: ComponentObject, playerControlComponentObject: ComponentObject): void;
+    function MediaPlayer(component: ComponentObject): void;
+    function MediaControl(componentObject: ComponentObject, mediaControlComponentObject: ComponentObject): void;
     function Searchbox(component: ComponentObject): void;
     function Sidepane(component: ComponentObject): void;
     function Toast(component: ComponentObject): void;
@@ -167,38 +165,64 @@ declare namespace syiro.listitem {
     function SetLabel(component: ComponentObject, content: string): boolean;
     function SetLink(component: ComponentObject, properties: any): boolean;
 }
-declare namespace syiro.player {
+declare module syiro.mediaplayer {
+    function New(properties: Object): ComponentObject;
+    function CenterInformation(component: ComponentObject): void;
+    function Configure(component: ComponentObject): void;
     function DurationChange(component: ComponentObject): void;
     function FetchInnerContentElement(component: ComponentObject): HTMLMediaElement;
     function FetchSources(component: ComponentObject): Array<Object>;
+    function GenerateSources(type: string, sources: Array<string>): Array<HTMLElement>;
     function GetPlayerLengthInfo(component: ComponentObject): Object;
-    function IsPlayable(component: ComponentObject): boolean;
+    function IsPlayable(component: ComponentObject, returnIsStreamble?: boolean): (string | boolean);
     function IsPlaying(component: ComponentObject): boolean;
     function IsStreamable(component: ComponentObject): boolean;
-    function GenerateSources(type: string, sources: Array<string>): Array<HTMLElement>;
     function PlayOrPause(component: ComponentObject, playButtonObjectOrElement?: any): void;
     function Reset(component: ComponentObject): void;
     function SetSources(component: ComponentObject, sources: any): void;
-    function SetTime(...args: any[]): void;
+    function SetTime(component: ComponentObject, setting: any): void;
     function SetVolume(component: ComponentObject, volume: number, fromEvent?: string): void;
     function ToggleFullscreen(component: ComponentObject): void;
     function ToggleMenuDialog(component: ComponentObject): void;
 }
-declare namespace syiro.playercontrol {
+declare module syiro.mediacontrol {
     function New(properties: Object): ComponentObject;
-    var Generate: typeof New;
-    function ShowVolumeSlider(playerControlComponent: ComponentObject, volumeButtonComponent: ComponentObject): void;
+    function ShowVolumeSlider(mediaControlComponent: ComponentObject, volumeButtonComponent: ComponentObject): void;
     function TimeLabelUpdater(component: ComponentObject, timePart: number, value: any): void;
     function Toggle(component: ComponentObject, forceShow?: boolean): void;
 }
+declare namespace syiro.player {
+    var New: typeof mediaplayer.New;
+    var Generate: typeof mediaplayer.New;
+    var DurationChange: typeof mediaplayer.DurationChange;
+    var FetchInnerContentElement: typeof mediaplayer.FetchInnerContentElement;
+    var FetchSources: typeof mediaplayer.FetchSources;
+    var GenerateSources: typeof mediaplayer.GenerateSources;
+    var GetPlayerLengthInfo: typeof mediaplayer.GetPlayerLengthInfo;
+    var IsPlaying: typeof mediaplayer.IsPlaying;
+    var IsPlayable: typeof mediaplayer.IsPlayable;
+    var IsStreamable: typeof mediaplayer.IsStreamable;
+    var PlayOrPause: typeof mediaplayer.PlayOrPause;
+    var Reset: typeof mediaplayer.Reset;
+    var SetSources: typeof mediaplayer.SetSources;
+    var SetTime: typeof mediaplayer.SetTime;
+    var SetVolume: typeof mediaplayer.SetVolume;
+    var ToggleFullscreen: typeof mediaplayer.ToggleFullscreen;
+    var ToggleMenuDialog: typeof mediaplayer.ToggleMenuDialog;
+}
+declare namespace syiro.playercontrol {
+    var New: typeof mediacontrol.New;
+    var Generate: typeof mediacontrol.New;
+    var ShowVolumeSlider: typeof mediacontrol.ShowVolumeSlider;
+    var TimeLabelUpdater: typeof mediacontrol.TimeLabelUpdater;
+    var Toggle: typeof mediacontrol.Toggle;
+}
 declare namespace syiro.audioplayer {
-    function New(properties: Object): any;
-    var Generate: typeof New;
-    function CenterInformation(component: ComponentObject): void;
+    function New(properties: Object): ComponentObject;
+    var CenterInformation: typeof mediaplayer.CenterInformation;
 }
 declare namespace syiro.videoplayer {
-    function New(properties: Object): any;
-    var Generate: typeof New;
+    function New(properties: Object): ComponentObject;
 }
 declare namespace syiro.searchbox {
     function New(properties: Object): ComponentObject;

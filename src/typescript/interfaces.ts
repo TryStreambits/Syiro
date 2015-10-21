@@ -26,14 +26,6 @@ interface Document {
 
 // #endregion
 
-// #region Component Object
-
-interface ComponentObject extends Object {
-
-}
-
-// #endregion
-
 interface Console { // Implement Mozilla Console Profile spec.
 	profileEnd(profile ?: string);
 }

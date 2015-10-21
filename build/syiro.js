@@ -1003,12 +1003,8 @@ var syiro;
                     case "list":
                         syiro.init.List(component);
                         break;
-                    case "audio-player":
-                        syiro.init.Player(component);
-                        syiro.render.Scale(component);
-                        break;
-                    case "video-player":
-                        syiro.init.Player(component);
+                    case "media-player":
+                        syiro.init.MediaPlayer(component);
                         syiro.render.Scale(component);
                         break;
                     case "searchbox":
@@ -1060,21 +1056,24 @@ var syiro;
             }
         }
         init.List = List;
-        function Player(component) {
+        function MediaPlayer(component) {
             if (syiro.data.Read(component["id"] + "->NoUX") == false) {
                 var componentElement = syiro.component.Fetch(component);
-                var innerContentElement = syiro.player.FetchInnerContentElement(component);
-                var playerControlArea = componentElement.querySelector('div[data-syiro-component="player-control"]');
-                var playerControlComponent = syiro.component.FetchComponentObject(playerControlArea);
+                var innerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
+                var mediaPlayerType = componentElement.getAttribute("data-syiro-component-type");
+                var mediaControlArea = componentElement.querySelector('div[data-syiro-component="media-control"]');
+                var mediaControlComponent = syiro.component.FetchComponentObject(mediaControlArea);
                 syiro.events.Add("contextmenu", innerContentElement, function () {
                     var e = arguments[1];
                     e.preventDefault();
                 });
-                syiro.events.Add("durationchange", innerContentElement, syiro.player.DurationChange.bind(this, component));
-                syiro.events.Add("timeupdate", innerContentElement, syiro.player.SetTime.bind(this, component, "tick"));
-                syiro.events.Add("ended", innerContentElement, syiro.player.Reset.bind(this, component));
+                syiro.events.Add("durationchange", innerContentElement, syiro.mediaplayer.DurationChange.bind(this, component));
+                syiro.events.Add("timeupdate", innerContentElement, function () {
+                    syiro.mediaplayer.SetTime(arguments[0], "tick");
+                }.bind(this, component, "tick"));
+                syiro.events.Add("ended", innerContentElement, syiro.mediaplayer.Reset.bind(this, component));
                 var contentElementObserver = new MutationObserver(function () {
-                    syiro.player.IsPlayable(arguments[0]);
+                    syiro.mediaplayer.Reset(arguments[0]);
                 }.bind(this, component));
                 var contentElementObserverOptions = {
                     childList: false,
@@ -1083,31 +1082,31 @@ var syiro;
                     subtree: false
                 };
                 contentElementObserver.observe(innerContentElement, contentElementObserverOptions);
-                syiro.init.PlayerControl(component, playerControlComponent);
-                if (component["type"] == "audio-player") {
+                syiro.init.MediaControl(component, mediaControlComponent);
+                if (mediaPlayerType == "audio") {
                     syiro.audioplayer.CenterInformation(component);
                 }
-                if (component["type"] == "video-player") {
+                else if (mediaPlayerType == "video") {
                     if (syiro.device.SupportsTouch) {
-                        syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.playercontrol.Toggle.bind(this, playerControlComponent));
+                        syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.mediacontrol.Toggle.bind(this, mediaControlComponent));
                     }
                     else {
-                        syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, syiro.player.PlayOrPause.bind(this, component));
-                        syiro.events.Add(["mouseenter", "mouseleave"], componentElement, syiro.playercontrol.Toggle.bind(this, playerControlComponent));
+                        syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, syiro.mediaplayer.PlayOrPause.bind(this, component));
+                        syiro.events.Add(["mouseenter", "mouseleave"], componentElement, syiro.mediacontrol.Toggle.bind(this, mediaControlComponent));
                     }
                 }
-                syiro.player.IsPlayable(component);
+                syiro.mediaplayer.Configure(component);
             }
         }
-        init.Player = Player;
-        function PlayerControl(componentObject, playerControlComponentObject) {
-            var playerControlElement = syiro.component.Fetch(playerControlComponentObject);
-            var playerRange = playerControlElement.querySelector('input[type="range"]');
+        init.MediaPlayer = MediaPlayer;
+        function MediaControl(componentObject, mediaControlComponentObject) {
+            var mediaControlElement = syiro.component.Fetch(mediaControlComponentObject);
+            var playerRange = mediaControlElement.querySelector('input[type="range"]');
             syiro.events.Add(syiro.events.eventStrings["down"], playerRange, function () {
                 var playerComponentObject = arguments[0];
                 syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true);
-                if ((syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) && (syiro.player.IsPlaying(playerComponentObject))) {
-                    syiro.player.PlayOrPause(playerComponentObject);
+                if ((syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) && (syiro.mediaplayer.IsPlaying(playerComponentObject))) {
+                    syiro.mediaplayer.PlayOrPause(playerComponentObject);
                 }
             }.bind(this, componentObject));
             syiro.events.Add(syiro.events.eventStrings["up"], playerRange, function () {
@@ -1115,7 +1114,7 @@ var syiro;
                 var playerRange = arguments[1];
                 if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) {
                     syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue");
-                    syiro.player.PlayOrPause(playerComponentObject);
+                    syiro.mediaplayer.PlayOrPause(playerComponentObject);
                 }
             }.bind(this, componentObject));
             syiro.events.Add("input", playerRange, function () {
@@ -1123,30 +1122,30 @@ var syiro;
                 var playerRange = arguments[1];
                 var valueNum = Number(playerRange.value);
                 if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) {
-                    syiro.player.SetTime(playerComponentObject, valueNum);
+                    syiro.mediaplayer.SetTime(playerComponentObject, valueNum);
                 }
                 else {
-                    syiro.player.SetVolume(playerComponentObject, valueNum, "input");
+                    syiro.mediaplayer.SetVolume(playerComponentObject, valueNum, "input");
                 }
             }.bind(this, componentObject));
-            var playButton = playerControlElement.querySelector('div[data-syiro-render-icon="play"]');
-            syiro.events.Add(syiro.events.eventStrings["up"], playButton, syiro.player.PlayOrPause.bind(this, componentObject));
-            var volumeButton = playerControlElement.querySelector('div[data-syiro-render-icon="volume"]');
+            var playButton = mediaControlElement.querySelector('div[data-syiro-render-icon="play"]');
+            syiro.events.Add(syiro.events.eventStrings["up"], playButton, syiro.mediaplayer.PlayOrPause.bind(this, componentObject));
+            var volumeButton = mediaControlElement.querySelector('div[data-syiro-render-icon="volume"]');
             var volumeButtonComponent = syiro.component.FetchComponentObject(volumeButton);
-            syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, syiro.playercontrol.ShowVolumeSlider.bind(this, playerControlComponentObject));
-            var menuButton = playerControlElement.querySelector('div[data-syiro-render-icon="menu"]');
+            syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, syiro.mediacontrol.ShowVolumeSlider.bind(this, mediaControlComponentObject));
+            var menuButton = mediaControlElement.querySelector('div[data-syiro-render-icon="menu"]');
             if (menuButton !== null) {
                 var menuButtonObject = syiro.component.FetchComponentObject(menuButton);
-                syiro.events.Add(syiro.events.eventStrings["up"], menuButtonObject, syiro.player.ToggleMenuDialog.bind(this, componentObject));
+                syiro.events.Add(syiro.events.eventStrings["up"], menuButtonObject, syiro.mediaplayer.ToggleMenuDialog.bind(this, componentObject));
             }
             if (componentObject["type"] == "video-player") {
-                var fullscreenButtonElement = playerControlElement.querySelector('div[data-syiro-render-icon="fullscreen"]');
+                var fullscreenButtonElement = mediaControlElement.querySelector('div[data-syiro-render-icon="fullscreen"]');
                 if (fullscreenButtonElement !== null) {
-                    syiro.events.Add(syiro.events.eventStrings["up"], fullscreenButtonElement, syiro.player.ToggleFullscreen.bind(this, componentObject));
+                    syiro.events.Add(syiro.events.eventStrings["up"], fullscreenButtonElement, syiro.mediaplayer.ToggleFullscreen.bind(this, componentObject));
                 }
             }
         }
-        init.PlayerControl = PlayerControl;
+        init.MediaControl = MediaControl;
         function Searchbox(component) {
             var componentElement = syiro.component.Fetch(component);
             if (syiro.data.Read(component["id"] + "->suggestions") !== false) {
@@ -1541,9 +1540,9 @@ var syiro;
                     for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++) {
                         var thisPlayer = allPlayers[allPlayersIndex];
                         syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer));
-                        if (thisPlayer.getAttribute("data-syiro-component") == "audioplayer") {
-                            var audioPlayerComponent = syiro.component.FetchComponentObject(thisPlayer);
-                            syiro.audioplayer.CenterInformation(audioPlayerComponent);
+                        if (thisPlayer.getAttribute("data-syiro-component-type") == "audio") {
+                            var mediaPlayerComponent = syiro.component.FetchComponentObject(thisPlayer);
+                            syiro.mediaplayer.CenterInformation(mediaPlayerComponent);
                         }
                     }
                     if (arguments[0] == "interval") {
@@ -2161,57 +2160,242 @@ var syiro;
     })(listitem = syiro.listitem || (syiro.listitem = {}));
 })(syiro || (syiro = {}));
 /*
-    This is a file containing the namespace for the Syiro Audio Player and Video Player, as well as shared player functionality.
-    The Audio Player is exposed via syiro.audioplayer.
-    The Video Player is exposed via syiro.videoplayer.
-    The shared Player functionality is exposed via syiro.player.
+    This is a file containing the Media Player Component
 */
 /// <reference path="component.ts" />
 /// <reference path="events.ts" />
 /// <reference path="generator.ts" />
 /// <reference path="interfaces.ts" />
+/// <reference path="players.ts" />
 /// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
-    var player;
-    (function (player) {
+    var mediaplayer;
+    (function (mediaplayer) {
+        function New(properties) {
+            var syiroComponentData = { "scaling": {} };
+            var componentObject = {
+                "id": syiro.component.IdGen("media-player"),
+                "type": "media-player"
+            };
+            var componentElement = syiro.utilities.ElementCreator("div", {
+                "data-syiro-component-id": componentObject.id, "data-syiro-component": "media-player",
+                "data-syiro-component-type": properties["type"], "name": componentObject.id
+            });
+            var mediaPlayerElement;
+            var mediaPlayerProperties = { "preload": "metadata", "UIWebView": "allowsInlineMediaPlayback", "volume": "0.5" };
+            if (typeof properties["type"] == "undefined") {
+                properties["type"] = "video";
+            }
+            if (navigator.userAgent.indexOf("iPhone") == -1) {
+                if ((typeof properties["ForceLiveUX"] == "boolean") && (properties["ForceLiveUX"])) {
+                    syiroComponentData["ForceLiveUX"] = true;
+                }
+                var mediaControlComponent = syiro.mediacontrol.New(properties);
+                var mediaControlElement = syiro.component.Fetch(mediaControlComponent);
+                if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")) {
+                    if (properties["menu"]["type"] == "list") {
+                        var playerMenuDialog = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "player-menu" });
+                        playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content": "Menu" }));
+                        playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"]));
+                        componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
+                    }
+                }
+                if (properties["type"] == "audio") {
+                    if ((typeof properties["title"] !== "undefined") || (typeof properties["artist"] !== "undefined")) {
+                        properties["generate-content-info"] = true;
+                    }
+                    if (typeof properties["width"] !== "number") {
+                        properties["width"] = 400;
+                    }
+                    syiro.component.CSS(componentElement, "width", properties["width"].toString() + "px");
+                    syiroComponentData["scaling->initialDimensions"] = [150, properties["width"]],
+                        syiroComponentData["scaling->ratio"] = [0, 0];
+                }
+                else {
+                    if (typeof properties["ratio"] !== "undefined") {
+                        syiroComponentData["scaling->ratio"] = properties["ratio"];
+                        syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]];
+                    }
+                    else if (typeof properties["fill"] !== "undefined") {
+                        syiroComponentData["scaling->fill"] = properties["fill"];
+                    }
+                    else {
+                        syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]];
+                    }
+                }
+                componentElement.appendChild(mediaControlElement);
+            }
+            else {
+                mediaPlayerProperties["NoUX"] = true;
+                mediaPlayerProperties["controls"] = "controls";
+            }
+            if (typeof properties["art"] !== "undefined") {
+                if (navigator.userAgent.indexOf("iPhone") == -1) {
+                    syiro.component.CSS(componentElement, "background-image", 'url("' + properties["art"] + '")');
+                }
+                else {
+                    mediaPlayerProperties["poster"] = properties["art"];
+                }
+            }
+            else {
+                if (properties["type"] == "audio") {
+                    componentElement.setAttribute("data-syiro-audio-player", "mini");
+                    delete properties["menu"];
+                }
+            }
+            mediaPlayerElement = syiro.utilities.ElementCreator(properties["type"], mediaPlayerProperties);
+            mediaPlayerElement.autoplay = false;
+            var sourceElements = syiro.mediaplayer.GenerateSources(properties["type"], properties["sources"]);
+            for (var _i = 0; _i < sourceElements.length; _i++) {
+                var sourceElement = sourceElements[_i];
+                mediaPlayerElement.appendChild(sourceElement);
+            }
+            if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"])) {
+                syiroComponentData["UsingExternalLibrary"] = true;
+            }
+            componentElement.insertBefore(mediaPlayerElement, componentElement.firstChild);
+            syiroComponentData["HTMLElement"] = componentElement;
+            syiro.data.Write(componentObject.id, syiroComponentData);
+            return componentObject;
+        }
+        mediaplayer.New = New;
+        function CenterInformation(component) {
+            var componentElement = syiro.component.Fetch(component);
+            if (componentElement.getAttribute("data-syiro-component-type") == "audio") {
+                var mediaControlElement = componentElement.querySelector('div[data-syiro-component="media-control"]');
+                var audioInformation = mediaControlElement.querySelector("section");
+                if (audioInformation !== null) {
+                    var audioInformationWidth = ((componentElement.clientWidth / 2) - (audioInformation.clientWidth / 2) - 40);
+                    syiro.component.CSS(audioInformation, "margin-left", audioInformationWidth.toString() + "px");
+                }
+            }
+        }
+        mediaplayer.CenterInformation = CenterInformation;
+        function Configure(component) {
+            var componentElement = syiro.component.Fetch(component);
+            var playerInnerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
+            var mediaControl = componentElement.querySelector('div[data-syiro-component="media-control"]');
+            if (syiro.data.Read(component["id"] + "->NoUX") == false) {
+                if (componentElement.getAttribute("data-syiro-component-type") == "video") {
+                    componentElement.removeAttribute("data-syiro-show-video");
+                }
+                var playButton = mediaControl.querySelector('div[data-syiro-render-icon="play"]');
+                syiro.component.CSS(playButton, "background-image", "");
+                playButton.removeAttribute("active");
+                var volumeControl = mediaControl.querySelector('div[data-syiro-render-icon="volume"]');
+                if (volumeControl !== null) {
+                    volumeControl.removeAttribute("active");
+                }
+                var isPlayableOrStreamable = syiro.mediaplayer.IsPlayable(component, true);
+                var playerErrorNotice = componentElement.querySelector('div[data-syiro-minor-component="player-error"]');
+                if (playerErrorNotice == null) {
+                    playerErrorNotice = syiro.utilities.ElementCreator("div", {
+                        "data-syiro-minor-component": "player-error", "content": "This content is not capable of being played on this browser or device."
+                    });
+                    var playerHalfHeight = ((componentElement.clientHeight - 40) / 2);
+                    syiro.component.CSS(playerErrorNotice, "width", componentElement.clientWidth.toString() + "px");
+                    syiro.component.CSS(playerErrorNotice, "padding-top", playerHalfHeight.toString() + "px");
+                    syiro.component.CSS(playerErrorNotice, "padding-bottom", playerHalfHeight.toString() + "px");
+                    componentElement.insertBefore(playerErrorNotice, componentElement.firstChild);
+                }
+                var innerTimeLabel = mediaControl.querySelector("time");
+                if ((isPlayableOrStreamable == true) || (isPlayableOrStreamable == "streamable")) {
+                    if (isPlayableOrStreamable == "streamable") {
+                        syiro.data.Write(component["id"] + "->IsStreaming", true);
+                        mediaControl.setAttribute("data-syiro-component-streamstyling", "");
+                        if (innerTimeLabel !== null) {
+                            innerTimeLabel.setAttribute("data-syiro-component-live", "");
+                            innerTimeLabel.textContent = "Live";
+                        }
+                    }
+                    else if (isPlayableOrStreamable == true) {
+                        syiro.data.Delete(component["id"] + "->IsStreaming");
+                        mediaControl.removeAttribute("data-syiro-component-streamstyling");
+                        if (innerTimeLabel !== null) {
+                            innerTimeLabel.removeAttribute("data-syiro-component-live");
+                            innerTimeLabel.textContent = "00:00";
+                            var playerMediaLengthInformation = syiro.mediaplayer.GetPlayerLengthInfo(component);
+                            var mediaControlComponent = syiro.component.FetchComponentObject(mediaControl);
+                            syiro.mediacontrol.TimeLabelUpdater(mediaControlComponent, 1, playerMediaLengthInformation["max"]);
+                        }
+                    }
+                    syiro.component.CSS(playerErrorNotice, "visibility", "");
+                }
+                else {
+                    syiro.component.CSS(playerErrorNotice, "visibility", "visible");
+                }
+            }
+            syiro.data.Delete(component.id + "->IsChangingInputValue");
+            syiro.data.Delete(component.id + "->IsChangingVolume");
+        }
+        mediaplayer.Configure = Configure;
         function DurationChange(component) {
             if (syiro.data.Read(component["id"] + "->IsStreaming") == false) {
                 var componentElement = syiro.component.Fetch(component);
-                var playerControlElement = componentElement.querySelector('div[data-syiro-component="player-control"]');
-                var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
-                var playerRange = playerControlElement.querySelector('input[type="range"]');
-                var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(component);
+                var mediaControlElement = componentElement.querySelector('div[data-syiro-component="media-control"]');
+                var mediaControlComponent = syiro.component.FetchComponentObject(mediaControlElement);
+                var playerRange = mediaControlElement.querySelector('input[type="range"]');
+                var playerMediaLengthInformation = syiro.mediaplayer.GetPlayerLengthInfo(component);
                 playerRange.setAttribute("max", playerMediaLengthInformation["max"]);
                 playerRange.setAttribute("step", playerMediaLengthInformation["step"]);
-                syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
+                syiro.mediacontrol.TimeLabelUpdater(mediaControlComponent, 1, playerMediaLengthInformation["max"]);
             }
         }
-        player.DurationChange = DurationChange;
+        mediaplayer.DurationChange = DurationChange;
         function FetchInnerContentElement(component) {
             var componentElement = syiro.component.Fetch(component);
-            return componentElement.querySelector(component["type"].replace("-player", ""));
+            return componentElement.querySelector(componentElement.getAttribute("data-syiro-component-type"));
         }
-        player.FetchInnerContentElement = FetchInnerContentElement;
+        mediaplayer.FetchInnerContentElement = FetchInnerContentElement;
         function FetchSources(component) {
-            var innerContentElement = syiro.player.FetchInnerContentElement(component);
+            var innerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
             var sourceTags = innerContentElement.getElementsByTagName("source");
             var sourcesArray = [];
             for (var sourceElementIndex = 0; sourceElementIndex < sourceTags.length; sourceElementIndex++) {
-                var sourceElement = sourceTags.item(sourceElementIndex);
-                if (typeof sourceElement !== "undefined") {
-                    sourcesArray.push({
-                        "src": sourceElement.getAttribute("src"),
-                        "type": sourceElement.getAttribute("type")
-                    });
-                }
+                var sourceElement = sourceTags[sourceElementIndex];
+                sourcesArray.push({
+                    "src": sourceElement.getAttribute("src"),
+                    "streamable": sourceElement.getAttribute("data-syiro-streamble-source"),
+                    "type": sourceElement.getAttribute("type")
+                });
             }
             return sourcesArray;
         }
-        player.FetchSources = FetchSources;
+        mediaplayer.FetchSources = FetchSources;
+        function GenerateSources(type, sources) {
+            var sourceElements = [];
+            for (var _i = 0; _i < sources.length; _i++) {
+                var source = sources[_i];
+                var streamingProtocol = source.substr(0, source.indexOf(":"));
+                var sourceExtension = source.substr(source.lastIndexOf(".")).replace(".", "");
+                var sourceTagAttributes = { "src": source };
+                if (source.substr(-1) !== ";") {
+                    if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")) {
+                        sourceTagAttributes["data-syiro-streamable-source"] = "true";
+                        sourceTagAttributes["type"] = streamingProtocol + "/" + sourceExtension;
+                    }
+                    else {
+                        if (sourceExtension == "m3u8") {
+                            sourceTagAttributes["data-syiro-streamable-source"] = "true";
+                            sourceTagAttributes["type"] = "application/x-mpegurl";
+                        }
+                        else {
+                            if (sourceExtension == "mov") {
+                                sourceExtension = "quicktime";
+                            }
+                            sourceTagAttributes["type"] = type + "/" + sourceExtension;
+                        }
+                    }
+                    sourceElements.push(syiro.utilities.ElementCreator("source", sourceTagAttributes));
+                }
+            }
+            return sourceElements;
+        }
+        mediaplayer.GenerateSources = GenerateSources;
         function GetPlayerLengthInfo(component) {
             var playerLengthInfo = {};
-            var contentDuration = syiro.player.FetchInnerContentElement(component).duration;
+            var contentDuration = syiro.mediaplayer.FetchInnerContentElement(component).duration;
             if ((isNaN(contentDuration) == false) && (isFinite(contentDuration))) {
                 playerLengthInfo["max"] = contentDuration;
                 if (contentDuration < 60) {
@@ -2237,144 +2421,71 @@ var syiro;
             }
             return playerLengthInfo;
         }
-        player.GetPlayerLengthInfo = GetPlayerLengthInfo;
-        function IsPlayable(component) {
+        mediaplayer.GetPlayerLengthInfo = GetPlayerLengthInfo;
+        function IsPlayable(component, returnIsStreamble) {
             var componentElement = syiro.component.Fetch(component);
-            var innerContentElement = syiro.player.FetchInnerContentElement(component);
-            var playerErrorNotice = componentElement.querySelector('div[data-syiro-minor-component="player-error"]');
+            var innerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
             var isPlayable = false;
-            var isStreamable = syiro.player.IsStreamable(component);
+            var isStreamable = false;
             if (syiro.data.Read(component["id"] + "->UsingExternalLibrary")) {
                 isPlayable = true;
+                isStreamable = true;
             }
             else {
-                var sourceElementsInfo = syiro.player.FetchSources(component);
+                var sourceElementsInfo = syiro.mediaplayer.FetchSources(component);
                 for (var _i = 0; _i < sourceElementsInfo.length; _i++) {
                     var sourceElementInfo = sourceElementsInfo[_i];
                     if (innerContentElement.canPlayType(sourceElementInfo["type"]) !== "") {
                         isPlayable = true;
                     }
+                    if (!isStreamable) {
+                        if ((syiro.utilities.TypeOfThing(sourceElementInfo["streamable"], "string")) && (sourceElementInfo["streamable"] == "true")) {
+                            isStreamable = true;
+                        }
+                    }
                 }
             }
-            if (syiro.data.Read(component["id"] + "->NoUX") == false) {
-                if (playerErrorNotice == null) {
-                    playerErrorNotice = syiro.utilities.ElementCreator("div", {
-                        "data-syiro-minor-component": "player-error", "content": "This content is not capable of being played on this browser or device."
-                    });
-                    var playerHalfHeight = ((componentElement.clientHeight - 40) / 2);
-                    syiro.component.CSS(playerErrorNotice, "width", componentElement.clientWidth.toString() + "px");
-                    syiro.component.CSS(playerErrorNotice, "padding-top", playerHalfHeight.toString() + "px");
-                    syiro.component.CSS(playerErrorNotice, "padding-bottom", playerHalfHeight.toString() + "px");
-                    componentElement.insertBefore(playerErrorNotice, componentElement.firstChild);
-                }
-                if (isPlayable || isStreamable) {
-                    syiro.component.CSS(playerErrorNotice, "visibility", "");
-                }
-                else {
-                    syiro.component.CSS(playerErrorNotice, "visibility", "visible");
-                }
+            if (returnIsStreamble && isStreamable) {
+                return "streamable";
             }
-            return isPlayable;
+            else if (isPlayable) {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-        player.IsPlayable = IsPlayable;
+        mediaplayer.IsPlayable = IsPlayable;
         function IsPlaying(component) {
             var componentElement = syiro.component.Fetch(component);
-            var isPaused = componentElement.querySelector(component["type"].replace("-player", "")).paused;
+            var isPaused = syiro.mediaplayer.FetchInnerContentElement(component).paused;
             return !isPaused;
         }
-        player.IsPlaying = IsPlaying;
+        mediaplayer.IsPlaying = IsPlaying;
         function IsStreamable(component) {
-            var componentElement = syiro.component.Fetch(component);
-            var playerControlElement = componentElement.querySelector('div[data-syiro-component="player-control"]');
-            var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
-            var isStreamble = false;
-            if (syiro.data.Read(component["id"] + "->UsingExternalLibrary")) {
-                isStreamble = true;
-            }
-            else {
-                var sourceElementsInfo = syiro.player.FetchSources(component);
-                for (var _i = 0; _i < sourceElementsInfo.length; _i++) {
-                    var sourceElementInfo = sourceElementsInfo[_i];
-                    var source = sourceElementInfo["src"];
-                    var streamingProtocol = source.substr(0, source.indexOf(":"));
-                    var sourceExtension = source.substr(source.lastIndexOf(".")).replace(".", "");
-                    if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")) {
-                        isStreamble = true;
-                    }
-                    else if ((streamingProtocol.indexOf("http") == 0) && (sourceExtension == "m3u8")) {
-                        isStreamble = true;
-                    }
-                }
-            }
-            if (isStreamble) {
-                syiro.data.Write(component["id"] + "->IsStreaming", true);
-                playerControlElement.setAttribute("data-syiro-component-streamstyling", "");
-                if (playerControlElement.querySelector("time") !== null) {
-                    playerControlElement.querySelector("time").setAttribute("data-syiro-component-live", "");
-                    playerControlElement.querySelector("time").textContent = "Live";
-                }
-            }
-            else {
-                syiro.data.Delete(component["id"] + "->IsStreaming");
-                playerControlElement.removeAttribute("data-syiro-component-streamstyling");
-                if (playerControlElement.querySelector("time") !== null) {
-                    playerControlElement.querySelector("time").removeAttribute("data-syiro-component-live");
-                    playerControlElement.querySelector("time").textContent = "00:00";
-                    var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(component);
-                    syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 1, playerMediaLengthInformation["max"]);
-                }
-            }
-            return isStreamble;
+            return (syiro.mediaplayer.IsPlayable(component, true) == "streamable");
         }
-        player.IsStreamable = IsStreamable;
-        function GenerateSources(type, sources) {
-            var sourceElements = [];
-            for (var _i = 0; _i < sources.length; _i++) {
-                var source = sources[_i];
-                var streamingProtocol = source.substr(0, source.indexOf(":"));
-                var sourceExtension = source.substr(source.lastIndexOf(".")).replace(".", "");
-                var sourceTagAttributes = { "src": source };
-                if (source.substr(-1) !== ";") {
-                    if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")) {
-                        sourceTagAttributes["type"] = streamingProtocol + "/" + sourceExtension;
-                    }
-                    else {
-                        if (sourceExtension == "m3u8") {
-                            sourceTagAttributes["type"] = "application/x-mpegurl";
-                        }
-                        else {
-                            if (sourceExtension == "mov") {
-                                sourceExtension = "quicktime";
-                            }
-                            sourceTagAttributes["type"] = type + "/" + sourceExtension;
-                        }
-                    }
-                    sourceElements.push(syiro.utilities.ElementCreator("source", sourceTagAttributes));
-                }
-            }
-            return sourceElements;
-        }
-        player.GenerateSources = GenerateSources;
+        mediaplayer.IsStreamable = IsStreamable;
         function PlayOrPause(component, playButtonObjectOrElement) {
-            var playerComponentElement = syiro.component.Fetch(component);
-            var innerContentElement = syiro.player.FetchInnerContentElement(component);
+            var componentElement = syiro.component.Fetch(component);
+            var innerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
             var typeOfPlayButtonObject = syiro.utilities.TypeOfThing(playButtonObjectOrElement);
             var playButton;
             if (component["type"] == "video-player") {
-                playerComponentElement.setAttribute("data-syiro-show-video", "true");
+                componentElement.setAttribute("data-syiro-show-video", "true");
             }
             if (typeOfPlayButtonObject == "ComponentObject") {
                 playButton = syiro.component.Fetch(playButtonObjectOrElement);
             }
             else {
-                if ((typeof typeOfPlayButtonObject !== "Element") || (playButtonObjectOrElement.getAttribute("data-syiro-render-icon") !== "play")) {
-                    playButton = playerComponentElement.querySelector('div[data-syiro-render-icon="play"]');
+                if ((typeOfPlayButtonObject !== "Element") || (playButtonObjectOrElement.getAttribute("data-syiro-render-icon") !== "play")) {
+                    playButton = componentElement.querySelector('div[data-syiro-render-icon="play"]');
                 }
                 else {
                     playButton = playButtonObjectOrElement;
                 }
             }
-            if (syiro.player.IsPlaying(component)) {
+            if (syiro.mediaplayer.IsPlaying(component)) {
                 innerContentElement.pause();
                 playButton.removeAttribute("active");
             }
@@ -2383,42 +2494,25 @@ var syiro;
                 playButton.setAttribute("active", "pause");
             }
         }
-        player.PlayOrPause = PlayOrPause;
+        mediaplayer.PlayOrPause = PlayOrPause;
         function Reset(component) {
             var playerElement = syiro.component.Fetch(component);
-            var playerInnerContentElement = syiro.player.FetchInnerContentElement(component);
-            var playerControl = playerElement.querySelector('div[data-syiro-component="player-control"]');
-            if (syiro.player.IsPlaying(component)) {
+            var playerInnerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
+            if (syiro.mediaplayer.IsPlaying(component)) {
                 playerInnerContentElement.pause();
             }
-            syiro.player.SetTime(component, 0);
-            syiro.player.IsPlayable(component);
-            if (syiro.data.Read(component["id"] + "->NoUX") == false) {
-                if (component["type"] == "video-player") {
-                    playerElement.removeAttribute("data-syiro-show-video");
-                }
-                var playButton = playerControl.querySelector('div[data-syiro-render-icon="play"]');
-                syiro.component.CSS(playButton, "background-image", "");
-                playButton.removeAttribute("active");
-                var volumeControl = playerControl.querySelector('div[data-syiro-render-icon="volume"]');
-                if (volumeControl !== null) {
-                    volumeControl.removeAttribute("active");
-                }
-            }
-            syiro.data.Delete(component["id"] + "->IsChangingInputValue");
-            syiro.data.Delete(component["id"] + "->IsChangingVolume");
+            syiro.mediaplayer.SetTime(component, 0);
+            syiro.mediaplayer.Configure(component);
         }
-        player.Reset = Reset;
+        mediaplayer.Reset = Reset;
         function SetSources(component, sources) {
             var playerElement = syiro.component.Fetch(component);
-            var playerControlElement = playerElement.querySelector('div[data-syiro-component="player-control"]');
-            var playerInnerContentElement = syiro.player.FetchInnerContentElement(component);
-            var contentType = component["type"].replace("-player", "");
-            var isStreamableContent = false;
+            var playerInnerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
+            var contentType = playerInnerContentElement.nodeName.toLowerCase();
             if (typeof sources == "string") {
                 sources = [sources];
             }
-            var sourceElements = syiro.player.GenerateSources(contentType, sources);
+            var sourceElements = syiro.mediaplayer.GenerateSources(contentType, sources);
             playerInnerContentElement.innerHTML = "";
             for (var _i = 0; _i < sourceElements.length; _i++) {
                 var sourceElement = sourceElements[_i];
@@ -2427,45 +2521,32 @@ var syiro;
             playerInnerContentElement.setAttribute("src", sources[0]);
             playerInnerContentElement.src = sources[0];
         }
-        player.SetSources = SetSources;
-        function SetTime() {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
-            }
+        mediaplayer.SetSources = SetSources;
+        function SetTime(component, setting) {
             var component = arguments[0];
             var componentElement = syiro.component.Fetch(component);
-            var playerInnerContentElement;
-            var time;
-            var fromEvent;
-            if (arguments.length == 2) {
-                playerInnerContentElement = syiro.player.FetchInnerContentElement(component);
-                time = arguments[1];
-            }
-            else if (arguments.length > 2) {
-                playerInnerContentElement = arguments[2];
-                fromEvent = arguments[1];
-            }
-            var currentPlayerTime = playerInnerContentElement.currentTime;
-            if ((typeof time == "number") && (currentPlayerTime !== time)) {
-                if (time <= playerInnerContentElement.duration) {
+            var playerInnerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
+            var currentTime = playerInnerContentElement.currentTime;
+            var time = currentTime;
+            var fromEvent = true;
+            if (typeof setting == "number") {
+                time = setting;
+                fromEvent = false;
+                if ((currentTime !== time) && (time <= playerInnerContentElement.duration)) {
                     playerInnerContentElement.currentTime = time;
                 }
             }
-            else if ((typeof fromEvent == "string") && (fromEvent == "tick")) {
-                time = currentPlayerTime;
-            }
-            var playerControlElement = componentElement.querySelector('div[data-syiro-component="player-control"]');
-            var playerControlComponent = syiro.component.FetchComponentObject(playerControlElement);
-            var playerRange = playerControlElement.querySelector("input");
-            syiro.playercontrol.TimeLabelUpdater(playerControlComponent, 0, time);
+            var mediaControlElement = componentElement.querySelector('div[data-syiro-component="media-control"]');
+            var mediaControlComponent = syiro.component.FetchComponentObject(mediaControlElement);
+            var playerRange = mediaControlElement.querySelector("input");
+            syiro.mediacontrol.TimeLabelUpdater(mediaControlComponent, 0, time);
             if (syiro.data.Read(component["id"] + "->IsStreaming") == false) {
                 var allowInputChange = false;
                 var isChangingInputValue = syiro.data.Read(component["id"] + "->IsChangingInputValue");
-                if ((typeof fromEvent == "undefined") && (isChangingInputValue)) {
+                if ((!fromEvent) && (isChangingInputValue)) {
                     allowInputChange = true;
                 }
-                else if ((fromEvent == "tick") && (isChangingInputValue == false)) {
+                else if (fromEvent && (!isChangingInputValue)) {
                     allowInputChange = true;
                 }
                 if (allowInputChange) {
@@ -2477,10 +2558,10 @@ var syiro;
                 }
             }
         }
-        player.SetTime = SetTime;
+        mediaplayer.SetTime = SetTime;
         function SetVolume(component, volume, fromEvent) {
             var playerElement = syiro.component.Fetch(component);
-            var playerInnerContentElement = syiro.player.FetchInnerContentElement(component);
+            var playerInnerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
             var playerRange = playerElement.querySelector('input[type="range"]');
             var inputVolumeValue = volume;
             if ((typeof fromEvent == "string") && (fromEvent == "input")) {
@@ -2503,7 +2584,7 @@ var syiro;
             syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + inputVolumeValue + "%, transparent 0px)");
             playerInnerContentElement.volume = volume;
         }
-        player.SetVolume = SetVolume;
+        mediaplayer.SetVolume = SetVolume;
         function ToggleFullscreen(component) {
             var componentElement = syiro.component.Fetch(component);
             if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
@@ -2535,7 +2616,7 @@ var syiro;
                 }
             }
         }
-        player.ToggleFullscreen = ToggleFullscreen;
+        mediaplayer.ToggleFullscreen = ToggleFullscreen;
         function ToggleMenuDialog(component) {
             var componentElement = syiro.component.Fetch(component);
             var menuDialog = componentElement.querySelector('div[data-syiro-minor-component="player-menu"]');
@@ -2546,7 +2627,7 @@ var syiro;
                     playerMenuHeight = 100;
                 }
                 else {
-                    playerMenuHeight = syiro.player.FetchInnerContentElement(component).clientHeight;
+                    playerMenuHeight = syiro.mediaplayer.FetchInnerContentElement(component).clientHeight;
                 }
                 syiro.component.CSS(menuDialog, "height", playerMenuHeight.toString() + "px");
                 syiro.component.CSS(menuDialog, "width", componentElement.clientWidth.toString() + "px");
@@ -2560,16 +2641,16 @@ var syiro;
                 syiro.component.CSS(menuDialog, "width", "");
             }
         }
-        player.ToggleMenuDialog = ToggleMenuDialog;
-    })(player = syiro.player || (syiro.player = {}));
+        mediaplayer.ToggleMenuDialog = ToggleMenuDialog;
+    })(mediaplayer = syiro.mediaplayer || (syiro.mediaplayer = {}));
 })(syiro || (syiro = {}));
 var syiro;
 (function (syiro) {
-    var playercontrol;
-    (function (playercontrol) {
+    var mediacontrol;
+    (function (mediacontrol) {
         function New(properties) {
-            var componentId = syiro.component.IdGen("player-control");
-            var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "player-control", "data-syiro-component-id": componentId });
+            var component = { "id": syiro.component.IdGen("media-control"), "type": "media-control" };
+            var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": component.type, "data-syiro-component-id": component.id });
             var playButton = syiro.button.New({ "data-syiro-render-icon": "play" });
             var inputRange = syiro.utilities.ElementCreator("input", { "type": "range", "value": "0" });
             componentElement.appendChild(inputRange);
@@ -2585,7 +2666,7 @@ var syiro;
                 componentElement.appendChild(infoSection);
             }
             else {
-                if (properties["is-video-player"]) {
+                if (properties["type"] == "video") {
                     var timeStamp = syiro.utilities.ElementCreator("time", { "content": "00:00 / 00:00" });
                     componentElement.appendChild(timeStamp);
                 }
@@ -2596,7 +2677,7 @@ var syiro;
                     componentElement.appendChild(syiro.component.Fetch(menuButton));
                 }
             }
-            if (typeof properties["is-video-player"] !== "undefined") {
+            if (properties["type"] == "video") {
                 var fullscreenButton = syiro.button.New({ "data-syiro-render-icon": "fullscreen" });
                 componentElement.appendChild(syiro.component.Fetch(fullscreenButton));
             }
@@ -2604,23 +2685,22 @@ var syiro;
                 var volumeButton = syiro.button.New({ "data-syiro-render-icon": "volume" });
                 componentElement.appendChild(syiro.component.Fetch(volumeButton));
             }
-            syiro.data.Write(componentId + "->HTMLElement", componentElement);
-            return { "id": componentId, "type": "player-control" };
+            syiro.data.Write(component.id + "->HTMLElement", componentElement);
+            return component;
         }
-        playercontrol.New = New;
-        playercontrol.Generate = New;
-        function ShowVolumeSlider(playerControlComponent, volumeButtonComponent) {
-            var playerControl = syiro.component.Fetch(playerControlComponent);
+        mediacontrol.New = New;
+        function ShowVolumeSlider(mediaControlComponent, volumeButtonComponent) {
+            var mediaControl = syiro.component.Fetch(mediaControlComponent);
             var volumeButton = syiro.component.Fetch(volumeButtonComponent);
-            var playerComponentObject = syiro.component.FetchComponentObject(playerControl.parentElement);
+            var playerComponentObject = syiro.component.FetchComponentObject(mediaControl.parentElement);
             var playerContentElement = syiro.player.FetchInnerContentElement(playerComponentObject);
-            var playerRange = playerControl.querySelector('input[type="range"]');
+            var playerRange = mediaControl.querySelector('input[type="range"]');
             if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) {
                 syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true);
                 syiro.data.Write(playerComponentObject["id"] + "->IsChangingVolume", true);
                 volumeButton.setAttribute("active", "true");
                 if (syiro.data.Read(playerComponentObject["id"] + "->IsStreaming")) {
-                    playerControl.removeAttribute("data-syiro-component-streamstyling");
+                    mediaControl.removeAttribute("data-syiro-component-streamstyling");
                 }
                 playerRange.setAttribute("max", "10");
                 playerRange.setAttribute("step", "1");
@@ -2629,7 +2709,7 @@ var syiro;
             else {
                 volumeButton.removeAttribute("active");
                 if (syiro.data.Read(playerComponentObject["id"] + "->IsStreaming")) {
-                    playerControl.setAttribute("data-syiro-component-streamstyling", "");
+                    mediaControl.setAttribute("data-syiro-component-streamstyling", "");
                 }
                 var playerMediaLengthInformation = syiro.player.GetPlayerLengthInfo(playerComponentObject);
                 playerRange.setAttribute("max", playerMediaLengthInformation["max"]);
@@ -2639,10 +2719,10 @@ var syiro;
                 syiro.player.SetTime(playerComponentObject, playerContentElement.currentTime);
             }
         }
-        playercontrol.ShowVolumeSlider = ShowVolumeSlider;
+        mediacontrol.ShowVolumeSlider = ShowVolumeSlider;
         function TimeLabelUpdater(component, timePart, value) {
-            var playerControlElement = syiro.component.Fetch(component);
-            var playerTimeElement = playerControlElement.querySelector("time");
+            var mediaControlElement = syiro.component.Fetch(component);
+            var playerTimeElement = mediaControlElement.querySelector("time");
             if (playerTimeElement !== null) {
                 var parsedSecondsToString = "";
                 if (typeof value == "number") {
@@ -2665,12 +2745,12 @@ var syiro;
                 playerTimeElement.textContent = playerTimeElementParts[0] + " / " + playerTimeElementParts[1];
             }
         }
-        playercontrol.TimeLabelUpdater = TimeLabelUpdater;
+        mediacontrol.TimeLabelUpdater = TimeLabelUpdater;
         function Toggle(component, forceShow) {
-            var playerControlElement = syiro.component.Fetch(component);
+            var mediaControlElement = syiro.component.Fetch(component);
             var currentAnimationStored;
-            if (playerControlElement.hasAttribute("data-syiro-animation")) {
-                currentAnimationStored = playerControlElement.getAttribute("data-syiro-animation");
+            if (mediaControlElement.hasAttribute("data-syiro-animation")) {
+                currentAnimationStored = mediaControlElement.getAttribute("data-syiro-animation");
             }
             if (typeof forceShow !== "boolean") {
                 forceShow = null;
@@ -2682,7 +2762,7 @@ var syiro;
                 syiro.animation.FadeOut(component);
             }
             else if ((typeof forceShow == "undefined") || (forceShow == null)) {
-                if ((currentAnimationStored == "fade-out") || (playerControlElement.hasAttribute("data-syiro-animation") == false)) {
+                if ((currentAnimationStored == "fade-out") || (mediaControlElement.hasAttribute("data-syiro-animation") == false)) {
                     syiro.animation.FadeIn(component);
                 }
                 else {
@@ -2690,7 +2770,53 @@ var syiro;
                 }
             }
         }
-        playercontrol.Toggle = Toggle;
+        mediacontrol.Toggle = Toggle;
+    })(mediacontrol = syiro.mediacontrol || (syiro.mediacontrol = {}));
+})(syiro || (syiro = {}));
+/*
+    This is a file containing the namespace for the Syiro Audio Player and Video Player, as well as shared player functionality.
+    The Audio Player is exposed via syiro.audioplayer.
+    The Video Player is exposed via syiro.videoplayer.
+    The shared Player functionality is exposed via syiro.player.
+*/
+/// <reference path="component.ts" />
+/// <reference path="events.ts" />
+/// <reference path="generator.ts" />
+/// <reference path="interfaces.ts" />
+/// <reference path="mediaplayer.ts" />
+/// <reference path="utilities.ts" />
+var syiro;
+(function (syiro) {
+    var player;
+    (function (player) {
+        player.New = syiro.mediaplayer.New;
+        player.Generate = syiro.mediaplayer.New;
+        player.DurationChange = syiro.mediaplayer.DurationChange;
+        player.FetchInnerContentElement = syiro.mediaplayer.FetchInnerContentElement;
+        player.FetchSources = syiro.mediaplayer.FetchSources;
+        player.GenerateSources = syiro.mediaplayer.GenerateSources;
+        player.GetPlayerLengthInfo = syiro.mediaplayer.GetPlayerLengthInfo;
+        player.IsPlaying = syiro.mediaplayer.IsPlaying;
+        player.IsPlayable = syiro.mediaplayer.IsPlayable;
+        player.IsStreamable = syiro.mediaplayer.IsStreamable;
+        player.PlayOrPause = syiro.mediaplayer.PlayOrPause;
+        player.Reset = syiro.mediaplayer.Reset;
+        player.SetSources = syiro.mediaplayer.SetSources;
+        player.SetTime = syiro.mediaplayer.SetTime;
+        player.SetVolume = syiro.mediaplayer.SetVolume;
+        player.ToggleFullscreen = syiro.mediaplayer.ToggleFullscreen;
+        player.ToggleMenuDialog = syiro.mediaplayer.ToggleMenuDialog;
+    })(player = syiro.player || (syiro.player = {}));
+})(syiro || (syiro = {}));
+var syiro;
+(function (syiro) {
+    var playercontrol;
+    (function (playercontrol) {
+        playercontrol.New = syiro.mediacontrol.New;
+        playercontrol.Generate = syiro.mediacontrol.New;
+        playercontrol.ShowVolumeSlider = syiro.mediacontrol.ShowVolumeSlider;
+        playercontrol.TimeLabelUpdater = syiro.mediacontrol.TimeLabelUpdater;
+        playercontrol.Toggle = syiro.mediacontrol.Toggle;
     })(playercontrol = syiro.playercontrol || (syiro.playercontrol = {}));
 })(syiro || (syiro = {}));
 var syiro;
@@ -2698,70 +2824,11 @@ var syiro;
     var audioplayer;
     (function (audioplayer) {
         function New(properties) {
-            if (properties["sources"] !== undefined) {
-                var componentId = syiro.component.IdGen("audio-player");
-                var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "audio-player", "data-syiro-component-id": componentId, "id": componentId, "name": componentId });
-                var audioPlayer = syiro.utilities.ElementCreator("audio", { "preload": "metadata", "volume": "0.5" });
-                audioPlayer.autoplay = false;
-                var sourceElements = syiro.player.GenerateSources("audio", properties["sources"]);
-                for (var _i = 0; _i < sourceElements.length; _i++) {
-                    var sourceElement = sourceElements[_i];
-                    audioPlayer.appendChild(sourceElement);
-                }
-                componentElement.appendChild(audioPlayer);
-                if (typeof properties["art"] !== "undefined") {
-                    syiro.component.CSS(componentElement, "background-image", 'url("' + properties["art"] + '")');
-                }
-                else {
-                    componentElement.setAttribute("data-syiro-audio-player", "mini");
-                    delete properties["menu"];
-                }
-                if ((typeof properties["title"] !== "undefined") || (typeof properties["artist"] !== "undefined")) {
-                    properties["generate-content-info"] = true;
-                }
-                if (typeof properties["width"] !== "number") {
-                    properties["width"] = 400;
-                }
-                syiro.component.CSS(componentElement, "width", properties["width"].toString() + "px");
-                var playerControlComponent = syiro.playercontrol.New(properties);
-                var playerControlElement = syiro.component.Fetch(playerControlComponent);
-                if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")) {
-                    if (properties["menu"]["type"] == "list") {
-                        var playerMenuDialog = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "player-menu" });
-                        playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content": "Menu" }));
-                        playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"]));
-                        componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
-                    }
-                }
-                componentElement.appendChild(playerControlElement);
-                var usingExternalLibrary = false;
-                if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"])) {
-                    usingExternalLibrary = true;
-                }
-                syiro.data.Write(componentId, {
-                    "UsingExternalLibrary": usingExternalLibrary,
-                    "HTMLElement": componentElement,
-                    "scaling->initialDimensions": [150, properties["width"]],
-                    "scaling->ratio": [0, 0]
-                });
-                return { "id": componentId, "type": "audio-player" };
-            }
-            else {
-                return { "error": "no sources defined" };
-            }
+            properties["type"] = "audio";
+            return syiro.mediaplayer.New(properties);
         }
         audioplayer.New = New;
-        audioplayer.Generate = New;
-        function CenterInformation(component) {
-            var componentElement = syiro.component.Fetch(component);
-            var playerControlElement = componentElement.querySelector('div[data-syiro-component="player-control"]');
-            var audioInformation = playerControlElement.querySelector("section");
-            if (audioInformation !== null) {
-                var audioInformationWidth = ((componentElement.clientWidth / 2) - (audioInformation.clientWidth / 2) - 40);
-                syiro.component.CSS(audioInformation, "margin-left", audioInformationWidth.toString() + "px");
-            }
-        }
-        audioplayer.CenterInformation = CenterInformation;
+        audioplayer.CenterInformation = syiro.mediaplayer.CenterInformation;
     })(audioplayer = syiro.audioplayer || (syiro.audioplayer = {}));
 })(syiro || (syiro = {}));
 var syiro;
@@ -2769,68 +2836,9 @@ var syiro;
     var videoplayer;
     (function (videoplayer) {
         function New(properties) {
-            if (properties["sources"] !== undefined) {
-                var componentId = syiro.component.IdGen("video-player");
-                var syiroComponentData = { "scaling": {} };
-                var syiroVideoElementProperties = { "preload": "metadata", "UIWebView": "allowsInlineMediaPlayback" };
-                var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": "video-player", "data-syiro-component-id": componentId, "id": componentId, "name": componentId });
-                if (navigator.userAgent.indexOf("iPhone") == -1) {
-                    syiroVideoElementProperties["volume"] = "0.5";
-                    if (typeof properties["art"] !== "undefined") {
-                        syiro.component.CSS(componentElement, "background-image", 'url("' + properties["art"] + '")');
-                    }
-                    if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")) {
-                        if (properties["menu"]["type"] == "list") {
-                            var playerMenuDialog = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "player-menu" });
-                            playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content": "Menu" }));
-                            playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"]));
-                            componentElement.insertBefore(playerMenuDialog, componentElement.firstChild);
-                        }
-                    }
-                    properties["is-video-player"] = true;
-                    var playerControlComponent = syiro.playercontrol.New(properties);
-                    componentElement.appendChild(syiro.component.Fetch(playerControlComponent));
-                    if ((typeof properties["ForceLiveUX"] == "boolean") && (properties["ForceLiveUX"])) {
-                        syiroComponentData["ForceLiveUX"] = true;
-                    }
-                }
-                else {
-                    syiroComponentData["NoUX"] = true;
-                    if (typeof properties["art"] !== "undefined") {
-                        syiroVideoElementProperties["poster"] = properties["art"];
-                    }
-                    syiroVideoElementProperties["controls"] = "controls";
-                }
-                var videoPlayer = syiro.utilities.ElementCreator("video", syiroVideoElementProperties);
-                var sourceElements = syiro.player.GenerateSources("video", properties["sources"]);
-                for (var _i = 0; _i < sourceElements.length; _i++) {
-                    var sourceElement = sourceElements[_i];
-                    videoPlayer.appendChild(sourceElement);
-                }
-                componentElement.insertBefore(videoPlayer, componentElement.lastChild);
-                syiroComponentData["HTMLElement"] = componentElement;
-                if (typeof properties["ratio"] !== "undefined") {
-                    syiroComponentData["scaling->ratio"] = properties["ratio"];
-                    syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]];
-                }
-                else if (typeof properties["fill"] !== "undefined") {
-                    syiroComponentData["scaling->fill"] = properties["fill"];
-                }
-                else {
-                    syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]];
-                }
-                if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"])) {
-                    syiroComponentData["UsingExternalLibrary"] = true;
-                }
-                syiro.data.Write(componentId, syiroComponentData);
-                return { "id": componentId, "type": "video-player" };
-            }
-            else {
-                return { "error": "no video defined" };
-            }
+            return syiro.mediaplayer.New(properties);
         }
         videoplayer.New = New;
-        videoplayer.Generate = New;
     })(videoplayer = syiro.videoplayer || (syiro.videoplayer = {}));
 })(syiro || (syiro = {}));
 /*

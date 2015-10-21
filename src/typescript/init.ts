@@ -1,5 +1,5 @@
 /*
-    This is the namespace for Syiro's init system
+	This is the namespace for Syiro's init system
 */
 
 /// <reference path="component.ts" />
@@ -31,12 +31,8 @@ namespace syiro.init {
 				case "list" : // If the Component is a List Component
 					syiro.init.List(component); // Initialize the List if needed
 					break;
-				case "audio-player" : // If the Component is an Audio Player Component
-					syiro.init.Player(component); // Initialize the Player
-					syiro.render.Scale(component); // Scale  the Player
-					break;
-				case "video-player" : // If the Component is an Video Player Component
-					syiro.init.Player(component); // Initialize the Player
+				case "media-player" : // If the Component is a Media Player Component
+					syiro.init.MediaPlayer(component); // Initialize the Player
 					syiro.render.Scale(component); // Scale  the Player
 					break;
 				case "searchbox" : // If it is a Searchbox Component
@@ -114,17 +110,18 @@ namespace syiro.init {
 
 	// #endregion
 
-	// #region Player Initialization
+	// #region Media Player Initialization
 
-	export function Player(component : ComponentObject){
+	export function MediaPlayer(component : ComponentObject){
 		if (syiro.data.Read(component["id"] + "->NoUX") == false){ // If we are apply UX to events to the Player
-			var componentElement : Element = syiro.component.Fetch(component); // Fetch the ComponentElement of the Audio / Video Player
-            var innerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(component); // Fetch the Audio or Video Player Element
+			var componentElement : Element = syiro.component.Fetch(component); // Fetch the ComponentElement of the Media Player
+			var innerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Fetch the Player content Element
+			var mediaPlayerType : string = componentElement.getAttribute("data-syiro-component-type"); // Get the type of Media Player
 
-			// #region Player Controls List
+			// #region Media Controls List
 
-			var playerControlArea = componentElement.querySelector('div[data-syiro-component="player-control"]'); // Get the Player Control section
-			var playerControlComponent : ComponentObject = syiro.component.FetchComponentObject(playerControlArea); // Get the Player Control Component Object
+			var mediaControlArea = componentElement.querySelector('div[data-syiro-component="media-control"]'); // Get the Media Control section
+			var mediaControlComponent : ComponentObject = syiro.component.FetchComponentObject(mediaControlArea); // Get the Media Control Component Object
 
 			// #endregion
 
@@ -141,9 +138,13 @@ namespace syiro.init {
 
 			// #region Audio / Video Player Timing Events
 
-			syiro.events.Add("durationchange", innerContentElement, syiro.player.DurationChange.bind(this, component)); // Add durationchange event to innerContentElement that calls syiro.player.DurationChange with bound componentObject
-			syiro.events.Add("timeupdate", innerContentElement, syiro.player.SetTime.bind(this, component, "tick")); // Add timeupdate event to innerContentElement that calls syiro.player.SetTime with bound componentObject and event indicator
-			syiro.events.Add("ended", innerContentElement, syiro.player.Reset.bind(this, component)); // Add ended event to innerContentElement that calls syiro.player.Reset with bound componentObject
+			syiro.events.Add("durationchange", innerContentElement, syiro.mediaplayer.DurationChange.bind(this, component)); // Add durationchange event to innerContentElement that calls syiro.mediaplayer.DurationChange with bound componentObject
+
+			syiro.events.Add("timeupdate", innerContentElement, function(){ // Have timeupdate call a function, which calls SetTime with only the Component Object and "tick"
+				syiro.mediaplayer.SetTime(arguments[0], "tick"); // Call SetTime with arguments[0] (Component Object) and "tick"
+			}.bind(this, component, "tick"));
+
+			syiro.events.Add("ended", innerContentElement, syiro.mediaplayer.Reset.bind(this, component)); // Add ended event to innerContentElement that calls syiro.mediaplayer.Reset with bound componentObject
 
 			// #endregion
 
@@ -151,7 +152,7 @@ namespace syiro.init {
 
 			var contentElementObserver = new MutationObserver(
 				function(){
-					syiro.player.IsPlayable(arguments[0]);
+					syiro.mediaplayer.Reset(arguments[0]);
 				}.bind(this, component)
 			);
 
@@ -166,53 +167,45 @@ namespace syiro.init {
 
 			// #endregion
 
-			syiro.init.PlayerControl(component, playerControlComponent); // Initialize the PlayerControl and inner Buttons
+			syiro.init.MediaControl(component, mediaControlComponent); // Initialize the MediaControl and inner Buttons
 
-			// #region Audio Player-Specific Initialization
+			// #region Type Specific Initialization
 
-            if (component["type"] == "audio-player"){ // If this is an Audio Player
-                syiro.audioplayer.CenterInformation(component); // Center the potential audio information
-            }
-
-			// #endregion
-
-			// #region Video Player-Specfic Initialization
-
-			if (component["type"] == "video-player"){
-
+			if (mediaPlayerType== "audio"){ // If this is an audio-type Media Player
+				syiro.audioplayer.CenterInformation(component); // Center the potential audio information
+			} else if (mediaPlayerType == "video"){ // If this is a video-type Media Player
 				if (syiro.device.SupportsTouch){ // If the device supports touch
-					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.playercontrol.Toggle.bind(this, playerControlComponent)); // Add an "up" event to player container that toggles the Player Control
+					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.mediacontrol.Toggle.bind(this, mediaControlComponent)); // Add an "up" event to player container that toggles the Media Control
+				} else { // If the device uses a mouse instead of touch
+					syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, syiro.mediaplayer.PlayOrPause.bind(this, component)); // Add an "up" event to video to toggle play / pause the video
+					syiro.events.Add(["mouseenter", "mouseleave"], componentElement, syiro.mediacontrol.Toggle.bind(this, mediaControlComponent)); // Add event to mouseenter and mouseleave to trigger syiro.mediacontrol.Toggle
 				}
-                else { // If the device uses a mouse instead of touch
-					syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, syiro.player.PlayOrPause.bind(this, component)); // Add an "up" event to video to toggle play / pause the video
-					syiro.events.Add(["mouseenter", "mouseleave"], componentElement, syiro.playercontrol.Toggle.bind(this, playerControlComponent)); // Add event to mouseenter and mouseleave to trigger syiro.playercontrol.Toggle
-                }
 			}
 
 			// #endregion
 
-			syiro.player.IsPlayable(component); // Check if the content is streamable
+			syiro.mediaplayer.Configure(component); // Configure the Media Player
 		}
 	}
 
 	// #endregion
 
-	// #region Player Control Initialization
+	// #region Media Control Initialization
 
-	export function PlayerControl(componentObject : ComponentObject, playerControlComponentObject : ComponentObject){
-		var playerControlElement : Element = syiro.component.Fetch(playerControlComponentObject); // Fetch the Player Control Element
+	export function MediaControl(componentObject : ComponentObject, mediaControlComponentObject : ComponentObject){
+		var mediaControlElement : Element = syiro.component.Fetch(mediaControlComponentObject); // Fetch the Media Control Element
 
 		// #region Player Range Initialization
 
-		var playerRange = playerControlElement.querySelector('input[type="range"]'); // Get the input range
+		var playerRange = mediaControlElement.querySelector('input[type="range"]'); // Get the input range
 
 		syiro.events.Add(syiro.events.eventStrings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
 			function(){
 				var playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
 				syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true); // Set the ChangingInputValue to true to infer we are changing the input value of the playerRange
 
-				if ((syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) && (syiro.player.IsPlaying(playerComponentObject))){ // If we are not changing the volume and the video is playing
-					syiro.player.PlayOrPause(playerComponentObject); // Pause the video
+				if ((syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) && (syiro.mediaplayer.IsPlaying(playerComponentObject))){ // If we are not changing the volume and the video is playing
+					syiro.mediaplayer.PlayOrPause(playerComponentObject); // Pause the video
 				}
 			}.bind(this, componentObject)
 		);
@@ -224,7 +217,7 @@ namespace syiro.init {
 
 				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
 					syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove  IsChangingInputValue
-					syiro.player.PlayOrPause(playerComponentObject); // Play the video
+					syiro.mediaplayer.PlayOrPause(playerComponentObject); // Play the video
 				}
 			}.bind(this, componentObject)
 		);
@@ -237,10 +230,10 @@ namespace syiro.init {
 				var valueNum : number = Number(playerRange.value); // Define valueNum as the converted string-to-number, where the value was the playerRange value
 
 				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
-					syiro.player.SetTime(playerComponentObject, valueNum); // Set the Time
+					syiro.mediaplayer.SetTime(playerComponentObject, valueNum); // Set the Time
 				}
 				else{ // If we are doing a volume change
-					syiro.player.SetVolume(playerComponentObject, valueNum, "input"); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
+					syiro.mediaplayer.SetVolume(playerComponentObject, valueNum, "input"); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
 				}
 			}.bind(this, componentObject)
 		);
@@ -249,26 +242,26 @@ namespace syiro.init {
 
 		// #region Play Button Listener
 
-		var playButton : Element = playerControlElement.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button Element
-		syiro.events.Add(syiro.events.eventStrings["up"], playButton, syiro.player.PlayOrPause.bind(this, componentObject)); // Listen to up events on the playButton to the PlayOrPause (binding the component Object)
+		var playButton : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button Element
+		syiro.events.Add(syiro.events.eventStrings["up"], playButton, syiro.mediaplayer.PlayOrPause.bind(this, componentObject)); // Listen to up events on the playButton to the PlayOrPause (binding the component Object)
 
 		// #endregion
 
 		// #region Volume Button Listener
 
-		var volumeButton : Element = playerControlElement.querySelector('div[data-syiro-render-icon="volume"]'); // Get the Volume Button Element
+		var volumeButton : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="volume"]'); // Get the Volume Button Element
 		var volumeButtonComponent : ComponentObject = syiro.component.FetchComponentObject(volumeButton); // Fetch the Component Object of the Volume Button so we may bind it during event adding
-		syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, syiro.playercontrol.ShowVolumeSlider.bind(this, playerControlComponentObject)); // Listen to up events on the volumeButton Component to ShowVolumeSlider (binding the Player Component Object)
+		syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, syiro.mediacontrol.ShowVolumeSlider.bind(this, mediaControlComponentObject)); // Listen to up events on the volumeButton Component to ShowVolumeSlider (binding the Player Component Object)
 
 		// #endregion
 
 		// #region Player Menu Dialog
 
-		var menuButton = playerControlElement.querySelector('div[data-syiro-render-icon="menu"]'); // Get the menuButton if it exists
+		var menuButton = mediaControlElement.querySelector('div[data-syiro-render-icon="menu"]'); // Get the menuButton if it exists
 
 		if (menuButton !== null){ // If the menu button exists
 			var menuButtonObject : ComponentObject = syiro.component.FetchComponentObject(menuButton); // Fetch the Component object of the Menu Button
-			syiro.events.Add(syiro.events.eventStrings["up"], menuButtonObject, syiro.player.ToggleMenuDialog.bind(this, componentObject)); // Add an event listener to the button that calls ToggleMenuDialog, binding to the Player Component
+			syiro.events.Add(syiro.events.eventStrings["up"], menuButtonObject, syiro.mediaplayer.ToggleMenuDialog.bind(this, componentObject)); // Add an event listener to the button that calls ToggleMenuDialog, binding to the Player Component
 		}
 
 		// #endregion
@@ -276,10 +269,10 @@ namespace syiro.init {
 		if (componentObject["type"] == "video-player"){ // If this is a Video Player Component
 			// #region Video Player Fullscreen Button Enabling
 
-			var fullscreenButtonElement : Element = playerControlElement.querySelector('div[data-syiro-render-icon="fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
+			var fullscreenButtonElement : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
 
 			if (fullscreenButtonElement !== null){ // If the fullscreen button exists
-				syiro.events.Add(syiro.events.eventStrings["up"], fullscreenButtonElement, syiro.player.ToggleFullscreen.bind(this, componentObject)); // Listen to up events on the fullscreen button
+				syiro.events.Add(syiro.events.eventStrings["up"], fullscreenButtonElement, syiro.mediaplayer.ToggleFullscreen.bind(this, componentObject)); // Listen to up events on the fullscreen button
 			}
 
 			// #endregion

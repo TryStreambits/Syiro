@@ -128,9 +128,9 @@ namespace syiro.device {
                     var thisPlayer : any = allPlayers[allPlayersIndex]; // Define thisPlayer as the index of allPlayers
                     syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
 
-                    if (thisPlayer.getAttribute("data-syiro-component") == "audioplayer"){ // If it is an audio player
-                        var audioPlayerComponent : ComponentObject = syiro.component.FetchComponentObject(thisPlayer);
-                        syiro.audioplayer.CenterInformation(audioPlayerComponent); // Recenter the Audio Player Component information
+                    if (thisPlayer.getAttribute("data-syiro-component-type") == "audio"){ // If it is an audio-type Media Player
+                        var mediaPlayerComponent : ComponentObject = syiro.component.FetchComponentObject(thisPlayer);
+                        syiro.mediaplayer.CenterInformation(mediaPlayerComponent); // Recenter the audio-type Media Player Component information
                     }
                 }
 

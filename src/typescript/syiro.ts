@@ -36,11 +36,13 @@ namespace syiro {
 
 		syiro.events.Add("scroll", document, // Add an event listener to the document for when the document is scrolling
 			function(){
-				var dropdownButtons : any = document.querySelectorAll('div[data-syiro-component="button"][data-syiro-component-type="dropdown"][active]'); // Get all of the Dropdown Buttons that are active
+				var dropdownButtons : NodeList = document.querySelectorAll('div[data-syiro-component="button"][data-syiro-component-type="dropdown"][active]'); // Get all of the Dropdown Buttons that are active
 
-				for (var dropdownButtonIndex = 0; dropdownButtonIndex < dropdownButtons.length; dropdownButtonIndex++){ // For each of those Dropdown Button Components that are active
-					var thisDropdownButtonObject : ComponentObject = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]); // Get the Component Object of the Dropdown Button
-					syiro.button.Toggle(thisDropdownButtonObject); // Toggle the Dropdown Button
+				for (var dropdownButtonIndex in dropdownButtons){ // For each of those Dropdown Button Components that are active
+					if (syiro.utilities.TypeOfThing(dropdownButtons[dropdownButtonIndex], "Element")){ // If this is an Element
+						var thisDropdownButtonObject : ComponentObject = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]); // Get the Component Object of the Dropdown Button
+						syiro.button.Toggle(thisDropdownButtonObject); // Toggle the Dropdown Button
+					}
 				}
 			}
 		);
@@ -131,8 +133,8 @@ namespace syiro {
 				function(mutations : Array<MutationRecord>){ // Define mutationHandler as a variable that consists of a function that handles mutationRecords
 					for (var mutation of mutations){ // For each mutation of mutations
 						if (mutation.type == "childList"){ // If something in the document changed (childList)
-							for (var i = 0; i < mutation.addedNodes.length; i++){ // For each node in the mutation.addedNodes
-								var componentElement : any = mutation.addedNodes[i]; // Get the Node
+							for (var mutationIndex in mutation.addedNodes){ // For each node in the mutation.addedNodes
+								var componentElement : any = mutation.addedNodes[mutationIndex]; // Get the Node
 								syiro.init.Parser(componentElement); // Send to Syiro's Component Parser
 							}
 						}

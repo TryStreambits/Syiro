@@ -47,12 +47,15 @@ namespace syiro.utilities {
 			updatedContent = content.replace(/<*[^]script*>/g, ""); // Replace all <script> and </script> tags
 		} else if (syiro.utilities.TypeOfThing(content, "Element")){ // If this is an Element
 			if (content.tagName.toLowerCase() !== "script"){ // If we are not including a singular script tag
-				var innerScriptElements = content.getElementsByTagName("script"); // Get all inner JavaScript tags
+				var innerScriptElements = content.querySelectorAll("script"); // Get all inner JavaScript tags
 
 				if (innerScriptElements.length !== 0){ // If there are inner JavaScript tags
-					for (var innerScriptElementIndex = 0; innerScriptElementIndex < innerScriptElements.length; innerScriptElementIndex++){ // For each inner JavaScript tag
+					for (var innerScriptElementIndex in innerScriptElements){ // For each inner JavaScript tag
 						var innerScriptElement = innerScriptElements[innerScriptElementIndex];
-						innerScriptElement.parentElement.removeChild(innerScriptElement); // Remove the script tag
+
+						if (syiro.utilities.TypeOfThing(innerScriptElement, "Element")){ // IF this is an Element
+							innerScriptElement.parentElement.removeChild(innerScriptElement); // Remove the script tag
+						}
 					}
 				}
 			}

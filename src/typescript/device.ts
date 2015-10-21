@@ -122,13 +122,16 @@ namespace syiro.device {
 
 				var allPlayers : NodeList = document.querySelectorAll('div[data-syiro-component$="player"]'); // Get all Audio Players and Video Players
 
-				for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++){ // For each Player
-					var thisPlayer : any = allPlayers[allPlayersIndex]; // Define thisPlayer as the index of allPlayers
-					syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
+				for (var playerIndex in allPlayers){ // For each Player
+					var thisPlayer : any = allPlayers[playerIndex]; // Define thisPlayer as the index of allPlayers
 
-					if (thisPlayer.getAttribute("data-syiro-component-type") == "audio"){ // If it is an audio-type Media Player
-						var mediaPlayerComponent : ComponentObject = syiro.component.FetchComponentObject(thisPlayer);
-						syiro.mediaplayer.CenterInformation(mediaPlayerComponent); // Recenter the audio-type Media Player Component information
+					if (syiro.utilities.TypeOfThing(thisPlayer, "Element")){ // If this is an Element
+						syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer)); // Scale this Player
+
+						if (thisPlayer.getAttribute("data-syiro-component-type") == "audio"){ // If it is an audio-type Media Player
+							var mediaPlayerComponent : ComponentObject = syiro.component.FetchComponentObject(thisPlayer);
+							syiro.mediaplayer.CenterInformation(mediaPlayerComponent); // Recenter the audio-type Media Player Component information
+						}
 					}
 				}
 

@@ -123,9 +123,11 @@ namespace syiro.toast {
 		var toasts : NodeList = document.body.querySelectorAll('div[data-syiro-component="toast"]'); // Get all Toasts
 
 		if (toasts.length !== 0){ // If there are Toasts in the DOM
-			for (var i = 0; i < toasts.length; i++){ // For each toast in toasts
-				var toastComponentObject : ComponentObject = syiro.component.FetchComponentObject(toasts[i]); // Get the Component Object of this Toast
-				syiro.toast.Clear(toastComponentObject); // Clear this Toast
+			for (var toastIndex in toasts){ // For each toast in toasts
+				if (syiro.utilities.TypeOfThing(toasts[toastIndex], "Element")){ // If the item is an Element
+					var toastComponentObject : ComponentObject = syiro.component.FetchComponentObject(toasts[toastIndex]); // Get the Component Object of this Toast
+					syiro.toast.Clear(toastComponentObject); // Clear this Toast
+				}
 			}
 		}
 	}

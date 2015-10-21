@@ -211,11 +211,13 @@ var syiro;
             }
             else if (syiro.utilities.TypeOfThing(content, "Element")) {
                 if (content.tagName.toLowerCase() !== "script") {
-                    var innerScriptElements = content.getElementsByTagName("script");
+                    var innerScriptElements = content.querySelectorAll("script");
                     if (innerScriptElements.length !== 0) {
-                        for (var innerScriptElementIndex = 0; innerScriptElementIndex < innerScriptElements.length; innerScriptElementIndex++) {
+                        for (var innerScriptElementIndex in innerScriptElements) {
                             var innerScriptElement = innerScriptElements[innerScriptElementIndex];
-                            innerScriptElement.parentElement.removeChild(innerScriptElement);
+                            if (syiro.utilities.TypeOfThing(innerScriptElement, "Element")) {
+                                innerScriptElement.parentElement.removeChild(innerScriptElement);
+                            }
                         }
                     }
                 }
@@ -664,23 +666,23 @@ var syiro;
             syiro.component.CSS(componentElement, "width", componentWidth.toString() + "px");
             var potentialComponentScalableChildren = syiro.data.Read(component.id + "->scaling->children");
             if (potentialComponentScalableChildren !== false) {
-                if (typeof potentialComponentScalableChildren.pop == "undefined") {
+                if (syiro.utilities.TypeOfThing(potentialComponentScalableChildren, "Object")) {
                     var childComponentsArray = [];
                     for (var childSelector in potentialComponentScalableChildren) {
                         var childElement = componentElement.querySelector(childSelector);
                         var childComponent = syiro.component.FetchComponentObject(childElement);
                         var childScalingData = syiro.data.Read(component.id + "->scaling->children->" + childSelector + "->scaling");
-                        syiro.data.Write(childComponent["id"] + "->scaling->initialDimensions", childScalingData["iniitalDimensions"]);
-                        syiro.data.Write(childComponent["id"] + "->scaling->ratios", childScalingData["ratios"]);
-                        syiro.data.Write(childComponent["id"] + "->scaling->fill", childScalingData["fill"]);
+                        syiro.data.Write(childComponent.id + "->scaling->initialDimensions", childScalingData["iniitalDimensions"]);
+                        syiro.data.Write(childComponent.id + "->scaling->ratios", childScalingData["ratios"]);
+                        syiro.data.Write(childComponent.id + "->scaling->fill", childScalingData["fill"]);
                         childComponentsArray.push(childComponent);
                         syiro.data.Delete(component.id + "->scaling->children->" + childSelector);
                     }
                     syiro.data.Write(component.id + "->scaling->children", childComponentsArray);
                 }
                 var componentChildren = syiro.data.Read(component.id + "->scaling->children");
-                for (var childComponentIndex = 0; childComponentIndex < componentChildren.length; childComponentIndex++) {
-                    var childComponentObject = componentChildren[childComponentIndex];
+                for (var _i = 0; _i < componentChildren.length; _i++) {
+                    var childComponentObject = componentChildren[_i];
                     syiro.render.Scale(childComponentObject);
                 }
             }
@@ -1441,7 +1443,7 @@ var syiro;
                     hasOddNumberOfButtons = true;
                     middleButtonNumber = Math.round(innerButtonElements.length / 2);
                 }
-                for (var innerButtonElementsIndex = 0; innerButtonElementsIndex < innerButtonElements.length; innerButtonElementsIndex++) {
+                for (var innerButtonElementsIndex in innerButtonElements) {
                     var buttonElement = innerButtonElements[innerButtonElementsIndex];
                     var widthValue = "calc(100% / " + innerButtonElements.length + ") !important";
                     if (hasOddNumberOfButtons && (innerButtonElementsIndex == middleButtonNumber)) {
@@ -1538,12 +1540,14 @@ var syiro;
                 if (currentOrientation !== syiro.device.Orientation) {
                     syiro.device.Orientation = currentOrientation;
                     var allPlayers = document.querySelectorAll('div[data-syiro-component$="player"]');
-                    for (var allPlayersIndex = 0; allPlayersIndex < allPlayers.length; allPlayersIndex++) {
-                        var thisPlayer = allPlayers[allPlayersIndex];
-                        syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer));
-                        if (thisPlayer.getAttribute("data-syiro-component-type") == "audio") {
-                            var mediaPlayerComponent = syiro.component.FetchComponentObject(thisPlayer);
-                            syiro.mediaplayer.CenterInformation(mediaPlayerComponent);
+                    for (var playerIndex in allPlayers) {
+                        var thisPlayer = allPlayers[playerIndex];
+                        if (syiro.utilities.TypeOfThing(thisPlayer, "Element")) {
+                            syiro.render.Scale(syiro.component.FetchComponentObject(thisPlayer));
+                            if (thisPlayer.getAttribute("data-syiro-component-type") == "audio") {
+                                var mediaPlayerComponent = syiro.component.FetchComponentObject(thisPlayer);
+                                syiro.mediaplayer.CenterInformation(mediaPlayerComponent);
+                            }
                         }
                     }
                     if (arguments[0] == "interval") {
@@ -2351,15 +2355,17 @@ var syiro;
         mediaplayer.FetchInnerContentElement = FetchInnerContentElement;
         function FetchSources(component) {
             var innerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
-            var sourceTags = innerContentElement.getElementsByTagName("source");
+            var sourceTags = innerContentElement.querySelectorAll("source");
             var sourcesArray = [];
-            for (var sourceElementIndex = 0; sourceElementIndex < sourceTags.length; sourceElementIndex++) {
+            for (var sourceElementIndex in sourceTags) {
                 var sourceElement = sourceTags[sourceElementIndex];
-                sourcesArray.push({
-                    "src": sourceElement.getAttribute("src"),
-                    "streamable": sourceElement.getAttribute("data-syiro-streamable-source"),
-                    "type": sourceElement.getAttribute("type")
-                });
+                if (syiro.utilities.TypeOfThing(sourceElement, "Element")) {
+                    sourcesArray.push({
+                        "src": sourceElement.getAttribute("src"),
+                        "streamable": sourceElement.getAttribute("data-syiro-streamable-source"),
+                        "type": sourceElement.getAttribute("type")
+                    });
+                }
             }
             return sourcesArray;
         }
@@ -2931,14 +2937,16 @@ var syiro;
                     syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important");
                     if (innerListItemsOfLinkedList.length > 0) {
                         var numOfListItemsThatWillShow = 0;
-                        for (var listItemIndex = 0; listItemIndex < innerListItemsOfLinkedList.length; listItemIndex++) {
+                        for (var listItemIndex in innerListItemsOfLinkedList) {
                             var listItem = innerListItemsOfLinkedList[listItemIndex];
-                            if (listItem.textContent.indexOf(searchboxValue) !== -1) {
-                                numOfListItemsThatWillShow++;
-                                syiro.component.CSS(listItem, "display", "block !important");
-                            }
-                            else {
-                                syiro.component.CSS(listItem, "display", "none !important");
+                            if (syiro.utilities.TypeOfThing(listItem, "Element")) {
+                                if (listItem.textContent.indexOf(searchboxValue) !== -1) {
+                                    numOfListItemsThatWillShow++;
+                                    syiro.component.CSS(listItem, "display", "block !important");
+                                }
+                                else {
+                                    syiro.component.CSS(listItem, "display", "none !important");
+                                }
                             }
                         }
                         if (numOfListItemsThatWillShow == 0) {
@@ -2970,7 +2978,7 @@ var syiro;
         function SetText(component, content) {
             var searchboxElement = syiro.component.Fetch(component);
             if (searchboxElement !== null) {
-                var searchboxInputElement = searchboxElement.getElementsByTagName("input")[0];
+                var searchboxInputElement = searchboxElement.querySelectorAll("input")[0];
                 if (content !== "") {
                     searchboxInputElement.setAttribute("placeholder", content);
                 }
@@ -3201,9 +3209,11 @@ var syiro;
         function ClearAll() {
             var toasts = document.body.querySelectorAll('div[data-syiro-component="toast"]');
             if (toasts.length !== 0) {
-                for (var i = 0; i < toasts.length; i++) {
-                    var toastComponentObject = syiro.component.FetchComponentObject(toasts[i]);
-                    syiro.toast.Clear(toastComponentObject);
+                for (var toastIndex in toasts) {
+                    if (syiro.utilities.TypeOfThing(toasts[toastIndex], "Element")) {
+                        var toastComponentObject = syiro.component.FetchComponentObject(toasts[toastIndex]);
+                        syiro.toast.Clear(toastComponentObject);
+                    }
                 }
             }
         }
@@ -3286,9 +3296,11 @@ var syiro;
         syiro.device.Detect();
         syiro.events.Add("scroll", document, function () {
             var dropdownButtons = document.querySelectorAll('div[data-syiro-component="button"][data-syiro-component-type="dropdown"][active]');
-            for (var dropdownButtonIndex = 0; dropdownButtonIndex < dropdownButtons.length; dropdownButtonIndex++) {
-                var thisDropdownButtonObject = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]);
-                syiro.button.Toggle(thisDropdownButtonObject);
+            for (var dropdownButtonIndex in dropdownButtons) {
+                if (syiro.utilities.TypeOfThing(dropdownButtons[dropdownButtonIndex], "Element")) {
+                    var thisDropdownButtonObject = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]);
+                    syiro.button.Toggle(thisDropdownButtonObject);
+                }
             }
         });
         syiro.events.Add(syiro.events.eventStrings["fullscreenchange"], document, function () {
@@ -3347,8 +3359,8 @@ var syiro;
                 for (var _i = 0; _i < mutations.length; _i++) {
                     var mutation = mutations[_i];
                     if (mutation.type == "childList") {
-                        for (var i = 0; i < mutation.addedNodes.length; i++) {
-                            var componentElement = mutation.addedNodes[i];
+                        for (var mutationIndex in mutation.addedNodes) {
+                            var componentElement = mutation.addedNodes[mutationIndex];
                             syiro.init.Parser(componentElement);
                         }
                     }

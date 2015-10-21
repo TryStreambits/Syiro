@@ -105,7 +105,7 @@ namespace syiro.searchbox {
 
 		var linkedListComponent : ComponentObject = syiro.component.FetchLinkedListComponentObject(searchboxComponent); // Fetch the Linked List of the Searchbox Component
 		var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponent); // Fetch the Element of the List Component
-		var innerListItemsOfLinkedList : any = linkedListComponentElement.querySelectorAll('div[data-syiro-component="list-item"]'); // Fetch a NodeList of Elements of all the List Items in the List
+		var innerListItemsOfLinkedList : NodeList = linkedListComponentElement.querySelectorAll('div[data-syiro-component="list-item"]'); // Fetch a NodeList of Elements of all the List Items in the List
 
 		syiro.component.CSS(linkedListComponentElement, "width", searchboxElement.clientWidth + "px"); // Ensure the Linked List is the same width of the Searchbox
 		syiro.render.Position(["below", "center"], linkedListComponent, searchboxComponent); // Position the Linked List Component below and centered in relation to the Searchbox Component
@@ -117,14 +117,16 @@ namespace syiro.searchbox {
 				if (innerListItemsOfLinkedList.length > 0){ // If the Linked List of the Searchbox has List Items
 					var numOfListItemsThatWillShow : number = 0; // Define numOfListItemsThatWillShow as, well the number of list items that will show, obviously.
 
-					for (var listItemIndex =0; listItemIndex < innerListItemsOfLinkedList.length; listItemIndex++){ // For each List Item in the Linked List
-						var listItem : Element = innerListItemsOfLinkedList[listItemIndex]; // Define listItem as this particular List Item in the index
+					for (var listItemIndex in innerListItemsOfLinkedList){ // For each List Item in the Linked List
+						var listItem = innerListItemsOfLinkedList[listItemIndex]; // Define listItem as this particular List Item in the index
 
-						if (listItem.textContent.indexOf(searchboxValue) !== -1){ // If the List Item content contains the current searchboxValue
-							numOfListItemsThatWillShow++; // Increment the numOfListItemsThatWillShow by one
-							syiro.component.CSS(listItem, "display", "block !important"); // Show the List Item since it has a suggestion string, use display CSS attribute so List height changes
-						} else {
-							syiro.component.CSS(listItem, "display", "none !important"); // Hide the List Item since it does not have content of the suggestion,  use display CSS attribute so List height changes
+						if (syiro.utilities.TypeOfThing(listItem, "Element")){ // If this is an Element
+							if (listItem.textContent.indexOf(searchboxValue) !== -1){ // If the List Item content contains the current searchboxValue
+								numOfListItemsThatWillShow++; // Increment the numOfListItemsThatWillShow by one
+								syiro.component.CSS(listItem, "display", "block !important"); // Show the List Item since it has a suggestion string, use display CSS attribute so List height changes
+							} else {
+								syiro.component.CSS(listItem, "display", "none !important"); // Hide the List Item since it does not have content of the suggestion,  use display CSS attribute so List height changes
+							}
 						}
 					}
 
@@ -164,7 +166,7 @@ namespace syiro.searchbox {
 		var searchboxElement : Element = syiro.component.Fetch(component); // Get the Searchbox Syiro component element
 
 		if (searchboxElement !== null){ // If the searchboxElement exists in syiro.data.storage or DOM
-			var searchboxInputElement : HTMLInputElement = searchboxElement.getElementsByTagName("input")[0]; // Get the inner input tag of the searchboxElement
+			var searchboxInputElement = searchboxElement.querySelectorAll("input")[0]; // Get the inner input tag of the searchboxElement
 
 			if (content !== ""){ // If we are updating the content
 				searchboxInputElement.setAttribute("placeholder", content); // Set the placeholder string

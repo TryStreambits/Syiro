@@ -258,17 +258,17 @@ namespace syiro.render {
 			// #region Children Component Data Parsing
 			// Parses any component data like scaling information passed regarding Children of the Component, sets to own data and changes "children" key / val to point to an array instead
 
-			if (typeof potentialComponentScalableChildren.pop == "undefined"){ // If children key / val is an Object rather than an Array (Array would have .pop)
+			if (syiro.utilities.TypeOfThing(potentialComponentScalableChildren, "Object")){ // If children key / val is an Object
 				var childComponentsArray : Array<Object> = []; // Define childComponents as an array of Objects
 
 				for (var childSelector in potentialComponentScalableChildren){ // For each childSelector in the children section of scaling
 					var childElement : Element = componentElement.querySelector(childSelector); // Get the childElement from componentElement based on the querySelector of the componentElement
-					var childComponent : Object = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
+					var childComponent : ComponentObject = syiro.component.FetchComponentObject(childElement); // Fetch the Component Object (or generate one if it doesn't exist already)
 					var childScalingData : Object = syiro.data.Read(component.id + "->scaling->children->" + childSelector + "->scaling"); // Get the scalingData for the child
 
-					syiro.data.Write(childComponent["id"] + "->scaling->initialDimensions", childScalingData["iniitalDimensions"]); // Write any initialDimensions that exist
-					syiro.data.Write(childComponent["id"] + "->scaling->ratios", childScalingData["ratios"]); // Write any ratios that exist
-					syiro.data.Write(childComponent["id"] + "->scaling->fill", childScalingData["fill"]); // Write any fill data that exist
+					syiro.data.Write(childComponent.id + "->scaling->initialDimensions", childScalingData["iniitalDimensions"]); // Write any initialDimensions that exist
+					syiro.data.Write(childComponent.id + "->scaling->ratios", childScalingData["ratios"]); // Write any ratios that exist
+					syiro.data.Write(childComponent.id + "->scaling->fill", childScalingData["fill"]); // Write any fill data that exist
 
 					childComponentsArray.push(childComponent); // Push the childComponent to the childComponentsArray Array of Objects
 					syiro.data.Delete(component.id + "->scaling->children->" + childSelector); // Delete the childSelector from scaling children in component
@@ -281,8 +281,7 @@ namespace syiro.render {
 
 			var componentChildren : Array<ComponentObject> = syiro.data.Read(component.id + "->scaling->children"); // Define componentChildren as the children in component->scaling->children
 
-			for (var childComponentIndex = 0; childComponentIndex < componentChildren.length; childComponentIndex++){ // For each childComponent in the Children scaling Object
-				var childComponentObject : ComponentObject = componentChildren[childComponentIndex]; // Define childComponentObject as the index of the Object from key / val children
+			for (var childComponentObject of componentChildren){ // For each item in componentChildren
 				syiro.render.Scale(childComponentObject); // Scale the child Component
 			}
 		}

@@ -284,17 +284,19 @@ module syiro.mediaplayer{
 
 	export function FetchSources(component : ComponentObject) : Array<Object> { // Return an array of source types (string)
 		var innerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Fetch the inner audio or video Element from the Audio Player or Video Player Component
-		var sourceTags : any = innerContentElement.getElementsByTagName("source"); // Get all source tags within the innerContentElement
+		var sourceTags : any = innerContentElement.querySelectorAll("source"); // Get all source tags within the innerContentElement
 		var sourcesArray : Array<Object> = []; // Define sourcesArray as an empty Array to hold source information
 
-		for (var sourceElementIndex = 0; sourceElementIndex < sourceTags.length; sourceElementIndex++){ // For each source Element in the sourceTags
+		for (var sourceElementIndex in sourceTags){ // For each source Element in the sourceTags
 			var sourceElement : any = sourceTags[sourceElementIndex]; // Get the individual source Element
 
-			sourcesArray.push({
-				"src" : sourceElement.getAttribute("src"), // Get the "src" attribute from the sourceElement
-				"streamable" : sourceElement.getAttribute("data-syiro-streamable-source"), // Get the streamble attribute
-				"type" : sourceElement.getAttribute("type") // Get the "type" attribute from the sourceElement, which should have information like "video/webm"
-			});
+			if (syiro.utilities.TypeOfThing(sourceElement, "Element")){ // If sourceElement is an Element
+				sourcesArray.push({
+					"src" : sourceElement.getAttribute("src"), // Get the "src" attribute from the sourceElement
+					"streamable" : sourceElement.getAttribute("data-syiro-streamable-source"), // Get the streamble attribute
+					"type" : sourceElement.getAttribute("type") // Get the "type" attribute from the sourceElement, which should have information like "video/webm"
+				});
+			}
 		}
 
 		return sourcesArray;

@@ -1,5 +1,5 @@
 /*
-    This is the namespace for animation in Syiro
+	This is the namespace for animation in Syiro
 */
 
 /// <reference path="component.ts" />
@@ -9,7 +9,7 @@
 
 namespace syiro.animation {
 
-    // #region Component Animation Function
+	// #region Component Animation Function
 	export function Animate(component : any, properties : Object){ // This function animates a particular Component or Element and calls a post-animation function if applicable
 		var element : any; // Define element as any
 
@@ -17,8 +17,7 @@ namespace syiro.animation {
 
 		if (typeOfComponent == "ComponentObject"){ // If we passed a Component Object
 			element = syiro.component.Fetch(component); //  Define element as the fetched Syiro Component
-		}
-		else if (typeOfComponent == "Element") { // If we passed an Element
+		} else if (typeOfComponent == "Element") { // If we passed an Element
 			element = component; // Define element as the component provided
 			component = syiro.component.FetchComponentObject(element); // Redefine component as the newly fetched Component Object of the element
 		}
@@ -56,8 +55,7 @@ namespace syiro.animation {
 							syiro.events.Remove(transitionEndFlag, element); // Remove all transitionend Events
 						}.bind(this, postAnimationFunction, transitionEndFlag)
 					);
-				}
-				else {
+				} else {
 					properties["function"].call(this, component); // Call with the component as the variable
 				}
 			}
@@ -66,70 +64,69 @@ namespace syiro.animation {
 		}
 	}
 
-    // #endregion
+	// #endregion
 
-    // #region Reset - Remove Syiro Animation Properties from Components
+	// #region Reset - Remove Syiro Animation Properties from Components
 
-    export function Reset(component : any){
-        var componentElement : Element; // Define componentElement as any
+	export function Reset(component : any){
+		var componentElement : Element; // Define componentElement as any
 
-        if (syiro.utilities.TypeOfThing(component) == "ComponentObject"){ // If we passed a Component Object
-            componentElement = syiro.component.Fetch(component); //  Define componentElement as the fetched Syiro Component
-        }
-        else{ // If we passed an Element
-            componentElement = component; // Define componentElement as the component provided
-            component = syiro.component.FetchComponentObject(componentElement); // Redefine component as the newly fetched Component Object of the componentElement
-        }
+		if (syiro.utilities.TypeOfThing(component) == "ComponentObject"){ // If we passed a Component Object
+			componentElement = syiro.component.Fetch(component); //  Define componentElement as the fetched Syiro Component
+		} else { // If we passed an Element
+			componentElement = component; // Define componentElement as the component provided
+			component = syiro.component.FetchComponentObject(componentElement); // Redefine component as the newly fetched Component Object of the componentElement
+		}
 
-        if (componentElement !== null){ // If the componentElement exists in the DOM
-            if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
-                componentElement = componentElement.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
-            }
+		if (componentElement !== null){ // If the componentElement exists in the DOM
+			if ((component["type"] == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
+				componentElement = componentElement.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
+			}
 
-            componentElement.removeAttribute("data-syiro-animation"); // Remove the animation attribute
-            componentElement.removeAttribute("data-syiro-animation-status"); // Remove the status attribute if it for some reason still exists
-        }
-    }
+			componentElement.removeAttribute("data-syiro-animation"); // Remove the animation attribute
+			componentElement.removeAttribute("data-syiro-animation-status"); // Remove the status attribute if it for some reason still exists
+		}
+	}
 
-    // #endregion
+	// #endregion
 
-    // #region Fade In Animation
+	// #region Fade In Animation
 
-    export function FadeIn(component : any, postAnimationFunction ?: Function){
-        syiro.animation.Animate(component, // Call Animate with the Component and properties
-            {
-                "animation" : "fade-in", // Define animation as fade-in-animation
-                "function" : postAnimationFunction // Define function as any postAnimationFunction defined
-            }
-        );
-    }
+	export function FadeIn(component : any, postAnimationFunction ?: Function){
+		syiro.animation.Animate(component, // Call Animate with the Component and properties
+			{
+				"animation" : "fade-in", // Define animation as fade-in-animation
+				"function" : postAnimationFunction // Define function as any postAnimationFunction defined
+			}
+		);
+	}
 
-    // #endregion
+	// #endregion
 
-    // #region Fade Out Animation
+	// #region Fade Out Animation
 
-    export function FadeOut(component : any, postAnimationFunction ?: Function){
-        syiro.animation.Animate(component, // Call Animate with the Component and properties
-            {
-                "animation" : "fade-out", // Define animation as fade-out-animation
-                "function" : postAnimationFunction // Define function as any postAnimationFunction defined
-            }
-        );
-    }
+	export function FadeOut(component : any, postAnimationFunction ?: Function){
+		syiro.animation.Animate(component, // Call Animate with the Component and properties
+			{
+				"animation" : "fade-out", // Define animation as fade-out-animation
+				"function" : postAnimationFunction // Define function as any postAnimationFunction defined
+			}
+		);
+	}
 
-    // #endregion
+	// #endregion
 
-    // #region Slide Animation
+	// #region Slide Animation
 
-    export function Slide(component : any, postAnimationFunction ?: Function){
-        syiro.animation.Animate(component, // Call Animate with the Component and properties
-            {
-                "animation" : "slide", // Define animation as slide
-                "function" : postAnimationFunction // Define function as any postAnimationFunction defined
-            }
-        );
-    }
+	export function Slide(component : any, postAnimationFunction ?: Function){
+		syiro.animation.Animate(component, // Call Animate with the Component and properties
+			{
+				"animation" : "slide", // Define animation as slide
+				"function" : postAnimationFunction // Define function as any postAnimationFunction defined
+			}
+		);
+	}
 
-    // #endregion
+	// #endregion
 
 }

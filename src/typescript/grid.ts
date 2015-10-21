@@ -90,7 +90,7 @@ module syiro.griditem {
 
 			if (syiro.utilities.TypeOfThing(properties["html"], "Element")){ // If it is an Element
 				componentElement.appendChild(properties["html"]); // Append the HTMLElement
-			} else{ // If it is a string
+			} else { // If it is a string
 				componentElement.innerHTML = properties["html"]; // Set the innerHTML of the componentElement to the HTML
 			}
 

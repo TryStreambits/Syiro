@@ -55,21 +55,17 @@ namespace syiro {
 
 				if ((typeof document.fullscreenElement !== "undefined") && (document.fullscreenElement !== null)){ // If the standard fullscreenElement is implemented
 					fullscreenVideoPlayerElement = document.fullscreenElement;
-				}
-				else if ((typeof document.mozFullScreenElement !== "undefined") && (document.mozFullScreenElement !== null)){ // If the mozilla fullscreenElement is implemented
+				} else if ((typeof document.mozFullScreenElement !== "undefined") && (document.mozFullScreenElement !== null)){ // If the mozilla fullscreenElement is implemented
 					fullscreenVideoPlayerElement = document.mozFullScreenElement;
-				}
-				else if ((typeof document.msFullscreenElement !== "undefined") && (document.msFullscreenElement !== null)){ // If the MS fullscreenElement is implemented
+				} else if ((typeof document.msFullscreenElement !== "undefined") && (document.msFullscreenElement !== null)){ // If the MS fullscreenElement is implemented
 					fullscreenVideoPlayerElement = document.msFullscreenElement;
-				}
-				else if ((typeof document.webkitFullscreenElement !== "undefined") && (document.webkitFullscreenElement !== null)){ // If the WebKit fullscreenElement is implemented
+				} else if ((typeof document.webkitFullscreenElement !== "undefined") && (document.webkitFullscreenElement !== null)){ // If the WebKit fullscreenElement is implemented
 					fullscreenVideoPlayerElement = document.webkitFullscreenElement;
 				}
 
 				if ((typeof fullscreenVideoPlayerElement !== "undefined") && (fullscreenVideoPlayerElement !== null)){ // If there is currently a fullscreen Element
 					document.SyiroFullscreenElement = fullscreenVideoPlayerElement; // Define SyiroFullscreenElement on the document as the current fullscreenVideoPlayerElement
-				}
-				else { // If there is no current fullscreen Element, like when exiting fullscreen
+				} else { // If there is no current fullscreen Element, like when exiting fullscreen
 					fullscreenVideoPlayerElement = document.SyiroFullscreenElement; // Fetch the SyiroFullscreenElement that we assigned during the initial fullscreenchange and set that as fullscreenVideoPlayerElement
 				}
 
@@ -164,30 +160,29 @@ namespace syiro {
 
 			mutationWatcher.observe(document.body, mutationWatcherOptions); // Watch the document body with the options provided.
 			triggerAccurateInitialDimensions.observe(document.body, tempWatcherOptions); // Watch the document body temporarily
-		}
-		else{ // If MutationObserver is NOT supported (IE10 and below), such as in Windows Phone
+		} else { // If MutationObserver is NOT supported (IE10 and below), such as in Windows Phone
 			syiro.legacyDimensionsDetection = false; // Define legacyDimensionsDetection as false, implying we have not already had a Component enter DOM and need to re-check screen dimensions
 
-	        (function mutationTimer(){
-	            window.setTimeout( // Set interval to 3000 (3 seconds) with a timeout
-	                function(){ // Call this function
-	                    for (var componentId in syiro.data.storage){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
+			(function mutationTimer(){
+				window.setTimeout( // Set interval to 3000 (3 seconds) with a timeout
+					function(){ // Call this function
+						for (var componentId in syiro.data.storage){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
 							var componentElement = document.querySelector('div[data-syiro-component-id="' + componentId + '"]'); // Get the potential component Element
-	                        if (componentElement !== null){ // If the component exists in the DOM
+							if (componentElement !== null){ // If the component exists in the DOM
 								syiro.init.Parser(componentElement); // Send to Syiro's Component Parser
 
 								if (syiro.legacyDimensionsDetection == false){ // If we should update screen dimensions now
 									syiro.device.FetchScreenDetails(); // Update screen details
 									syiro.legacyDimensionsDetection = true; // Set legacyDimensionsDetection to true
 								}
-	                        }
-	                    }
+							}
+						}
 
-	                    mutationTimer();
-	                },
-	                3000
-	            )
-	        })();
+						mutationTimer();
+					},
+					3000
+				)
+			})();
 		}
 
 		// #endregion

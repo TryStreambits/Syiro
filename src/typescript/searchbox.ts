@@ -51,8 +51,7 @@ namespace syiro.searchbox {
 				for (var preseedItemIndex in properties["preseed"]){ // For each item in preseed
 					listItems.push(syiro.listitem.New({ "label" : properties["preseed"][preseedItemIndex] })); /// Push a new generated List Item Component Object to listItemsArray
 				}
-			}
-			else{ // If preseed []string is not provided
+			} else { // If preseed []string is not provided
 				componentData["handlers"]["suggestions"] = properties["handler"]; // Faux "suggestions" key with the val as the handler passed (that we will use to get suggestions)
 				componentData["preseed"] = false; // Define preseed value in searchboxComponentData as false
 			}
@@ -97,8 +96,7 @@ namespace syiro.searchbox {
 		if (arguments.length == 2){ // If we were passed only two arguments (the input Element and value)
 			searchboxElement = arguments[0].parentElement; // Define searchboxElement as the input Element's parent
 			searchboxValue = arguments[1]; // Define the searchboxValue as the second argument
-		}
-		else if (arguments.length > 2){ // If we were passed more than two arguments
+		} else if (arguments.length > 2){ // If we were passed more than two arguments
 			searchboxElement = arguments[0]; // Define searchboxElement as the provided Element (which was bound)
 			searchboxValue = searchboxElement.querySelector("input").value; // Define searchboxValue as the queried input Element's value
 		}
@@ -125,8 +123,7 @@ namespace syiro.searchbox {
 						if (listItem.textContent.indexOf(searchboxValue) !== -1){ // If the List Item content contains the current searchboxValue
 							numOfListItemsThatWillShow++; // Increment the numOfListItemsThatWillShow by one
 							syiro.component.CSS(listItem, "display", "block !important"); // Show the List Item since it has a suggestion string, use display CSS attribute so List height changes
-						}
-						else{
+						} else {
 							syiro.component.CSS(listItem, "display", "none !important"); // Hide the List Item since it does not have content of the suggestion,  use display CSS attribute so List height changes
 						}
 					}
@@ -135,8 +132,7 @@ namespace syiro.searchbox {
 						syiro.component.CSS(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List since we have no suggestions that are valid
 					}
 				}
-			}
-			else{ // If preseed is not enabled
+			} else { // If preseed is not enabled
 				syiro.component.CSS(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List until we get suggestions and generate the new List Items
 
 				var suggestions : Array<string> = syiro.data.Read(searchboxComponent["id"] + "->handlers->suggestions").call(this, searchboxValue); // Call the suggestions handler function
@@ -155,8 +151,7 @@ namespace syiro.searchbox {
 					syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Show the List Item now that we have parsed the suggestions and generated List Items
 				}
 			}
-		}
-		else{ // If the searchboxValue is empty
+		} else { // If the searchboxValue is empty
 			syiro.component.CSS(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List
 		}
 	}
@@ -173,8 +168,7 @@ namespace syiro.searchbox {
 
 			if (content !== ""){ // If we are updating the content
 				searchboxInputElement.setAttribute("placeholder", content); // Set the placeholder string
-			}
-			else if (content == ""){ // If the content is set to false, meaning we are removing the placeholder
+			} else if (content == ""){ // If the content is set to false, meaning we are removing the placeholder
 				searchboxInputElement.removeAttribute("placeholder"); // Remove the placeholder attribute
 			}
 

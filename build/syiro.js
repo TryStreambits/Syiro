@@ -1100,6 +1100,7 @@ var syiro;
         }
         init.MediaPlayer = MediaPlayer;
         function MediaControl(componentObject, mediaControlComponentObject) {
+            var componentElement = syiro.component.Fetch(componentObject);
             var mediaControlElement = syiro.component.Fetch(mediaControlComponentObject);
             var playerRange = mediaControlElement.querySelector('input[type="range"]');
             syiro.events.Add(syiro.events.eventStrings["down"], playerRange, function () {
@@ -1138,7 +1139,7 @@ var syiro;
                 var menuButtonObject = syiro.component.FetchComponentObject(menuButton);
                 syiro.events.Add(syiro.events.eventStrings["up"], menuButtonObject, syiro.mediaplayer.ToggleMenuDialog.bind(this, componentObject));
             }
-            if (componentObject["type"] == "video-player") {
+            if (componentElement.getAttribute("data-syiro-component-type") == "video") {
                 var fullscreenButtonElement = mediaControlElement.querySelector('div[data-syiro-render-icon="fullscreen"]');
                 if (fullscreenButtonElement !== null) {
                     syiro.events.Add(syiro.events.eventStrings["up"], fullscreenButtonElement, syiro.mediaplayer.ToggleFullscreen.bind(this, componentObject));
@@ -2191,8 +2192,6 @@ var syiro;
                 if ((typeof properties["ForceLiveUX"] == "boolean") && (properties["ForceLiveUX"])) {
                     syiroComponentData["ForceLiveUX"] = true;
                 }
-                var mediaControlComponent = syiro.mediacontrol.New(properties);
-                var mediaControlElement = syiro.component.Fetch(mediaControlComponent);
                 if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")) {
                     if (properties["menu"]["type"] == "list") {
                         var playerMenuDialog = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component": "player-menu" });
@@ -2224,6 +2223,8 @@ var syiro;
                         syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]];
                     }
                 }
+                var mediaControlComponent = syiro.mediacontrol.New(properties);
+                var mediaControlElement = syiro.component.Fetch(mediaControlComponent);
                 componentElement.appendChild(mediaControlElement);
             }
             else {
@@ -2356,7 +2357,7 @@ var syiro;
                 var sourceElement = sourceTags[sourceElementIndex];
                 sourcesArray.push({
                     "src": sourceElement.getAttribute("src"),
-                    "streamable": sourceElement.getAttribute("data-syiro-streamble-source"),
+                    "streamable": sourceElement.getAttribute("data-syiro-streamable-source"),
                     "type": sourceElement.getAttribute("type")
                 });
             }
@@ -2369,7 +2370,7 @@ var syiro;
                 var source = sources[_i];
                 var streamingProtocol = source.substr(0, source.indexOf(":"));
                 var sourceExtension = source.substr(source.lastIndexOf(".")).replace(".", "");
-                var sourceTagAttributes = { "src": source };
+                var sourceTagAttributes = { "src": source, "data-syiro-streamable-source": "false" };
                 if (source.substr(-1) !== ";") {
                     if ((streamingProtocol == "rtsp") || (streamingProtocol == "rtmp")) {
                         sourceTagAttributes["data-syiro-streamable-source"] = "true";
@@ -2471,7 +2472,7 @@ var syiro;
             var innerContentElement = syiro.mediaplayer.FetchInnerContentElement(component);
             var typeOfPlayButtonObject = syiro.utilities.TypeOfThing(playButtonObjectOrElement);
             var playButton;
-            if (component["type"] == "video-player") {
+            if (componentElement.getAttribute("data-syiro-component-type") == "video") {
                 componentElement.setAttribute("data-syiro-show-video", "true");
             }
             if (typeOfPlayButtonObject == "ComponentObject") {
@@ -2836,6 +2837,7 @@ var syiro;
     var videoplayer;
     (function (videoplayer) {
         function New(properties) {
+            properties["type"] = "video";
             return syiro.mediaplayer.New(properties);
         }
         videoplayer.New = New;

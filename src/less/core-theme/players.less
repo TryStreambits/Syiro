@@ -8,7 +8,7 @@
     -webkit-appearance: none !important; // No WebKit styling
     float: left;
     height: 10px !important;
-    width: 100% !important; // Have it fill the entire player-control top
+    width: 100% !important; // Have it fill the entire media-control top
     background-color: transparent;
     border: 0; // No border
     outline: 0;
@@ -18,390 +18,402 @@
 
 // #endregion
 
-// #region Shared Player Control
+// #region Media Player
 
-div[data-syiro-component="player-control"]{
+div[data-syiro-component="media-player"]{
+
+    // #region Shared Attributes
+
     float: left;
-    width: inherit; // Scales to width of video player
 
-    &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Player Control
-        height: 50px; // Set height to 50px
-        max-height: 50px; // Enforce the height of 50px
-
-        & > input { // Input Slider
-            display: none; // Default to not showing
-        }
-    }
-
-    &:not([data-syiro-component-streamstyling]){ // If we are NOT applying "Stream Styling" to the Player Control
-        height: 60px; // Set height to 50px
-        max-height: 60px; // Enforce the height of 60px
-
-        & > input { // Input Slider
-            display: block; // Default to showing
-        }
-
-        & > time { // Time Label tweaks for NON-Streaming Styling
-            height: 50px;
-            width: auto;
-            line-height: 50px;
-            margin: 0 10px 0 10px;
-        }
-    }
-
-    & > div[data-syiro-component="button"][data-syiro-component-type="basic"]{ // Custom LESS for Basic Button Components inside Player Control
-        float: left;
-        height: 32px;
-        width: 32px;
-        min-width: 0; // Override Basic Button minimum width
-        color: contrast(@syiroPlayerControlColor); // Ensure the color contrasts the syiroPlayerControlColor
-        line-height: 32px; // Ensure the icon is centered vertically
-        text-align: center; // Ensure the icon is centered horizontally
-        background-color: transparent;
-        border-radius: 0;
-        margin: 9px 5px 9px 5px; // Center on Player Control
-
-        &:not(:first-of-type){ // If the button is not the first one
-            float: right; // Float to the right of the Player Control
-        }
-
-        &[active]:not([data-syiro-render-icon="play"]):after{ // If the button is active and it is not the play button
-            color: @syiroPlayerControlColor; // Set the text color to the syiroPlayerControlColor
-            background-color: contrast(@syiroPlayerControlColor); // Set the background to the contrast of the syiroPlayerControlColor
-        }
-
-        &[data-syiro-render-icon="play"]{ // Play Button
-            &[active]{ // If the Play Button is set to "active", meaning we are treating it as a "pause" button indicator
-                &:after {
-                    .icon("pause", 14); // Use the pause icon
-                }
-            }
-        }
-    }
-
-    // #region Our "slider" / input range
-
-    & > input[type="range"]{
-
-        // #region Range Thumb
-
-        .thumbProperties(){
-			-moz-appearance: none; // No Firefox appearance
-			-webkit-appearance: none; // No WebKit appearance
-            visbility: hidden;
-			background-color: transparent;
-			background: transparent;
-			border: 0;
-			border-radius: 0;
-        }
-
-        &::-moz-range-thumb { // Firefox "Thumb" Styling
-            .thumbProperties; // Import Thumb Styling
-        }
-
-        &::-ms-thumb { // Internet Explorer "Thumb" Styling
-            .thumbProperties; // Import Thumb Styling
-        }
-
-        &::-webkit-slider-thumb{ // Chrome "Thumb" Styling
-            .thumbProperties; // Import Thumb Styling
-        }
-
-        // #endregion
-    }
-
-    // #endregion
-
-    // #region Label Time Information
-
-    & > time {
-        float: left;
-        color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the syiroPlayerControlColor
-        font-size: 14px;
-
-        &[data-syiro-component-live]{ // Live "View"
-            height: 12px;
-            width: 12px;
-            text-indent: 18px;
-            line-height: 12px;
-            background-color: #ff1212;
-            border-radius: 16px;
-            margin: 19px 10px 0 10px;
-        }
-    }
-
-    // #endregion
-}
-
-// #endregion
-
-// #region Player Error Dialog (Codec)
-
-div[data-syiro-minor-component="player-error"]{
-    float: left;
-    height: 40px; // Set to 40px, which is exactly two lines of text at 20px line-height
-    color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the syiroPlayerControlColor
-    text-align: center;
-    line-height: 20px;
-    background-color: @syiroPlayerControlColor;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    z-index: 4; // Force above all content in the Audio Player or Video Player
-    visibility: hidden; // Default to not being visible
-}
-
-// #endregion
-
-// #region Player Menu Dialog
-
-div[data-syiro-minor-component="player-menu"]{
-    float: left;
-    color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the background color
-    background-color: fade(@syiroPlayerControlColor, 80%); // Set the background color to the syiroBackgroundColor, faded (transparency) to 80%
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    z-index: 6; // Force above the video and video poster
-    visibility: hidden; // Default to not being visible
-
-    & > label { // Menu Dialog Label
-        float: left;
-        height: 50px;
-        width: 100%;
-        font-size: 18px;
-        text-indent: 10px;
-        line-height: 50px;
-    }
-
-    & > div[data-syiro-component="list"]{ // Menu Dialog List
-        float: left;
-        height: auto;
-        width: 90%;
-		color: contrast(@syiroPlayerControlColor); // Contrast the Syiro Player background color
-
-		div[data-syiro-component="list-item"] {
-			margin: 0 0 5px 10px; // Set margin to be 10px on the left and 5px on bottom
-		}
-    }
-}
-
-// #region Audio Player
-
-div[data-syiro-component="audio-player"]{
-    float: left;
-    height: auto;
-    background-color: @syiroPlayerControlColor; // Set a default background color in the event art is not added.
-
-    & > audio {
-        display: hidden; // Hide the audio player
-    }
-
-    // #region Mini Player
-
-    &[data-syiro-audio-player="mini"]{
-        min-height: 50px;
-        max-height: 60px;
-
-        // #region Player Menu
-
-        & > div[data-syiro-minor-component="player-menu"]{
-            display: none; // Force Hide the Player Menu
-        }
-
-        // #endregion
-
-        // #region Player Controls
-
-        & > div[data-syiro-component="player-control"]{
-            margin-top: 0; // No top margin
-            background-color: transparent; // Set background-color to transparent
-        }
-
-        // #endregion
-    }
-
-    // #endregion
-
-    // #region Full-sized Player
-
-    &:not([data-syiro-audio-player="mini"]){ // Not Mini
-        height: 150px;
-        background-position-y: 33%; // Offset by 1/3 (most album art main content takes up 2/3 to 1/2 of entire album art)
-        background-size: 100% auto; // Set background-size to 100% width, automatic height
-
-        // #region Player Menu
-
-        & > div[data-syiro-minor-component="player-menu"]{ // Menu Dialog within Audio Player
-            & > div[data-syiro-component="list"] div[data-syiro-component="list-item"] { // Inner List Items
-                width: 40px; // Set width to 40px
-                margin-left: 10px; // Ensure the List Item has enough space between the icons and is aligned with the Menu label
-
-                & > img { // If there is an image within the List Item
-                    height: 32px; // Reduce the height of the image
-                    width: 32px; // Reduce the width of the image
-                    margin: 4px 0 0 0; // Ensure the img looks good in the Audio Player's Menu Dialog "Grid View"
-                }
-
-                & > label { // Labels within List Items
-                    display: none; // Hide the list item
-                }
-            }
-        }
-
-        // #endregion
-
-        // #region Player Controls
-
-        & > div[data-syiro-component="player-control"]{
-            background-color: fade(@syiroPlayerControlColor, 75%); // Set background-color to transparent
-
-            &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Player Control
-                margin-top: 100px; // 100px top margin (since 150px - 50px is 100)
-            }
-
-            &:not([data-syiro-component-streamstyling]){ // If we are NOT applying "Stream Styling" to the Player Control
-                margin-top: 90px; // 90px top margin (since 150px - 60px is 90)
-            }
-        }
-
-        // #endregion
-    }
-
-    // #endregion
-
-    // #region General Audio Player - Player Control - Styling
-
-    & > div[data-syiro-component="player-control"]{
-
-        // #region Range "Track"
-
-        & > input {
-            &::-moz-range-track { // Firefox
-                .trackProperties(transparent);
-            }
-
-            &::-ms-track{ // Internet Explorer
-                .trackProperties(transparent); // Import the trackProperties
-            }
-
-            .trackProperties(transparent); // Place in input[type="range"] for Chrome
-        }
-
-        // #endregion
-
-        & > div[data-syiro-component="button"]:after{ // Inner Button Content
-            color: contrast(@syiroPlayerControlColor);
-        }
-
-		& > section { // Audio Information
-			float: left;
-			height: 40px;
-			max-width: 150px;
-			text-align: center;
-			margin-top: 5px;
-
-            & > b, label {
-				float: left;
-				width: 100%; // Fill up entire "row"
-				color: contrast(@syiroPlayerControlColor); // Make sure the text contrasts the player control color
-                font-size: 14px;
-                font-weight: normal; // No font-weight
-            }
-
-			& > b:not(:only-child), & > label:not(only-child) {
-				line-height: 20px; // Half of section
-			}
-
-			& > b:only-child, & > label:only-child { // If only a title or artist is provided
-				height: 100%;
-				line-height: 40px;
-			}
-        }
-    }
-
-    // #endregion
-}
-
-// #endregion
-
-// #region Video Player
-
-div[data-syiro-component="video-player"]{
-    float: left;
-    background-color: black; // Set the Video Player Component to have a black background to match video letterboxing color
-    background-repeat: no-repeat; // Do not repeat any Video Art
-    background-size: 100%; // Ensure Video Art is full container
-
-    // #region Show Video
-
-    &[data-syiro-show-video="true"]{
-        & > video { // Inner Video
-            visibility: visible; // Make visible
-        }
-    }
-
-    // #endregion
-
-    &:-webkit-full-screen{ // Webkit Fullscreen
-        height: 100% !important;
-        width: 100% !important;
-		position: absolute;
-		top: 0;
-    }
-
-    & > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] div[data-syiro-component="list-item"]{
-        & > img { // If there is an image within the List Item
-            height: 32px; // Reduce the height of the image
-            width: 32px; // Reduce the width of the image
-            margin: 4px 5px 0 0; // Make sure the image is properly aligned with the Menu label and label text
-        }
-    }
-
-    & > video { // Inner video
-        float: left;
-        height: inherit; // Inherit from parent Video Player container
-        width: inherit; // Inherit from parent Video Player container
-        background-color: black; // Set background color of video to black in the event it doesn't have the proper aspect ratio, to make any letterboxing less jarring
+    & > audio, video { // Audio and Video Elements
         visibility: hidden; // Default to being hidden
-
-        &:focus { // When the video is focused, typically on right-click, disable the border / outline
-            border: 0;
-            outline: 0;
-        }
     }
 
+    // #endregion
 
-    & > div[data-syiro-component="player-control"] { // Overrides for Video Player's Player Control
-        background-color: fadeout(@syiroPlayerControlColor, 10%);
-        position: relative;
-        z-index: 6; // Force above video poster
+    // #region Audio-Type Media Player
 
-        &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Player Control
-            bottom: 50px; // Ensure the Player Control is on the bottom edge of the Video Player
-        }
+    &[data-syiro-component-type="audio"]{
+        height: auto;
+        background-color: @syiroPlayerControlColor; // Set a default background color in the event art is not added.
 
-        &:not([data-syiro-component-streamstyling]){
-            bottom: 60px; // Ensure the Player Control is on the bottom edge of the Video Player
-        }
+        // #region Mini Player
 
-        // #region Range "Track"
+        &[data-syiro-audio-player="mini"]{
+            min-height: 50px;
+            max-height: 60px;
 
-        & > input {
-            &::-moz-range-track { // Firefox
-                .trackProperties();
+            // #region Player Menu
+
+            & > div[data-syiro-minor-component="player-menu"]{
+                display: none; // Force Hide the Player Menu
             }
 
-            &::-ms-track{ // Internet Explorer
-                .trackProperties(); // Import the trackProperties
+            // #endregion
+
+            // #region Media Controls
+
+            & > div[data-syiro-component="media-control"]{
+                margin-top: 0; // No top margin
+                background-color: transparent; // Set background-color to transparent
             }
 
-            .trackProperties(); // Place in input[type="range"] for Chrome
+            // #endregion
+        }
+
+        // #endregion
+
+        // #region Full-sized Player
+
+        &:not([data-syiro-audio-player="mini"]){ // Not Mini
+            height: 150px;
+            background-position-y: 33%; // Offset by 1/3 (most album art main content takes up 2/3 to 1/2 of entire album art)
+            background-size: 100% auto; // Set background-size to 100% width, automatic height
+
+            // #region Player Menu
+
+            & > div[data-syiro-minor-component="player-menu"]{ // Menu Dialog within Audio Player
+                & > div[data-syiro-component="list"] div[data-syiro-component="list-item"] { // Inner List Items
+                    width: 40px; // Set width to 40px
+                    margin-left: 10px; // Ensure the List Item has enough space between the icons and is aligned with the Menu label
+
+                    & > img { // If there is an image within the List Item
+                        height: 32px; // Reduce the height of the image
+                        width: 32px; // Reduce the width of the image
+                        margin: 4px 0 0 0; // Ensure the img looks good in the Audio Player's Menu Dialog "Grid View"
+                    }
+
+                    & > label { // Labels within List Items
+                        display: none; // Hide the list item
+                    }
+                }
+            }
+
+            // #endregion
+
+            // #region Media Controls
+
+            & > div[data-syiro-component="media-control"]{
+                background-color: fade(@syiroPlayerControlColor, 75%); // Set background-color to transparent
+
+                &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Media Control
+                    margin-top: 100px; // 100px top margin (since 150px - 50px is 100)
+                }
+
+                &:not([data-syiro-component-streamstyling]){ // If we are NOT applying "Stream Styling" to the Media Control
+                    margin-top: 90px; // 90px top margin (since 150px - 60px is 90)
+                }
+            }
+
+            // #endregion
+        }
+
+        // #endregion
+
+        // #region General Audio Player - Media Control - Styling
+
+        & > div[data-syiro-component="media-control"]{
+
+            // #region Range "Track"
+
+            & > input {
+                &::-moz-range-track { // Firefox
+                    .trackProperties(transparent);
+                }
+
+                &::-ms-track{ // Internet Explorer
+                    .trackProperties(transparent); // Import the trackProperties
+                }
+
+                .trackProperties(transparent); // Place in input[type="range"] for Chrome
+            }
+
+            // #endregion
+
+            & > div[data-syiro-component="button"]:after{ // Inner Button Content
+                color: contrast(@syiroPlayerControlColor);
+            }
+
+    		& > section { // Audio Information
+    			float: left;
+    			height: 40px;
+    			max-width: 150px;
+    			text-align: center;
+    			margin-top: 5px;
+
+                & > b, label {
+    				float: left;
+    				width: 100%; // Fill up entire "row"
+    				color: contrast(@syiroPlayerControlColor); // Make sure the text contrasts the player control color
+                    font-size: 14px;
+                    font-weight: normal; // No font-weight
+                }
+
+    			& > b:not(:only-child), & > label:not(only-child) {
+    				line-height: 20px; // Half of section
+    			}
+
+    			& > b:only-child, & > label:only-child { // If only a title or artist is provided
+    				height: 100%;
+    				line-height: 40px;
+    			}
+            }
         }
 
         // #endregion
 
     }
-}
 
-// #endregion
+    // #endregion
+
+    // #region Video-Type Media Player
+
+    &[data-syiro-component-type="video"]{
+        background-color: black; // Set the Video Player Component to have a black background to match video letterboxing color
+        background-repeat: no-repeat; // Do not repeat any Video Art
+        background-size: 100%; // Ensure Video Art is full container
+
+        // #region Show Video
+
+        &[data-syiro-show-video="true"]{
+            & > video { // Inner Video
+                visibility: visible; // Make visible
+            }
+        }
+
+        // #endregion
+
+        &:-webkit-full-screen{ // Webkit Fullscreen
+            height: 100% !important;
+            width: 100% !important;
+    		position: absolute;
+    		top: 0;
+        }
+
+        & > div[data-syiro-minor-component="player-menu"] > div[data-syiro-component="list"] div[data-syiro-component="list-item"]{
+            & > img { // If there is an image within the List Item
+                height: 32px; // Reduce the height of the image
+                width: 32px; // Reduce the width of the image
+                margin: 4px 5px 0 0; // Make sure the image is properly aligned with the Menu label and label text
+            }
+        }
+
+        & > video { // Inner video
+            float: left;
+            height: inherit; // Inherit from parent Video Player container
+            width: inherit; // Inherit from parent Video Player container
+            background-color: black; // Set background color of video to black in the event it doesn't have the proper aspect ratio, to make any letterboxing less jarring
+            visibility: hidden; // Default to being hidden
+
+            &:focus { // When the video is focused, typically on right-click, disable the border / outline
+                border: 0;
+                outline: 0;
+            }
+        }
+
+
+        & > div[data-syiro-component="media-control"] { // Overrides for Video Player's Media Control
+            background-color: fadeout(@syiroPlayerControlColor, 10%);
+            position: relative;
+            z-index: 6; // Force above video poster
+
+            &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Media Control
+                bottom: 50px; // Ensure the Media Control is on the bottom edge of the Video Player
+            }
+
+            &:not([data-syiro-component-streamstyling]){
+                bottom: 60px; // Ensure the Media Control is on the bottom edge of the Video Player
+            }
+
+            // #region Range "Track"
+
+            & > input {
+                &::-moz-range-track { // Firefox
+                    .trackProperties();
+                }
+
+                &::-ms-track{ // Internet Explorer
+                    .trackProperties(); // Import the trackProperties
+                }
+
+                .trackProperties(); // Place in input[type="range"] for Chrome
+            }
+
+            // #endregion
+
+        }
+    }
+
+    // #endregion
+
+    // #region Shared Media Control
+
+    div[data-syiro-component="media-control"]{
+        float: left;
+        width: inherit; // Scales to width of video player
+
+        &[data-syiro-component-streamstyling]{ // If we are applying "Stream Styling" to the Media Control
+            height: 50px; // Set height to 50px
+            max-height: 50px; // Enforce the height of 50px
+
+            & > input { // Input Slider
+                display: none; // Default to not showing
+            }
+        }
+
+        &:not([data-syiro-component-streamstyling]){ // If we are NOT applying "Stream Styling" to the Media Control
+            height: 60px; // Set height to 50px
+            max-height: 60px; // Enforce the height of 60px
+
+            & > input { // Input Slider
+                display: block; // Default to showing
+            }
+
+            & > time { // Time Label tweaks for NON-Streaming Styling
+                height: 50px;
+                width: auto;
+                line-height: 50px;
+                margin: 0 10px 0 10px;
+            }
+        }
+
+        & > div[data-syiro-component="button"][data-syiro-component-type="basic"]{ // Custom LESS for Basic Button Components inside Media Control
+            float: left;
+            height: 32px;
+            width: 32px;
+            min-width: 0; // Override Basic Button minimum width
+            color: contrast(@syiroPlayerControlColor); // Ensure the color contrasts the syiroPlayerControlColor
+            line-height: 32px; // Ensure the icon is centered vertically
+            text-align: center; // Ensure the icon is centered horizontally
+            background-color: transparent;
+            border-radius: 0;
+            margin: 9px 5px 9px 5px; // Center on Media Control
+
+            &:not(:first-of-type){ // If the button is not the first one
+                float: right; // Float to the right of the Media Control
+            }
+
+            &[active]:not([data-syiro-render-icon="play"]):after{ // If the button is active and it is not the play button
+                color: @syiroPlayerControlColor; // Set the text color to the syiroPlayerControlColor
+                background-color: contrast(@syiroPlayerControlColor); // Set the background to the contrast of the syiroPlayerControlColor
+            }
+
+            &[data-syiro-render-icon="play"]{ // Play Button
+                &[active]{ // If the Play Button is set to "active", meaning we are treating it as a "pause" button indicator
+                    &:after {
+                        .icon("pause", 14); // Use the pause icon
+                    }
+                }
+            }
+        }
+
+        // #region Our "slider" / input range
+
+        & > input[type="range"]{
+
+            // #region Range Thumb
+
+            .thumbProperties(){
+    			-moz-appearance: none; // No Firefox appearance
+    			-webkit-appearance: none; // No WebKit appearance
+                visbility: hidden;
+    			background-color: transparent;
+    			background: transparent;
+    			border: 0;
+    			border-radius: 0;
+            }
+
+            &::-moz-range-thumb { // Firefox "Thumb" Styling
+                .thumbProperties; // Import Thumb Styling
+            }
+
+            &::-ms-thumb { // Internet Explorer "Thumb" Styling
+                .thumbProperties; // Import Thumb Styling
+            }
+
+            &::-webkit-slider-thumb{ // Chrome "Thumb" Styling
+                .thumbProperties; // Import Thumb Styling
+            }
+
+            // #endregion
+        }
+
+        // #endregion
+
+        // #region Label Time Information
+
+        & > time {
+            float: left;
+            color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the syiroPlayerControlColor
+            font-size: 14px;
+
+            &[data-syiro-component-live]{ // Live "View"
+                height: 12px;
+                width: 12px;
+                text-indent: 18px;
+                line-height: 12px;
+                background-color: #ff1212;
+                border-radius: 16px;
+                margin: 19px 10px 0 10px;
+            }
+        }
+
+        // #endregion
+    }
+
+    // #endregion
+
+    // #region Player Error Dialog (Codec)
+
+    div[data-syiro-minor-component="player-error"]{
+        float: left;
+        height: 40px; // Set to 40px, which is exactly two lines of text at 20px line-height
+        color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the syiroPlayerControlColor
+        text-align: center;
+        line-height: 20px;
+        background-color: @syiroPlayerControlColor;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        z-index: 4; // Force above all content in the Audio Player or Video Player
+        visibility: hidden; // Default to not being visible
+    }
+
+    // #endregion
+
+    // #region Player Menu Dialog
+
+    div[data-syiro-minor-component="player-menu"]{
+        float: left;
+        color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the background color
+        background-color: fade(@syiroPlayerControlColor, 80%); // Set the background color to the syiroBackgroundColor, faded (transparency) to 80%
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        z-index: 6; // Force above the video and video poster
+        visibility: hidden; // Default to not being visible
+
+        & > label { // Menu Dialog Label
+            float: left;
+            height: 50px;
+            width: 100%;
+            font-size: 18px;
+            text-indent: 10px;
+            line-height: 50px;
+        }
+
+        & > div[data-syiro-component="list"]{ // Menu Dialog List
+            float: left;
+            height: auto;
+            width: 90%;
+    		color: contrast(@syiroPlayerControlColor); // Contrast the Syiro Player background color
+
+    		div[data-syiro-component="list-item"] {
+    			margin: 0 0 5px 10px; // Set margin to be 10px on the left and 5px on bottom
+    		}
+        }
+    }
+
+    // #endregion
+}

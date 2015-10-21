@@ -80,6 +80,7 @@ namespace syiro.videoplayer {
     // #region Video Player Generator
 
     export function New(properties : Object) : ComponentObject { // Generate a Video Player Component and return a Component Object
+		properties["type"] = "video"; // Set Media Player type to audio
         return syiro.mediaplayer.New(properties); // Call to generate a new video-type (default) Media Player
     }
 

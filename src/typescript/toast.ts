@@ -31,8 +31,7 @@ namespace syiro.toast {
 			if (typeof properties["message"] !== "undefined"){ // If a message is defined (meaning don't do a properties change
 				var titleLabel : Element = syiro.utilities.ElementCreator("label", { "content" : properties["title"] }); // Generate a title
 				componentElement.appendChild(titleLabel); // Append the label to the componentElement
-			}
-			else { // If a message is not defined, do a properties change
+			} else { // If a message is not defined, do a properties change
 				properties["message"] = properties["title"] ; // Redefine message as title content
 				delete properties["title"]; // Delete title from properties
 			}
@@ -69,8 +68,7 @@ namespace syiro.toast {
 				if (typeof toastButtonProperties["content"] == "undefined"){ // If content is not defined
 					if (toastButtonProperties["action"] == "deny"){ // If this is a "deny" action
 						toastButtonProperties["content"] = "No"; // Simply set to "No"
-					}
-					else{ // If this is an "affirm" action
+					} else { // If this is an "affirm" action
 						toastButtonProperties["content"] = "Yes"; // Simply set to "Yes"
 					}
 				}
@@ -91,8 +89,7 @@ namespace syiro.toast {
 			if (Object.keys(futureButtonHandlers).length !== 0){ // If the Future Button Handlers Object is not empty
 				syiro.data.Write(componentId + "->ActionHandlers", futureButtonHandlers); // Write to componentId -> ActionHandlers the handlers
 			}
-		}
-		else{ // If just a message is provided
+		} else { // If just a message is provided
 			var closeIconButtonObject : ComponentObject = syiro.button.New({ "type" : "basic", "content": "x" }); // TEMP "x" LABEL
 			componentElement.appendChild(syiro.component.Fetch(closeIconButtonObject)); // Append the closeIconButton (that we fetch from closeIconButtonObject) to the Toast
 		}
@@ -150,23 +147,19 @@ namespace syiro.toast {
 				if (toastType == "normal"){ // If this is a Normal Toast
 					if ((syiro.device.width > 1024) && (currentAnimation == "slide")){ // If the document width is "large" and we did a Slide In
 						showAnimation = false; // Slide Out the Normal Toast
-					}
-					else if ((syiro.device.width <= 1024) && ((currentAnimation == "fade-in") || (currentAnimation == "slide"))){ // If the document width is "small" and we did a Fade In or Slide (a Slide would happen if we had a large document width which "shrunk" down)
+					} else if ((syiro.device.width <= 1024) && ((currentAnimation == "fade-in") || (currentAnimation == "slide"))){ // If the document width is "small" and we did a Fade In or Slide (a Slide would happen if we had a large document width which "shrunk" down)
 						showAnimation = false; // Fade Out the Normal Toast
 					}
-				}
-				else if (toastType == "dialog"){ // If this is a Dialog Toast
+				} else if (toastType == "dialog"){ // If this is a Dialog Toast
 					showAnimation = !(currentAnimation == "fade-in"); // If we did a fade-in, set showAnimation to the reverse of the value (so, showAnimation should be false)
 				}
-			}
-			else{ // If an action was provided
+			} else { // If an action was provided
 				showAnimation = !(action == "hide"); // If we are forcing hide (action would be equal to hide, which then would mean showAnimation is true, so we reverse it)
 			}
 
 			if ((showAnimation) && ((syiro.device.width > 1024) && (toastType == "normal"))){ // If we are showing the Toast, document width is "large" and this is a Normal Toast
 				syiro.animation.Slide(component); // Slide the Toast
-			}
-			else if ((showAnimation) && (((syiro.device.width <= 1024) && (toastType == "normal")) || (toastType == "dialog"))){ // If we are showing the Toast and it is either a Normal Toast w/ document width "small" OR a Dialog Toast
+			} else if ((showAnimation) && (((syiro.device.width <= 1024) && (toastType == "normal")) || (toastType == "dialog"))){ // If we are showing the Toast and it is either a Normal Toast w/ document width "small" OR a Dialog Toast
 				 syiro.animation.FadeIn(component, // Fade In the Toast Notification
 				 	function(){
 					 	var toastElement = syiro.component.Fetch(component); // Get the Toast Element
@@ -177,11 +170,9 @@ namespace syiro.toast {
 						 }
 					 }
 				 );
-			}
-			else if ((showAnimation == false) && ((syiro.device.width> 1024) && (toastType == "normal"))){ // If we are hiding the Toast, document width is "large" and this is a Normal Toast
+			} else if ((showAnimation == false) && ((syiro.device.width> 1024) && (toastType == "normal"))){ // If we are hiding the Toast, document width is "large" and this is a Normal Toast
 				syiro.animation.Reset(component); // Simply reset the Toast
-			}
-			else if ((showAnimation == false) && (((syiro.device.width <= 1024) && (toastType == "normal")) || (toastType == "dialog"))){ // If we are hiding the Toast and it is either a Normal Toast w/ document width "small" OR a Dialog Toast
+			} else if ((showAnimation == false) && (((syiro.device.width <= 1024) && (toastType == "normal")) || (toastType == "dialog"))){ // If we are hiding the Toast and it is either a Normal Toast w/ document width "small" OR a Dialog Toast
 				 syiro.animation.FadeOut(component, // Fade Out the Toast Notification
 				 	function(){
 						 var toastElement = syiro.component.Fetch(component); // Get the Toast Element

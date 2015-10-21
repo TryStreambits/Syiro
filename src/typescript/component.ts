@@ -20,8 +20,7 @@ namespace syiro.component {
 
 		if (typeOfComponent == "ComponentObject"){ // If we were provided a Component Object
 			modifiableElement = syiro.component.Fetch(component); // Fetch the Element and assign it to modifiableElement
-		}
-		else if (typeOfComponent == "Element"){ // If the component is NOT a Syiro Component Object
+		} else if (typeOfComponent == "Element"){ // If the component is NOT a Syiro Component Object
 			modifiableElement = component; // Treat the component as an Element
 		}
 
@@ -50,17 +49,14 @@ namespace syiro.component {
 			if (typeof newValue == "undefined"){ // If we are fetching the current value rather than modifying or removing it
 				if (stylePropertyValue !== undefined){ // If the elementStylingObject has the property
 					returnedValue = stylePropertyValue; // Define returnedValue as the value of the property
-				}
-				else{ // If the property we are looking for does not exist
+				} else { // If the property we are looking for does not exist
 					returnedValue = ""; // Define the returnedValue as an empty string
 				}
-			}
-			else if ((newValue !== "") && (newValue !== false)){ // If we are updated the value (not an empty string)
+			} else if ((newValue !== "") && (newValue !== false)){ // If we are updated the value (not an empty string)
 				elementStylingObject[property] = newValue; // Assign the newValue to the property
 				modifiedStyling = true; // Indicate that we've modified the Element's styling
 				returnedValue = newValue; // Define returnedValue as the value we are setting
-			}
-			else{ // If we are removing the value
+			} else { // If we are removing the value
 				if (typeof stylePropertyValue !== "undefined"){ // If the elementStylingObject has the property
 					elementStylingObject[property] = null; // Define the property as null
 					modifiedStyling = true; // Indicate that we've modified the Element's styling
@@ -78,13 +74,11 @@ namespace syiro.component {
 
 				if (updatedCSSStyle.length !== 0){ // If the styling is not empty
 					modifiableElement.setAttribute("style", updatedCSSStyle); // Set the style attribute
-				}
-				else{ // If the styling is empty
+				} else { // If the styling is empty
 					modifiableElement.removeAttribute("style"); // Remove the style attribute
 				}
 			}
-		}
-		else{ // If the modifiableElement doesn't exist
+		} else { // If the modifiableElement doesn't exist
 			returnedValue = ""; // Set returnedValue to an empty string
 		}
 
@@ -117,12 +111,10 @@ namespace syiro.component {
 		if (arguments.length == 1){ // If only one argument is defined
 			if (typeof arguments[0] == "string"){ // If the first argument defined is a string (selector)
 				variableProvided = document.querySelector(arguments[0]); // Define variableProvided as the returned Element from querySelector
-			}
-			else{ // If the first argument is not a string
+			} else { // If the first argument is not a string
 				variableProvided = arguments[0]; // Define variableProvided as the first argument
 			}
-		}
-		else if (arguments.length == 2){ // If two arguments are defined
+		} else if (arguments.length == 2){ // If two arguments are defined
 			if (typeof arguments[1] == "string"){ // If the second argument defined in a string (selector)
 				variableProvided = document.querySelector(arguments[1]); // Define variableProvided as the returned Element from querySelector
 			}
@@ -137,21 +129,18 @@ namespace syiro.component {
 				previouslyDefined = true; // Set previouslyDefined as true
 				component["id"] = possibleExistingId;
 				component["type"] = variableProvided.getAttribute("data-syiro-component"); // Get the Component type
-			}
-			else{ // If an id has not been previously defined
+			} else { // If an id has not been previously defined
 				if ((arguments.length == 2) && (typeof arguments[0] == "string")){ // If the first argument is a string and the args length is two
 					component["id"] = syiro.component.IdGen(arguments[0]); // Define componentId as Id generated based on the type provided
 					component["type"] = arguments[0]; // Define the type of the component as the type passed as the first arg
-				}
-				else if (arguments.length == 1){
+				} else if (arguments.length == 1){
 					var idBase : string = ""; // Define idBase as the base that the Component ID will be based on
 					var potentialExistingType : string = variableProvided.getAttribute("data-syiro-component"); // Get any existing type if it has one
 
 					if (potentialExistingType !== null){ // If a type is defined but not an Id (like the page)
 						idBase = potentialExistingType; // Set idBase to potentialExistingType
 						component["type"] = potentialExistingType; // Set the type to the same type
-					}
-					else{ // If no type is defined
+					} else { // If no type is defined
 						idBase = variableProvided.tagName.toLowerCase(); // Set idBase to the tagName lowercased
 						component["type"] = idBase; // Set type to whatever the tag is
 					}
@@ -166,8 +155,7 @@ namespace syiro.component {
 					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.button.Toggle); // Immediately listen to the Dropdown Button
 				}
 			}
-		}
-		else if ((typeOfVariableProvided == "Document") || (typeOfVariableProvided.indexOf("Screen") == 0) || typeOfVariableProvided == "Window"){ // If this is a valid alternative variable to do event handling on
+		} else if ((typeOfVariableProvided == "Document") || (typeOfVariableProvided.indexOf("Screen") == 0) || typeOfVariableProvided == "Window"){ // If this is a valid alternative variable to do event handling on
 			var lowercasedType : string = typeOfVariableProvided.toLowerCase(); // Lowercase the type of the varaible
 			component["id"] = lowercasedType; // Set the Id of the Component Object to lowercasedType
 			component["type"] = lowercasedType; // Set the type of the Component Object to lowercasedType
@@ -186,8 +174,7 @@ namespace syiro.component {
 
 		if (syiro.utilities.TypeOfThing(component) == "ComponentObject"){ // If the Component provided is a Syiro Component Object
 			componentElement = syiro.component.Fetch(component); // Fetch the Component Element
-		}
-		else { // If the Component provided is NOT a Syiro Component Object
+		} else { // If the Component provided is NOT a Syiro Component Object
 			componentElement = component; // Set the componentElement to the component (Element) provided
 		}
 
@@ -219,8 +206,7 @@ namespace syiro.component {
 
 		if (syiro.component.lastUniqueIds[type] == undefined){ // If the lastUniqueId of this type hasn't been defined yet.
 			lastUniqueIdOfType = 0; // Set to zero
-		}
-		else{ // If the lastUniqueId of this type IS defined
+		} else { // If the lastUniqueId of this type IS defined
 			lastUniqueIdOfType = syiro.component.lastUniqueIds[type]; // Set lastUniqueIdOfType to the one set in lastUniqueIds
 		}
 
@@ -256,8 +242,7 @@ namespace syiro.component {
 		if (typeof appendOrPrepend == "boolean"){ // If appendOrPrepend is a boolean
 			if (appendOrPrepend){ // If we are appending
 				appendOrPrepend = "append"; // Set as "append"
-			}
-			else{
+			} else {
 				appendOrPrepend = "prepend"; // Set as "prepend"
 			}
 		}
@@ -266,8 +251,7 @@ namespace syiro.component {
 
 		if (syiro.utilities.TypeOfThing(parentComponent) == "ComponentObject"){ // If the parentComponent is a Component Object
 			parentElement = syiro.component.Fetch(parentComponent); // Get the HTMLElement of the parentComponent
-		}
-		else{ // If it is an Element
+		} else { // If it is an Element
 			parentElement = parentComponent; // Define parentElement as actually the parentComponent
 			parentComponent = syiro.component.FetchComponentObject(parentElement); // Redefine parentComponent as the fetched Component Object
 		}
@@ -283,12 +267,10 @@ namespace syiro.component {
 		if (syiro.utilities.TypeOfThing(childComponent) == "ComponentObject"){ // If the childComponent is an Syiro Component Object
 			if ((parentComponent["type"] == "navbar") && (syiro.data.Read(parentComponent["id"] + "->Position") == "top") && ((childComponent["type"] == "button") || (childComponent["type"] == "searchbox"))){ // If the parentComponent is a top Navbar and childComponent is either a button or a searchbar
 				allowAdding = true; // Allow adding the childComponent
-			}
-			else if ((parentComponent["type"] == "list") && (childComponent["type"].indexOf("list") !== -1)){ // If the parentComponent is a List and childComponent is a List or List Item
+			} else if ((parentComponent["type"] == "list") && (childComponent["type"].indexOf("list") !== -1)){ // If the parentComponent is a List and childComponent is a List or List Item
 				parentElement = parentElement.querySelector('div[data-syiro-minor-component="list-content"]'); // Change parentElement to listContent container for append
 				allowAdding = true; // Allow adding the childComponent
-			}
-			else if (typeof childComponent["link"] !== "undefined"){ // If a component "link" key is defined, meaning it is a link
+			} else if (typeof childComponent["link"] !== "undefined"){ // If a component "link" key is defined, meaning it is a link
 				childElement = syiro.utilities.ElementCreator("a", // Create a link element
 					{
 						"title" : childComponent["title"], // Set the title as the one specified in the component object
@@ -298,13 +280,11 @@ namespace syiro.component {
 				);
 
 				allowAdding = true; // Allow adding the childComponent
-			}
-			else{ // If it is NOT a Dropdown Button, List, Searchbox, or Link
+			} else { // If it is NOT a Dropdown Button, List, Searchbox, or Link
 				childElement = syiro.component.Fetch(childComponent); // Get the HTMLElement of the childComponent
 				allowAdding = true; // Allow adding the childComponent
 			}
-		}
-		else if (syiro.utilities.TypeOfThing(childComponent, "Element")){ // If the childComponentType is an (HTML)Element
+		} else if (syiro.utilities.TypeOfThing(childComponent, "Element")){ // If the childComponentType is an (HTML)Element
 			childElement = childComponent; // Set the childElement to the childComponent
 			allowAdding = true;
 		}
@@ -312,8 +292,7 @@ namespace syiro.component {
 		if ((allowAdding) && (parentElement !== null) && (childElement !== null)){ // If we are allowing the adding of the childComponent and both the parentElement and childElement exist in syiro.data.storage or DOM
 			if (appendOrPrepend == "prepend"){ // If we are prepending the childElement
 				parentElement.insertBefore(childElement, parentElement.firstChild); // Insert before the first component
-			}
-			else{ // If we are appending the childComponent
+			} else { // If we are appending the childComponent
 				parentElement.appendChild(childElement); // Append the Element
 			}
 		}
@@ -336,8 +315,7 @@ namespace syiro.component {
 
 		if ((typeOfThing == "ComponentObject") || (typeOfThing == "Element")){ // If the componentsToRemove is a Component Object or Element
 			componentList = [componentsToRemove]; // Set componentList to an Array consisting of the single Component Object
-		}
-		else if (typeOfThing == "Array"){ // If the componentsToRemove is an Array
+		} else if (typeOfThing == "Array"){ // If the componentsToRemove is an Array
 			componentList = componentsToRemove; // Set componentList to the componentsToRemove
 		}
 
@@ -349,8 +327,7 @@ namespace syiro.component {
 			if (typeOfComponent == "ComponentObject"){ // If the individual Component is a Syiro Component Object
 				componentObject = component; //  Define componentObject as the Object provided
 				componentElement = syiro.component.Fetch(component); // Define componentElement as the fetched Element of the Component
-			}
-			else if (typeOfComponent == "Element"){ // If the individual Component is an Element
+			} else if (typeOfComponent == "Element"){ // If the individual Component is an Element
 				componentObject = syiro.component.FetchComponentObject(component); // Define componentObject as the Component Object we'll fetch based on the Element
 				componentElement = component; // Define componentElement as the Element provided
 			}

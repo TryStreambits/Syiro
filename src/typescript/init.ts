@@ -193,6 +193,7 @@ namespace syiro.init {
 	// #region Media Control Initialization
 
 	export function MediaControl(componentObject : ComponentObject, mediaControlComponentObject : ComponentObject){
+		var componentElement : Element = syiro.component.Fetch(componentObject); // Fetch the componentElement of the Media Player
 		var mediaControlElement : Element = syiro.component.Fetch(mediaControlComponentObject); // Fetch the Media Control Element
 
 		// #region Player Range Initialization
@@ -231,8 +232,7 @@ namespace syiro.init {
 
 				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
 					syiro.mediaplayer.SetTime(playerComponentObject, valueNum); // Set the Time
-				}
-				else{ // If we are doing a volume change
+				} else { // If we are doing a volume change
 					syiro.mediaplayer.SetVolume(playerComponentObject, valueNum, "input"); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
 				}
 			}.bind(this, componentObject)
@@ -266,7 +266,7 @@ namespace syiro.init {
 
 		// #endregion
 
-		if (componentObject["type"] == "video-player"){ // If this is a Video Player Component
+		if (componentElement.getAttribute("data-syiro-component-type") == "video"){ // If this is a video-type Media Player
 			// #region Video Player Fullscreen Button Enabling
 
 			var fullscreenButtonElement : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button

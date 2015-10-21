@@ -18,8 +18,7 @@ namespace syiro.data {
 		if (keyList.indexOf("->") !== -1){ // If we are applying data to a key/val in the Component's data
 			componentId= keyList.slice(0, keyList.indexOf("->")); // Define componentId as the first string before the first ->
 			keyToApply = keyList.replace(componentId + "->", ""); // Set keyToApply to be keyList but without the Component Id
-		}
-		else{ // If we are applying the data itself to the key/val of syiro.data.storage, such as create the initial Object during creation of the Component
+		} else { // If we are applying the data itself to the key/val of syiro.data.storage, such as create the initial Object during creation of the Component
 			componentId = keyList; // Define componentId as the actual keyList
 		}
 
@@ -27,13 +26,11 @@ namespace syiro.data {
 			if (modificationType == "write"){ // If we are doing a write
 				if (typeof keyToApply =="string"){ // If there are sub-keys to apply on this write operation
 					syiro.data.storage[componentId] = {}; // Define as a new Object
-				}
-				else { // If no keyToApply exists, meaning whatever is in data is the entire Object for initial write
+				} else { // If no keyToApply exists, meaning whatever is in data is the entire Object for initial write
 					syiro.data.storage[componentId] = data; // Apply the data
 					returnableValue = true; // Immediately set returnableValue to true
 				}
-			}
-			else{ // If we are not doing a write operation
+			} else { // If we are not doing a write operation
 				returnableValue = false; // Define as false (the value doesn't exist)
 			}
 		}
@@ -44,17 +41,14 @@ namespace syiro.data {
 			if (modificationType == "read"){ // If the modificationType is read
 				if (typeof syiro.data.storage[componentId][keyToApply] !== "undefined"){ // If the keyToApply is defined
 					returnableValue = syiro.data.storage[componentId][keyToApply]; // Define returnableValue as the keyToApply/val stored
-				}
-				else{ // If the value does not exist
+				} else { // If the value does not exist
 					returnableValue = false; // Set returnableValue to false
 				}
-			}
-			else if (modificationType == "write"){ // If we are writing data
+			} else if (modificationType == "write"){ // If we are writing data
 				if (typeof data !== "undefined"){ // If data is defined
 					syiro.data.storage[componentId][keyToApply] = data; // Define the keyToApply/val as key + data passed
 				}
-			}
-			else if (modificationType == "delete"){ // If we are deleting data in syiro.data.storage
+			} else if (modificationType == "delete"){ // If we are deleting data in syiro.data.storage
 				if (typeof syiro.data.storage[componentId][keyToApply] !== "undefined"){ // If the keyToApply exists (or for that matter, the Component-specific storage exists)
 					delete syiro.data.storage[componentId][keyToApply]; // Delete the key from this componentId
 				}

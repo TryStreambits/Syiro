@@ -16,8 +16,7 @@ namespace syiro.button {
 		if (typeof properties["type"] == "undefined"){ // If the type is undefined
 			if ((typeof properties["list"] == "undefined") && (typeof properties["items"] == "undefined")){ // If there is no List or Items provided in properties
 				properties["type"] = "basic"; // Default to a basic button
-			}
-			else { // If there is a List or Items provided in properties
+			} else { // If there is a List or Items provided in properties
 				properties["type"] = "dropdown"; // Default to Dropdown Button
 			}
 		}
@@ -65,8 +64,7 @@ namespace syiro.button {
 
 			if (typeof properties["items"] !== "undefined"){ // If List Items are provided in the properties
 				listComponent = syiro.list.New({ "items" : properties["items"]}); // Simply generate a new List component from the provided list items and set the listComponent Object to the one provided by Generate
-			}
-			else{ // If a List is provided
+			} else { // If a List is provided
 				listComponent = properties["list"]; // Simply set the listComponent to the List Component Object that was provided
 			}
 
@@ -90,8 +88,7 @@ namespace syiro.button {
 			delete properties["position"]; // Delete "position" from properties
 
 			// #endregion
-		}
-		else if (properties["type"] == "toggle"){ // If this is a Toggle Button that is being generated
+		} else if (properties["type"] == "toggle"){ // If this is a Toggle Button that is being generated
 			var buttonToggleAttributes = { "data-syiro-minor-component" : "buttonToggle"}; // Create an Object to hold the attributes we'll pass when creating the buttonToggle
 
 			if ((typeof properties["default"] == "boolean") && (properties["default"])){ // If a default state for the button is defined and is defined as true (already active)
@@ -129,8 +126,7 @@ namespace syiro.button {
 			if (content !== ""){ // If we are not removing the icon from the Button
 				syiro.component.CSS(componentElement, "background-image", 'url("' + content + '")'); // Set the backgroundImage to the content specified
 				componentElement.setAttribute("data-syiro-render-icon", "custom"); // Specify not to render &:after icons
-			}
-			else{
+			} else {
 				syiro.component.CSS(componentElement, "background-image", ""); // Remove the background-image
 				componentElement.removeAttribute("data-syiro-render-icon"); // Remove the render-icon property
 			}
@@ -161,8 +157,7 @@ namespace syiro.button {
 
 				innerImage.setAttribute("src", content); // Set the Button image source
 				syiro.component.Update(component["id"], componentElement); // Update the storedComponent (if necessary)
-			}
-			else if ((content == "") && (innerImage !== null)){ // If the content is set to an empty string and innerImage exists
+			} else if ((content == "") && (innerImage !== null)){ // If the content is set to an empty string and innerImage exists
 				syiro.component.Remove(innerImage); // Remove the image
 			}
 
@@ -206,8 +201,7 @@ namespace syiro.button {
 			if (syiro.component.CSS(linkedListComponentElement, "visibility") !== ""){ // If the CSS of the linked List Component is stating the List is active (visibility is visible)
 				componentElement.removeAttribute("active"); // Remove the "active" attribute
 				syiro.component.CSS(linkedListComponentElement, "visibility", ""); // Remove the visibility attribute and hide the List
-			}
-			else{ // If the linked List is not active / showing
+			} else { // If the linked List is not active / showing
 				var linkedListComponentElementWidth : number = componentElement.clientWidth; // Define linkedListComponentELementWidth as a number, defaulting to the Dropdown width
 
 				if (linkedListComponentElementWidth < 200){ // If the List is not at least 200px
@@ -222,20 +216,17 @@ namespace syiro.button {
 				componentElement.setAttribute("active", ""); // Set the "active" attribute
 				syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Show the List
 			}
-		}
-		else if (componentElement.getAttribute("data-syiro-component-type") == "toggle"){ // If this a Toggle Button
+		} else if (componentElement.getAttribute("data-syiro-component-type") == "toggle"){ // If this a Toggle Button
 			if (typeof active == "undefined"){ // If is not provided
 				active = componentElement.hasAttribute("active"); // Define active as the boolean provided by hasAttribute
-			}
-			else { // If active is provided, flip the logic since the expected action is the FORCE the active provided
+			} else { // If active is provided, flip the logic since the expected action is the FORCE the active provided
 				active = !active; // Reverse the boolean
 			}
 
 			if (active){ // If the status is currently active
 				syiro.animation.Reset(component); // Eliminate the animation property
 				componentElement.removeAttribute("active"); // Remove the active attribute
-			}
-			else{ // If the status is NOT active
+			} else { // If the status is NOT active
 				syiro.animation.Slide(component);
 				componentElement.setAttribute("active", "true"); // Set to active
 			}
@@ -303,8 +294,7 @@ namespace syiro.buttongroup {
 			if (component["type"] == "buttongroup"){ // If it is a Buttongroup Component
 				componentElement = syiro.component.Fetch(component); // Fetch the Component Element
 			}
-		}
-		else if (typeOfComponent == "Element"){ // If it is an Element
+		} else if (typeOfComponent == "Element"){ // If it is an Element
 			componentElement = component; // Define componentElement as the component provided
 		}
 
@@ -324,8 +314,7 @@ namespace syiro.buttongroup {
 
 				if (hasOddNumberOfButtons && (innerButtonElementsIndex == middleButtonNumber)){ // If this is the middle button Element
 					widthValue = "calc(100% / " + innerButtonElements.length + " - 2px) !important"; // Define widthValue as 100% / 2 minus 2px (bordering)
-				}
-				else if (innerButtonElementsIndex == (innerButtonElements.length - 1)){ // If this is the last button Element
+				} else if (innerButtonElementsIndex == (innerButtonElements.length - 1)){ // If this is the last button Element
 					widthValue = "calc(100% / " + innerButtonElements.length + " - " + (innerButtonElements.length - 1) + "px) !important"; // Define widthValue as 100% / 2 minus N - 1px (for each button aside from the last, account for the bordering)
 				}
 

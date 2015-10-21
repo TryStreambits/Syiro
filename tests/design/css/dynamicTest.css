@@ -14,11 +14,17 @@ div[data-syiro-component="navbar"] > div[data-syiro-component="button"][data-syi
 
 /* End of Navbar Inner Dropdown Button */
 
+/* Shared Player Container Styling */
+
+div[data-page-component*="-container"]:not([data-page-component="buttongroup-container"]){
+    float: left;
+}
+
+/* End of Shared Player Container Styling */
 
 /* Buttongroup Container & Inner Buttongroup Component */
 
 div[data-page-component="buttongroup-container"]{ /* Buttongroup Container */
-    float: left;
     width: 100%;
     margin: 1.5% 0 1.5% 0;
 }
@@ -28,14 +34,6 @@ div[data-page-component="buttongroup-container"] > div[data-syiro-component="but
 }
 
 /* End of Buttongroup Container & Inner Buttongroup Component */
-
-/* Audio Player Component */
-
-div[data-syiro-component="audio-player"]{
-    margin-left: calc((100% - 400px) / 2);
-}
-
-/* End of Audio Player Component  */
 
 /* Video Player Container */
 
@@ -69,16 +67,16 @@ div[data-page-component="video-player-container"]{
 }
 
 @media (min-width: 601px){
-    /* Shared Player Container Styling */
+    div[data-page-component="audio-player-container"]{
+        width: 400px;
+        margin-left: calc((100% - 400px) / 2);        
+    }
 
-    div[data-page-component*="-container"]:not([data-page-component="buttongroup-container"]){
-        float: left;
+    div[data-page-component="video-player-container"]{
         height: calc(50%);
         width: 50%;
         margin-left: 25%;
     }
-
-    /* End of Shared Player Container Styling */
 }
 
 /* End of Scaling */

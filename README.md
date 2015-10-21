@@ -36,7 +36,7 @@ The package also comes with a gzipped version of the JavaScript code, so you can
 Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
 Bootstrap 3.3.5 | 145.9kb | 121.1kb | None Provided
-Polymer 1.0.5 | Varies depending on use of components | 148.3kb | None Provided
+Polymer 1.1.0 | Varies depending on use of components | 150.6kb | None Provided
 Syiro 1.5.3 | 28.7kb | 60.2kb | 13.6kb
 
 Details:

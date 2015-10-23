@@ -6,12 +6,11 @@ Syiro is a highly-focused framework for building front-end applications for devi
 
 **How does Syiro compare to the likes of Bootstrap and Polymer?**
 
-1. Syiro is significantly more focused on functionality and components compared to Bootstrap and Polymer.
-2. Bootstrap implements components that are redundant given the capabilities of HTML5, such as progress bars, and as a result those frameworks are significantly more bloated and have to provide functionality to help trim out all the unnecessary components they package in.
-3. Bootstrap, unlike Syiro, also requires jQuery to do simple functionality like event handing, making the footprint for creating applications significantly larger as well as adding complexity in regards to dependencies.
-4. Polymer, just like Bootstrap, requires multiple dependencies and therefore makes rapid development more complex and forces you to rely on tools like Bower for dependency management.
-5. Polymer relies on Custom Elements, which is a working draft and is only supported in Chrome, therefore not friendly to the web as a whole, since users of any browser not using the Blink engine can't utilize Custom Elements without polyfilling. Syiro, on the other hand, leverages the HTML5 standard data-* to define components.
-6. Neither Bootstrap nor Polymer offer an easy way to generate components via Javascript. With Syiro you can easily generate a component by calling syiro.X.Generate (where X = the component type).
+1. Bootstrap implements components that are redundant given the capabilities of HTML5, such as progress bars, and as a result those frameworks are significantly more bloated and have to provide functionality to help trim out all the unnecessary components they package in.
+2. Bootstrap, unlike Syiro, also requires jQuery to do simple functionality like event handing, making the footprint for creating applications significantly larger as well as adding complexity in regards to dependencies.
+3. Polymer, just like Bootstrap, requires multiple dependencies and therefore makes rapid development more complex and forces you to rely on tools like Bower for dependency management.
+4. Polymer relies on Custom Elements, which is a working draft and is only supported in Chrome, which is neither friendly to the web ecosystem, nor to performance. Users of any browser not using the Blink engine can't utilize Custom Elements without polyfilling. Syiro, on the other hand, leverages the HTML5 standard data-* to define components.
+5. Neither Bootstrap nor Polymer offer an easy way to generate components via Javascript. With Syiro you can easily create a component by calling syiro.X.New (where X = the component type).
 
 **You mentioned that Syiro does not rely on jQuery, does that mean I can choose any other JavaScript framework to use with Syiro?**
 
@@ -23,11 +22,11 @@ Syiro uses LESS / CSS to theme components, making it easy to differentiate your 
 
 **What is Syiro's policy on backwards compatibility?**
 
-We have a [document that highlights our policy](http://stroblindustries.com/devcenter/index.html?product=syiro&doc=api-support-policy) on API support and backwards compatibility, so you know exactly when something *could* break and when something *shouldn't* break so you can yell at us!
+We have a [document that highlights our policy](http://stroblindustries.com/devcenter/index.html?product=syiro&doc=api-support-policy) on API support and backwards compatibility, so you know exactly when something *could* and when something *shouldn't* break.
 
 ## Download ##
 
-You can download either our [stable 1.5.3 release](https://github.com/StroblIndustries/Syiro/releases/download/1.5.3/stable.tar.gz) or [devel 1.6.0 RC2](https://github.com/StroblIndustries/Syiro/releases/download/1.6.0-rc2/devel.tar.gz), which provides the necessary minified CSS, images and JS wrapped in a nice package.
+You can download our [stable 1.6.0 release](https://github.com/StroblIndustries/Syiro/releases/download/1.6.0/stable.tar.gz) which provides the necessary minified CSS, images and JS wrapped in a nice package.
 
 The package also comes with a gzipped version of the JavaScript code, so you can easily serve the compressed content.
 
@@ -37,7 +36,7 @@ Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
 Bootstrap 3.3.5 | 145.9kb | 121.1kb | None Provided
 Polymer 1.1.0 | Varies depending on use of components | 150.6kb | None Provided
-Syiro 1.5.3 | 28.7kb | 60.2kb | 13.6kb
+Syiro 1.6.0 | 31.7kb | 63.8kb | 14.4kb
 
 Details:
 

@@ -6,13 +6,13 @@ div[data-syiro-component="button"]{
     float: left;
     cursor: default; // Default to "arrow" cursor
 	margin: 5px;
-	
+
 	// #region Custom Icon on Button
-	
+
 	&[data-syiro-render-icon="custom"]{
 		background-position: 95% 50%; // Float the icon to the right and have it sit in the middle
 	}
-	
+
 	// #endregion
 
     // #region Inner Image
@@ -29,7 +29,7 @@ div[data-syiro-component="button"]{
 
     &[data-syiro-component-type="basic"]{
 		color: contrast(@syiroPrimaryColor);
-		font-size: 14px;
+		font-size: 13px;
 		text-align: center;
 		text-decoration: none;
         border-radius: 3px;
@@ -43,7 +43,7 @@ div[data-syiro-component="button"]{
 
     &[data-syiro-component-type="dropdown"]{
         height: 40px;
-        font-size: 14px;
+        font-size: 13px;
         line-height: 40px;
 
         &::selection{ // If the Dropdown Button is double-clicked, that acts as a text selection

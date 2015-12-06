@@ -1,7 +1,7 @@
 // #region Syiro "Use Font" Mixin for ensuring correct font is used
 
 .syiroUseFont() when not (@syiroTheme = "ios"){ // When using the Default or Material Design Theme
-	src: local('Fira Sans'), local('fira'), local('Fira'), url(fonts/fira.woff) format('woff'); // Use Fira Sans
+	src: local('Droid Sans'), local('droid sans'), url(fonts/droidsans.ttf) format('truetype'); // Use Droid Sans
 }
 
 .syiroUseFont() when (@syiroTheme = "ios"){ // When using the iOS Theme

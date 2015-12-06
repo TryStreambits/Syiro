@@ -9,7 +9,7 @@ div[data-syiro-component="toast"]{
 	z-index: 10; // Force above all the things
 
 	// #region Toast Title
-	
+
 	& > label {
 		float: left;
 		width: e("calc(100% - 20px)"); // 100% of width minus 20px margins
@@ -18,43 +18,43 @@ div[data-syiro-component="toast"]{
 		font-size: 13px;
 		line-height: 24px;
 	}
-	
+
 	// #endregion
-	
+
 	// #region Toast Message
-	
+
 	& > span {
 		float: left;
 		font-family: inherit;
 		margin: 5px 10px 5px 10px; // 5px top and bottom, 10px left and right
 		overflow-y: auto; // Overflow if it is a large mesage
-		
+
 		// #region No Title Provided (Message Only)
-		
+
 		&:first-child{ // Is this the first child
 			height: 40px; // Force 40px max height (carries over to entire Toast height)
 			width: e("calc(100% - (20px + 42px))"); // 100% width minus (20px margin plus 42px (Buttons, 32px + margin))
 			font-size: 13px; // Utilize the extra room by having a larger font
 		}
-		
+
 		// #endregion
-		
+
 		// #region Title Provided
-		
+
 		&:not(:first-child){
 			height: e("calc(100% - (34px + 42px))"); // 100% of height of Toast minus (34px top  title height and 42px Buttons container height)
 			width: e("calc(100% - 20px)"); // 100% of width minus 20px margins
 			font-size: 12px;
 			margin: 5px 10px 5px 10px; // 5px top and bottom, 10px left and right
 		}
-		
+
 		// #endregion
 	}
-	
+
 	// #endregion
-	
+
 	// #region "Global" Button Styling Tweaks
-	
+
 	& div[data-syiro-component="button"]{
 		height: 32px;
 		line-height: 32px;
@@ -63,48 +63,48 @@ div[data-syiro-component="toast"]{
 		padding: 0; // Override default padding of Syiro Button
 		cursor: pointer; // Make it obvious this section is clickable
 	}
-	
+
 	// #endregion
-	
+
 	// #region Buttons Container
-	
+
 	& > div[data-syiro-minor-component="toast-buttons"]{
 		float: right; // Float the Toast Buttons Container to the right
 		height: 32px;
-		
+
 		// #region Inner Syiro Buttons
-		
+
 		& > div[data-syiro-component="button"]{
 			height: inherit;
 			min-width: 100px; // Minimum of 100px width
 			font-size: 13px;
 			margin: 0; // Override default margins of Syiro Button
-			
+
 			&:only-child, &:last-of-type { // If this is the only child or the last Button (usually Affirm)
 				float: right; // Float the Deny button to the right
 				color: @syiroPrimaryColor; // Use the Syiro Primary Color (implying this single action is not "negative")
 			}
-			
+
 			// #region Deny Button
-			
+
 			&[data-syiro-dialog-action="deny"]{
 				&:not(:last-child){ // If this is not the last child
 					float: left; // Float the Deny button to the left
 					color: lighten(red, 10%); // Light Red
 				}
 			}
-			
+
 			// #endregion
-			
+
 		}
-		
+
 		// #endregion
 	}
-	
+
 	// #endregion
-	
+
 	// #region Message-Only Button (To Close)
-	
+
 	& > div[data-syiro-component="button"]{
 		float: right; // Float to right
 		min-width: 32px; // Only allow to be 32px wide
@@ -113,63 +113,63 @@ div[data-syiro-component="toast"]{
 		color: contrast(@syiroToastBackground); // Contrast the Syiro Toast Background
 		margin: 10px 5px 10px 5px; // 10px top and bottom, 5px left and right
 	}
-	
+
 	// #endregion
-	
+
 	// #region Dialog-Specific Toast Styling
-	
+
 	&[data-syiro-component-type="dialog"]{
 		opacity: 0; // Default opacity of 0 (transparent)
 		visibility: hidden; // Default to a hidden Dialog Toast
 	}
-	
+
 	// #endregion
-	
+
 	// #region Small Screen Devices
-	
+
 	@media screen and (max-width: 1024px){
 		width: 80%; // 80% of the width of the page
 		top: 5%; // 5% from the top
 		left: 10%; // 10% from left
-		
+
 		// #region "Normal" Toasts that aren't already being shown via a slide animation (happens during scaling from large -> small document)
-		
+
 		&[data-syiro-component-type="normal"]:not([data-syiro-animation="slide"]){
 			opacity: 0; // Default opacity of 0 (transparent)
 			visibility: hidden; // Default to a hidden Dialog Toast
 		}
-		
+
 		// #endregion
-		
+
 		// #region "Dialog" Toasts
-		
+
 		&[data-syiro-component-type="dialog"]{
 			height: 90%; // Ensure Dialog covers the majority of the page
 		}
-		
+
 		// #endregion
 	}
-	
+
 	// #endregion
-	
+
 	// #region Reasonably-Sized Devices and Beyond
-		
+
 	@media screen and (min-width: 1024px){
 		// #region Normal-Specific Toast Styling
-		
+
 		&[data-syiro-component-type="normal"]{
 			float: right;
 			width: 300px;
 			left:100%;// Default to 100% outside the screen (on the right)
 			bottom: 10px;
-			
+
 			.slideLeft("calc(100% - 300px - 10px)", 125) // Dynamically calculate 10px from the right edge, slide within 125ms
 		}
-		
+
 		// #endregion
-		
+
 		// #region Dialog-Specific Toast Styling
-		
+
 		&[data-syiro-component-type="dialog"]{
 			float: left;
 			height: 60%; // 60% of the page
@@ -177,10 +177,10 @@ div[data-syiro-component="toast"]{
 			top: 20%; // Center Dialog Toast vertically
 			left: 30%; // Center Dialog Toast horizontally
 		}
-		
+
 		// #endregion
 	}
-	
+
 	// #endregion
 
 }

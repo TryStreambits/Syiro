@@ -3,7 +3,7 @@
 .listItemProperties(){
 	float: left;
 	width: 100%;
-	font-size:  14px;
+	font-size: 13px;
 	opacity : 1.0;
 	overflow: hidden;
 }
@@ -40,7 +40,7 @@ div[data-syiro-component="list"]{
 			width: 100%;
 
 			& > div[data-syiro-minor-component="list-header"]{ // List Header
-				.listItemProperties(); // Apply listItemProperties (treat the List Header as if it is just another List Item
+				.listItemProperties(); // Apply listItemProperties (treat the List Header as if it is just another List Item)
 
 				&:after{ // Icon
 					float: right; // Flow to right
@@ -56,11 +56,6 @@ div[data-syiro-component="list"]{
 				&:not([active]){ // If the List Content isn't "active" (active = showing)
 					display: none; // Default to not being shown
 				}
-
-				& > div[data-syiro-component="list-item"]{ // Inner List Item
-					font-size: 12px; // Smaller font
-					opacity: 0.80; // 80% opacity
-				}
 			}
 
 		}
@@ -69,7 +64,7 @@ div[data-syiro-component="list"]{
 
 		// #region Syiro List Item Component (Only applies if the List Item does not have the attribute nonstrict-formatting)
 
-		& > div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){
+		& div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){
 			.listItemProperties(); // Apply listItemProperties()
 
 			// #region Image

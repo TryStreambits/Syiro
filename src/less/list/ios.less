@@ -1,0 +1,22 @@
+@import (reference) "../core.less"; // Import Core as a reference
+
+div[data-syiro-component="list"]{ // Syiro List Component
+	// #region Syiro List Content
+
+	& > div[data-syiro-minor-component="list-content"]{
+
+		& > div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Syiro List Item Component (Only applies if the List Item does not have the attribute nonstrict-formatting)
+			// #region Image
+
+			& > img {
+				height: 36px;
+				width: 36px;
+				margin-right: 10px;
+			}
+
+			// #endregion
+		}
+	}
+
+	// #endregion
+}

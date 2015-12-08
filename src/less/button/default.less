@@ -36,7 +36,6 @@ div[data-syiro-component="button"]{
 			margin-top: 1px;
 
 			&:not([data-syiro-animation]){ // If there is no applied animation
-				border: 1px solid darken(@syiroBackground, 20%);
 				margin-left: 1px;
 			}
 
@@ -51,6 +50,11 @@ div[data-syiro-component="button"]{
 
 		&:not([active]){
 			background-color: darken(@syiroBackground, 5%);
+
+			& > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
+				background-color: @syiroRed; // More strongly imply Disabled / False status
+				border: 1px solid @syiroRed;
+			}
 		}
 
 		// #endregion

@@ -1,7 +1,8 @@
 @syiroTheme : "default"; // Define syiroTheme we are compiling - set to default
 
+@import "animations.less"; // Animations
 @import "core.less"; // Core CSS
 @import "icons.less"; // Icons
 
-@import "core-theme/**"; // Import core LESS
-@import "@{syiroTheme}-theme/**"; // Import all from this theme (requires less-plugin-glob)
+@import "**/core.less"; // Import core LESS
+@import "**/@{syiroTheme}.less"; // Import all from this theme (requires less-plugin-glob)

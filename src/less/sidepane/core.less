@@ -10,6 +10,26 @@ div[data-syiro-component="sidepane"]{
     position: fixed; // Fixed positioning
     z-index : 9;
 
+    // #region Theme-Based Width
+
+    @lHDWidth : 500; // Set "Lower" Than HD Width to 500
+    @hdWidth : 250; // Set HD Width to 250
+
+    & when (@syiroTheme = "material") { // When the theme is Material
+        @lHDWidth : 512; // Change "Lower" Than HD Width to 512
+        @hdWidth : 256; // Change HD Width to 256
+    }
+
+    @media (max-width: 1279px){ // Lower than HD
+        max-width: unit(@lHDWidth, "px"); // Use lHDWidth as max-width
+    }
+
+    @media (min-width: 280px){ // HD
+        width: unit(@hdWidth, "px"); // Set fixed width to hdWidth
+    }
+
+    // #endregion
+
     // #region Disable Slow-Transition Dragging
 
     &[data-syiro-render-transition="false"]{

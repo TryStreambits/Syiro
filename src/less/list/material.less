@@ -1,39 +1,33 @@
 @import (reference) "../core.less"; // Import Core as a reference
 
 .listItemProperties(){
-	height: 40px;
-	line-height: 40px;
+	height: 48px;
+	line-height: 48px;
 }
 
+// This is the Material Design LESS of the List and List Item Components.
+
 div[data-syiro-component="list"]{ // Syiro List Component
-	min-height: 40px;
-	overflow: hidden; // Hide overflow
 
 	// #region Syiro List Content
 
 	& > div[data-syiro-minor-component="list-content"]{
 
-		// #region Syiro List Component (sub-Lists)
-
-		& > div[data-syiro-component="list"]{
-
-			& > div[data-syiro-minor-component="list-header"]{ // List Header
-				.listItemProperties(); // Apply listItemProperties (treat the List Header as if it is just another List Item
-			}
-
-		}
-
-		// #endregion
-
 		& > div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Syiro List Item Component (Only applies if the List Item does not have the attribute nonstrict-formatting)
-			.listItemProperties(); // Apply listItemProperties
-
 			// #region Image
 
 			& > img {
-				height: 40px;
-				width: 40px;
-				margin-right: 10px;
+				height: 36px;
+				width: 36px;
+				margin: 6px 0 12px 12px;
+			}
+
+			// #endregion
+
+			// #region Button
+
+			& > div[data-syiro-component="button"]{
+				margin: 17px;
 			}
 
 			// #endregion
@@ -44,7 +38,7 @@ div[data-syiro-component="list"]{ // Syiro List Component
 
 	&[data-syiro-component-owner^="button"],&[data-syiro-component-owner^="searchbox"]{ // If the owner of the List is a Button type Dropdown or a Searchbox
 		& div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // List Item without strict formatting
-			text-indent: 10px;
+			text-indent: 12px;
 
 			& > div[data-syiro-component="button"][data-syiro-component-type="toggle"]:not([data-syiro-component-status="toggle"]){
 				border: 1px solid darken(@syiroBackground, 20%); // Allow easy differentiation between list-item background and toggle button

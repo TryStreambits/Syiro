@@ -48,6 +48,10 @@ Details:
 3. All gzipped  JavaScript was done using [Google's Closure Compiler](https://developers.google.com/closure/compiler/) at "simple" optimizations level.
 4. Syiro numbers are updated for stable releases.
 
+## Contributing ##
+
+This project leverages CodeUtils for development and adopts the CodeUtils Usage Spec. To learn how to contribute to this project and set up CodeUtils, read [here](https://github.com/StroblIndustries/CodeUtils/blob/master/CodeUtils-Usage-Spec.md).
+
 ## Using Syiro ##
 
 You can learn how to use Syiro by following documentation at our [Developer Center](http://stroblindustries.com/devcenter/index.html?product=syiro).

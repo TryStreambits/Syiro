@@ -79,7 +79,7 @@ declare namespace syiro.component {
     function IdGen(type: string): string;
     function IsComponentObject(component: any): boolean;
     function Update(componentId: string, componentElement: Element): void;
-    function Add(appendOrPrepend: any, parentComponent: any, childComponent: any): boolean;
+    function Add(appendOrPrepend: string, parentComponent: any, childComponent: any): boolean;
     function Remove(componentsToRemove: any): void;
 }
 declare module syiro.mediaplayer {

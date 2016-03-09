@@ -249,8 +249,8 @@ namespace syiro.buttongroup {
 	export function New(properties : Object) : ComponentObject {
 		var buttongroupComponentObject : ComponentObject;
 
-		if (typeof properties["items"] !== "undefined"){ // If items is defined
-			if (properties["items"].length >= 2){ // If the length of items is equal to or greater than 2
+		if (syiro.utilities.TypeOfThing(properties["items"], "Array")){ // If items is defined as an Array
+			if (properties["items"].length > 1){ // If the length of items is equal to or greater than 2
 				var componentId : string = syiro.component.IdGen("buttongroup"); // Generate a component Id
 				var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "buttongroup", "data-syiro-component-id" : componentId } );
 

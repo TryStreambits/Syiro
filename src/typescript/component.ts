@@ -169,13 +169,7 @@ namespace syiro.component {
 			componentElement = component; // Set the componentElement to the component (Element) provided
 		}
 
-		var componentClientRectList : ClientRectList = componentElement.getClientRects(); // Get the list of ComponentRect of this Component
-
-		dimensionsAndPosition["x"] = componentClientRectList[0].left; // Set x to the horizontal "left" position
-		dimensionsAndPosition["y"] = componentClientRectList[0].top; // Set y to the vertical "top" position
-		dimensionsAndPosition["height"] = componentClientRectList[0].height; // Set height to the ClientRect height
-		dimensionsAndPosition["width"] = componentClientRectList[0].width; // Set width to the ClientRect width
-
+		dimensionsAndPosition = componentElement.getClientRects()[0]; // Get the list of ComponentRect of this Component
 		return dimensionsAndPosition;
 	}
 
@@ -229,15 +223,7 @@ namespace syiro.component {
 
 	// #region Add Component function - Responsible for adding components to other components or elements
 
-	export function Add(appendOrPrepend : any, parentComponent : any, childComponent : any) : boolean { // Returns boolean if the component adding was successful or not
-		if (typeof appendOrPrepend == "boolean"){ // If appendOrPrepend is a boolean
-			if (appendOrPrepend){ // If we are appending
-				appendOrPrepend = "append"; // Set as "append"
-			} else {
-				appendOrPrepend = "prepend"; // Set as "prepend"
-			}
-		}
-
+	export function Add(appendOrPrepend : string, parentComponent : any, childComponent : any) : boolean { // Returns boolean if the component adding was successful or not
 		var parentElement : Element; // Define parentElement as an Element
 
 		if (syiro.utilities.TypeOfThing(parentComponent) == "ComponentObject"){ // If the parentComponent is a Component Object

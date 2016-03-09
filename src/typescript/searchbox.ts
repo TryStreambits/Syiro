@@ -143,7 +143,7 @@ namespace syiro.searchbox {
 
 					for (var suggestionIndex in suggestions){ // For each suggestion in suggestions
 						var suggestionListItem : ComponentObject = syiro.listitem.New({ "label" : suggestions[suggestionIndex] }); // Create a List Item with the label being the suggestion
-						syiro.list.AddItem(true, linkedListComponent, suggestionListItem); // Append the List Item to the Linked List
+						syiro.list.AddItem("append", linkedListComponent, suggestionListItem); // Append the List Item to the Linked List
 						syiro.events.Add(syiro.events.eventStrings["up"], suggestionListItem, syiro.data.Read(searchboxComponent["id"] + "handlers->list-item-handler")); // Add the list-item-handler we have stored from syiro.data to the suggestionListItem
 					}
 

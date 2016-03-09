@@ -4,6 +4,7 @@
 
 /// <reference path="component.ts" />
 /// <reference path="interfaces.ts" />
+/// <reference path="mediaplayer.ts" />
 
 // #region Syiro Init System
 
@@ -172,7 +173,7 @@ namespace syiro.init {
 			// #region Type Specific Initialization
 
 			if (mediaPlayerType== "audio"){ // If this is an audio-type Media Player
-				syiro.audioplayer.CenterInformation(component); // Center the potential audio information
+				syiro.mediaplayer.CenterInformation(component); // Center the potential audio information
 			} else if (mediaPlayerType == "video"){ // If this is a video-type Media Player
 				if (syiro.device.SupportsTouch){ // If the device supports touch
 					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.mediacontrol.Toggle.bind(this, mediaControlComponent)); // Add an "up" event to player container that toggles the Media Control

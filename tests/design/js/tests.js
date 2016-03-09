@@ -157,39 +157,39 @@ function TestMediaPlayers(){
 	syiro.component.Add("append", syiro.page, syiroGeneratedVideoPlayer); // Add the video player to the DOM
 
 	perfily.test.New({ "Description" : "Media Player FetchInnerContentElement", "Suite" : "Syiro", "TestFunction": function(){ // Create a new Test that calls FetchInnerContentElement
-		syiro.player.FetchInnerContentElement(syiroGeneratedVideoPlayer);
+		syiro.mediaplayer.FetchInnerContentElement(syiroGeneratedVideoPlayer);
 	}});
 
 	perfily.test.New({ "Description" : "Media Player FetchSources", "Suite" : "Syiro", "TestFunction" : function(){ // Create a new Test that calls FetchSources
-		syiro.player.FetchSources(syiroGeneratedVideoPlayer);
+		syiro.mediaplayer.FetchSources(syiroGeneratedVideoPlayer);
 	}});
 
 	perfily.test.New({ "Description" : "Media Player IsPlayable", "Expecting" : true, "Suite" : "Syiro", "TestFunction" : function(){ // Create a new Test that checks IsPlayable
-		syiro.player.IsPlayable(syiroGeneratedVideoPlayer);
+		syiro.mediaplayer.IsPlayable(syiroGeneratedVideoPlayer);
 	}});
 
 	perfily.test.New({ "Description" : "Media Player IsPlayable (Streaming)", "Expecting" : false, "Suite" : "Syiro", "TestFunction" : function(){ // Create a new Test that tests IsPlayable with streamable check set to true and expects to not be.
-		syiro.player.IsPlaying(syiroGeneratedVideoPlayer, true);
+		syiro.mediaplayer.IsPlaying(syiroGeneratedVideoPlayer, true);
 	}});
 
 	perfily.test.New({ "Description" : "Media Player IsPlaying", "Expecting" : false, "Suite" : "Syiro", "TestFunction" : function(){ // Create a new Test that tests IsPlaying and expects to not be playing
-		syiro.player.IsPlaying(syiroGeneratedVideoPlayer);
+		syiro.mediaplayer.IsPlaying(syiroGeneratedVideoPlayer);
 	}});
 
 	perfily.test.New({ "Description" : "Media Player PlayOrPause", "Suite" : "Syiro", "TestFunction" : function(){ // Create a new Test that calls to play the video player
-		syiro.player.PlayOrPause(syiroGeneratedVideoPlayer);
+		syiro.mediaplayer.PlayOrPause(syiroGeneratedVideoPlayer);
 	}});
 
 	perfily.test.New({ "Description" : "Media Player SetTime", "Suite" : "Syiro", "TestFunction" : function(){ // Create a new Test that sets the time of the video player
-		syiro.player.SetTime(syiroGeneratedVideoPlayer, 7);
+		syiro.mediaplayer.SetTime(syiroGeneratedVideoPlayer, 7);
 	}})
 
 	perfily.test.New({ "Description" : "Media Player SetVolume", "Suite" : "Syiro", "TestFunction" : function(){ // Create a new Test that sets the volume of the video player
-		syiro.player.SetVolume(syiroGeneratedVideoPlayer, 0.5);
+		syiro.mediaplayer.SetVolume(syiroGeneratedVideoPlayer, 0.5);
 	}});
 
 	perfily.test.New({ "Description" : "Media Player Reset", "Suite" : "Syiro", "TestFunction" : function(){ // Create a new Test that resets the player
-		syiro.player.Reset(syiroGeneratedVideoPlayer);
+		syiro.mediaplayer.Reset(syiroGeneratedVideoPlayer);
 	}});
 }
 

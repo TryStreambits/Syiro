@@ -69,8 +69,6 @@ namespace syiro.navbar {
 
 	}
 
-	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
-
 	// #endregion
 
 	// #region Function to add a link to the Navbar based on properties of that link

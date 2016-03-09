@@ -5,7 +5,6 @@
 /// <reference path="component.ts" />
 /// <reference path="events.ts" />
 /// <reference path="interfaces.ts" />
-/// <reference path="players.ts" />
 /// <reference path="utilities.ts" />
 
 // #region Media Player Component
@@ -729,7 +728,7 @@ module syiro.mediacontrol {
 		var volumeButton : Element = syiro.component.Fetch(volumeButtonComponent); // Fetch the Volume Button Element
 
 		var playerComponentObject : ComponentObject = syiro.component.FetchComponentObject(mediaControl.parentElement); // Get the Component Object of the parent Player Component
-		var playerContentElement : HTMLMediaElement = syiro.player.FetchInnerContentElement(playerComponentObject); // Get the audio or video Element of the parent Player Component
+		var playerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(playerComponentObject); // Get the audio or video Element of the parent Player Component
 
 		var playerRange : any = mediaControl.querySelector('input[type="range"]'); // Get the Media Control Range
 
@@ -745,7 +744,7 @@ module syiro.mediacontrol {
 
 			playerRange.setAttribute("max", "10"); // Set max attribute to 10 in playerRange
 			playerRange.setAttribute("step", "1"); // Set step attribute to 1 in playerRange
-			syiro.player.SetVolume(playerComponentObject, playerContentElement.volume); // Call SetVolume initially to do proper playerRange gradient styling
+			syiro.mediaplayer.SetVolume(playerComponentObject, playerContentElement.volume); // Call SetVolume initially to do proper playerRange gradient styling
 		} else { // If we are already actively doing a volume change, meaning the user wants to switch back to the normal view
 			volumeButton.removeAttribute("active"); // Remove component-active to imply volume icon is not active
 
@@ -753,13 +752,13 @@ module syiro.mediacontrol {
 				mediaControl.setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
 			}
 
-			var playerMediaLengthInformation : Object = syiro.player.GetPlayerLengthInfo(playerComponentObject); // Get information about the appropriate settings for the input range
+			var playerMediaLengthInformation : Object = syiro.mediaplayer.GetPlayerLengthInfo(playerComponentObject); // Get information about the appropriate settings for the input range
 			playerRange.setAttribute("max", playerMediaLengthInformation["max"]); // Set max attribute the playerMediaLengthInformation max key/val
 			playerRange.setAttribute("step", playerMediaLengthInformation["step"]); // Set step attribute the playerMediaLengthInformation step key/val
 
 			syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove  IsChangingInputValue
 			syiro.data.Delete(playerComponentObject["id"] + "->IsChangingVolume"); // Delete the IsChangingVolume key from this Player's data
-			syiro.player.SetTime(playerComponentObject, playerContentElement.currentTime); // Call SetTime (which will have no visual change of the video for the user) to update the slider to the accurate position
+			syiro.mediaplayer.SetTime(playerComponentObject, playerContentElement.currentTime); // Call SetTime (which will have no visual change of the video for the user) to update the slider to the accurate position
 		}
 	}
 

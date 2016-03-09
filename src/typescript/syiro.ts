@@ -11,7 +11,6 @@
 /// <reference path="grid.ts" />
 /// <reference path="navbar.ts" />
 /// <reference path="list.ts" />
-/// <reference path="players.ts" />
 /// <reference path="render.ts" />
 /// <reference path="searchbox.ts" />
 /// <reference path="sidepane.ts" />

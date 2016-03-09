@@ -82,6 +82,32 @@ declare namespace syiro.component {
     function Add(appendOrPrepend: any, parentComponent: any, childComponent: any): boolean;
     function Remove(componentsToRemove: any): void;
 }
+declare module syiro.mediaplayer {
+    function New(properties: Object): ComponentObject;
+    function CenterInformation(component: ComponentObject): void;
+    function Configure(component: ComponentObject): void;
+    function DurationChange(component: ComponentObject): void;
+    function FetchInnerContentElement(component: ComponentObject): HTMLMediaElement;
+    function FetchSources(component: ComponentObject): Array<Object>;
+    function GenerateSources(type: string, sources: Array<string>): Array<HTMLElement>;
+    function GetPlayerLengthInfo(component: ComponentObject): Object;
+    function IsPlayable(component: ComponentObject, returnIsStreamble?: boolean): (string | boolean);
+    function IsPlaying(component: ComponentObject): boolean;
+    function IsStreamable(component: ComponentObject): boolean;
+    function PlayOrPause(component: ComponentObject, playButtonObjectOrElement?: any): void;
+    function Reset(component: ComponentObject): void;
+    function SetSources(component: ComponentObject, sources: any): void;
+    function SetTime(component: ComponentObject, setting: any): void;
+    function SetVolume(component: ComponentObject, volume: number, fromEvent?: string): void;
+    function ToggleFullscreen(component: ComponentObject): void;
+    function ToggleMenuDialog(component: ComponentObject): void;
+}
+declare module syiro.mediacontrol {
+    function New(properties: Object): ComponentObject;
+    function ShowVolumeSlider(mediaControlComponent: ComponentObject, volumeButtonComponent: ComponentObject): void;
+    function TimeLabelUpdater(component: ComponentObject, timePart: number, value: any): void;
+    function Toggle(component: ComponentObject, forceShow?: boolean): void;
+}
 declare namespace syiro.init {
     function Parser(componentElement: Element): void;
     function createContentOverlay(purpose: string): Element;
@@ -96,7 +122,6 @@ declare namespace syiro.init {
 }
 declare namespace syiro.button {
     function New(properties: Object): ComponentObject;
-    var Generate: typeof New;
     function SetIcon(component: ComponentObject, content: string): boolean;
     function SetImage(component: ComponentObject, content: string): boolean;
     function SetText(component: ComponentObject, content: string): boolean;
@@ -105,7 +130,6 @@ declare namespace syiro.button {
 }
 declare namespace syiro.buttongroup {
     function New(properties: Object): ComponentObject;
-    var Generate: typeof New;
     function CalculateInnerButtonWidth(component: any): HTMLElement;
     function Toggle(buttonComponent: ComponentObject): void;
 }
@@ -140,7 +164,6 @@ declare module syiro.griditem {
 }
 declare namespace syiro.navbar {
     function New(properties: Object): ComponentObject;
-    var Generate: typeof New;
     function AddLink(append: any, component: ComponentObject, elementOrProperties: any): boolean;
     function RemoveLink(component: ComponentObject, elementOrProperties: any): boolean;
     function SetLogo(component: ComponentObject, content: string): boolean;
@@ -148,7 +171,6 @@ declare namespace syiro.navbar {
 }
 declare namespace syiro.list {
     function New(properties: Object): ComponentObject;
-    var Generate: typeof New;
     function SetHeader(component: ComponentObject, content: any): void;
     function Toggle(component: any): void;
     var AddItem: typeof component.Add;
@@ -156,80 +178,18 @@ declare namespace syiro.list {
 }
 declare namespace syiro.listitem {
     function New(properties: Object): ComponentObject;
-    var Generate: typeof New;
     function SetControl(component: ComponentObject, control: ComponentObject): boolean;
     function SetImage(component: ComponentObject, content: string): boolean;
     function SetLabel(component: ComponentObject, content: string): boolean;
     function SetLink(component: ComponentObject, properties: any): boolean;
 }
-declare module syiro.mediaplayer {
-    function New(properties: Object): ComponentObject;
-    function CenterInformation(component: ComponentObject): void;
-    function Configure(component: ComponentObject): void;
-    function DurationChange(component: ComponentObject): void;
-    function FetchInnerContentElement(component: ComponentObject): HTMLMediaElement;
-    function FetchSources(component: ComponentObject): Array<Object>;
-    function GenerateSources(type: string, sources: Array<string>): Array<HTMLElement>;
-    function GetPlayerLengthInfo(component: ComponentObject): Object;
-    function IsPlayable(component: ComponentObject, returnIsStreamble?: boolean): (string | boolean);
-    function IsPlaying(component: ComponentObject): boolean;
-    function IsStreamable(component: ComponentObject): boolean;
-    function PlayOrPause(component: ComponentObject, playButtonObjectOrElement?: any): void;
-    function Reset(component: ComponentObject): void;
-    function SetSources(component: ComponentObject, sources: any): void;
-    function SetTime(component: ComponentObject, setting: any): void;
-    function SetVolume(component: ComponentObject, volume: number, fromEvent?: string): void;
-    function ToggleFullscreen(component: ComponentObject): void;
-    function ToggleMenuDialog(component: ComponentObject): void;
-}
-declare module syiro.mediacontrol {
-    function New(properties: Object): ComponentObject;
-    function ShowVolumeSlider(mediaControlComponent: ComponentObject, volumeButtonComponent: ComponentObject): void;
-    function TimeLabelUpdater(component: ComponentObject, timePart: number, value: any): void;
-    function Toggle(component: ComponentObject, forceShow?: boolean): void;
-}
-declare namespace syiro.player {
-    var New: typeof mediaplayer.New;
-    var Generate: typeof mediaplayer.New;
-    var DurationChange: typeof mediaplayer.DurationChange;
-    var FetchInnerContentElement: typeof mediaplayer.FetchInnerContentElement;
-    var FetchSources: typeof mediaplayer.FetchSources;
-    var GenerateSources: typeof mediaplayer.GenerateSources;
-    var GetPlayerLengthInfo: typeof mediaplayer.GetPlayerLengthInfo;
-    var IsPlaying: typeof mediaplayer.IsPlaying;
-    var IsPlayable: typeof mediaplayer.IsPlayable;
-    var IsStreamable: typeof mediaplayer.IsStreamable;
-    var PlayOrPause: typeof mediaplayer.PlayOrPause;
-    var Reset: typeof mediaplayer.Reset;
-    var SetSources: typeof mediaplayer.SetSources;
-    var SetTime: typeof mediaplayer.SetTime;
-    var SetVolume: typeof mediaplayer.SetVolume;
-    var ToggleFullscreen: typeof mediaplayer.ToggleFullscreen;
-    var ToggleMenuDialog: typeof mediaplayer.ToggleMenuDialog;
-}
-declare namespace syiro.playercontrol {
-    var New: typeof mediacontrol.New;
-    var Generate: typeof mediacontrol.New;
-    var ShowVolumeSlider: typeof mediacontrol.ShowVolumeSlider;
-    var TimeLabelUpdater: typeof mediacontrol.TimeLabelUpdater;
-    var Toggle: typeof mediacontrol.Toggle;
-}
-declare namespace syiro.audioplayer {
-    function New(properties: Object): ComponentObject;
-    var CenterInformation: typeof mediaplayer.CenterInformation;
-}
-declare namespace syiro.videoplayer {
-    function New(properties: Object): ComponentObject;
-}
 declare namespace syiro.searchbox {
     function New(properties: Object): ComponentObject;
-    var Generate: typeof New;
     function Suggestions(...args: any[]): void;
     function SetText(component: ComponentObject, content: any): void;
 }
 declare namespace syiro.sidepane {
     function New(properties: Object): ComponentObject;
-    var Generate: typeof New;
     function GestureInit(): void;
     function Drag(): void;
     function Release(): void;
@@ -237,7 +197,6 @@ declare namespace syiro.sidepane {
 }
 declare namespace syiro.toast {
     function New(properties: Object): ComponentObject;
-    var Generate: typeof New;
     function Clear(component: ComponentObject): void;
     function ClearAll(): void;
     function Toggle(component: ComponentObject, action?: string): void;

@@ -99,8 +99,6 @@ namespace syiro.toast {
 		return { "id" : componentId, "type" : "toast" }; // Return a Component Object
 	}
 
-	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
-
 	// #endregion
 
 	// #region Clear - This function will remove a specific Toasts from DOM

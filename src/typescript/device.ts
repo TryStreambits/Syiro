@@ -4,6 +4,7 @@
 
 /// <reference path="events.ts" />
 /// <reference path="interfaces.ts" />
+/// <reference path="mediaplayer.ts" />
 
 // #region Syiro Device Information and Functionality
 

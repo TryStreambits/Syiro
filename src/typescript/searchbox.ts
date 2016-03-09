@@ -82,8 +82,6 @@ namespace syiro.searchbox {
 		return { "id" : componentId, "type" : "searchbox" }; // Return a Component Object
 	}
 
-	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
-
 	// #endregion
 
 	// #region Searchbox Suggestions Handler

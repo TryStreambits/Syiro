@@ -106,8 +106,9 @@ function generateMediaPlayers(){
 
     /* End of Share Dialogs List Generation */
 
-    var generatedAudioPlayer = syiro.audioplayer.New(
+    var generatedAudioPlayer = syiro.mediaplayer.New(
             {
+				"type" : "audio",
                 "menu" : audioMenuDialogList,
                 "sources": ["http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg", "http://www.noiseaddicts.com/samples/55.mp3" ],
                 "art" : "https://c2.staticflickr.com/6/5134/5518988345_9df9892bb2_b.jpg",
@@ -116,8 +117,9 @@ function generateMediaPlayers(){
             }
     );
 
-    var generatedVideoPlayer = syiro.videoplayer.New(
+    var generatedVideoPlayer = syiro.mediaplayer.New(
             {
+				"type" : "video",
                 "art" : "img/video-art.png",
                 "menu" : videoMenuDialogList,
                 "fill" : [0.8,1],
@@ -164,11 +166,11 @@ function changeVideoSource(){
 
     if (buttonComponentElement.textContent == "Change Sources"){ // If we are using original sources
         syiro.button.SetLabel(buttonComponentObject, "Prior Sources"); // Set Button label to "Prior Sources"
-        syiro.player.SetSources(videoPlayerComponentObject, ["https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv", "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4"]); // Change the source
+        syiro.mediaplayer.SetSources(videoPlayerComponentObject, ["https://download.blender.org/durian/trailer/sintel_trailer-720p.ogv", "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4"]); // Change the source
     }
     else { // If we are not using original sources
         syiro.button.SetLabel(buttonComponentObject, "Change Sources"); // Set Button label to original label
-        syiro.player.SetSources(videoPlayerComponentObject, ["http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v", "http://video.webmfiles.org/big-buck-bunny_trailer.webm"]); // Change the source to original
+        syiro.mediaplayer.SetSources(videoPlayerComponentObject, ["http://download.blender.org/peach/trailer/trailer_480p.mov", "http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v", "http://video.webmfiles.org/big-buck-bunny_trailer.webm"]); // Change the source to original
     }
 }
 

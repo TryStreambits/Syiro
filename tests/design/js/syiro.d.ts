@@ -169,7 +169,7 @@ declare module syiro.dropdown {
     function AddItem(component: ComponentObject, listItemComponent: ComponentObject): void;
     function RemoveItem(component: ComponentObject, listItemComponent: ComponentObject): void;
 }
-declare module syiro.player {
+declare module syiro.mediaplayer {
     function DurationChange(component: ComponentObject): void;
     function FetchInnerContentElement(component: ComponentObject): HTMLMediaElement;
     function FetchSources(component: ComponentObject): Array<Object>;
@@ -186,7 +186,7 @@ declare module syiro.player {
     function ToggleFullscreen(component: ComponentObject): void;
     function ToggleMenuDialog(component: ComponentObject): void;
 }
-declare module syiro.playercontrol {
+declare module syiro.mediaplayercontrol {
     function New(properties: Object): ComponentObject;
     var Generate: typeof New;
     function ShowVolumeSlider(playerControlComponent: ComponentObject, volumeButtonComponent: ComponentObject): void;

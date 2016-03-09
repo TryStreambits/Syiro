@@ -114,8 +114,6 @@ namespace syiro.button {
 		return { "id" : componentId, "type" : "button" }; // Return a Component Object
 	}
 
-	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
-
 	// #endregion
 
 	// #region Function for setting the icon of a Button
@@ -286,8 +284,6 @@ namespace syiro.buttongroup {
 
 		return buttongroupComponentObject;
 	}
-
-	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
 
 	// #endregion
 

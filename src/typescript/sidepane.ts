@@ -67,8 +67,6 @@ namespace syiro.sidepane {
 		return { "id" : componentId, "type" : "sidepane"}; // Return a Sidepane Component Object
 	}
 
-	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
-
 	// #endregion
 
 	// #region Gesture Functions

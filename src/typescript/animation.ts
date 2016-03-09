@@ -11,8 +11,7 @@ namespace syiro.animation {
 
 	// #region Component Animation Function
 	export function Animate(component : any, properties : Object){ // This function animates a particular Component or Element and calls a post-animation function if applicable
-		var element : any; // Define element as any
-
+		var element : any = null; // Define element as any
 		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of this component variable
 
 		if (typeOfComponent == "ComponentObject"){ // If we passed a Component Object
@@ -30,22 +29,17 @@ namespace syiro.animation {
 			var postAnimationFunction : Function = properties["function"]; // Define any function passed in properties as postAnimationFunction
 
 			if (typeof postAnimationFunction == "function"){ // If a postAnimationFunction is defined
-				var transitionEndUsed = false; // Default transitionEndUsed to false to indicate whether or not we should immediately trigger function or wait until transition end
-
-				if ((typeof element.style["transition"] !== "undefined") || (typeof element.style["webkitTransition"] !== "undefined")){ // If CSS3 Transitions are supported
-					transitionEndUsed = true; // transitionend Event is utilized
+				if ((typeof element.style["transition"] !== "undefined") || (typeof element.style["webkitTransition"] !== "undefined")){ // If transitionend Event is used
 					var transitionEndFlag = "webkitTransitionEnd"; // Default to webkitTransitionEnd as the event listener
 
 					if (typeof element.style["transition"] !== "undefined"){ // If the standard transition property is supported
 						transitionEndFlag = "transitionend";
 					}
-				}
 
-				if (transitionEndUsed){ // If transitionend Event is used
 					syiro.events.Add(transitionEndFlag, element,
 						function(){
 							var postAnimationFunction = arguments[0]; // Get the first arg as postAnimationFunction
-							var transitionEndFlag= arguments[1]; // Get the second arg as the transitionEndFlag
+							var transitionEndFlag = arguments[1]; // Get the second arg as the transitionEndFlag
 							var element = arguments[2]; // Get the element as the third argument
 
 							if (typeof postAnimationFunction == "function"){ // If postAnimationFunction was passed (as in, it existed in the first place)
@@ -56,7 +50,7 @@ namespace syiro.animation {
 						}.bind(this, postAnimationFunction, transitionEndFlag)
 					);
 				} else {
-					properties["function"].call(this, component); // Call with the component as the variable
+					postAnimationFunction.call(this, component); // Call with the component as the variable
 				}
 			}
 

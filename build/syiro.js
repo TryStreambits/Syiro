@@ -75,7 +75,7 @@ var syiro;
     var animation;
     (function (animation) {
         function Animate(component, properties) {
-            var element;
+            var element = null;
             var typeOfComponent = syiro.utilities.TypeOfThing(component);
             if (typeOfComponent == "ComponentObject") {
                 element = syiro.component.Fetch(component);
@@ -90,15 +90,11 @@ var syiro;
                 }
                 var postAnimationFunction = properties["function"];
                 if (typeof postAnimationFunction == "function") {
-                    var transitionEndUsed = false;
                     if ((typeof element.style["transition"] !== "undefined") || (typeof element.style["webkitTransition"] !== "undefined")) {
-                        transitionEndUsed = true;
                         var transitionEndFlag = "webkitTransitionEnd";
                         if (typeof element.style["transition"] !== "undefined") {
                             transitionEndFlag = "transitionend";
                         }
-                    }
-                    if (transitionEndUsed) {
                         syiro.events.Add(transitionEndFlag, element, function () {
                             var postAnimationFunction = arguments[0];
                             var transitionEndFlag = arguments[1];
@@ -110,7 +106,7 @@ var syiro;
                         }.bind(this, postAnimationFunction, transitionEndFlag));
                     }
                     else {
-                        properties["function"].call(this, component);
+                        postAnimationFunction.call(this, component);
                     }
                 }
                 element.setAttribute("data-syiro-animation", properties["animation"]);

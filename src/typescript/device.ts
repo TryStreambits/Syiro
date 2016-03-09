@@ -4,7 +4,7 @@
 
 /// <reference path="events.ts" />
 /// <reference path="interfaces.ts" />
-/// <reference path="mediaplayer.ts" />
+/// <reference path="components/mediaplayer.ts" />
 
 // #region Syiro Device Information and Functionality
 
@@ -13,13 +13,12 @@ namespace syiro.device {
 	// #region Browser / Device Support (Default all to true since Detect() will change it if necessary)
 
 	export var DoNotTrack : boolean; // Define DoNotTrack as a boolean if the browser's user has Do Not Track enabled.
-	export var HasCryptography : boolean = true; // Define HasCryptography as a boolean if the device has Crypto support (for instance for getting random values).
-	export var HasGeolocation : boolean = true; // Define HasGeolocation as a boolean if the device has Geolocation support.
-	export var HasIndexedDB : boolean = true; // Define HasIndexedDB as a boolean if the device has IndexedDB support.
-	export var HasLocalStorage : boolean = true; // Define HasLocalStorage as a boolean if the device has LocalStorage support.
+	export var HasCryptography : boolean; // Define HasCryptography as a boolean if the device has Crypto support (for instance for getting random values).
+	export var HasGeolocation : boolean; // Define HasGeolocation as a boolean if the device has Geolocation support.
+	export var HasLocalStorage : boolean; // Define HasLocalStorage as a boolean if the device has LocalStorage support.
 	export var IsOnline : boolean = true; // Define IsOnline as a boolean if the device is online.
 	export var OperatingSystem : string; // Define OperatingSystem as a string of what the OS is
-	export var SupportsMutationObserver : boolean = false; // Define SupportsMutationObserver as a boolean, defaulting to false, as to whether the browser / device supports MutationObserver or WebKitMutationObserver
+	export var SupportsMutationObserver : boolean; // Define SupportsMutationObserver as a boolean, defaulting to false, as to whether the browser / device supports MutationObserver or WebKitMutationObserver
 	export var SupportsTouch : boolean = false; // Define SupportsTouch as a boolean, defaulting to false, as to whether or not the device supports touch.
 
 	// #region Screen Variables
@@ -48,22 +47,10 @@ namespace syiro.device {
 
 		// #endregion
 
-		syiro.device.HasCryptography = (typeof window.crypto !== "undefined"); // HasCryptography is set to true if window.crypto is not undefined
-		syiro.device.HasGeolocation = (typeof navigator.geolocation !== "undefined"); // HasGeolocation is set to true if navigator.geolocation is not undefined
-		syiro.device.HasIndexedDB == (typeof window.indexedDB !== "undefined"); // HasIndexDB is set to true if window.indexedDB is not undefined
-		syiro.device.HasLocalStorage =  (typeof window.localStorage !== "undefined"); // HasLocalStorage is set to true if window.localStorage is not undefined
+		syiro.device.HasCryptography = syiro.utilities.TypeOfThing(window.crypto, "Crypto"); // HasCryptography is set to true if window.crypto is type Crypto
+		syiro.device.HasLocalStorage =  syiro.utilities.TypeOfThing(window.localStorage, "Storage"); // HasLocalStorage is set to true if window.localStorage is type Storage
 
-		// #endregion
-
-		// #region MutationObserver Support
-
-		if ((typeof MutationObserver !== "undefined") || (typeof WebKitMutationObserver !== "undefined")){ // If MutationObserver is supported by the browser
-			if (typeof WebKitMutationObserver !== "undefined"){ // If WebKitMutationObserver is used instead (like on iOS)
-				MutationObserver = WebKitMutationObserver; // Set MutationObserver to WebKitMutationObserver
-			}
-
-			syiro.device.SupportsMutationObserver = true; // Set SupportsMutationObserver support variable to true
-		}
+		syiro.device.SupportsMutationObserver = syiro.utilities.TypeOfThing(MutationObserver, "function"); // SupportsMutationObserver is if MutationObserver is a function
 
 		// #region Online Status Support
 
@@ -89,9 +76,7 @@ namespace syiro.device {
 
 		// #region Touch Support Checking
 
-		var eventsToRemove : Array<string>; // Define eventsToRemove as an array of strings to remove from eventStrings
-
-		if ((navigator.userAgent.indexOf("Firefox/") == -1) &&(syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Sailfish") && (syiro.device.OperatingSystem !== "Windows")){ // If we are not on a desktop operating system, Firefox, or Sailfish OS (since Gecko has half-backed Touch Events support)
+	if ((navigator.userAgent.indexOf("Firefox/") == -1) &&(syiro.device.OperatingSystem !== "Linux") && (syiro.device.OperatingSystem !== "OS X") && (syiro.device.OperatingSystem !== "Sailfish") && (syiro.device.OperatingSystem !== "Windows")){ // If we are not on a desktop operating system, Firefox, or Sailfish OS (since Gecko has half-backed Touch Events support)
 			syiro.device.SupportsTouch = true; // Set syiro.device.SupportsTouch to true
 			syiro.events.eventStrings["down"] = ["touchstart"]; // Set down events to touchstart
 			syiro.events.eventStrings["up"] = ["touchend"]; // Set up events to touchend
@@ -111,7 +96,6 @@ namespace syiro.device {
 		syiro.device.FetchScreenDetails(); // Do an initial fetch of the screen details
 
 		syiro.device.Orientation = syiro.device.FetchScreenOrientation(); // Do an initial fetch of the screen orientation
-		syiro.events.Add("resize", window, syiro.device.FetchScreenDetails); // Listen to the window resizing for updating the screen details
 
 		// #region Orientation Listening and Determinination Support
 
@@ -149,11 +133,7 @@ namespace syiro.device {
 			syiro.device.OrientationObject = screen.orientation; // Point syiro.device.OrientationObject to screen.orientation type
 			syiro.events.eventStrings["orientationchange"] = ["change"]; // Set our eventStrings orientationchange to only change
 		} else if (typeof screen.onmsorientationchange !== "undefined"){ // If this is the Internet Explorer vendor-prefixed orientation change
-			syiro.device.OrientationObject = screen; // Point syiro.device.OrientationObject to screen.msOrientation rather than screen
 			syiro.events.eventStrings["orientationchange"] = ["msorientationchange"]; // Set our eventStrings orientationchange to only the IE event string
-		} else if (typeof screen.onmozorientationchange !== "undefined"){ // If this is the Gecko vendor-prefixing (Mozilla) orientation change
-			syiro.device.OrientationObject = screen; // Point syiro.device.OrientationObject to screen.mozOrientation rather than screen
-			syiro.events.eventStrings["orientationchange"] = ["mozorientationchange"]; // Set our eventStrings orientationchange to only the Moz event string
 		} else { // If orientationchange simply isn't supported
 			syiro.events.eventStrings["orientationchange"] = ["orientationchange-viainterval"]; // Delete our event string for orientationchange
 		}
@@ -175,7 +155,7 @@ namespace syiro.device {
 
 	// #region Fetch Operating System
 
-	export function FetchOperatingSystem(){
+	export function FetchOperatingSystem() : string {
 		var userAgent : string = navigator.userAgent; // Get the userAgent
 
 		if (userAgent.indexOf("Android") !== -1){ // If the userAgent is set to claim the device is Android
@@ -208,24 +188,12 @@ namespace syiro.device {
 	// #region Screen Dimension Details
 
 	export function FetchScreenDetails(){
-		syiro.device.height = screen.height;
-		syiro.device.width = screen.width;
+		syiro.device.height = screen.height; // Height of the entire device
+		syiro.device.width = screen.width; // Width of the entire device
 
-		if (syiro.device.height < 720){ // If the document height is less than 720px
-			syiro.device.IsSubHD = true; // Set IsSubHD to true
-			syiro.device.IsHD = false; // Set IsHD to false
-			syiro.device.IsFullHDOrAbove = false; // Set IsFullHDOrAbove to false
-		} else { // If the screen height is greater than 720px
-			if (((syiro.device.height >= 720) && (syiro.device.height< 1080)) && (syiro.device.width >= 1280)){ // If the document is essentially "720p" HD (greater than 720px but less than 1280px) in width
-				syiro.device.IsSubHD = false; // Set IsSubHD to false
-				syiro.device.IsHD = true; // Set IsHD to true
-				syiro.device.IsFullHDOrAbove = false; // Set IsFullHDOrAbove to false
-			} else if ((syiro.device.height >= 1080) && (syiro.device.width >= 1920)){ // If the document width is greater or equal to 1920px and the document height is greater or equal to 1080px
-				syiro.device.IsSubHD = false; // Set IsSubHD to false
-				syiro.device.IsHD = true; // Set IsHD to true, since technically it supports 720p content
-				syiro.device.IsFullHDOrAbove = true; // Set IsFullHDOrAbove to true
-			}
-		}
+		syiro.device.IsSubHD = (syiro.device.height < 720); // Set IsSubHD to whether or not height is less than 720
+		syiro.device.IsHD = (((syiro.device.height >= 720) && (syiro.device.height < 1080)) && (syiro.device.width >= 1280)); // Set IsHD to whether or not height is 720 to 1080 and width is 1280+
+		syiro.device.IsFullHDOrAbove = ((syiro.device.height >= 1080) && (syiro.device.width >= 1920)); // Set IsFullHDOrAbove to whether or not height is 1080+ and width is 1920+
 	}
 
 	// #endregion
@@ -239,13 +207,9 @@ namespace syiro.device {
 			deviceOrientation = screen.orientation; // Set deviceOrientation to screen.orientation type
 		} else if (typeof screen.onmsorientationchange !== "undefined"){ // If this is the Internet Explorer vendor-prefixed orientation change
 			deviceOrientation = screen.msOrientation; // Set deviceOrientation to screen.msOrientation
-		} else if (typeof screen.onmozorientationchange !== "undefined"){ // If this is the Gecko vendor-prefixing (Mozilla) orientation change
-			deviceOrientation = screen.mozOrientation; // Set deviceOrientation to screen.mozOrientation
 		}
 
-		if (deviceOrientation == "landscape-primary"){
-			deviceOrientation = "landscape"; // We are in landscape mode
-		} else if (screen.height < screen.width){ // If none of the Screen Orientation API is supported AND the screen width is larger than the height
+		if ((deviceOrientation == "landscape-primary") || (screen.height < screen.width)){ // If we are in landscape mode (using -primary) or Screen Orientation API is not supported and width is larger than height
 			deviceOrientation = "landscape"; // We are in landscape mode
 		}
 

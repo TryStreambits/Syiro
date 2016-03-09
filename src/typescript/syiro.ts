@@ -3,18 +3,18 @@
 */
 /// <reference path="init.ts" />
 /// <reference path="animation.ts" />
-/// <reference path="button.ts" />
+/// <reference path="components/button.ts" />
 /// <reference path="component.ts" />
 /// <reference path="data.ts" />
 /// <reference path="device.ts" />
 /// <reference path="events.ts" />
-/// <reference path="grid.ts" />
-/// <reference path="navbar.ts" />
-/// <reference path="list.ts" />
+/// <reference path="components/grid.ts" />
+/// <reference path="components/navbar.ts" />
+/// <reference path="components/list.ts" />
 /// <reference path="render.ts" />
-/// <reference path="searchbox.ts" />
-/// <reference path="sidepane.ts" />
-/// <reference path="toast.ts" />
+/// <reference path="components/searchbox.ts" />
+/// <reference path="components/sidepane.ts" />
+/// <reference path="components/toast.ts" />
 /// <reference path="utilities.ts" />
 
 namespace syiro {

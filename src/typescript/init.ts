@@ -4,7 +4,7 @@
 
 /// <reference path="component.ts" />
 /// <reference path="interfaces.ts" />
-/// <reference path="mediaplayer.ts" />
+/// <reference path="components/mediaplayer.ts" />
 
 // #region Syiro Init System
 

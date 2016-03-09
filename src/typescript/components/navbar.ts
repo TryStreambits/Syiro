@@ -2,8 +2,8 @@
 	This is the namespace for Syiro Navbar component (previously referred to as Header and Footer Components).
 */
 
-/// <reference path="component.ts" />
-/// <reference path="utilities.ts" />
+/// <reference path="../component.ts" />
+/// <reference path="../utilities.ts" />
 
 // #region Navbar Component
 

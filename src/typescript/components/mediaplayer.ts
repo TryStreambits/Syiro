@@ -2,10 +2,10 @@
 	This is a file containing the Media Player Component
 */
 
-/// <reference path="component.ts" />
-/// <reference path="events.ts" />
-/// <reference path="interfaces.ts" />
-/// <reference path="utilities.ts" />
+/// <reference path="../component.ts" />
+/// <reference path="../events.ts" />
+/// <reference path="../interfaces.ts" />
+/// <reference path="../utilities.ts" />
 
 // #region Media Player Component
 

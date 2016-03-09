@@ -10,7 +10,7 @@
 namespace syiro.animation {
 
 	// #region Component Animation Function
-	export function Animate(component : any, properties : Object){ // This function animates a particular Component or Element and calls a post-animation function if applicable
+	export function Animate(component : any, properties : AnimationOptions){ // This function animates a particular Component or Element and calls a post-animation function if applicable
 		var element : any = null; // Define element as any
 		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of this component variable
 
@@ -21,14 +21,12 @@ namespace syiro.animation {
 			component = syiro.component.FetchComponentObject(element); // Redefine component as the newly fetched Component Object of the element
 		}
 
-		if ((element !== null) && (typeof properties["animation"] == "string")){ // If the element exists in the DOM and an animation is provided
+		if ((element !== null) && (typeof properties.animation == "string")){ // If the element exists in the DOM and an animation is provided
 			if ((component.type == "button") && (element.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
 				element = element.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
 			}
 
-			var postAnimationFunction : Function = properties["function"]; // Define any function passed in properties as postAnimationFunction
-
-			if (typeof postAnimationFunction == "function"){ // If a postAnimationFunction is defined
+			if (typeof properties.postAnimationFunc == "function"){ // If a postAnimationFunction is defined
 				if ((typeof element.style["transition"] !== "undefined") || (typeof element.style["webkitTransition"] !== "undefined")){ // If transitionend Event is used
 					var transitionEndFlag = "webkitTransitionEnd"; // Default to webkitTransitionEnd as the event listener
 
@@ -47,14 +45,14 @@ namespace syiro.animation {
 							}
 
 							syiro.events.Remove(transitionEndFlag, element); // Remove all transitionend Events
-						}.bind(this, postAnimationFunction, transitionEndFlag)
+						}.bind(this, properties.postAnimationFunc, transitionEndFlag)
 					);
 				} else {
-					postAnimationFunction.call(this, component); // Call with the component as the variable
+					properties.postAnimationFunc.call(this, component); // Call with the component as the variable
 				}
 			}
 
-			element.setAttribute("data-syiro-animation", properties["animation"]); // Add the animation to data-syiro-animation attribute
+			element.setAttribute("data-syiro-animation", properties.animation); // Add the animation to data-syiro-animation attribute
 		}
 	}
 
@@ -90,7 +88,7 @@ namespace syiro.animation {
 		syiro.animation.Animate(component, // Call Animate with the Component and properties
 			{
 				"animation" : "fade-in", // Define animation as fade-in-animation
-				"function" : postAnimationFunction // Define function as any postAnimationFunction defined
+				"postAnimationFunc" : postAnimationFunction // Define function as any postAnimationFunction defined
 			}
 		);
 	}
@@ -103,7 +101,7 @@ namespace syiro.animation {
 		syiro.animation.Animate(component, // Call Animate with the Component and properties
 			{
 				"animation" : "fade-out", // Define animation as fade-out-animation
-				"function" : postAnimationFunction // Define function as any postAnimationFunction defined
+				"postAnimationFunc" : postAnimationFunction // Define function as any postAnimationFunction defined
 			}
 		);
 	}
@@ -116,7 +114,7 @@ namespace syiro.animation {
 		syiro.animation.Animate(component, // Call Animate with the Component and properties
 			{
 				"animation" : "slide", // Define animation as slide
-				"function" : postAnimationFunction // Define function as any postAnimationFunction defined
+				"postAnimationFunc" : postAnimationFunction // Define function as any postAnimationFunction defined
 			}
 		);
 	}

@@ -159,8 +159,7 @@ namespace syiro.component {
 
 	// #region Element Dimensions and Position Fetching
 
-	export function FetchDimensionsAndPosition(component : any) : Object { // Get the height and width of the Element
-		var dimensionsAndPosition : Object = {}; // Define dimensionsAndPosition as an empty Object
+	export function FetchDimensionsAndPosition(component : any) : ClientRect { // Get the height and width of the Element
 		var componentElement : HTMLElement; // Define componentElement as an Element
 
 		if (syiro.utilities.TypeOfThing(component) == "ComponentObject"){ // If the Component provided is a Syiro Component Object
@@ -169,8 +168,7 @@ namespace syiro.component {
 			componentElement = component; // Set the componentElement to the component (Element) provided
 		}
 
-		dimensionsAndPosition = componentElement.getClientRects()[0]; // Get the list of ComponentRect of this Component
-		return dimensionsAndPosition;
+		return componentElement.getClientRects()[0]; // Get the list of ComponentRect of this Component
 	}
 
 	// #endregion

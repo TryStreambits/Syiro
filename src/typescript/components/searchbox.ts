@@ -2,8 +2,8 @@
  This is the namespace for Syiro Searchbox component.
 */
 
-/// <reference path="component.ts" />
-/// <reference path="utilities.ts" />
+/// <reference path="../component.ts" />
+/// <reference path="../utilities.ts" />
 
 // #region Syiro Searchbox Component
 

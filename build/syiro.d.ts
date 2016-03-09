@@ -6,12 +6,13 @@ interface Document {
     mozCancelFullScreen: Function;
     SyiroFullscreenElement: Element;
 }
-interface Console {
-    profileEnd(profile?: string): any;
-}
 interface Element {
     msRequestFullscreen: Function;
     mozRequestFullScreen: Function;
+}
+interface AnimationOptions extends Object {
+    animation: "fade-in" | "fade-out" | "slide";
+    postAnimationFunc?: Function;
 }
 interface ComponentObject extends Object {
     id: string;
@@ -46,7 +47,7 @@ declare namespace syiro.data {
     function Delete(keyList: string): any;
 }
 declare namespace syiro.animation {
-    function Animate(component: any, properties: Object): void;
+    function Animate(component: any, properties: AnimationOptions): void;
     function Reset(component: any): void;
     function FadeIn(component: any, postAnimationFunction?: Function): void;
     function FadeOut(component: any, postAnimationFunction?: Function): void;
@@ -74,7 +75,7 @@ declare namespace syiro.component {
     function CSS(component: any, property: string, newValue?: string): string;
     function Fetch(component: ComponentObject): any;
     function FetchComponentObject(...args: any[]): ComponentObject;
-    function FetchDimensionsAndPosition(component: any): Object;
+    function FetchDimensionsAndPosition(component: any): ClientRect;
     function FetchLinkedListComponentObject(component: any): ComponentObject;
     function IdGen(type: string): string;
     function IsComponentObject(component: any): boolean;
@@ -137,7 +138,6 @@ declare namespace syiro.device {
     var DoNotTrack: boolean;
     var HasCryptography: boolean;
     var HasGeolocation: boolean;
-    var HasIndexedDB: boolean;
     var HasLocalStorage: boolean;
     var IsOnline: boolean;
     var OperatingSystem: string;

@@ -3,8 +3,8 @@
  Contrary to common belief, this does not actually have anything to do with toast.
 */
 
-/// <reference path="component.ts" />
-/// <reference path="utilities.ts" />
+/// <reference path="../component.ts" />
+/// <reference path="../utilities.ts" />
 
 // #region Syiro Toast Component
 

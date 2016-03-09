@@ -13,10 +13,10 @@ namespace syiro.button {
 
 	export function New(properties : Object) : ComponentObject { // Generate a Button Component and return a Component Object
 		if (typeof properties["type"] == "undefined"){ // If the type is undefined
-			if ((typeof properties["list"] == "undefined") && (typeof properties["items"] == "undefined")){ // If there is no List or Items provided in properties
-				properties["type"] = "basic"; // Default to a basic button
-			} else { // If there is a List or Items provided in properties
-				properties["type"] = "dropdown"; // Default to Dropdown Button
+			properties["type"] = "basic"; // Default to a basic button
+
+			if (syiro.utilities.TypeOfThing(properties["list"], "ComponentObject") || syiro.utilities.TypeOfThing(properties["items"], "Array")){ // If there is an List or Items provided in properties
+				properties["type"] = "dropdown"; // Set to Dropdown Button
 			}
 		}
 
@@ -38,11 +38,17 @@ namespace syiro.button {
 				componentData["data-syiro-render-icon"] = "menu"; // Default to Menu icon
 			}
 
-			if (typeof properties["icon"] == "string"){ // If an icon is defined and it is a string
-				componentData["style"] = 'background-image: url("' + properties["icon"] + '")'; // Add to the componentData the style attribute with background-image being set
-				componentData["data-syiro-render-icon"] = "custom"; // Set the data-syiro-render-icon to custom so we don't automatically render the default Dropdown icon or menu icon
-				delete properties["icon"]; // Remove the "icon" key
+			if ((typeof properties["icon"] == "string") && (properties["icon"] !== "")){ // If an icon is defined and it is a non-empty string
+				componentData["data-syiro-render-icon"] = properties["icon"]; // Default to render-icon being the icon property, for things like built-in icons
+
+				if (properties["icon"].indexOf(".") !== -1) { // If there is an extension likely being used (contains a .)
+					componentData["data-syiro-render-icon"] = "custom"; // Set the data-syiro-render-icon to custom so we don't automatically render the default Dropdown icon or menu icon
+					componentData["style"] = 'background-image: url("' + properties["icon"] + '")'; // Add to the componentData the style attribute with background-image being set
+				}
+
 			}
+
+			delete properties["icon"]; // Remove the "icon" key
 
 			if (typeof properties["image"] == "string"){ // If an image (like an avatar) is defined in the properties
 				var primaryImage : HTMLElement = syiro.utilities.ElementCreator("img", { "src" : properties["image"] }); // Create an img Element with the image source
@@ -59,12 +65,12 @@ namespace syiro.button {
 		if (properties["type"] == "dropdown"){ // If this is a Dropdown Button that is being generated
 			// #region List Creation and Linking
 
-			var listComponent : ComponentObject; // Define listComponent as the Component Object of the List
+			var listComponent : ComponentObject = properties["list"]; // Default listComponent as the Component Object of the List
+			delete properties["list"]; // Delete "list" if it exists
 
 			if (typeof properties["items"] !== "undefined"){ // If List Items are provided in the properties
 				listComponent = syiro.list.New({ "items" : properties["items"]}); // Simply generate a new List component from the provided list items and set the listComponent Object to the one provided by Generate
-			} else { // If a List is provided
-				listComponent = properties["list"]; // Simply set the listComponent to the List Component Object that was provided
+				delete properties["items"]; // Remove the "items" key
 			}
 
 			var listComponentElement : Element = syiro.component.Fetch(listComponent); // Fetch the List Component Element
@@ -72,14 +78,11 @@ namespace syiro.button {
 			listComponentElement.setAttribute("data-syiro-component-owner", componentId); // Set the List's owner to be the Dropdown
 			componentData["aria-owns"] = listComponent["id"]; // Define the aria-owns in componentData, setting it to the List Component to declare for ARIA that the Dropdown Button Component "owns" the List Component
 
-			delete properties["items"]; // Delete "items" if it exists
-			delete properties["list"]; // Delete "list" if it exists
-
 			// #endregion
 
 			// #region Dropdown List Position (For the Dropdown toggling of the List)
 
-			if (typeof properties["position"] == "undefined"){ // If the position information is NOT defined
+			if (!syiro.utilities.TypeOfThing(properties["position"], "Array")){ // If the position information is NOT an Array
 				properties["position"] = ["below", "center"]; // Default to showing the List centered, below the Dropdown
 			}
 
@@ -90,7 +93,7 @@ namespace syiro.button {
 		} else if (properties["type"] == "toggle"){ // If this is a Toggle Button that is being generated
 			var buttonToggleAttributes = { "data-syiro-minor-component" : "buttonToggle"}; // Create an Object to hold the attributes we'll pass when creating the buttonToggle
 
-			if ((typeof properties["default"] == "boolean") && (properties["default"])){ // If a default state for the button is defined and is defined as true (already active)
+			if (syiro.utilities.TypeOfThing(properties["default"], "boolean") && properties["default"]){ // If a default state for the button is defined and is defined as true (already active)
 				buttonToggleAttributes["data-syiro-component-status"] = "true"; // Add the data-syiro-component-status attribute with "true" as the value
 				delete properties["default"]; // Remove the "content" key
 			}
@@ -99,11 +102,12 @@ namespace syiro.button {
 		}
 
 		delete properties["type"]; // Remove the "type" key
-
 		componentElement = syiro.utilities.ElementCreator("div", componentData); // Generate the Component Element with the componentData provided
 
-		for (var propertyKey in properties){ // Recursive go through any other attributes that needs to be set.
-			componentElement.setAttribute(propertyKey, properties[propertyKey]); // Treat it like an attribute
+		if (Object.keys(properties).length !== 0){ // If there are items in properties
+			for (var propertyKey in properties){ // Recursive go through any other attributes that needs to be set.
+				componentElement.setAttribute(propertyKey, properties[propertyKey]); // Treat it like an attribute
+			}
 		}
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
@@ -245,6 +249,8 @@ namespace syiro.buttongroup {
 	// #region Buttongroup Generator
 
 	export function New(properties : Object) : ComponentObject {
+		var buttongroupComponentObject : ComponentObject;
+
 		if (typeof properties["items"] !== "undefined"){ // If items is defined
 			if (properties["items"].length >= 2){ // If the length of items is equal to or greater than 2
 				var componentId : string = syiro.component.IdGen("buttongroup"); // Generate a component Id
@@ -274,9 +280,11 @@ namespace syiro.buttongroup {
 				}
 
 				syiro.data.Write(componentId + "->HTMLElement", componentElement); // Write the HTMLElement to the Syiro Data System
-				return { "id" : componentId, "type" : "buttongroup" }; // Return a Component Object
+				buttongroupComponentObject = { "id" : componentId, "type" : "buttongroup" }; // Set buttongroupComponentObject to a new Object
 			}
 		}
+
+		return buttongroupComponentObject;
 	}
 
 	export var Generate = New; // Define Generate as backwards-compatible call to New(). DEPRECATE AROUND 2.0
@@ -285,7 +293,7 @@ namespace syiro.buttongroup {
 
 	// #region Buttongroup - Inner Button Width Calculation
 
-	export function CalculateInnerButtonWidth(component : any){
+	export function CalculateInnerButtonWidth(component : any) : HTMLElement {
 		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of the variable passed
 		var componentElement : HTMLElement; // Define componentElement as the Element of the Component Object and/or is the component passed
 
@@ -319,9 +327,9 @@ namespace syiro.buttongroup {
 
 				syiro.component.CSS(buttonElement, "width", widthValue); // Set the width to be 100% / number of button Elements
 			}
-
-			return componentElement; // Return the modified Component Element
 		}
+
+		return componentElement; // Return the modified Component Element
 	}
 
 	// #region Buttongroup Active Button Toggling

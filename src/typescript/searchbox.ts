@@ -31,7 +31,7 @@ namespace syiro.searchbox {
 		}
 
 		var inputElement : HTMLElement = syiro.utilities.ElementCreator("input", { "aria-autocomplete" : "list", "role" : "textbox", "placeholder" : properties["content"] }); // Searchbox Inner Input Generation
-		var searchButton : ComponentObject = syiro.button.New({ "data-syiro-render-icon" : "search" }); // Create a Search icon button
+		var searchButton : ComponentObject = syiro.button.New({ "icon" : "search" }); // Create a Search icon button
 
 		// #region Suggestions Enabling
 

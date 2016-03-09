@@ -1,11 +1,4 @@
-/*
-    These are interface extensions so Typescript doesn't freak out.
-*/
 var WebKitMutationObserver;
-/*
-This is the namespace for managing Syiro Data.
-*/
-/// <reference path="interfaces.ts" />
 var syiro;
 (function (syiro) {
     var data;
@@ -77,17 +70,12 @@ var syiro;
         data_1.Delete = Delete;
     })(data = syiro.data || (syiro.data = {}));
 })(syiro || (syiro = {}));
-/*
-    This is the namespace for animation in Syiro
-*/
-/// <reference path="component.ts" />
-/// <reference path="interfaces.ts" />
 var syiro;
 (function (syiro) {
     var animation;
     (function (animation) {
         function Animate(component, properties) {
-            var element;
+            var element = null;
             var typeOfComponent = syiro.utilities.TypeOfThing(component);
             if (typeOfComponent == "ComponentObject") {
                 element = syiro.component.Fetch(component);
@@ -102,15 +90,11 @@ var syiro;
                 }
                 var postAnimationFunction = properties["function"];
                 if (typeof postAnimationFunction == "function") {
-                    var transitionEndUsed = false;
                     if ((typeof element.style["transition"] !== "undefined") || (typeof element.style["webkitTransition"] !== "undefined")) {
-                        transitionEndUsed = true;
                         var transitionEndFlag = "webkitTransitionEnd";
                         if (typeof element.style["transition"] !== "undefined") {
                             transitionEndFlag = "transitionend";
                         }
-                    }
-                    if (transitionEndUsed) {
                         syiro.events.Add(transitionEndFlag, element, function () {
                             var postAnimationFunction = arguments[0];
                             var transitionEndFlag = arguments[1];
@@ -122,7 +106,7 @@ var syiro;
                         }.bind(this, postAnimationFunction, transitionEndFlag));
                     }
                     else {
-                        properties["function"].call(this, component);
+                        postAnimationFunction.call(this, component);
                     }
                 }
                 element.setAttribute("data-syiro-animation", properties["animation"]);
@@ -170,9 +154,164 @@ var syiro;
         animation.Slide = Slide;
     })(animation = syiro.animation || (syiro.animation = {}));
 })(syiro || (syiro = {}));
-/*
-    This is a namespace for Syiro utilities that are commonly used throughout Syiro's core code and may be useful to others.
-*/
+var syiro;
+(function (syiro) {
+    var events;
+    (function (events) {
+        events.eventStrings = {
+            "down": [], "up": [],
+            "fullscreenchange": ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"],
+            "orientationchange": ["orientationchange", "mozorientationchange", "msorientationchange"]
+        };
+        function Handler() {
+            var component = arguments[0];
+            var eventData = arguments[1];
+            if (eventData.type.indexOf("touch") !== -1) {
+                eventData.preventDefault();
+            }
+            syiro.events.Trigger(eventData.type, component, eventData);
+        }
+        events.Handler = Handler;
+        function Trigger(eventType, component, eventData) {
+            var componentId;
+            var componentElement;
+            var passableValue = null;
+            var typeOfComponent = syiro.utilities.TypeOfThing(component);
+            if (syiro.utilities.TypeOfThing(component, "ComponentObject")) {
+                componentId = component.id;
+                componentElement = syiro.component.Fetch(component);
+            }
+            else {
+                componentId = syiro.component.FetchComponentObject(component)["id"];
+                componentElement = component;
+            }
+            if (component.type == "searchbox") {
+                componentElement = componentElement.firstElementChild;
+            }
+            var functionsForListener = syiro.data.Read(componentId + "->handlers->" + eventType);
+            if ((component.type == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
+                passableValue = (!componentElement.hasAttribute("active"));
+            }
+            else if (componentElement.nodeName == "INPUT") {
+                passableValue = componentElement.value;
+            }
+            else {
+                passableValue = eventData;
+            }
+            for (var _i = 0, functionsForListener_1 = functionsForListener; _i < functionsForListener_1.length; _i++) {
+                var individualFunc = functionsForListener_1[_i];
+                individualFunc.call(this, component, passableValue);
+            }
+        }
+        events.Trigger = Trigger;
+        function Add(listeners, component, listenerCallback) {
+            var componentId;
+            var allowListening = true;
+            if (arguments.length == 3) {
+                if (typeof listeners == "string") {
+                    listeners = listeners.trim().split(" ");
+                }
+                var componentElement;
+                if (syiro.utilities.TypeOfThing(component, "ComponentObject")) {
+                    componentId = component.id;
+                    componentElement = syiro.component.Fetch(component);
+                    if (component.type == "list-item") {
+                        allowListening = !(componentElement.querySelector("div") !== null);
+                    }
+                    else if (component.type == "searchbox") {
+                        componentElement = componentElement.firstElementChild;
+                    }
+                }
+                else {
+                    componentId = syiro.component.FetchComponentObject(component)["id"];
+                    componentElement = component;
+                }
+                if (allowListening) {
+                    for (var _i = 0, listeners_1 = listeners; _i < listeners_1.length; _i++) {
+                        var listener = listeners_1[_i];
+                        var currentListenersArray = syiro.data.Read(componentId + "->handlers->" + listener);
+                        if (typeof currentListenersArray == "boolean") {
+                            currentListenersArray = [listenerCallback];
+                            if (syiro.data.Read(componentId + "->DisableInputTrigger") == false) {
+                                componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component));
+                            }
+                        }
+                        else {
+                            if (currentListenersArray.indexOf(listenerCallback) == -1) {
+                                currentListenersArray.push(listenerCallback);
+                            }
+                        }
+                        syiro.data.Write(componentId + "->handlers->" + listener, currentListenersArray);
+                    }
+                }
+            }
+            else {
+                allowListening = false;
+            }
+            return allowListening;
+        }
+        events.Add = Add;
+        function Remove() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var allowRemoval = true;
+            var successfulRemoval = false;
+            var listeners;
+            var component;
+            var componentElement;
+            var specFunc;
+            if ((args.length >= 2) && (args.length < 4)) {
+                if ((typeof args[0] == "string") || (typeof args[0].length !== "undefined")) {
+                    listeners = args[0];
+                    if (typeof listeners == "string") {
+                        listeners = listeners.trim().split(" ");
+                    }
+                }
+                else {
+                    allowRemoval = false;
+                }
+                component = args[1];
+                if (typeof args[2] == "function") {
+                    specFunc = args[2];
+                }
+                if (syiro.utilities.TypeOfThing(component, "ComponentObject")) {
+                    componentElement = syiro.component.Fetch(component);
+                }
+                else {
+                    componentElement = component;
+                    component = syiro.component.FetchComponentObject(component);
+                }
+                if (allowRemoval) {
+                    if ((typeof componentElement !== "undefined") && (componentElement !== null)) {
+                        for (var _a = 0, listeners_2 = listeners; _a < listeners_2.length; _a++) {
+                            var listener = listeners_2[_a];
+                            var componentListeners = null;
+                            if (typeof specFunc == "function") {
+                                componentListeners = syiro.data.Read(component.id + "->handlers->" + listener);
+                                var componentListenersFunctionIndex = componentListeners.indexOf(specFunc);
+                                if (componentListenersFunctionIndex !== -1) {
+                                    componentListeners.splice(componentListenersFunctionIndex, 1);
+                                }
+                            }
+                            if ((componentListeners == null) || (componentListeners.length == 0)) {
+                                syiro.data.Delete(component.id + "->handlers->" + listener);
+                                componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component));
+                            }
+                            else {
+                                syiro.data.Write(component.id + "->handlers->" + listener, componentListeners);
+                            }
+                        }
+                        successfulRemoval = true;
+                    }
+                }
+            }
+            return successfulRemoval;
+        }
+        events.Remove = Remove;
+    })(events = syiro.events || (syiro.events = {}));
+})(syiro || (syiro = {}));
 var syiro;
 (function (syiro) {
     var utilities;
@@ -287,189 +426,6 @@ var syiro;
         utilities.TypeOfThing = TypeOfThing;
     })(utilities = syiro.utilities || (syiro.utilities = {}));
 })(syiro || (syiro = {}));
-/*
- This is the namespace for generating Syiro components.
- */
-/// <reference path="syiro.ts" />
-/// <reference path="utilities.ts" />
-var syiro;
-(function (syiro) {
-    var generator;
-    (function (generator) {
-        generator.ElementCreator = syiro.utilities.ElementCreator;
-    })(generator = syiro.generator || (syiro.generator = {}));
-})(syiro || (syiro = {}));
-/*
-    This is the namespace for Syiro Component and Generic Element Event Handling
-*/
-/// <reference path="animation.ts" />
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="interfaces.ts" />
-var syiro;
-(function (syiro) {
-    var events;
-    (function (events) {
-        events.eventStrings = {
-            "down": [], "up": [],
-            "fullscreenchange": ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"],
-            "orientationchange": ["orientationchange", "mozorientationchange", "msorientationchange"]
-        };
-        function Handler() {
-            var component = arguments[0];
-            var eventData = arguments[1];
-            if (eventData.type.indexOf("touch") !== -1) {
-                eventData.preventDefault();
-            }
-            syiro.events.Trigger(eventData.type, component, eventData);
-        }
-        events.Handler = Handler;
-        function Trigger(eventType, component, eventData) {
-            var componentId;
-            var componentElement;
-            var passableValue = null;
-            var typeOfComponent = syiro.utilities.TypeOfThing(component);
-            if (syiro.utilities.TypeOfThing(component, "ComponentObject")) {
-                componentId = component.id;
-                componentElement = syiro.component.Fetch(component);
-            }
-            else {
-                componentId = syiro.component.FetchComponentObject(component)["id"];
-                componentElement = component;
-            }
-            if (component.type == "searchbox") {
-                componentElement = componentElement.firstElementChild;
-            }
-            var functionsForListener = syiro.data.Read(componentId + "->handlers->" + eventType);
-            if ((component.type == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")) {
-                passableValue = (!componentElement.hasAttribute("active"));
-            }
-            else if (componentElement.nodeName == "INPUT") {
-                passableValue = componentElement.value;
-            }
-            else {
-                passableValue = eventData;
-            }
-            for (var _i = 0; _i < functionsForListener.length; _i++) {
-                var individualFunc = functionsForListener[_i];
-                individualFunc.call(this, component, passableValue);
-            }
-        }
-        events.Trigger = Trigger;
-        function Add(listeners, component, listenerCallback) {
-            var componentId;
-            var allowListening = true;
-            if (arguments.length == 3) {
-                if (typeof listeners == "string") {
-                    listeners = listeners.trim().split(" ");
-                }
-                var componentElement;
-                if (syiro.utilities.TypeOfThing(component, "ComponentObject")) {
-                    componentId = component.id;
-                    componentElement = syiro.component.Fetch(component);
-                    if (component.type == "list-item") {
-                        allowListening = !(componentElement.querySelector("div") !== null);
-                    }
-                    else if (component.type == "searchbox") {
-                        componentElement = componentElement.firstElementChild;
-                    }
-                }
-                else {
-                    componentId = syiro.component.FetchComponentObject(component)["id"];
-                    componentElement = component;
-                }
-                if (allowListening) {
-                    for (var _i = 0; _i < listeners.length; _i++) {
-                        var listener = listeners[_i];
-                        var currentListenersArray = syiro.data.Read(componentId + "->handlers->" + listener);
-                        if (typeof currentListenersArray == "boolean") {
-                            currentListenersArray = [listenerCallback];
-                            if (syiro.data.Read(componentId + "->DisableInputTrigger") == false) {
-                                componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component));
-                            }
-                        }
-                        else {
-                            if (currentListenersArray.indexOf(listenerCallback) == -1) {
-                                currentListenersArray.push(listenerCallback);
-                            }
-                        }
-                        syiro.data.Write(componentId + "->handlers->" + listener, currentListenersArray);
-                    }
-                }
-            }
-            else {
-                allowListening = false;
-            }
-            return allowListening;
-        }
-        events.Add = Add;
-        function Remove() {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
-            }
-            var allowRemoval = true;
-            var successfulRemoval = false;
-            var listeners;
-            var component;
-            var componentElement;
-            var specFunc;
-            if ((args.length >= 2) && (args.length < 4)) {
-                if ((typeof args[0] == "string") || (typeof args[0].length !== "undefined")) {
-                    listeners = args[0];
-                    if (typeof listeners == "string") {
-                        listeners = listeners.trim().split(" ");
-                    }
-                }
-                else {
-                    allowRemoval = false;
-                }
-                component = args[1];
-                if (typeof args[2] == "function") {
-                    specFunc = args[2];
-                }
-                if (syiro.utilities.TypeOfThing(component, "ComponentObject")) {
-                    componentElement = syiro.component.Fetch(component);
-                }
-                else {
-                    componentElement = component;
-                    component = syiro.component.FetchComponentObject(component);
-                }
-                if (allowRemoval) {
-                    if ((typeof componentElement !== "undefined") && (componentElement !== null)) {
-                        for (var _a = 0; _a < listeners.length; _a++) {
-                            var listener = listeners[_a];
-                            var componentListeners = null;
-                            if (typeof specFunc == "function") {
-                                componentListeners = syiro.data.Read(component.id + "->handlers->" + listener);
-                                var componentListenersFunctionIndex = componentListeners.indexOf(specFunc);
-                                if (componentListenersFunctionIndex !== -1) {
-                                    componentListeners.splice(componentListenersFunctionIndex, 1);
-                                }
-                            }
-                            if ((componentListeners == null) || (componentListeners.length == 0)) {
-                                syiro.data.Delete(component.id + "->handlers->" + listener);
-                                componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component));
-                            }
-                            else {
-                                syiro.data.Write(component.id + "->handlers->" + listener, componentListeners);
-                            }
-                        }
-                        successfulRemoval = true;
-                    }
-                }
-            }
-            return successfulRemoval;
-        }
-        events.Remove = Remove;
-    })(events = syiro.events || (syiro.events = {}));
-})(syiro || (syiro = {}));
-/*
-This is the namespace for render-oriented functionality for Components, such as positioning.
-*/
-/// <reference path="component.ts" />
-/// <reference path="data.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var render;
@@ -513,8 +469,8 @@ var syiro;
                     else if (componentWidthDifference < 0) {
                         componentRightPosition = (relativeComponentXPosition + Math.abs(componentWidthDifference));
                     }
-                    for (var _i = 0; _i < positioningList.length; _i++) {
-                        var position = positioningList[_i];
+                    for (var _i = 0, positioningList_1 = positioningList; _i < positioningList_1.length; _i++) {
+                        var position = positioningList_1[_i];
                         var positionValue;
                         switch (position) {
                             case "above":
@@ -583,7 +539,6 @@ var syiro;
         }
         render.Position = Position;
         function Scale(component, data) {
-            // #region Variable Setup
             var componentId = component.id;
             var componentElement = syiro.component.Fetch(component);
             var parentHeight = componentElement.parentElement.clientHeight;
@@ -681,8 +636,8 @@ var syiro;
                     syiro.data.Write(component.id + "->scaling->children", childComponentsArray);
                 }
                 var componentChildren = syiro.data.Read(component.id + "->scaling->children");
-                for (var _i = 0; _i < componentChildren.length; _i++) {
-                    var childComponentObject = componentChildren[_i];
+                for (var _i = 0, componentChildren_1 = componentChildren; _i < componentChildren_1.length; _i++) {
+                    var childComponentObject = componentChildren_1[_i];
                     syiro.render.Scale(childComponentObject);
                 }
             }
@@ -690,13 +645,6 @@ var syiro;
         render.Scale = Scale;
     })(render = syiro.render || (syiro.render = {}));
 })(syiro || (syiro = {}));
-/*
-    This is the namespace for core Syiro functionality.
-*/
-/// <reference path="data.ts" />
-/// <reference path="events.ts" />
-/// <reference path="interfaces.ts" />
-/// <reference path="render.ts" />
 var syiro;
 (function (syiro) {
     var component;
@@ -705,8 +653,7 @@ var syiro;
         function CSS(component, property, newValue) {
             var typeOfComponent = syiro.utilities.TypeOfThing(component);
             var modifiableElement;
-            var returnedValue;
-            var modifiedStyling = false;
+            var returnedValue = "";
             if (typeOfComponent == "ComponentObject") {
                 modifiableElement = syiro.component.Fetch(component);
             }
@@ -719,37 +666,28 @@ var syiro;
                 if (currentElementStyling !== null) {
                     var currentElementStylingArray = currentElementStyling.split(";");
                     for (var styleKey in currentElementStylingArray) {
-                        var cssPropertyValue = currentElementStylingArray[styleKey];
+                        var cssPropertyValue = currentElementStylingArray[styleKey].replace(" ", "");
                         if (cssPropertyValue !== "") {
-                            var propertyValueArray = cssPropertyValue.split(": ");
-                            elementStylingObject[propertyValueArray[0].trim()] = propertyValueArray[1].trim();
+                            var propertyValueArray = cssPropertyValue.split(":");
+                            elementStylingObject[propertyValueArray[0]] = propertyValueArray[1];
                         }
                     }
                 }
-                var stylePropertyValue = elementStylingObject[property];
+                var modifiedStyling = false;
                 if (typeof newValue == "undefined") {
-                    if (stylePropertyValue !== undefined) {
+                    var stylePropertyValue = elementStylingObject[property];
+                    if (typeof stylePropertyValue !== "undefined") {
                         returnedValue = stylePropertyValue;
                     }
-                    else {
-                        returnedValue = "";
-                    }
-                }
-                else if ((newValue !== "") && (newValue !== false)) {
-                    elementStylingObject[property] = newValue;
-                    modifiedStyling = true;
-                    returnedValue = newValue;
                 }
                 else {
-                    if (typeof stylePropertyValue !== "undefined") {
-                        elementStylingObject[property] = null;
-                        modifiedStyling = true;
-                    }
+                    modifiedStyling = true;
+                    elementStylingObject[property] = newValue;
                 }
                 if (modifiedStyling) {
                     var updatedCSSStyle = "";
                     for (var cssProperty in elementStylingObject) {
-                        if (elementStylingObject[cssProperty] !== null) {
+                        if (elementStylingObject[cssProperty] !== "") {
                             updatedCSSStyle = updatedCSSStyle + cssProperty + ": " + elementStylingObject[cssProperty] + ";";
                         }
                     }
@@ -760,9 +698,6 @@ var syiro;
                         modifiableElement.removeAttribute("style");
                     }
                 }
-            }
-            else {
-                returnedValue = "";
             }
             return returnedValue;
         }
@@ -950,8 +885,8 @@ var syiro;
             else if (typeOfThing == "Array") {
                 componentList = componentsToRemove;
             }
-            for (var _i = 0; _i < componentList.length; _i++) {
-                var component = componentList[_i];
+            for (var _i = 0, componentList_1 = componentList; _i < componentList_1.length; _i++) {
+                var component = componentList_1[_i];
                 var typeOfComponent = syiro.utilities.TypeOfThing(component);
                 var componentObject;
                 var componentElement;
@@ -978,11 +913,6 @@ var syiro;
         component_1.Remove = Remove;
     })(component = syiro.component || (syiro.component = {}));
 })(syiro || (syiro = {}));
-/*
-    This is the namespace for Syiro's init system
-*/
-/// <reference path="component.ts" />
-/// <reference path="interfaces.ts" />
 var syiro;
 (function (syiro) {
     var init;
@@ -1020,8 +950,8 @@ var syiro;
                         break;
                 }
                 var innerComponentElements = componentElement.querySelectorAll('div[data-syiro-component]');
-                for (var _i = 0; _i < innerComponentElements.length; _i++) {
-                    var childComponentElement = innerComponentElements[_i];
+                for (var _i = 0, innerComponentElements_1 = innerComponentElements; _i < innerComponentElements_1.length; _i++) {
+                    var childComponentElement = innerComponentElements_1[_i];
                     syiro.init.Parser(childComponentElement);
                 }
                 syiro.data.Delete(component.id + "->HTMLElement");
@@ -1037,8 +967,8 @@ var syiro;
         function Buttongroup(component) {
             var componentElement = syiro.component.Fetch(component);
             var innerButtons = componentElement.querySelectorAll('div[data-syiro-component="button"]');
-            for (var _i = 0; _i < innerButtons.length; _i++) {
-                var innerButton = innerButtons[_i];
+            for (var _i = 0, innerButtons_1 = innerButtons; _i < innerButtons_1.length; _i++) {
+                var innerButton = innerButtons_1[_i];
                 var buttonComponentObject = syiro.component.FetchComponentObject(innerButton);
                 syiro.events.Add(syiro.events.eventStrings["up"], buttonComponentObject, syiro.buttongroup.Toggle);
             }
@@ -1194,8 +1124,8 @@ var syiro;
                     toastContentOverlayElement = syiro.init.createContentOverlay("toast");
                 }
             }
-            for (var _i = 0; _i < toastButtons.length; _i++) {
-                var toastButton = toastButtons[_i];
+            for (var _i = 0, toastButtons_1 = toastButtons; _i < toastButtons_1.length; _i++) {
+                var toastButton = toastButtons_1[_i];
                 var toastButtonObject = syiro.component.FetchComponentObject(toastButton);
                 var dialogAction = toastButton.getAttribute("data-syiro-dialog-action");
                 syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, component));
@@ -1212,22 +1142,14 @@ var syiro;
         init.Toast = Toast;
     })(init = syiro.init || (syiro.init = {}));
 })(syiro || (syiro = {}));
-/*
- This is the namespace for the Syiro Button, Buttongroup, and Toggle Button components.
- */
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var button;
     (function (button) {
         function New(properties) {
             if (typeof properties["type"] == "undefined") {
-                if ((typeof properties["list"] == "undefined") && (typeof properties["items"] == "undefined")) {
-                    properties["type"] = "basic";
-                }
-                else {
+                properties["type"] = "basic";
+                if (syiro.utilities.TypeOfThing(properties["list"], "ComponentObject") || syiro.utilities.TypeOfThing(properties["items"], "Array")) {
                     properties["type"] = "dropdown";
                 }
             }
@@ -1243,11 +1165,14 @@ var syiro;
                 if (properties["type"] == "dropdown") {
                     componentData["data-syiro-render-icon"] = "menu";
                 }
-                if (typeof properties["icon"] == "string") {
-                    componentData["style"] = 'background-image: url("' + properties["icon"] + '")';
-                    componentData["data-syiro-render-icon"] = "custom";
-                    delete properties["icon"];
+                if ((typeof properties["icon"] == "string") && (properties["icon"] !== "")) {
+                    componentData["data-syiro-render-icon"] = properties["icon"];
+                    if (properties["icon"].indexOf(".") !== -1) {
+                        componentData["data-syiro-render-icon"] = "custom";
+                        componentData["style"] = 'background-image: url("' + properties["icon"] + '")';
+                    }
                 }
+                delete properties["icon"];
                 if (typeof properties["image"] == "string") {
                     var primaryImage = syiro.utilities.ElementCreator("img", { "src": properties["image"] });
                     componentData["content"] = primaryImage.outerHTML + componentData["content"];
@@ -1259,20 +1184,17 @@ var syiro;
                 }
             }
             if (properties["type"] == "dropdown") {
-                var listComponent;
+                var listComponent = properties["list"];
+                delete properties["list"];
                 if (typeof properties["items"] !== "undefined") {
                     listComponent = syiro.list.New({ "items": properties["items"] });
-                }
-                else {
-                    listComponent = properties["list"];
+                    delete properties["items"];
                 }
                 var listComponentElement = syiro.component.Fetch(listComponent);
                 document.body.appendChild(listComponentElement);
                 listComponentElement.setAttribute("data-syiro-component-owner", componentId);
                 componentData["aria-owns"] = listComponent["id"];
-                delete properties["items"];
-                delete properties["list"];
-                if (typeof properties["position"] == "undefined") {
+                if (!syiro.utilities.TypeOfThing(properties["position"], "Array")) {
                     properties["position"] = ["below", "center"];
                 }
                 syiro.data.Write(listComponent["id"] + "->render", properties["position"]);
@@ -1280,7 +1202,7 @@ var syiro;
             }
             else if (properties["type"] == "toggle") {
                 var buttonToggleAttributes = { "data-syiro-minor-component": "buttonToggle" };
-                if ((typeof properties["default"] == "boolean") && (properties["default"])) {
+                if (syiro.utilities.TypeOfThing(properties["default"], "boolean") && properties["default"]) {
                     buttonToggleAttributes["data-syiro-component-status"] = "true";
                     delete properties["default"];
                 }
@@ -1288,8 +1210,10 @@ var syiro;
             }
             delete properties["type"];
             componentElement = syiro.utilities.ElementCreator("div", componentData);
-            for (var propertyKey in properties) {
-                componentElement.setAttribute(propertyKey, properties[propertyKey]);
+            if (Object.keys(properties).length !== 0) {
+                for (var propertyKey in properties) {
+                    componentElement.setAttribute(propertyKey, properties[propertyKey]);
+                }
             }
             syiro.data.Write(componentId + "->HTMLElement", componentElement);
             return { "id": componentId, "type": "button" };
@@ -1395,6 +1319,7 @@ var syiro;
     var buttongroup;
     (function (buttongroup) {
         function New(properties) {
+            var buttongroupComponentObject;
             if (typeof properties["items"] !== "undefined") {
                 if (properties["items"].length >= 2) {
                     var componentId = syiro.component.IdGen("buttongroup");
@@ -1418,9 +1343,10 @@ var syiro;
                         syiro.component.Update(activeButtonComponent["id"], defaultActiveButton);
                     }
                     syiro.data.Write(componentId + "->HTMLElement", componentElement);
-                    return { "id": componentId, "type": "buttongroup" };
+                    buttongroupComponentObject = { "id": componentId, "type": "buttongroup" };
                 }
             }
+            return buttongroupComponentObject;
         }
         buttongroup.New = New;
         buttongroup.Generate = New;
@@ -1437,25 +1363,25 @@ var syiro;
             }
             if (componentElement !== null) {
                 var innerButtonElements = componentElement.querySelectorAll('div[data-syiro-component="button"]');
-                var hasOddNumberOfButtons = false;
+                var hasOddNumberOfButtons = (Number((innerButtonElements.length / 2).toFixed()) !== (innerButtonElements.length / 2));
                 var middleButtonNumber = 0;
-                if (Number((innerButtonElements.length / 2).toFixed()) !== (innerButtonElements.length / 2)) {
-                    hasOddNumberOfButtons = true;
+                if (hasOddNumberOfButtons) {
                     middleButtonNumber = Math.round(innerButtonElements.length / 2);
                 }
                 for (var innerButtonElementsIndex in innerButtonElements) {
+                    var index = Number(innerButtonElementsIndex);
                     var buttonElement = innerButtonElements[innerButtonElementsIndex];
                     var widthValue = "calc(100% / " + innerButtonElements.length + ") !important";
-                    if (hasOddNumberOfButtons && (innerButtonElementsIndex == middleButtonNumber)) {
+                    if (hasOddNumberOfButtons && (index == middleButtonNumber)) {
                         widthValue = "calc(100% / " + innerButtonElements.length + " - 2px) !important";
                     }
-                    else if (innerButtonElementsIndex == (innerButtonElements.length - 1)) {
+                    else if (index == (innerButtonElements.length - 1)) {
                         widthValue = "calc(100% / " + innerButtonElements.length + " - " + (innerButtonElements.length - 1) + "px) !important";
                     }
                     syiro.component.CSS(buttonElement, "width", widthValue);
                 }
-                return componentElement;
             }
+            return componentElement;
         }
         buttongroup.CalculateInnerButtonWidth = CalculateInnerButtonWidth;
         function Toggle(buttonComponent) {
@@ -1472,11 +1398,6 @@ var syiro;
         buttongroup.Toggle = Toggle;
     })(buttongroup = syiro.buttongroup || (syiro.buttongroup = {}));
 })(syiro || (syiro = {}));
-/*
- This is the namespace for information and functionality Syiro provides regarding the device using Syiro.
-*/
-/// <reference path="events.ts" />
-/// <reference path="interfaces.ts" />
 var syiro;
 (function (syiro) {
     var device;
@@ -1490,7 +1411,6 @@ var syiro;
         device.SupportsTouch = false;
         device.OrientationObject = screen;
         function Detect() {
-            // #region Do Not Track
             if (typeof navigator.doNotTrack !== "undefined") {
                 syiro.device.DoNotTrack = Boolean(navigator.doNotTrack);
             }
@@ -1659,12 +1579,6 @@ var syiro;
         device.FetchScreenOrientation = FetchScreenOrientation;
     })(device = syiro.device || (syiro.device = {}));
 })(syiro || (syiro = {}));
-/*
- This is the namespace for Syiro Grid component and it's sub-component, Grid Item
- */
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var grid;
@@ -1722,9 +1636,10 @@ var syiro;
     var griditem;
     (function (griditem) {
         function New(properties) {
+            var gridItemComponent;
             if ((syiro.utilities.TypeOfThing(properties["html"], "Element")) || (syiro.utilities.TypeOfThing(properties["html"], "string"))) {
-                var component = { "id": syiro.component.IdGen("grid-item"), "type": "grid-item" };
-                var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": component.id, "data-syiro-component": "grid-item" });
+                var gridItemComponent = { "id": syiro.component.IdGen("grid-item"), "type": "grid-item" };
+                var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id": gridItemComponent.id, "data-syiro-component": "grid-item" });
                 properties["html"] = syiro.utilities.SanitizeHTML(properties["html"]);
                 if (syiro.utilities.TypeOfThing(properties["html"], "Element")) {
                     componentElement.appendChild(properties["html"]);
@@ -1732,19 +1647,13 @@ var syiro;
                 else {
                     componentElement.innerHTML = properties["html"];
                 }
-                syiro.data.Write(component.id + "->HTMLElement", componentElement);
-                return component;
+                syiro.data.Write(gridItemComponent.id + "->HTMLElement", componentElement);
             }
+            return gridItemComponent;
         }
         griditem.New = New;
     })(griditem = syiro.griditem || (syiro.griditem = {}));
 })(syiro || (syiro = {}));
-/*
-    This is the namespace for Syiro Navbar component (previously referred to as Header and Footer Components).
-*/
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var navbar;
@@ -1891,12 +1800,6 @@ var syiro;
         navbar.SetLabel = SetLabel;
     })(navbar = syiro.navbar || (syiro.navbar = {}));
 })(syiro || (syiro = {}));
-/*
- This is the namespace for Syiro List component and it's sub-component, List Item
- */
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var list;
@@ -2164,15 +2067,6 @@ var syiro;
         listitem.SetLink = SetLink;
     })(listitem = syiro.listitem || (syiro.listitem = {}));
 })(syiro || (syiro = {}));
-/*
-    This is a file containing the Media Player Component
-*/
-/// <reference path="component.ts" />
-/// <reference path="events.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="interfaces.ts" />
-/// <reference path="players.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var mediaplayer;
@@ -2252,8 +2146,8 @@ var syiro;
             mediaPlayerElement = syiro.utilities.ElementCreator(properties["type"], mediaPlayerProperties);
             mediaPlayerElement.autoplay = false;
             var sourceElements = syiro.mediaplayer.GenerateSources(properties["type"], properties["sources"]);
-            for (var _i = 0; _i < sourceElements.length; _i++) {
-                var sourceElement = sourceElements[_i];
+            for (var _i = 0, sourceElements_1 = sourceElements; _i < sourceElements_1.length; _i++) {
+                var sourceElement = sourceElements_1[_i];
                 mediaPlayerElement.appendChild(sourceElement);
             }
             if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"])) {
@@ -2372,8 +2266,8 @@ var syiro;
         mediaplayer.FetchSources = FetchSources;
         function GenerateSources(type, sources) {
             var sourceElements = [];
-            for (var _i = 0; _i < sources.length; _i++) {
-                var source = sources[_i];
+            for (var _i = 0, sources_1 = sources; _i < sources_1.length; _i++) {
+                var source = sources_1[_i];
                 var streamingProtocol = source.substr(0, source.indexOf(":"));
                 var sourceExtension = source.substr(source.lastIndexOf(".")).replace(".", "");
                 var sourceTagAttributes = { "src": source, "data-syiro-streamable-source": "false" };
@@ -2440,8 +2334,8 @@ var syiro;
             }
             else {
                 var sourceElementsInfo = syiro.mediaplayer.FetchSources(component);
-                for (var _i = 0; _i < sourceElementsInfo.length; _i++) {
-                    var sourceElementInfo = sourceElementsInfo[_i];
+                for (var _i = 0, sourceElementsInfo_1 = sourceElementsInfo; _i < sourceElementsInfo_1.length; _i++) {
+                    var sourceElementInfo = sourceElementsInfo_1[_i];
                     if (innerContentElement.canPlayType(sourceElementInfo["type"]) !== "") {
                         isPlayable = true;
                     }
@@ -2521,8 +2415,8 @@ var syiro;
             }
             var sourceElements = syiro.mediaplayer.GenerateSources(contentType, sources);
             playerInnerContentElement.innerHTML = "";
-            for (var _i = 0; _i < sourceElements.length; _i++) {
-                var sourceElement = sourceElements[_i];
+            for (var _i = 0, sourceElements_2 = sourceElements; _i < sourceElements_2.length; _i++) {
+                var sourceElement = sourceElements_2[_i];
                 playerInnerContentElement.appendChild(sourceElement);
             }
             playerInnerContentElement.setAttribute("src", sources[0]);
@@ -2658,7 +2552,7 @@ var syiro;
         function New(properties) {
             var component = { "id": syiro.component.IdGen("media-control"), "type": "media-control" };
             var componentElement = syiro.utilities.ElementCreator("div", { "data-syiro-component": component.type, "data-syiro-component-id": component.id });
-            var playButton = syiro.button.New({ "data-syiro-render-icon": "play" });
+            var playButton = syiro.button.New({ "icon": "play" });
             var inputRange = syiro.utilities.ElementCreator("input", { "type": "range", "value": "0" });
             componentElement.appendChild(inputRange);
             componentElement.appendChild(syiro.component.Fetch(playButton));
@@ -2680,16 +2574,16 @@ var syiro;
             }
             if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")) {
                 if (properties["menu"]["type"] == "list") {
-                    var menuButton = syiro.button.New({ "data-syiro-render-icon": "menu" });
+                    var menuButton = syiro.button.New({ "icon": "menu" });
                     componentElement.appendChild(syiro.component.Fetch(menuButton));
                 }
             }
             if (properties["type"] == "video") {
-                var fullscreenButton = syiro.button.New({ "data-syiro-render-icon": "fullscreen" });
+                var fullscreenButton = syiro.button.New({ "icon": "fullscreen" });
                 componentElement.appendChild(syiro.component.Fetch(fullscreenButton));
             }
             if (syiro.device.OperatingSystem !== "iOS") {
-                var volumeButton = syiro.button.New({ "data-syiro-render-icon": "volume" });
+                var volumeButton = syiro.button.New({ "icon": "volume" });
                 componentElement.appendChild(syiro.component.Fetch(volumeButton));
             }
             syiro.data.Write(component.id + "->HTMLElement", componentElement);
@@ -2780,18 +2674,6 @@ var syiro;
         mediacontrol.Toggle = Toggle;
     })(mediacontrol = syiro.mediacontrol || (syiro.mediacontrol = {}));
 })(syiro || (syiro = {}));
-/*
-    This is a file containing the namespace for the Syiro Audio Player and Video Player, as well as shared player functionality.
-    The Audio Player is exposed via syiro.audioplayer.
-    The Video Player is exposed via syiro.videoplayer.
-    The shared Player functionality is exposed via syiro.player.
-*/
-/// <reference path="component.ts" />
-/// <reference path="events.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="interfaces.ts" />
-/// <reference path="mediaplayer.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var player;
@@ -2849,12 +2731,6 @@ var syiro;
         videoplayer.New = New;
     })(videoplayer = syiro.videoplayer || (syiro.videoplayer = {}));
 })(syiro || (syiro = {}));
-/*
- This is the namespace for Syiro Searchbox component.
-*/
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var searchbox;
@@ -2874,7 +2750,7 @@ var syiro;
                 componentData["DisableInputTrigger"] = true;
             }
             var inputElement = syiro.utilities.ElementCreator("input", { "aria-autocomplete": "list", "role": "textbox", "placeholder": properties["content"] });
-            var searchButton = syiro.button.New({ "data-syiro-render-icon": "search" });
+            var searchButton = syiro.button.New({ "icon": "search" });
             if ((typeof properties["suggestions"] !== "undefined") && (properties["suggestions"])) {
                 componentData["suggestions"] = "enabled";
                 componentData["handlers"] = {
@@ -2991,12 +2867,6 @@ var syiro;
         searchbox.SetText = SetText;
     })(searchbox = syiro.searchbox || (syiro.searchbox = {}));
 })(syiro || (syiro = {}));
-/*
- This is the namespace for the Syiro Sidepane Component.
- */
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var sidepane;
@@ -3110,28 +2980,21 @@ var syiro;
                     }
                 }
                 componentElement.removeAttribute("data-syiro-render-animation");
-                syiro.component.CSS(componentElement, "transform", false);
-                syiro.component.CSS(componentElement, "-webkit-transform", false);
+                syiro.component.CSS(componentElement, "transform", "");
+                syiro.component.CSS(componentElement, "-webkit-transform", "");
                 if (showSidepane) {
                     syiro.animation.Slide(component);
                     syiro.component.CSS(sidepaneContentOverlay, "display", "block");
                 }
                 else {
                     syiro.animation.Reset(component);
-                    syiro.component.CSS(sidepaneContentOverlay, "display", false);
+                    syiro.component.CSS(sidepaneContentOverlay, "display", "");
                 }
             }
         }
         sidepane.Toggle = Toggle;
     })(sidepane = syiro.sidepane || (syiro.sidepane = {}));
 })(syiro || (syiro = {}));
-/*
- This is the namespace for Syiro Toast component.
- Contrary to common belief, this does not actually have anything to do with toast.
-*/
-/// <reference path="component.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     var toast;
@@ -3270,26 +3133,6 @@ var syiro;
         toast.Toggle = Toggle;
     })(toast = syiro.toast || (syiro.toast = {}));
 })(syiro || (syiro = {}));
-/*
-    This is the aggregate of all the Syiro namespace into a unified namespace
-*/
-/// <reference path="init.ts" />
-/// <reference path="animation.ts" />
-/// <reference path="button.ts" />
-/// <reference path="component.ts" />
-/// <reference path="data.ts" />
-/// <reference path="device.ts" />
-/// <reference path="events.ts" />
-/// <reference path="generator.ts" />
-/// <reference path="grid.ts" />
-/// <reference path="navbar.ts" />
-/// <reference path="list.ts" />
-/// <reference path="players.ts" />
-/// <reference path="render.ts" />
-/// <reference path="searchbox.ts" />
-/// <reference path="sidepane.ts" />
-/// <reference path="toast.ts" />
-/// <reference path="utilities.ts" />
 var syiro;
 (function (syiro) {
     function Init() {
@@ -3356,8 +3199,8 @@ var syiro;
         document.body.removeChild(syiroInternalColorContainer);
         if (syiro.device.SupportsMutationObserver) {
             var mutationWatcher = new MutationObserver(function (mutations) {
-                for (var _i = 0; _i < mutations.length; _i++) {
-                    var mutation = mutations[_i];
+                for (var _i = 0, mutations_1 = mutations; _i < mutations_1.length; _i++) {
+                    var mutation = mutations_1[_i];
                     if (mutation.type == "childList") {
                         for (var mutationIndex in mutation.addedNodes) {
                             var componentElement = mutation.addedNodes[mutationIndex];

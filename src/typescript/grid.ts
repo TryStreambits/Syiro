@@ -11,7 +11,7 @@ module syiro.grid {
 
 	// #region New Grid Component
 
-	export function New(properties : Object) : ComponentObject{
+	export function New(properties : Object) : ComponentObject {
 		var component : ComponentObject = { "id" : syiro.component.IdGen("grid"), "type" : "grid" }; // Define componentObject as a new ComponentObject with a newly generated Id and type set to grid
 		var renderItems : string;
 
@@ -81,9 +81,11 @@ module syiro.griditem {
 	// #region New Grid Item Component
 
 	export function New(properties : Object) : ComponentObject {
+		var gridItemComponent : ComponentObject;
+
 		if ((syiro.utilities.TypeOfThing(properties["html"], "Element")) || (syiro.utilities.TypeOfThing(properties["html"], "string"))){ // If the only valid property, HTML, is defined, as an Element or string
-			var component : ComponentObject = { "id" : syiro.component.IdGen("grid-item"), "type" : "grid-item" }; // Define componentObject as the generated ComponentObject with the unique Id as well as type to grid-item
-			var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : component.id, "data-syiro-component" : "grid-item" }); // Create the Grid Item container
+			var gridItemComponent : ComponentObject = { "id" : syiro.component.IdGen("grid-item"), "type" : "grid-item" }; // Define componentObject as the generated ComponentObject with the unique Id as well as type to grid-item
+			var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : gridItemComponent.id, "data-syiro-component" : "grid-item" }); // Create the Grid Item container
 
 			properties["html"] = syiro.utilities.SanitizeHTML(properties["html"]); // Sanitize the HTML, whether it be a string or an Element of some sort
 
@@ -93,10 +95,10 @@ module syiro.griditem {
 				componentElement.innerHTML = properties["html"]; // Set the innerHTML of the componentElement to the HTML
 			}
 
-			syiro.data.Write(component.id + "->HTMLElement", componentElement); // Write the Grid Item HTMLELement
-
-			return component;
+			syiro.data.Write(gridItemComponent.id + "->HTMLElement", componentElement); // Write the Grid Item HTMLELement
 		}
+
+		return gridItemComponent;
 	}
 
 	// #endregion

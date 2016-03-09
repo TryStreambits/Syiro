@@ -52,7 +52,7 @@ function generateNavbarAndSidepane(){
 	var toggleNormalToastListItemObject = syiro.listitem.New({"label" : "Toggle Normal Toast"}); // Generate a List Item with the content being "Toggle Normal Toast"
 	var toggleDialogToastListItemObject  = syiro.listitem.New({"label" : "Toggle Dialog Toast"}); // Generate a List Item with the content being "Toggle Dialog Toast"
 
-	var dropdownButtonComponentObject = syiro.button.New({ "type" : "dropdown", "icon" : "", "items" : [ toggleNormalToastListItemObject,  toggleDialogToastListItemObject ], "position" : ["below", "right"] });
+	var dropdownButtonComponentObject = syiro.button.New({ "type" : "dropdown", "icon" : "custom", "items" : [ toggleNormalToastListItemObject,  toggleDialogToastListItemObject ], "position" : ["below", "right"] });
 
 	// #endregion
 
@@ -144,11 +144,11 @@ function generateMediaPlayers(){
 // #region Background Color Switcher
 
 function backgroundColorSwitcher(){
-    if (syiro.CSS(document.body, "background-color") == false){ // If we are currently using a light background
+    if (syiro.CSS(document.body, "background-color") == ""){ // If we are currently using a light background
         syiro.CSS(document.body, "background-color", "rgba(0,0,0,0.75)"); // Set to 75% black
     }
     else { // If we are currently using a dark background
-        syiro.CSS(document.body, "background-color", false); // Unset
+        syiro.CSS(document.body, "background-color", ""); // Unset
     }
 }
 

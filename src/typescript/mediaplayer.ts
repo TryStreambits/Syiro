@@ -666,7 +666,7 @@ module syiro.mediacontrol {
 		var component : ComponentObject = { "id" : syiro.component.IdGen("media-control"), "type" : "media-control" }; // Generate the Component Object of the Media Control
 		var componentElement = syiro.utilities.ElementCreator("div",  { "data-syiro-component" : component.type, "data-syiro-component-id" : component.id }); // Generate the basic mediaControl container
 
-		var playButton = syiro.button.New( { "data-syiro-render-icon" : "play" } ); // Create a play button
+		var playButton = syiro.button.New( { "icon" : "play" } ); // Create a play button
 		var inputRange : HTMLElement = syiro.utilities.ElementCreator("input", { "type" : "range", "value" : "0"} ); // Create an input range
 
 		componentElement.appendChild(inputRange); // Append the input range
@@ -695,7 +695,7 @@ module syiro.mediacontrol {
 
 		if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")){ // If the menu defined is a ComponentObject (List)
 			if (properties["menu"]["type"] == "list"){ // If the component provided is a List
-				var menuButton = syiro.button.New( { "data-syiro-render-icon" : "menu"} ); // Generate a Menu Button
+				var menuButton = syiro.button.New( { "icon" : "menu"} ); // Generate a Menu Button
 				componentElement.appendChild(syiro.component.Fetch(menuButton)); // Append the menuButton to the mediaControlElement
 			}
 		}
@@ -705,14 +705,14 @@ module syiro.mediacontrol {
 		// #region Video Player - Additional Functionality Adding
 
 		if (properties["type"] == "video"){ // If the type is a video Media Player
-			var fullscreenButton = syiro.button.New( { "data-syiro-render-icon" : "fullscreen"} ); // Create a fullscreen button
+			var fullscreenButton = syiro.button.New( { "icon" : "fullscreen"} ); // Create a fullscreen button
 			componentElement.appendChild(syiro.component.Fetch(fullscreenButton)); // Append the fullscreen control
 		}
 
 		// #endregion
 
 		if (syiro.device.OperatingSystem !== "iOS"){ // As iOS does not allow manual control of volume (it has to be done with hardware controls), check if the OS is NOT iOS before volume button generation
-			var volumeButton = syiro.button.New( { "data-syiro-render-icon" : "volume" } ); // Generate a Volume Button
+			var volumeButton = syiro.button.New( { "icon" : "volume" } ); // Generate a Volume Button
 			componentElement.appendChild(syiro.component.Fetch(volumeButton)); // Append the volume control
 		}
 

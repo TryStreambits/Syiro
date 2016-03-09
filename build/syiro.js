@@ -160,127 +160,6 @@ var syiro;
 })(syiro || (syiro = {}));
 var syiro;
 (function (syiro) {
-    var utilities;
-    (function (utilities) {
-        function ElementCreator(type, attributes) {
-            if ((typeof type == "string") && (typeof attributes == "object")) {
-                var generatedElement = document.createElement(type);
-                for (var attributeKey in attributes) {
-                    var attributeValue = attributes[attributeKey];
-                    if (attributeKey !== "content") {
-                        if (attributeKey == "content-attr") {
-                            attributeKey = "content";
-                        }
-                        generatedElement.setAttribute(attributeKey, syiro.utilities.SanitizeHTML(attributeValue));
-                    }
-                    else {
-                        if ((typeof attributeValue == "string") || (syiro.utilities.TypeOfThing(attributeValue, "Element"))) {
-                            var sanitizedContent = syiro.utilities.SanitizeHTML(attributeValue);
-                            if (typeof attributeValue == "string") {
-                                generatedElement.innerHTML = sanitizedContent;
-                            }
-                            else {
-                                generatedElement.appendChild(sanitizedContent);
-                            }
-                        }
-                    }
-                }
-                return generatedElement;
-            }
-        }
-        utilities.ElementCreator = ElementCreator;
-        function SanitizeHTML(content) {
-            var updatedContent = false;
-            if (typeof content == "string") {
-                updatedContent = content.replace(/<*[^]script*>/g, "");
-            }
-            else if (syiro.utilities.TypeOfThing(content, "Element")) {
-                if (content.tagName.toLowerCase() !== "script") {
-                    var innerScriptElements = content.querySelectorAll("script");
-                    if (innerScriptElements.length !== 0) {
-                        for (var innerScriptElementIndex in innerScriptElements) {
-                            var innerScriptElement = innerScriptElements[innerScriptElementIndex];
-                            if (syiro.utilities.TypeOfThing(innerScriptElement, "Element")) {
-                                innerScriptElement.parentElement.removeChild(innerScriptElement);
-                            }
-                        }
-                    }
-                }
-                updatedContent = content;
-            }
-            return updatedContent;
-        }
-        utilities.SanitizeHTML = SanitizeHTML;
-        function SecondsToTimeFormat(seconds) {
-            var timeObject = {};
-            if (seconds >= 3600) {
-                timeObject["hours"] = Math.floor(seconds / 3600);
-                timeObject["minutes"] = Math.floor((seconds - (3600 * timeObject["hours"])) / 60);
-                timeObject["seconds"] = Math.floor((seconds - (3600 * timeObject["hours"])) - (60 * timeObject["minutes"]));
-            }
-            else if ((seconds >= 60) && (seconds < 3600)) {
-                timeObject["minutes"] = Math.floor(seconds / 60);
-                timeObject["seconds"] = Math.floor(seconds - (timeObject["minutes"] * 60));
-            }
-            else {
-                timeObject["minutes"] = 0;
-                timeObject["seconds"] = seconds;
-            }
-            timeObject["seconds"] = Math.floor(timeObject["seconds"]);
-            for (var timeObjectKey in timeObject) {
-                var timeObjectValue = timeObject[timeObjectKey];
-                var timeObjectValueString = timeObjectValue.toString();
-                if (timeObjectValue < 10) {
-                    timeObjectValueString = "0" + timeObjectValueString;
-                }
-                timeObject[timeObjectKey] = timeObjectValueString;
-            }
-            return timeObject;
-        }
-        utilities.SecondsToTimeFormat = SecondsToTimeFormat;
-        function TypeOfThing(thing, checkAgainstType) {
-            var thingType = (typeof thing);
-            if (thingType !== "undefined") {
-                if ((thingType == "object") && (typeof thing.nodeType == "undefined")) {
-                    if ((typeof thing["id"] !== "undefined") && (typeof thing["type"] !== "undefined")) {
-                        thingType = "ComponentObject";
-                    }
-                    else if ((typeof thing["link"] !== "undefined") && (typeof thing["title"] !== "undefined")) {
-                        thingType = "LinkPropertiesObject";
-                    }
-                    else if (Array.isArray(thing) == true) {
-                        thingType = "Array";
-                    }
-                    else {
-                        thingType = thing.toString().replace("[object ", "").replace("]", "");
-                    }
-                }
-                else if (typeof thing.nodeType !== "undefined") {
-                    if (thing.nodeType !== 9) {
-                        thingType = "Element";
-                    }
-                    else if (thing.nodeType == 9) {
-                        thingType = "Document";
-                    }
-                }
-            }
-            if (typeof checkAgainstType == "string") {
-                thingType = (checkAgainstType == thingType);
-            }
-            return thingType;
-        }
-        utilities.TypeOfThing = TypeOfThing;
-    })(utilities = syiro.utilities || (syiro.utilities = {}));
-})(syiro || (syiro = {}));
-var syiro;
-(function (syiro) {
-    var generator;
-    (function (generator) {
-        generator.ElementCreator = syiro.utilities.ElementCreator;
-    })(generator = syiro.generator || (syiro.generator = {}));
-})(syiro || (syiro = {}));
-var syiro;
-(function (syiro) {
     var events;
     (function (events) {
         events.eventStrings = {
@@ -436,6 +315,120 @@ var syiro;
         }
         events.Remove = Remove;
     })(events = syiro.events || (syiro.events = {}));
+})(syiro || (syiro = {}));
+var syiro;
+(function (syiro) {
+    var utilities;
+    (function (utilities) {
+        function ElementCreator(type, attributes) {
+            if ((typeof type == "string") && (typeof attributes == "object")) {
+                var generatedElement = document.createElement(type);
+                for (var attributeKey in attributes) {
+                    var attributeValue = attributes[attributeKey];
+                    if (attributeKey !== "content") {
+                        if (attributeKey == "content-attr") {
+                            attributeKey = "content";
+                        }
+                        generatedElement.setAttribute(attributeKey, syiro.utilities.SanitizeHTML(attributeValue));
+                    }
+                    else {
+                        if ((typeof attributeValue == "string") || (syiro.utilities.TypeOfThing(attributeValue, "Element"))) {
+                            var sanitizedContent = syiro.utilities.SanitizeHTML(attributeValue);
+                            if (typeof attributeValue == "string") {
+                                generatedElement.innerHTML = sanitizedContent;
+                            }
+                            else {
+                                generatedElement.appendChild(sanitizedContent);
+                            }
+                        }
+                    }
+                }
+                return generatedElement;
+            }
+        }
+        utilities.ElementCreator = ElementCreator;
+        function SanitizeHTML(content) {
+            var updatedContent = false;
+            if (typeof content == "string") {
+                updatedContent = content.replace(/<*[^]script*>/g, "");
+            }
+            else if (syiro.utilities.TypeOfThing(content, "Element")) {
+                if (content.tagName.toLowerCase() !== "script") {
+                    var innerScriptElements = content.querySelectorAll("script");
+                    if (innerScriptElements.length !== 0) {
+                        for (var innerScriptElementIndex in innerScriptElements) {
+                            var innerScriptElement = innerScriptElements[innerScriptElementIndex];
+                            if (syiro.utilities.TypeOfThing(innerScriptElement, "Element")) {
+                                innerScriptElement.parentElement.removeChild(innerScriptElement);
+                            }
+                        }
+                    }
+                }
+                updatedContent = content;
+            }
+            return updatedContent;
+        }
+        utilities.SanitizeHTML = SanitizeHTML;
+        function SecondsToTimeFormat(seconds) {
+            var timeObject = {};
+            if (seconds >= 3600) {
+                timeObject["hours"] = Math.floor(seconds / 3600);
+                timeObject["minutes"] = Math.floor((seconds - (3600 * timeObject["hours"])) / 60);
+                timeObject["seconds"] = Math.floor((seconds - (3600 * timeObject["hours"])) - (60 * timeObject["minutes"]));
+            }
+            else if ((seconds >= 60) && (seconds < 3600)) {
+                timeObject["minutes"] = Math.floor(seconds / 60);
+                timeObject["seconds"] = Math.floor(seconds - (timeObject["minutes"] * 60));
+            }
+            else {
+                timeObject["minutes"] = 0;
+                timeObject["seconds"] = seconds;
+            }
+            timeObject["seconds"] = Math.floor(timeObject["seconds"]);
+            for (var timeObjectKey in timeObject) {
+                var timeObjectValue = timeObject[timeObjectKey];
+                var timeObjectValueString = timeObjectValue.toString();
+                if (timeObjectValue < 10) {
+                    timeObjectValueString = "0" + timeObjectValueString;
+                }
+                timeObject[timeObjectKey] = timeObjectValueString;
+            }
+            return timeObject;
+        }
+        utilities.SecondsToTimeFormat = SecondsToTimeFormat;
+        function TypeOfThing(thing, checkAgainstType) {
+            var thingType = (typeof thing);
+            if (thingType !== "undefined") {
+                if ((thingType == "object") && (typeof thing.nodeType == "undefined")) {
+                    if ((typeof thing["id"] !== "undefined") && (typeof thing["type"] !== "undefined")) {
+                        thingType = "ComponentObject";
+                    }
+                    else if ((typeof thing["link"] !== "undefined") && (typeof thing["title"] !== "undefined")) {
+                        thingType = "LinkPropertiesObject";
+                    }
+                    else if (Array.isArray(thing) == true) {
+                        thingType = "Array";
+                    }
+                    else {
+                        thingType = thing.toString().replace("[object ", "").replace("]", "");
+                    }
+                }
+                else if (typeof thing.nodeType !== "undefined") {
+                    if (thing.nodeType !== 9) {
+                        thingType = "Element";
+                    }
+                    else if (thing.nodeType == 9) {
+                        thingType = "Document";
+                    }
+                }
+            }
+            if (typeof checkAgainstType == "string") {
+                thingType = (checkAgainstType == thingType);
+            }
+            return thingType;
+        }
+        utilities.TypeOfThing = TypeOfThing;
+    })(utilities = syiro.utilities || (syiro.utilities = {}));
 })(syiro || (syiro = {}));
 var syiro;
 (function (syiro) {

@@ -7,7 +7,6 @@
 
 /// <reference path="component.ts" />
 /// <reference path="events.ts" />
-/// <reference path="generator.ts" />
 /// <reference path="interfaces.ts" />
 /// <reference path="mediaplayer.ts" />
 /// <reference path="utilities.ts" />

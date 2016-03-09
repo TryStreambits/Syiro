@@ -4,7 +4,6 @@
 
 /// <reference path="animation.ts" />
 /// <reference path="component.ts" />
-/// <reference path="generator.ts" />
 /// <reference path="interfaces.ts" />
 
 namespace syiro.events {

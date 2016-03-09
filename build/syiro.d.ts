@@ -52,21 +52,18 @@ declare namespace syiro.animation {
     function FadeOut(component: any, postAnimationFunction?: Function): void;
     function Slide(component: any, postAnimationFunction?: Function): void;
 }
-declare namespace syiro.utilities {
-    function ElementCreator(type: string, attributes: Object): any;
-    function SanitizeHTML(content: any): any;
-    function SecondsToTimeFormat(seconds: number): Object;
-    function TypeOfThing(thing: any, checkAgainstType?: string): any;
-}
-declare namespace syiro.generator {
-    var ElementCreator: typeof utilities.ElementCreator;
-}
 declare namespace syiro.events {
     var eventStrings: Object;
     function Handler(): void;
     function Trigger(eventType: string, component: any, eventData?: Event): void;
     function Add(listeners: any, component: any, listenerCallback: Function): boolean;
     function Remove(...args: any[]): boolean;
+}
+declare namespace syiro.utilities {
+    function ElementCreator(type: string, attributes: Object): any;
+    function SanitizeHTML(content: any): any;
+    function SecondsToTimeFormat(seconds: number): Object;
+    function TypeOfThing(thing: any, checkAgainstType?: string): any;
 }
 declare namespace syiro.render {
     function Position(positioningList: (string | Array<string>), componentObject: any, relativeComponentObject: any): boolean;

@@ -8,7 +8,6 @@
 /// <reference path="data.ts" />
 /// <reference path="device.ts" />
 /// <reference path="events.ts" />
-/// <reference path="generator.ts" />
 /// <reference path="grid.ts" />
 /// <reference path="navbar.ts" />
 /// <reference path="list.ts" />

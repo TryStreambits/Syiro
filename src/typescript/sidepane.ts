@@ -3,7 +3,6 @@
  */
 
 /// <reference path="component.ts" />
-/// <reference path="generator.ts" />
 /// <reference path="utilities.ts" />
 
 // #region Syiro Sidepane Functionality

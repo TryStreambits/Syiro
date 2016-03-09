@@ -12,11 +12,10 @@ namespace syiro.component {
 
 	// #region Component CSS Fetcher / Modifier
 
-	export function CSS(component : any, property : string, newValue ?: (string | boolean)){
+	export function CSS(component : any, property : string, newValue ?: string) : string {
 		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of the variable passed
 		var modifiableElement : Element; // Define modifiableElement as the Element we are going to modify
-		var returnedValue : any; // Define returnedValue as value we are returning
-		var modifiedStyling : any = false; // Define modifiedStyling as a boolean value to indicate whether we modified the Element's styling or not. Defaults to false.
+		var returnedValue : string = ""; // Define returnedValue as value we are returning
 
 		if (typeOfComponent == "ComponentObject"){ // If we were provided a Component Object
 			modifiableElement = syiro.component.Fetch(component); // Fetch the Element and assign it to modifiableElement
@@ -34,40 +33,34 @@ namespace syiro.component {
 				var currentElementStylingArray = currentElementStyling.split(";"); // Split currentElementStyling into an array where the separator is the semi-colon
 
 				for (var styleKey in currentElementStylingArray){ // For each CSS property / value in the styling
-					var cssPropertyValue = currentElementStylingArray[styleKey]; // Define cssPropertyValue as this index in currentElementStylingArray
+					var cssPropertyValue = currentElementStylingArray[styleKey].replace(" ", ""); // Define cssPropertyValue as this index in currentElementStylingArray, replacing whitespace
 					if (cssPropertyValue !== ""){ // If the array item value is not empty
-						var propertyValueArray = cssPropertyValue.split(": "); // Split the propery / value based on the colon to an array
-						elementStylingObject[propertyValueArray[0].trim()] = propertyValueArray[1].trim(); // Cleanup the whitespace in the property and value,add it as a key/val in the elementStylingObject
+						var propertyValueArray = cssPropertyValue.split(":"); // Split the propery / value based on the colon to an array
+						elementStylingObject[propertyValueArray[0]] = propertyValueArray[1]; // Add it as a key/val in the elementStylingObject
 					}
 				}
 			}
 
 			// #endregion
 
-			var stylePropertyValue : any = elementStylingObject[property]; // Define stylePropertyValue as the value of the property (if any) in the elementStylingObject
+			var modifiedStyling : boolean = false; // Define modifiedStyling as a boolean value to indicate whether we modified the Element's styling or not. Defaults to false.
 
 			if (typeof newValue == "undefined"){ // If we are fetching the current value rather than modifying or removing it
-				if (stylePropertyValue !== undefined){ // If the elementStylingObject has the property
-					returnedValue = stylePropertyValue; // Define returnedValue as the value of the property
-				} else { // If the property we are looking for does not exist
-					returnedValue = ""; // Define the returnedValue as an empty string
-				}
-			} else if ((newValue !== "") && (newValue !== false)){ // If we are updated the value (not an empty string)
-				elementStylingObject[property] = newValue; // Assign the newValue to the property
-				modifiedStyling = true; // Indicate that we've modified the Element's styling
-				returnedValue = newValue; // Define returnedValue as the value we are setting
-			} else { // If we are removing the value
+				var stylePropertyValue : string = elementStylingObject[property];
+
 				if (typeof stylePropertyValue !== "undefined"){ // If the elementStylingObject has the property
-					elementStylingObject[property] = null; // Define the property as null
-					modifiedStyling = true; // Indicate that we've modified the Element's styling
+					returnedValue = stylePropertyValue; // Define returnedValue as the value of the property
 				}
+			} else { // If newValue is defined
+				modifiedStyling = true; // Indicate that we've modified the Element's styling
+				elementStylingObject[property] = newValue; // Assign the newValue to the property
 			}
 
 			if (modifiedStyling){ // If we have modified the styling Object
 				var updatedCSSStyle : string = ""; // Define updatedCSSStyle as the new style we will apply
 
 				for (var cssProperty in elementStylingObject){ // For each CSS property / value in the elementStylingObject
-					if (elementStylingObject[cssProperty] !== null){ // If the value is NOT null (not deletion)
+					if (elementStylingObject[cssProperty] !== ""){ // If the value is not an empty string
 						updatedCSSStyle = updatedCSSStyle + cssProperty + ": " + elementStylingObject[cssProperty] + ";"; // Append the property + value to the updatedCSSStyle and ensure we have closing semi-colon
 					}
 				}
@@ -78,8 +71,6 @@ namespace syiro.component {
 					modifiableElement.removeAttribute("style"); // Remove the style attribute
 				}
 			}
-		} else { // If the modifiableElement doesn't exist
-			returnedValue = ""; // Set returnedValue to an empty string
 		}
 
 		return returnedValue;

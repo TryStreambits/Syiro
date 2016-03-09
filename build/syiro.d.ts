@@ -74,7 +74,7 @@ declare namespace syiro.render {
 }
 declare namespace syiro.component {
     var lastUniqueIds: Object;
-    function CSS(component: any, property: string, newValue?: (string | boolean)): any;
+    function CSS(component: any, property: string, newValue?: string): string;
     function Fetch(component: ComponentObject): any;
     function FetchComponentObject(...args: any[]): ComponentObject;
     function FetchDimensionsAndPosition(component: any): Object;

@@ -300,21 +300,21 @@ namespace syiro.buttongroup {
 
 		if (componentElement !== null){ // If componentElement is defined as an actual Element
 			var innerButtonElements : NodeList = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all the inner Buttons
-			var hasOddNumberOfButtons : boolean = false; // Define hasOddNumberOfButtons as a boolean defaulting to false
+			var hasOddNumberOfButtons : boolean = (Number((innerButtonElements.length / 2).toFixed()) !== (innerButtonElements.length / 2)); // Define hasOddNumberOfButtons as the bool of whether or not the toFixed of the divided num == non-fixed
 			var middleButtonNumber : number = 0; // Define middleButtonNumber as the INT-th position in innerButtonElements to declare as the middle number (if there is one) - Just default to 0
 
-			if (Number((innerButtonElements.length / 2).toFixed()) !== (innerButtonElements.length / 2)){ // If the divided lengths are not equal (one using toFixed() to remove floating points)
-				hasOddNumberOfButtons = true; // Odd number
+			if (hasOddNumberOfButtons){ // If the divided lengths are not equal (one using toFixed() to remove floating points)
 				middleButtonNumber = Math.round(innerButtonElements.length / 2); // Define middleButtonNumber as the rounded-up int of innerButtonElements.length / 2 (ex. 5 / 2 = 2.5 -> 3)
 			}
 
 			for (var innerButtonElementsIndex in innerButtonElements){ // For each button
+				var index : number = Number(innerButtonElementsIndex);
 				var buttonElement = innerButtonElements[innerButtonElementsIndex];
 				var widthValue : string = "calc(100% / " + innerButtonElements.length + ") !important"; // Define widthValue as a string (since we'll be apply it via CSS and letting CSS dynamically calc width). Default to 100% / num of button Elements
 
-				if (hasOddNumberOfButtons && (innerButtonElementsIndex == middleButtonNumber)){ // If this is the middle button Element
+				if (hasOddNumberOfButtons && (index == middleButtonNumber)){ // If this is the middle button Element
 					widthValue = "calc(100% / " + innerButtonElements.length + " - 2px) !important"; // Define widthValue as 100% / 2 minus 2px (bordering)
-				} else if (innerButtonElementsIndex == (innerButtonElements.length - 1)){ // If this is the last button Element
+				} else if (index == (innerButtonElements.length - 1)){ // If this is the last button Element
 					widthValue = "calc(100% / " + innerButtonElements.length + " - " + (innerButtonElements.length - 1) + "px) !important"; // Define widthValue as 100% / 2 minus N - 1px (for each button aside from the last, account for the bordering)
 				}
 

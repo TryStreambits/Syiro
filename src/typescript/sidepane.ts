@@ -169,15 +169,15 @@ namespace syiro.sidepane {
 			}
 
 			componentElement.removeAttribute("data-syiro-render-animation"); // Remove the property declaring to not render animation
-			syiro.component.CSS(componentElement, "transform", false); // Ensure there is no transform property
-			syiro.component.CSS(componentElement, "-webkit-transform", false); // Ensure there is no transform property
+			syiro.component.CSS(componentElement, "transform", ""); // Ensure there is no transform property
+			syiro.component.CSS(componentElement, "-webkit-transform", ""); // Ensure there is no transform property
 
 			if (showSidepane){ // If we are going to show the Sidepane
 				syiro.animation.Slide(component); // Slide out the Sidepane
 				syiro.component.CSS(sidepaneContentOverlay, "display", "block"); // Show the sidepaneContentOverlay under the Sidepane
 			} else { // If we are going to hide the Sidepane
 				syiro.animation.Reset(component); // Reset Animation properties in the Sidepane
-				syiro.component.CSS(sidepaneContentOverlay, "display", false); // Hide the sidepaneContentOverlay
+				syiro.component.CSS(sidepaneContentOverlay, "display", ""); // Hide the sidepaneContentOverlay
 			}
 		}
 	}

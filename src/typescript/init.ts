@@ -19,7 +19,7 @@ namespace syiro.init {
 			switch (component.type) { // Do initialization based on Component Object type
 				case "button" : // If it is a Button Component
 					if (componentElement.getAttribute("data-syiro-component-type") !== "basic"){ // If it is a Dropdown or Toggle Button Component type
-						syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.button.Toggle); // Add the syiro.button.Toggle event to the Button types Dropdown and Toggle
+						syiro.events.Add(syiro.events.Strings["up"], component, syiro.button.Toggle); // Add the syiro.button.Toggle event to the Button types Dropdown and Toggle
 					}
 
 					break;
@@ -34,7 +34,6 @@ namespace syiro.init {
 					break;
 				case "media-player" : // If the Component is a Media Player Component
 					syiro.init.MediaPlayer(component); // Initialize the Player
-					syiro.render.Scale(component); // Scale  the Player
 					break;
 				case "searchbox" : // If it is a Searchbox Component
 					syiro.init.Searchbox(component); // Initialize the Searchbox
@@ -81,7 +80,7 @@ namespace syiro.init {
 
 		for (var innerButton of innerButtons){ // For each Button Component in the Buttongroup
 			var buttonComponentObject = syiro.component.FetchComponentObject(innerButton); // Get the buttonComponentObject
-			syiro.events.Add(syiro.events.eventStrings["up"], buttonComponentObject, syiro.buttongroup.Toggle); // Immediately enable parent toggling for this Button
+			syiro.events.Add(syiro.events.Strings["up"], buttonComponentObject, syiro.buttongroup.Toggle); // Immediately enable parent toggling for this Button
 		}
 	}
 
@@ -90,7 +89,7 @@ namespace syiro.init {
 	// #region Grid Initialization
 
 	export function Grid(component : ComponentObject){
-		syiro.events.Add(syiro.events.eventStrings["orientationchange"], syiro.device.OrientationObject, syiro.grid.Scale.bind(this, component)); // Add an event listener on orientationchange to scale this Grid
+		syiro.events.Add(syiro.events.Strings["orientationchange"], syiro.device.OrientationObject, syiro.grid.Scale.bind(this, component)); // Add an event listener on orientationchange to scale this Grid
 		syiro.events.Add("resize", window, syiro.grid.Scale.bind(this, component)); // Add an event listener on window resize to scale this Grid
 
 		syiro.grid.Scale(component); // Do an initial Grid scaling
@@ -105,7 +104,7 @@ namespace syiro.init {
 
 		if (componentElement.parentElement.getAttribute("data-syiro-minor-component") == "list-content"){ // If the List is nested in another List
 			var listHeader : Element = componentElement.querySelector('div[data-syiro-minor-component="list-header"]'); // Get the listHeader of the List
-			syiro.events.Add(syiro.events.eventStrings["up"], listHeader, syiro.list.Toggle); // Add an up event to Toggle the showing / hiding of the List's content
+			syiro.events.Add(syiro.events.Strings["up"], listHeader, syiro.list.Toggle); // Add an up event to Toggle the showing / hiding of the List's content
 		}
 	}
 
@@ -172,13 +171,11 @@ namespace syiro.init {
 
 			// #region Type Specific Initialization
 
-			if (mediaPlayerType== "audio"){ // If this is an audio-type Media Player
-				syiro.mediaplayer.CenterInformation(component); // Center the potential audio information
-			} else if (mediaPlayerType == "video"){ // If this is a video-type Media Player
+			if (mediaPlayerType == "video"){ // If this is a video-type Media Player
 				if (syiro.device.SupportsTouch){ // If the device supports touch
-					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.mediacontrol.Toggle.bind(this, mediaControlComponent)); // Add an "up" event to player container that toggles the Media Control
+					syiro.events.Add(syiro.events.Strings["up"], component, syiro.mediacontrol.Toggle.bind(this, mediaControlComponent)); // Add an "up" event to player container that toggles the Media Control
 				} else { // If the device uses a mouse instead of touch
-					syiro.events.Add(syiro.events.eventStrings["up"], innerContentElement, syiro.mediaplayer.PlayOrPause.bind(this, component)); // Add an "up" event to video to toggle play / pause the video
+					syiro.events.Add(syiro.events.Strings["up"], innerContentElement, syiro.mediaplayer.PlayOrPause.bind(this, component)); // Add an "up" event to video to toggle play / pause the video
 					syiro.events.Add(["mouseenter", "mouseleave"], componentElement, syiro.mediacontrol.Toggle.bind(this, mediaControlComponent)); // Add event to mouseenter and mouseleave to trigger syiro.mediacontrol.Toggle
 				}
 			}
@@ -201,24 +198,20 @@ namespace syiro.init {
 
 		var playerRange = mediaControlElement.querySelector('input[type="range"]'); // Get the input range
 
-		syiro.events.Add(syiro.events.eventStrings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
+		syiro.events.Add(syiro.events.Strings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
 			function(){
 				var playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
 				syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true); // Set the ChangingInputValue to true to infer we are changing the input value of the playerRange
-
-				if ((syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false) && (syiro.mediaplayer.IsPlaying(playerComponentObject))){ // If we are not changing the volume and the video is playing
-					syiro.mediaplayer.PlayOrPause(playerComponentObject); // Pause the video
-				}
 			}.bind(this, componentObject)
 		);
 
-		syiro.events.Add(syiro.events.eventStrings["up"], playerRange, // Add mouseup / touchend events to the playerRange, which calls a function to indicate we are no longer changing the input value
+		syiro.events.Add(syiro.events.Strings["up"], playerRange, // Add mouseup / touchend events to the playerRange, which calls a function to indicate we are no longer changing the input value
 			function(){
 				var playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
 				var playerRange = arguments[1]; // Get the playerRange passed as the second argument
 
 				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
-					syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove  IsChangingInputValue
+					syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove IsChangingInputValue
 					syiro.mediaplayer.PlayOrPause(playerComponentObject); // Play the video
 				}
 			}.bind(this, componentObject)
@@ -228,7 +221,6 @@ namespace syiro.init {
 			function(){
 				var playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
 				var playerRange : HTMLInputElement = arguments[1]; // Define playerRangeElement as the Element passed as the second arg
-
 				var valueNum : number = Number(playerRange.value); // Define valueNum as the converted string-to-number, where the value was the playerRange value
 
 				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
@@ -244,7 +236,7 @@ namespace syiro.init {
 		// #region Play Button Listener
 
 		var playButton : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button Element
-		syiro.events.Add(syiro.events.eventStrings["up"], playButton, syiro.mediaplayer.PlayOrPause.bind(this, componentObject)); // Listen to up events on the playButton to the PlayOrPause (binding the component Object)
+		syiro.events.Add(syiro.events.Strings["up"], playButton, syiro.mediaplayer.PlayOrPause.bind(this, componentObject)); // Listen to up events on the playButton to the PlayOrPause (binding the component Object)
 
 		// #endregion
 
@@ -252,7 +244,7 @@ namespace syiro.init {
 
 		var volumeButton : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="volume"]'); // Get the Volume Button Element
 		var volumeButtonComponent : ComponentObject = syiro.component.FetchComponentObject(volumeButton); // Fetch the Component Object of the Volume Button so we may bind it during event adding
-		syiro.events.Add(syiro.events.eventStrings["up"], volumeButtonComponent, syiro.mediacontrol.ShowVolumeSlider.bind(this, mediaControlComponentObject)); // Listen to up events on the volumeButton Component to ShowVolumeSlider (binding the Player Component Object)
+		syiro.events.Add(syiro.events.Strings["up"], volumeButtonComponent, syiro.mediacontrol.ShowVolumeSlider.bind(this, mediaControlComponentObject)); // Listen to up events on the volumeButton Component to ShowVolumeSlider (binding the Player Component Object)
 
 		// #endregion
 
@@ -262,7 +254,7 @@ namespace syiro.init {
 
 		if (menuButton !== null){ // If the menu button exists
 			var menuButtonObject : ComponentObject = syiro.component.FetchComponentObject(menuButton); // Fetch the Component object of the Menu Button
-			syiro.events.Add(syiro.events.eventStrings["up"], menuButtonObject, syiro.mediaplayer.ToggleMenuDialog.bind(this, componentObject)); // Add an event listener to the button that calls ToggleMenuDialog, binding to the Player Component
+			syiro.events.Add(syiro.events.Strings["up"], menuButtonObject, syiro.mediaplayer.ToggleMenuDialog.bind(this, componentObject)); // Add an event listener to the button that calls ToggleMenuDialog, binding to the Player Component
 		}
 
 		// #endregion
@@ -273,7 +265,7 @@ namespace syiro.init {
 			var fullscreenButtonElement : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
 
 			if (fullscreenButtonElement !== null){ // If the fullscreen button exists
-				syiro.events.Add(syiro.events.eventStrings["up"], fullscreenButtonElement, syiro.mediaplayer.ToggleFullscreen.bind(this, componentObject)); // Listen to up events on the fullscreen button
+				syiro.events.Add(syiro.events.Strings["up"], fullscreenButtonElement, syiro.mediaplayer.ToggleFullscreen.bind(this, componentObject)); // Listen to up events on the fullscreen button
 			}
 
 			// #endregion
@@ -299,7 +291,7 @@ namespace syiro.init {
 		}
 
 		var innerSearchboxButton = componentElement.querySelector('div[data-syiro-component="button"]'); // Get the inner Button of the Searchbox
-		syiro.events.Add(syiro.events.eventStrings["up"], innerSearchboxButton, function(){ // Add an up event handler to the innerSearchboxButton to trigger the input handlers of the Searchbox
+		syiro.events.Add(syiro.events.Strings["up"], innerSearchboxButton, function(){ // Add an up event handler to the innerSearchboxButton to trigger the input handlers of the Searchbox
 			var searchboxComponent : ComponentObject = arguments[0]; // Set searchboxComponent as the bound first argument
 			var searchboxElement : Element = syiro.component.Fetch(searchboxComponent); // Get the Searchbox's Element
 			var searchboxInput : any = searchboxElement.querySelector("input"); // Define searchboxInput as the input element we fetched
@@ -316,15 +308,15 @@ namespace syiro.init {
 
 		var sidepaneContentOverlayElement : Element = document.querySelector('div[data-syiro-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Get an existing Sidepane ContentOverlay if one exists already, no need to create unnecessary ContentOverlays
 		var innerSidepaneEdge = componentElement.querySelector('div[data-syiro-minor-component="sidepane-edge"]'); // Get the Sidepane Edge
-		syiro.events.Add(syiro.events.eventStrings["down"], innerSidepaneEdge, syiro.sidepane.GestureInit); // Bind the Sidepane Edge to GestureInit function for "down"
+		syiro.events.Add(syiro.events.Strings["down"], innerSidepaneEdge, syiro.sidepane.GestureInit); // Bind the Sidepane Edge to GestureInit function for "down"
 
 		if (sidepaneContentOverlayElement == null){ // If there is no overlay on the page
 			sidepaneContentOverlayElement = syiro.init.createContentOverlay("sidepane"); // Create the ContentOverlay (with the purpose of the Sidepane, appending it to the page, and declare contentOverlay as the var pointing to the Element
 
-			syiro.events.Add(syiro.events.eventStrings["down"], sidepaneContentOverlayElement, function(){ // Create a "down" event so Sidepane dragging doesn't trigger an "up" event
-				syiro.events.Add(syiro.events.eventStrings["up"], arguments[1], function(){ // Create the "up" event for the contentOverlay
+			syiro.events.Add(syiro.events.Strings["down"], sidepaneContentOverlayElement, function(){ // Create a "down" event so Sidepane dragging doesn't trigger an "up" event
+				syiro.events.Add(syiro.events.Strings["up"], arguments[1], function(){ // Create the "up" event for the contentOverlay
 					syiro.sidepane.Toggle(arguments[0]); // Toggle the Sidepane
-					syiro.events.Remove(syiro.events.eventStrings["up"], arguments[1]); // Remove the "up" event on contentOverlay
+					syiro.events.Remove(syiro.events.Strings["up"], arguments[1]); // Remove the "up" event on contentOverlay
 				}.bind(this, arguments[0]));
 			}.bind(this, component));
 		}
@@ -353,11 +345,11 @@ namespace syiro.init {
 
 			var dialogAction = toastButton.getAttribute("data-syiro-dialog-action"); // Get the dialog-action of this Button
 
-			syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, component)); // Add to each Button the action to Toggle (force hide) the Toast
+			syiro.events.Add(syiro.events.Strings["up"], toastButtonObject, syiro.toast.Toggle.bind(this, component)); // Add to each Button the action to Toggle (force hide) the Toast
 
 			if (actionHandlers !== false){ // If there are actionHandlers
 				if (typeof actionHandlers[dialogAction] !== "undefined"){ // If there is a function for this action
-					syiro.events.Add(syiro.events.eventStrings["up"], toastButtonObject, actionHandlers[dialogAction]); // Assign the function from this actionHandler Object key/val to the Button
+					syiro.events.Add(syiro.events.Strings["up"], toastButtonObject, actionHandlers[dialogAction]); // Assign the function from this actionHandler Object key/val to the Button
 				}
 			}
 		}

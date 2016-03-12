@@ -54,7 +54,7 @@ declare namespace syiro.animation {
     function Slide(component: any, postAnimationFunction?: Function): void;
 }
 declare namespace syiro.events {
-    var eventStrings: Object;
+    var Strings: Object;
     function Handler(): void;
     function Trigger(eventType: string, component: any, eventData?: Event): void;
     function Add(listeners: any, component: any, listenerCallback: Function): boolean;
@@ -68,7 +68,6 @@ declare namespace syiro.utilities {
 }
 declare namespace syiro.render {
     function Position(positioningList: (string | Array<string>), componentObject: any, relativeComponentObject: any): boolean;
-    function Scale(component: ComponentObject, data?: Object): void;
 }
 declare namespace syiro.component {
     var lastUniqueIds: Object;
@@ -85,7 +84,6 @@ declare namespace syiro.component {
 }
 declare module syiro.mediaplayer {
     function New(properties: Object): ComponentObject;
-    function CenterInformation(component: ComponentObject): void;
     function Configure(component: ComponentObject): void;
     function DurationChange(component: ComponentObject): void;
     function FetchInnerContentElement(component: ComponentObject): HTMLMediaElement;
@@ -217,5 +215,4 @@ declare namespace syiro {
     var Add: typeof component.Add;
     var Remove: typeof component.Remove;
     var Position: typeof render.Position;
-    var Scale: typeof render.Scale;
 }

@@ -59,36 +59,12 @@ module syiro.mediaplayer{
 			// #region Type-specific  Checking and Implementations
 
 			if (properties["type"] == "audio"){ // If this is an audio-type player
-				// #region Audio Player - Content Information Filtering
-
 				if ((typeof properties["title"] !== "undefined") || (typeof properties["artist"] !== "undefined")){ // If the properties has the artist information or audio file title defined
 					properties["generate-content-info"] = true; // Set "generate-info" to true since we will pass that to the mediacontrol generator
 				}
-
-				// #endregion
-
-				// #region Component Dimension Setting
-					if (typeof properties["width"] !== "number"){ // If the width attribute is not defined as number
-						properties["width"] = 400; // Set width property to 400 as default
-					}
-
-					syiro.component.CSS(componentElement, "width", properties["width"].toString() + "px"); // Set the width of the Audio Player Component Element
-
-					syiroComponentData["scaling->initialDimensions"] = [150, properties["width"]], // Set the initialDimensions to 150px height and width as properties[width]
-					syiroComponentData["scaling->ratio"] = [0,0]; // Do not scale (unless forced)
-				// #endregion
-			} else { // If this is a video-type player
-				if (typeof properties["ratio"] !== "undefined"){ // If ratio is defined
-					syiroComponentData["scaling->ratio"] = properties["ratio"]; // Define the ratio properties in syiroComponentData->scaling as the provided ratio property
-					syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]]; // Define initialDimensions as [height, width]
-				}
-				else if (typeof properties["fill"] !== "undefined"){ // If fill is defined
-					syiroComponentData["scaling->fill"] = properties["fill"]; // Define the fill properties in syiroComponentData->scaling as the provided fill property
-				}
-				else { // If neither ratio nor fill are defined
-					syiroComponentData["scaling->initialDimensions"] = [properties["height"], properties["width"]]; // Define initialDimensions as [height, width]
-				}
 			}
+
+			// #endregion
 
 			var mediaControlComponent : ComponentObject = syiro.mediacontrol.New(properties); // Create a new Media Control
 			var mediaControlElement : Element = syiro.component.Fetch(mediaControlComponent); // Fetch the HTMLElement
@@ -97,6 +73,44 @@ module syiro.mediaplayer{
 		} else { // If we are using an iPhone
 			mediaPlayerProperties["NoUX"] = true; // NoUX set to true
 			mediaPlayerProperties["controls"] = "controls"; // Use the build-in iOS controls
+		}
+
+		// #endregion
+
+		// #region Dimension Setting
+
+		if (syiro.utilities.TypeOfThing(properties["height"], "undefined")){ // If height is not defined
+			if (properties["type"] == "audio"){ // If this is an audio player
+				if (syiro.utilities.TypeOfThing(properties["mini"], "boolean") && properties["mini"]){ // If this is a mini player
+					properties["height"] = 50;
+				} else { // If this is not a mini player
+					properties["height"] = 150;
+				}
+			} else { // If this is a video player
+				properties["height"] = 300;
+			}
+		}
+
+		if (syiro.utilities.TypeOfThing(properties["width"], "undefined")){ // If width is not defined
+			if (properties["type"] == "audio"){ // If this is an audio player
+				properties["width"] = 400; // Default to 400
+			} else { // If this is a video player
+				if (syiro.utilities.TypeOfThing(properties["height"], "number")){ // If we have a number for height (pixels)
+					properties["width"] = properties["height"] * 1.77; // Ensure we have a widescreen ratio
+				} else { // If we likely have a string
+					properties["width"] = properties["height"]; // Have width reflect height, like if height is set to 100%
+				}
+			}
+		}
+
+		for (var dimension of ["height", "width"]) { // For height and width in array
+			var dimensionValue = properties[dimension];
+
+			if (syiro.utilities.TypeOfThing(dimensionValue, "number")){ // If the dimension value is a fixed number
+				properties[dimension] = dimensionValue.toString() + "px"; // Change to string and append px
+			}
+
+			syiro.component.CSS(componentElement, dimension, properties[dimension]); // Set the height or width of the componentElement
 		}
 
 		// #endregion
@@ -149,24 +163,6 @@ module syiro.mediaplayer{
 
 	// #endregion
 
-	// #region Audio Information Center
-
-	export function CenterInformation(component : ComponentObject){
-		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Element
-
-		if (componentElement.getAttribute("data-syiro-component-type") == "audio"){ // If this is an audio-type Media Player
-			var mediaControlElement : Element = componentElement.querySelector('div[data-syiro-component="media-control"]'); // Get the Media Control Element
-			var audioInformation : Element = mediaControlElement.querySelector("section"); // Audio Information section (if it exists)
-
-			if (audioInformation !== null){ // If the audioInformation is a section within the Media Control
-				var audioInformationWidth : number = ((componentElement.clientWidth / 2) - (audioInformation.clientWidth / 2) - 40); // Set audioInformationWidth to half width of Audio Player minus half width of audio Information, offset by -40
-				syiro.component.CSS(audioInformation, "margin-left", audioInformationWidth.toString() + "px"); // Set the margin-left of the audioInformationWidth
-			}
-		}
-	}
-
-	// #endregion
-
 	// #region Configure - This function will configure the Media Player if necessary
 
 	export function Configure(component : ComponentObject){
@@ -202,12 +198,6 @@ module syiro.mediaplayer{
 				playerErrorNotice = syiro.utilities.ElementCreator("div", { // Create a div to add to the player stating there is a codec error
 					"data-syiro-minor-component" : "player-error", "content" : "This content is not capable of being played on this browser or device."
 				});
-
-				var playerHalfHeight = ((componentElement.clientHeight - 40) / 2); // Define playerHalfHeight equal to half the height of the Player, minus 40 (height of the codecErrorElement)
-
-				syiro.component.CSS(playerErrorNotice, "width", componentElement.clientWidth.toString() + "px"); // Set the width to the width of the Player
-				syiro.component.CSS(playerErrorNotice, "padding-top", playerHalfHeight.toString() + "px"); // Set the padding-top to the playerHalfHeight
-				syiro.component.CSS(playerErrorNotice, "padding-bottom", playerHalfHeight.toString() + "px"); // Set the padding-bottom to the playerHalfHeight
 
 				componentElement.insertBefore(playerErrorNotice, componentElement.firstChild); // Prepend the codecErrorElement to the Player
 			}
@@ -630,24 +620,11 @@ module syiro.mediaplayer{
 		var menuButton : Element = componentElement.querySelector('div[data-syiro-render-icon="menu"]'); // Get the menu button element
 
 		if (syiro.component.CSS(menuDialog, "visibility") !== "visible"){ // If the Menu Dialog is currently not showing
-			var playerMenuHeight : number; // Define playerMenuHeight as a number (height that the dialog should be)
-
-			if (component.type == "audio-player"){ // If we are showing a menu dialog for an Audio Player
-				playerMenuHeight = 100; // Set to 100 since the Audio Player has a fixed height of 100px
-			} else { // If we are showing a menu dialog for the Video Player
-				playerMenuHeight = syiro.mediaplayer.FetchInnerContentElement(component).clientHeight; // Set to the height of the inner video (content) Element
-			}
-
-			syiro.component.CSS(menuDialog, "height", playerMenuHeight.toString() + "px"); // Set the height of the menu dialog
-			syiro.component.CSS(menuDialog, "width", componentElement.clientWidth.toString() + "px"); // Set the width of the menu dialog to be the same as the componentElement
-
 			menuButton.setAttribute("active", "true"); // Set the menu button active to true
 			syiro.component.CSS(menuDialog, "visibility", "visible"); // Show the menu dialog
 		} else { // If the Menu dialog currently IS showing
 			menuButton.removeAttribute("active"); // Remove the menu button active status
 			syiro.component.CSS(menuDialog, "visibility", ""); // Hide the menu dialog (removing the visibility attribute, putting the Menu Dialog back to default state)
-			syiro.component.CSS(menuDialog, "height", ""); // Remove the height attribute from the Player Menu Dialog
-			syiro.component.CSS(menuDialog, "width", ""); // Remove the width attribute from the Player Menu Dialog
 		}
 	}
 

@@ -1,11 +1,8 @@
-// #region Syiro "Use Font" Mixin for ensuring correct font is used
+// #region Mixins
 
-.syiroUseFont() when not (@syiroTheme = "ios"){ // When using the Default or Material Design Theme
-	src: local('Droid Sans'), local('droid sans'), url(fonts/droidsans.ttf) format('truetype'); // Use Droid Sans
-}
-
-.syiroUseFont() when (@syiroTheme = "ios"){ // When using the iOS Theme
-	src: local('San Francisco Display'), local('San Francisco Display Regular') format('truetype'); // Use San Fransisco
+.dimensions(@height, @width){
+	height: e(@height);
+	width: e(@width);
 }
 
 // #endregion
@@ -16,16 +13,12 @@
 	font-family: 'Syiro Text';
 	font-style: normal;
 	font-weight: 400;
-	.syiroUseFont();
+	src: local('Droid Sans'), local('droid sans'), url(fonts/droidsans.ttf) format('truetype'); // Use Droid Sans
 }
 
 @font-face {
-	font-family: "Syiro";
-	src: url(fonts/syiro.eot);
-	src: url(fonts/syiro.eot?#iefix) format("embedded-opentype"),
-		url(fonts/syiro.woff) format("woff"),
-		url(fonts/syiro.ttf) format("truetype"),
-		url(fonts/syiro.svg#Syiro) format("svg");
+	font-family: "Syiro Icons";
+	src: url(fonts/syiro.woff) format("woff"), url(fonts/syiro.ttf) format("truetype");
 	font-weight: normal;
 	font-style: normal;
 }
@@ -82,14 +75,6 @@ div[data-syiro-component="internalColorContainer"]{
 
 // #region Page Component
 
-.mainPageWidthCalculate() when not (@syiroTheme = "material"){ // If Default or iOS
-	width: e('calc(100% - 250px)'); // Set width to be 100% - 250px (Sidepane)
-}
-
-.mainPageWidthCalculate() when (@syiroTheme = "material"){
-	width: e('calc(100% - 256px)'); // Set width to be 100% - 256px (Sidepane)
-}
-
 body {
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-font-smoothing: antialiased;
@@ -121,7 +106,7 @@ body {
 
 		@media (min-width: 1280px){
 			float: right;
-			.mainPageWidthCalculate;
+			width: e('calc(100% - 250px)'); // Set width to be 100% - 250px (Sidepane)
 		}
 
 		// #endregion

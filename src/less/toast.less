@@ -1,4 +1,4 @@
-@import (reference) "../core.less"; // Import Core as a reference
+@import (reference) "core.less"; // Import Core as a reference
 
 // This is the core LESS of the Toast Component.
 
@@ -58,7 +58,7 @@ div[data-syiro-component="toast"]{
 	& div[data-syiro-component="button"]{
 		height: 32px;
 		line-height: 32px;
-		background-color: transparent; // No background
+		background-color: transparent !important; // No background
 		border: 0;
 		padding: 0; // Override default padding of Syiro Button
 		cursor: pointer; // Make it obvious this section is clickable

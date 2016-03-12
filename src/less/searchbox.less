@@ -1,5 +1,5 @@
-@import (reference) "../core.less"; // Import Core as a reference
-@import (reference) "../icons.less"; // Import Icons as a reference
+@import (reference) "core.less"; // Import Core as a reference
+@import (reference) "icons.less"; // Import Icons as a reference
 
 div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
 	float: left;
@@ -12,7 +12,7 @@ div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
 	& > input{ // Syiro Searchbox (Input Element) Component
 		float: left;
 		height: 38px;
-		width: e("calc(100% - 32px)"); // Set to calc 100% of the width of the parent minus 32px
+		width: e("calc(100% - 40px)"); // Set to calc 100% of the width of the parent minus button width
 		line-height: 38px;
 		text-indent: 10px;
 		background-color: transparent;
@@ -29,9 +29,6 @@ div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
 
 	& > div[data-syiro-component="button"] {
 		float: right;
-		height: e("calc(100% + 2px)"); // Set height of icon too 100% of Searchbox + 2px to cover border
-		min-width: 32px !important; // Change minimum width of button
-		line-height: 38px;
 		border-radius: 0; // Override border-radius of Basic Button
 		margin: -1px -1px 0 0; // Ensure the icon is covering the border
 		padding: 0; // Remove the button's  padding

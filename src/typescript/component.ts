@@ -143,7 +143,7 @@ namespace syiro.component {
 				variableProvided.setAttribute("data-syiro-component", component.type); // Set the component's type
 
 				if ((component.type == "button") && (variableProvided.getAttribute("data-syiro-component-type") == "dropdown") && (previouslyDefined == false)){ // If we are defining a Syiro Dropdown Button component for the first time
-					syiro.events.Add(syiro.events.eventStrings["up"], component, syiro.button.Toggle); // Immediately listen to the Dropdown Button
+					syiro.events.Add(syiro.events.Strings["up"], component, syiro.button.Toggle); // Immediately listen to the Dropdown Button
 				}
 			}
 		} else if ((typeOfVariableProvided == "Document") || (typeOfVariableProvided.indexOf("Screen") == 0) || typeOfVariableProvided == "Window"){ // If this is a valid alternative variable to do event handling on

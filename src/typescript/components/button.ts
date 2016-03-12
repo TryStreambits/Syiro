@@ -52,7 +52,7 @@ namespace syiro.button {
 
 			if (typeof properties["image"] == "string"){ // If an image (like an avatar) is defined in the properties
 				var primaryImage : HTMLElement = syiro.utilities.ElementCreator("img", { "src" : properties["image"] }); // Create an img Element with the image source
-				componentData["content"] = primaryImage.outerHTML + componentData["content"]; // Prepend the HTML of the img tag to the componentData->content
+				properties["content"] = primaryImage.outerHTML + properties["content"]; // Prepend the HTML of the img tag to the componentData->content
 				delete properties["image"]; // Remove the "image" key
 			}
 

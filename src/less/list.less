@@ -1,0 +1,115 @@
+@import (reference) "core.less"; // Import Core as a reference
+
+body {
+
+    @listItemHeight : 40px;
+
+    .listItemProperties(){
+    	float: left;
+    	height: @listItemHeight;
+    	width: 100%;
+    	font-size: 13px;
+    	line-height: @listItemHeight;
+    	overflow: hidden;
+    }
+
+    div[data-syiro-component="list"]{
+        float: left;
+        height: auto;
+        min-height: @listItemHeight;
+        width: auto;
+        color: contrast(@syiroBackground);
+        overflow: hidden;
+
+        &[data-syiro-component-owner]{ // If this List is owned
+    		background-color: darken(@syiroBackground, 2.5); // Set background to slightly darkened form of @syiroBackground
+    		border-top: 2px solid darken(@syiroBackground, 20%);
+    		position: fixed; // Fixed position
+    		z-index: 8; // Float above other content, but not above contentOverlay (9) or Toasts (10)
+    		visibility: hidden; // Hide (not using display: block) so getBoundingClientRect properly calculates dimensions
+
+            & > div[data-syiro-minor-component="list-content"] div[data-syiro-component="list-item"] > label { // Inner label of Dropdown or Searchbox owned List in List Item
+                margin-left: 10px;
+            }
+    	}
+
+        // #region List Header
+
+    	& > div[data-syiro-minor-component="list-header"]{
+    		.listItemProperties(); // Apply same properties as List Item
+
+    		&:not([data-syiro-nonstrict-formatting]){ // If we are not including HTML
+    			font-size: 16px;
+    			opacity: 0.60; // 60% opacity
+    		}
+    	}
+
+    	// #endregion
+
+        // #region List content
+
+        & > div[data-syiro-minor-component="list-content"]{
+
+            // #region Nested Lists
+
+            & > div[data-syiro-component="list"]{
+                width: 100%;
+
+                // #region Nested List's Headers
+
+                & > div[data-syiro-minor-component="list-header"]{
+                    &:after{
+                        float: right;
+                        .icon("dropdown");
+                    }
+
+                    &[active]:after{ // If active
+    					.flip(); // Flip the Dropdown icon to point up
+    				}
+                }
+
+                // #region
+
+                & > div[data-syiro-minor-component="list-content"]:not([active]){ // Non-active List Content
+                    display: none;
+                }
+            }
+
+            // #endregion
+
+            // #region List Item (Not Non-strict formatting)
+
+            & div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){
+    			.listItemProperties(); // Apply listItemProperties()
+
+    			& > img, & > picture { // Image
+    				float: left;
+                    height: inherit;
+                    width: auto;
+    				border-radius: 50%; // Ensure icon is circular
+
+                    &:not(:last-child) { // Not the last child in the List Item
+                        margin-right: 10px;
+                    }
+    			}
+
+    			& > a { // Inner Links
+    				float: left;
+    				width: 100%; // Only allow the link to be in this particular List Item component (disallow secondary controls)
+    				color: @syiroPrimaryColor; // Force link color (primary color)
+    				font-weight: normal;
+    				text-decoration: none; // No text decoration
+    			}
+
+
+    			& > div[data-syiro-component="button"]{ // Inner Buttons
+    				float: right; // Float the component to the right
+    			}
+    		}
+
+            // #endregion
+        }
+
+        // #region
+    }
+}

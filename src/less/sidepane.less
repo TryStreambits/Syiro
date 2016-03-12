@@ -1,4 +1,4 @@
-@import (reference) "../core.less"; // Import Core as a reference
+@import (reference) "core.less"; // Import Core as a reference
 
 // This is the core LESS of the Sidepane Component.
 
@@ -10,22 +10,19 @@ div[data-syiro-component="sidepane"]{
     position: fixed; // Fixed positioning
     z-index : 9;
 
-    // #region Theme-Based Width
-
-    @lHDWidth : 500; // Set "Lower" Than HD Width to 500
-    @hdWidth : 250; // Set HD Width to 250
-
-    & when (@syiroTheme = "material") { // When the theme is Material
-        @lHDWidth : 512; // Change "Lower" Than HD Width to 512
-        @hdWidth : 256; // Change HD Width to 256
-    }
+    // #region Screen-Based Width
 
     @media (max-width: 1279px){ // Lower than HD
-        max-width: unit(@lHDWidth, "px"); // Use lHDWidth as max-width
+        width: 80%; // 80% of page (75% for actual content, 5% for Edge)
+        max-width: 500px;
+        transform: translateX(-95%); // Default to only showing the edge of the Sidepane (-100% of the Sidepane, +5% for edge)
+        -webkit-transform: translateX(-95%); // Default to only showing the edge of the Sidepane (-100% of the Sidepane, +5% for edge)
+
+        .slide(0, 250); // Enable slide animation for Sidepane so it slides to left position of 0 in 250ms
     }
 
     @media (min-width: 280px){ // HD
-        width: unit(@hdWidth, "px"); // Set fixed width to hdWidth
+        width: 250px;
     }
 
     // #endregion
@@ -44,7 +41,7 @@ div[data-syiro-component="sidepane"]{
     & > div[data-syiro-minor-component="sidepane-content"]{
         float: left;
         height: 100%;
-        background-color: #f4f4f4; // Set a fixed hex background color
+        background-color: @syiroBackground; // Set a fixed hex background color
 
 		// #region Scaling
 
@@ -129,18 +126,6 @@ div[data-syiro-component="sidepane"]{
         }
 
 		// #endregion
-    }
-
-    // #endregion
-
-    // #region Scaling
-
-    @media (max-width: 1279px){ // For displays with a resolution that is not HD
-        width: 80%; // 80% of page (75% for actual content, 5% for Edge)
-        transform: translateX(-95%); // Default to only showing the edge of the Sidepane (-100% of the Sidepane, +5% for edge)
-		-webkit-transform: translateX(-95%); // Default to only showing the edge of the Sidepane (-100% of the Sidepane, +5% for edge)
-
-        .slide(0, 250); // Enable slide animation for Sidepane so it slides to left position of 0 in 250ms
     }
 
     // #endregion

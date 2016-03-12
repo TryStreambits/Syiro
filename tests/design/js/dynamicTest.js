@@ -28,8 +28,8 @@ function generatePage(){
     var buttonGroupComponent = syiro.buttongroup.New({ "active" : 1, "items" : [ audioButtonComponent, videoButtonComponent ]}); // Generate a Button Group with two Buttons
     buttonGroupContainer.appendChild(syiro.Fetch(buttonGroupComponent)); // Fetch the Buttongroup Component and append it to Buttongroup Container
 
-    syiro.events.Add(syiro.events.eventStrings["up"], audioButtonComponent, showPlayerContainer.bind(this, "audio")); // Add an event (up) to the audioButtonComponent, having it trigger showPlayerContainer w/ audio
-    syiro.events.Add(syiro.events.eventStrings["up"], videoButtonComponent, showPlayerContainer.bind(this, "video")); // Add an event (up) to the videoButtonComponent, having it trigger showPlayerContainer w/ video
+    syiro.events.Add(syiro.events.Strings["up"], audioButtonComponent, showPlayerContainer.bind(this, "audio")); // Add an event (up) to the audioButtonComponent, having it trigger showPlayerContainer w/ audio
+    syiro.events.Add(syiro.events.Strings["up"], videoButtonComponent, showPlayerContainer.bind(this, "video")); // Add an event (up) to the videoButtonComponent, having it trigger showPlayerContainer w/ video
 
     /* End of Buttongroup Generation */
 
@@ -86,11 +86,11 @@ function generateNavbarAndSidepane(){
     document.body.insertBefore(syiro.Fetch(sidepaneComponentObject), syiro.page); // Prepend in body
     syiro.page.insertBefore(syiro.Fetch(navbarComponentObject), syiro.page.firstChild); // Append the fetched Navbar Element to the main Element
 
-	syiro.events.Add(syiro.events.eventStrings["up"], toggleNormalToastListItemObject, syiro.toast.Toggle.bind(this, normalToastComponentObject)); // Listen to up event for the Normal Toast List Item Object that'll toggle the Normal Toast Component
-	syiro.events.Add(syiro.events.eventStrings["up"], toggleDialogToastListItemObject, syiro.toast.Toggle.bind(this, dialogToastComponentObject)); // Listen to up event for the Dialog Toast List Item Object that'll toggle the Dialog Toast Component
+	syiro.events.Add(syiro.events.Strings["up"], toggleNormalToastListItemObject, syiro.toast.Toggle.bind(this, normalToastComponentObject)); // Listen to up event for the Normal Toast List Item Object that'll toggle the Normal Toast Component
+	syiro.events.Add(syiro.events.Strings["up"], toggleDialogToastListItemObject, syiro.toast.Toggle.bind(this, dialogToastComponentObject)); // Listen to up event for the Dialog Toast List Item Object that'll toggle the Dialog Toast Component
 
 	syiro.events.Add("input", searchboxComponent, outputSearchboxContent); // Set input event of Searchbox Component to outputSearchboxContent func
-    syiro.events.Add(syiro.events.eventStrings["up"], backgroundColorToggler, backgroundColorSwitcher); // Add the backgroundColorSwitcher function to the toggle button
+    syiro.events.Add(syiro.events.Strings["up"], backgroundColorToggler, backgroundColorSwitcher); // Add the backgroundColorSwitcher function to the toggle button
 }
 
 // #endregion
@@ -134,7 +134,7 @@ function generateMediaPlayers(){
 
     var changeSourceButtonComponent = syiro.button.New({ "content" : "Change Sources" }); // Generate the Change Source Button
     videoPlayerContainer.appendChild(syiro.Fetch(changeSourceButtonComponent)); // Fetch and append the Change Source Button to the Video Player Container
-    syiro.events.Add(syiro.events.eventStrings["up"], changeSourceButtonComponent, changeVideoSource); // Set event (up) of changeSourceButtonComponent to call changeVideoSource()
+    syiro.events.Add(syiro.events.Strings["up"], changeSourceButtonComponent, changeVideoSource); // Set event (up) of changeSourceButtonComponent to call changeVideoSource()
 }
 
 // #endregion

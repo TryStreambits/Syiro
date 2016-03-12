@@ -8,7 +8,7 @@
 
 namespace syiro.events {
 
-	export var eventStrings : Object = { // Set syiro.component.listenerStrings as an Object containing commonly used event lister combinations
+	export var Strings : Object = { // Set syiro.component.listenerStrings as an Object containing commonly used event lister combinations
 		"down" : [], "up" : [],
 		"fullscreenchange" : ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"],
 		"orientationchange" : ["orientationchange", "mozorientationchange", "msorientationchange"]
@@ -17,14 +17,13 @@ namespace syiro.events {
 	// #region Syiro Component and Generic Element Event Handler
 
 	export function Handler(){
-		var component : any = arguments[0]; // Set component as first argument passed
 		var eventData : Event = arguments[1]; // Set eventData as the second argument passed
 
 		if (eventData.type.indexOf("touch") !== -1){ // If we are using touch events
 			eventData.preventDefault(); // Prevent the browser from doing default touch actions
 		}
 
-		syiro.events.Trigger(eventData.type, component, eventData); // Call Trigger automatically with the type, Component, and possible eventData
+		syiro.events.Trigger(eventData.type, arguments[0], eventData); // Call Trigger automatically with the type, Component, and possible eventData
 	}
 
 	// #region Trigger - This function is used to determine what data to provide and trigger the functions necessary.

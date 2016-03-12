@@ -202,7 +202,7 @@ namespace syiro.listitem {
 					syiro.component.Remove(innerLink); // Remove the innerLink
 				}
 
-				syiro.events.Remove(syiro.events.eventStrings["up"], component); // Ensure the List Item has no up listeners after adding the new Control
+				syiro.events.Remove(syiro.events.Strings["up"], component); // Ensure the List Item has no up listeners after adding the new Control
 				syiro.component.Add("append", component, control); // Append the control to the List Item
 
 				setControlSucceeded = true; // Set setLabelSucceeded to true

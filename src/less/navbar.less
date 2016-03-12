@@ -1,0 +1,85 @@
+@import (reference) "core.less"; // Import Core as a reference
+
+body {
+    div[data-syiro-component="navbar"]{
+        float: left;
+        height: 60px;
+        width: 100%;
+        color: contrast(darken(@syiroBackground, 2.5%));
+        font-size: 14px;
+        line-height: 60px;
+        background-color: darken(@syiroBackground, 2.5%);
+
+        &[data-syiro-position="fixed"]{ // Fixed Positioning
+            left: 0;
+            right: 0;
+            position: fixed;
+            z-index: 7;
+        }
+
+        & > a { // Links
+            float: left; // Float left
+            height: inherit; // Inherit from parent navbar
+            width: auto; // Automatic width
+            color: inherit; // Inherit from parent
+            line-height: inherit; // Inherit from parent navbar
+            text-align: center; // Center the text
+            text-decoration: none; // No decoration
+            padding: 0 15px; // Padding on each side of link
+        }
+
+        // #region Top Navbar Component
+
+        &[data-syiro-component-type="top"]{
+            border-bottom: 2px lighten(@syiroSecondaryColor, 20%);
+
+            &[data-syiro-position="fixed"]{ // Fixed positioning
+                top : 0;
+            }
+
+            & > img[data-syiro-minor-component="logo"]{ // Logo component within header
+                float: left;
+                height: e("calc(100% - 20px)"); // Set height to 100% of navbar - 20px
+                width: auto;
+                margin: 10px 10px 10px 20px;
+                border: 0;
+            }
+
+            & > div[data-syiro-component="button"] { // Button modifications
+                &[data-syiro-component-type="basic"]{ // Basic buttons
+        			margin-top: 10px; // Change margin on top to 10px
+        		}
+
+                &[data-syiro-component-type="dropdown"]{ // Header Dropdown Modifications
+                    height: inherit; // Full-height of header
+                    line-height: inherit;
+                    margin-top: 0; /* Force the list to be vertically aligned */
+                }
+            }
+
+            & > div[data-syiro-component="searchbox"]{ // Searchbox Modifications
+                float: right; // Force the component to float to the right
+                margin: 10px 10px 0 0; // Center in header, adequate spacing on right
+            }
+        }
+
+        // #endregion
+
+        // #region Bottom Navbar
+
+        &[data-syiro-component-type="bottom"]{
+            border-top: 2px lighten(@syiroSecondaryColor, 20%);
+
+        	& > label { // Footer Text
+        		float: left;
+        		margin-left: 20px;
+        	}
+
+            &[data-syiro-position="fixed"]{ // Fixed positioning
+                bottom : 0;
+            }
+        }
+
+        // #endregion
+    }
+}

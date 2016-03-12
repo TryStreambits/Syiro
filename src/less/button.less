@@ -1,0 +1,201 @@
+@import (reference) "core.less"; // Import Core
+
+body {
+    @buttonHeight: 40px;
+
+    // #region Buttons
+
+    div[data-syiro-component="button"]{
+        float: left;
+        cursor: default; // Default to "arrow" cursor
+        margin: 5px;
+
+        // #region Basic & Dropdown Buttons
+
+        &:not([data-syiro-component-type="toggle"]){
+            height: @buttonHeight;
+
+            font-size: 13px;
+            line-height: @buttonHeight;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 3px;
+            padding: 0 5px; // 5px on left and right
+
+            &:not([active]){ // If the item is not active
+                color: contrast(@syiroPrimaryColor);
+                background-color: @syiroPrimaryColor;
+            }
+
+            &:empty { // If the Button is icon-only
+    			width: @buttonHeight; // Set width to the same as the height
+    		}
+
+    		&:not(:empty){ // If the Button is not empty
+                &[data-syiro-component="basic"]{ // Basic Button
+                    min-width: 115px;
+                }
+
+                &[data-syiro-component="dropdown"]{ // Dropdown Button
+                    min-width: 200px;
+                    text-indent: 10px;
+                }
+
+    		}
+
+            &::selection{ // If the Button is double-clicked, that acts as a text selection
+                background-color: transparent; // Mask that the text was selected by making the background-color transparent.
+            }
+
+            &[data-syiro-component-type="dropdown"]{ // Dropdown
+
+                &[active]{ // If the Dropdown is "active", change the Dropdown Label
+                    color: contrast(@syiroPrimaryColor);
+                    background-color: @syiroPrimaryColor; // Ensure the active Dropdown is differentiated from the other Dropdowns
+
+                    &:after {
+                        color: contrast(@syiroPrimaryColor);
+                    }
+                }
+
+                // #region Dropdown Button - Not Active
+
+                &:not([active]){ // IF the Dropdown is NOT "active"
+                    color: contrast(darken(@syiroBackground, 2.5%));
+                    background-color: darken(@syiroBackground, 2.5%);
+
+                    &:after {
+                        color: @syiroPrimaryColor;
+                    }
+                }
+
+                // #endregion
+            }
+
+            & > img { // Custom Image
+                height: inherit;
+                width: auto;
+            }
+        }
+
+        // #endregion
+
+        // #region Toggle Button
+
+        &[data-syiro-component-type="toggle"]{
+            height: 22px; // Make it smaller than the typical button
+    		width: 50px; // Fixed width
+            border-radius: 12px; // Make sure the Toggle has a rounded edge
+            margin: 9px 4px 9px 0;
+
+            &:not([active]){ // False Status
+                background-color: darken(@syiroBackground, 5%);
+
+                & > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
+                    background-color: @syiroRed; // More strongly imply Disabled / False status
+                    border: 1px solid @syiroRed;
+                }
+            }
+
+            &[active]{ // True Status
+                background-color: @syiroPrimaryColor;
+
+                & > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
+                    background-color: @syiroBackground;
+                }
+            }
+
+            & > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
+                float: left;
+                height: 18px;
+                width: 18px;
+                border-radius: 50%;  // Make the buttonToggle circular
+                margin-top: 1px;
+
+                transform: translateX(0); // Default to sitting on left of Button
+
+                &:not([data-syiro-animation]){ // If there is no applied animation
+    				margin-left: 1px;
+    			}
+
+    			&[data-syiro-animation]{ // When the Toggle Button is active
+    				border: 1px solid @syiroPrimaryColor; // Set to same color as active Toggle Button background
+    			}
+
+    			.slide(29px, 125); // Enable slide animation so it slides to left position of 29px in 125ms
+            }
+        }
+
+        // #endregion
+    }
+
+    // #endregion
+
+    // #region Buttongroup
+
+    div[data-syiro-component="buttongroup"]{
+    		float: left;
+            height: @buttonHeight;
+    		min-width: 300px;
+    		background-color: darken(@syiroBackground, 5%); // Set background color to @syiroBackground darkened by 5%
+    		border-radius: 20px; // Set border-radius to 20px so we have a circular border radius on the sides
+    		border: 1px solid darken(@syiroBackground, 10%); // Have a slight border around the buttongroup
+    		margin: 5px;
+
+    		// #region Inner Button
+
+    		& > div[data-syiro-component="button"][data-syiro-component-type="basic"]{
+    			float: left;
+    			min-width: 0; // No minimum width
+    			border-radius: 0; // No border radius
+    			margin: 0; // No margin
+                padding: 0; // No padding
+
+    			&:first-of-type { // First Button in Button Group
+    				border-radius: @buttonHeight 0 0 @buttonHeight; // Set border-radius to be @buttonHeight on top and button left
+    			}
+
+    			&:not(:last-of-type){ // Not the last button
+    				border-right: 1px solid lighten(contrast(@syiroBackground), 87.5%); // Set the border-radius to the contrasted color of the Syiro Background Color but lighten by 87.5%
+    			}
+
+    			&:last-of-type { // Last Button in Button Group
+    				border-radius: 0 @buttonHeight @buttonHeight 0; // Set border-radius to be @buttonHeight on top and bottom right
+    			}
+
+    			&:not([active]){ // If the button is NOT active
+    				color: contrast(darken(@syiroBackground, 5%)); // Ensure the text color contrasts the Buttongroup background color
+    				background-color: transparent; // Override default background styling
+    			}
+
+    			&[active]{ // If this button is active
+                    color: contrast(@syiroPrimaryColor);
+    				background-color: @syiroPrimaryColor; // Set background-color of button to Syiro Primary Color to indicate it is the active button
+    			}
+    		}
+
+    		// #enderegion
+    }
+
+    // #endregion
+
+    // #region Direction-Specific
+
+    &:not([dir="rtl"]){ // LTR Specific
+        div[data-syiro-component="button"]{
+            &[data-syiro-render-icon="custom"]{ // Custom Icon on Button
+                background-position: 95% 50%; // Float the icon to the right and have it sit in the middle
+            }
+        }
+    }
+
+    &[dir="rtl"]{ // RTL Specific
+        div[data-syiro-component="button"]{
+            &[data-syiro-render-icon="custom"]{ // Custom Icon on Button
+                background-position: 5% 50%; // Float the icon to the left and have it sit in the middle
+            }
+        }
+    }
+
+    // #endregion
+}

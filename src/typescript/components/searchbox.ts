@@ -65,7 +65,7 @@ namespace syiro.searchbox {
 
 			if (typeof properties["preseed"] !== "undefined"){ // If a preseed []string is provided
 				for (var listItemIndex in listItems){ // For each List Item in listItems array
-					syiro.events.Add(syiro.events.eventStrings["up"], listItems[listItemIndex], properties["list-item-handler"]); // Add a mouseup / touchend event to List Item with the handler being list-item-handler
+					syiro.events.Add(syiro.events.Strings["up"], listItems[listItemIndex], properties["list-item-handler"]); // Add a mouseup / touchend event to List Item with the handler being list-item-handler
 				}
 			}
 		}
@@ -144,7 +144,7 @@ namespace syiro.searchbox {
 					for (var suggestionIndex in suggestions){ // For each suggestion in suggestions
 						var suggestionListItem : ComponentObject = syiro.listitem.New({ "label" : suggestions[suggestionIndex] }); // Create a List Item with the label being the suggestion
 						syiro.list.AddItem("append", linkedListComponent, suggestionListItem); // Append the List Item to the Linked List
-						syiro.events.Add(syiro.events.eventStrings["up"], suggestionListItem, syiro.data.Read(searchboxComponent["id"] + "handlers->list-item-handler")); // Add the list-item-handler we have stored from syiro.data to the suggestionListItem
+						syiro.events.Add(syiro.events.Strings["up"], suggestionListItem, syiro.data.Read(searchboxComponent["id"] + "handlers->list-item-handler")); // Add the list-item-handler we have stored from syiro.data to the suggestionListItem
 					}
 
 					syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Show the List Item now that we have parsed the suggestions and generated List Items

@@ -83,8 +83,8 @@ namespace syiro.sidepane {
 			moveElement = document; // Track mousemove across the entire document
 		}
 
-		syiro.events.Add(syiro.events.eventStrings["move"], moveElement, syiro.sidepane.Drag.bind(this, arguments[0])); // Bind the Sidepane Edge and moveElement to the Drag function for "move"
-		syiro.events.Add(syiro.events.eventStrings["up"], moveElement, syiro.sidepane.Release.bind(this, arguments[0])); // Bind the Sidepane Edge to Release function for "up"
+		syiro.events.Add(syiro.events.Strings["move"], moveElement, syiro.sidepane.Drag.bind(this, arguments[0])); // Bind the Sidepane Edge and moveElement to the Drag function for "move"
+		syiro.events.Add(syiro.events.Strings["up"], moveElement, syiro.sidepane.Release.bind(this, arguments[0])); // Bind the Sidepane Edge to Release function for "up"
 
 		// #endregion
 
@@ -127,8 +127,8 @@ namespace syiro.sidepane {
 
 		// #region Remove Events for Mouse / Touch Move + Up
 
-		syiro.events.Remove(syiro.events.eventStrings["move"], moveElement); // Remove the "move" function
-		syiro.events.Remove(syiro.events.eventStrings["up"], moveElement); // Remove the "up" function
+		syiro.events.Remove(syiro.events.Strings["move"], moveElement); // Remove the "move" function
+		syiro.events.Remove(syiro.events.Strings["up"], moveElement); // Remove the "up" function
 
 		// #endregion
 	}

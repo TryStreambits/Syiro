@@ -49,7 +49,7 @@ namespace syiro {
 
 		// #region Video Player Fullscreen Scaling
 
-		syiro.events.Add(syiro.events.eventStrings["fullscreenchange"], document,  // Call the eventAction, either syiro.events.Add or syiro.events.Remove
+		syiro.events.Add(syiro.events.Strings["fullscreenchange"], document,  // Call the eventAction, either syiro.events.Add or syiro.events.Remove
 			function(){
 				var fullscreenVideoPlayerElement : Element; // Define fullscreenVideoPlayerElement as an Element
 
@@ -68,8 +68,6 @@ namespace syiro {
 				} else { // If there is no current fullscreen Element, like when exiting fullscreen
 					fullscreenVideoPlayerElement = document.SyiroFullscreenElement; // Fetch the SyiroFullscreenElement that we assigned during the initial fullscreenchange and set that as fullscreenVideoPlayerElement
 				}
-
-				syiro.render.Scale(syiro.component.FetchComponentObject(fullscreenVideoPlayerElement));
 			}
 		);
 
@@ -206,7 +204,6 @@ namespace syiro {
 	export var Remove = syiro.component.Remove; // Meta-function for removing Syiro components
 
 	export var Position = syiro.render.Position; // Meta function for setting the position of a Syiro Component
-	export var Scale = syiro.render.Scale; // Meta function for scaling a Syiro Component
 
 	// #endregion
 

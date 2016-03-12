@@ -37,10 +37,6 @@ function generatePage(){
 
     syiro.events.Add("resize", window, function(){ // Add a resize event to the window
         syiro.CSS(videoPlayerContainer, "height", (syiro.device.height - 120).toString() + "px");
-        var audioPlayerComponentObject = syiro.FetchComponentObject(audioPlayerContainer.querySelector('div[data-syiro-component="media-player"][data-syiro-component-type="audio"]')); // Get the Component Object of the Audio Player inside audioPlayerContainer
-        var videoPlayerComponentObject = syiro.FetchComponentObject(videoPlayerContainer.querySelector('div[data-syiro-component="media-player"][data-syiro-component-type="video"]')); // Get the Component Object of the Video Player inside videoPlayerContainer
-        syiro.render.Scale(audioPlayerComponentObject); // Rescale the Audio Player
-		syiro.render.Scale(videoPlayerComponentObject); // Rescale the Video Player
     });
 }
 

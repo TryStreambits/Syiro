@@ -34,19 +34,20 @@ The package also comes with a gzipped version of the JavaScript code, so you can
 
 Framework | Minified CSS | Minified JS | Gzipped JS
 --------------- | ----------------- | --------------- | --------------
-Bootstrap 3.3.5 | 145.9kb | 121.1kb | None Provided
-Polymer 1.1.0 | Varies depending on use of components | 150.6kb | None Provided
+Bootstrap 3.3.6 | 36.9kb | 122.5kb | None Provided
+Polymer 1.3.1 | Varies depending on use of components | 155.3kb | None Provided
 Syiro 1.6.0 | 31.7kb | 63.8kb | 14.4kb
+Syiro (DEV) | 29.4kb | 58.3kb | 13.0kb
 
 Details:
 
-1. Bootstrap's size is also calculating in jQuery `2.1.4`, jQuery being a requirement of Bootstrap.
+1. Bootstrap's size is also calculating in jQuery `2.2.1`, jQuery being a requirement of Bootstrap.
 2. Polymer's minified calculation is based on using:
 ``` bash
 [CustomElement.min.js, HTMLImports.min.js, MutationObserver.min.js, ShadowDOM.min.js, webcomponents-lite.min.js]
 ```
 3. All gzipped  JavaScript was done using [Google's Closure Compiler](https://developers.google.com/closure/compiler/) at "simple" optimizations level.
-4. Syiro numbers are updated for stable releases.
+4. Syiro numbers are updated for stable releases and dev (working branch).
 
 ## Contributing ##
 

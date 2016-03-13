@@ -30,29 +30,26 @@ namespace syiro.events {
 	// This can be manually triggered or via Handler
 
 	export function Trigger(eventType : string, component : any, eventData ?:Event){
-		var componentId : string;
+		var componentObject : ComponentObject = component; // Default componentObject as component
 		var componentElement : any; // Define componentElement as any (potentially Element)
 		var passableValue : any = null; // Set passableValue to any type, defaults to null
 
 		// #region Component Data Determination - Determines the Component Id and Component Element
 
-		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of this Component
-
 		if (syiro.utilities.TypeOfThing(component, "ComponentObject")){ // If this is a Component Object
-			componentId = component.id; // Define componentId as the component's Id
 			componentElement = syiro.component.Fetch(component); // Set the componentElement to the component Element we fetched
 		} else { // If the Component is either an Element or another interface like screen
-			componentId = syiro.component.FetchComponentObject(component)["id"]; // Fetch the Component Object of the component and assign the Id to component Id
+			componentObject = syiro.component.FetchComponentObject(component); // Fetch the Component Object of the component
 			componentElement = component; // Define componentElement as the Component
 		}
 
-		if (component.type == "searchbox"){ // If this is a Searchbox Component
-			componentElement = componentElement.firstElementChild; // Change componentElement to be the inner input
+		if (componentObject.type == "searchbox"){ // If this is a Searchbox Component
+			componentElement = componentElement.querySelector("input"); // Change componentElement to be the inner input
 		}
 
 		// #endregion
 
-		var functionsForListener : Array<Function> = syiro.data.Read(componentId + "->handlers->" + eventType); // Fetch all functions for this particular listener
+		var functionsForListener : Array<Function> = syiro.data.Read(componentObject.id + "->handlers->" + eventType); // Fetch all functions for this particular listener
 
 		// #region Passable Data Determination
 
@@ -67,7 +64,7 @@ namespace syiro.events {
 		// #endregion
 
 		for (var individualFunc of functionsForListener){ // For each function that is related to the Component for this particular listener
-			individualFunc.call(this, component, passableValue); // Call the function, passing along the passableValue and the Component
+			individualFunc.call(this, component, passableValue); // Call the function, passing along the passableValue and the component
 		}
 	}
 
@@ -76,38 +73,37 @@ namespace syiro.events {
 	// #region Syiro Component and Generic Element Add Listener Function
 
 	export function Add(listeners : any, component : any, listenerCallback : Function) : boolean { // Takes (optional) space-separated listeners, Component Object or a generic Element, and the handler function.
-		var componentId : string;
 		var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
 
 		if (arguments.length == 3){ // If an appropriate amount of arguments are provided
 			if (typeof listeners == "string"){ // If the listeners is a string
-				listeners = listeners.trim().split(" "); // Trim the spaces from the beginning and end then split each listener into an array item
+				listeners = listeners.replace(" ", "").split(","); // Eliminate whitespacing and comma-separate listeners
 			}
 
+			var componentObject : ComponentObject = component; // Define componentObject as a Component Object, default to component
 			var componentElement : any; // Define componentElement as an Element
 
 			if (syiro.utilities.TypeOfThing(component, "ComponentObject")){ // If the Component provided is a Syiro Component Object
-				componentId = component.id;
 				componentElement = syiro.component.Fetch(component); // Get the Component Element
-
-				if (component.type == "list-item"){ // Make sure the component is in fact a List Item
-					allowListening = !(componentElement.querySelector("div") !== null); // If there is a div defined in the List Item, meaning there is a control within the list item (the query would return a non-null value), set allowListening to false
-				} else if (component.type == "searchbox"){ // If this Component is a Searchbox
-					componentElement = componentElement.firstElementChild ; // Redefine componentElement as the inner input
-				}
 			} else { // If the Component provided is not a Syiro Component Object
-				componentId = syiro.component.FetchComponentObject(component)["id"]; // Define componentId as the fetched component Object of the provided variable
+				componentObject = syiro.component.FetchComponentObject(component); // Define component as the fetched component Object of the provided variable
 				componentElement = component; // Define componentElement as the Component
+			}
+
+			if (component.type == "list-item"){ // Make sure the component is in fact a List Item
+				allowListening = (componentElement.querySelector("div") == null); // If there is a div defined in the List Item, meaning there is a control within the list item (the query would return a non-null value), set allowListening to false
+			} else if (component.type == "searchbox"){ // If this Component is a Searchbox
+				componentElement = componentElement.querySelector("input"); // Redefine componentElement as the inner input
 			}
 
 			if (allowListening){ // If allowListening is TRUE
 				for (var listener of listeners){ // For each listener in the listeners array
-					var currentListenersArray : any = syiro.data.Read(componentId + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
+					var currentListenersArray : any = syiro.data.Read(componentObject.id + "->handlers->" + listener); // Get all listeners of this handler (if any) of this Component
 
 					if (typeof currentListenersArray == "boolean"){ // If there are no functions in the Array
 						currentListenersArray = [listenerCallback]; // Define as a new Array
 
-						if (syiro.data.Read(componentId + "->DisableInputTrigger") == false){ // If this isn't a Searchbox or is but doesn't have DisableInputTrigger set to true
+						if (syiro.data.Read(componentObject.id + "->DisableInputTrigger") == false){ // If this isn't a Searchbox or is but doesn't have DisableInputTrigger set to true
 							componentElement.addEventListener(listener, syiro.events.Handler.bind(this, component)); // Set the Listener / Handler as Syiro's Event Handler, binding to "this" and the Component
 						}
 					} else { // If there is already functions in currentListenersArray
@@ -116,7 +112,7 @@ namespace syiro.events {
 						}
 					}
 
-					syiro.data.Write(componentId + "->handlers->" + listener, currentListenersArray); // Write currentListenersArray (whether it is an empty array or a newly updated one) to the Component's handlers for this listener
+					syiro.data.Write(componentObject.id + "->handlers->" + listener, currentListenersArray); // Write currentListenersArray (whether it is an empty array or a newly updated one) to the Component's handlers for this listener
 				}
 			}
 		} else { // If the arguments length is NOT 3, meaning either too few or too many arguments were provided

@@ -107,7 +107,7 @@ function generateMediaPlayers(){
 				"type" : "audio",
                 "menu" : audioMenuDialogList,
                 "sources": ["http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg", "http://www.noiseaddicts.com/samples/55.mp3" ],
-                "art" : "https://c2.staticflickr.com/6/5134/5518988345_9df9892bb2_b.jpg",
+                "art" : "img/lake.jpg",
                 "title" : "Example OGG File",
                 "artist" : "JesseW"
             }

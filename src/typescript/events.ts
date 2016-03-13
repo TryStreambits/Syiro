@@ -9,7 +9,9 @@
 namespace syiro.events {
 
 	export var Strings : Object = { // Set syiro.component.listenerStrings as an Object containing commonly used event lister combinations
-		"down" : [], "up" : [],
+		"down" : "mousedown", // Default down to mousedown
+		"up" : "mouseup", // Default up to mouseup
+		"move" : "mousemove", // Default move to mousemove
 		"fullscreenchange" : ["fullscreenchange", "mozfullscreenchange", "msfullscreenchange", "webkitfullscreenchange"],
 		"orientationchange" : ["orientationchange", "mozorientationchange", "msorientationchange"]
 	};

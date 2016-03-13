@@ -115,9 +115,11 @@ namespace syiro {
 
 		var syiroInternalColorContainer : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "internalColorContainer"});
 		document.body.appendChild(syiroInternalColorContainer);
-		syiro.backgroundColor = window.getComputedStyle(syiroInternalColorContainer).backgroundColor; // Get the backgroundColor defined in CSS and set it to syiro.backgroundColor
-		syiro.primaryColor = window.getComputedStyle(syiroInternalColorContainer).color; // Get the primaryColor defined in CSS as color key/val and set it to syiro.primaryColor
-		syiro.secondaryColor = window.getComputedStyle(syiroInternalColorContainer).borderColor; // Get the secondaryColor defined in CSS as border-color key/val and set it to syiro.secondaryColor
+
+		var syiroInternalColorStyle = window.getComputedStyle(syiroInternalColorContainer);
+		syiro.backgroundColor = syiroInternalColorStyle.backgroundColor; // Get the backgroundColor defined in CSS and set it to syiro.backgroundColor
+		syiro.primaryColor = syiroInternalColorStyle.color; // Get the primaryColor defined in CSS as color key/val and set it to syiro.primaryColor
+		syiro.secondaryColor = syiroInternalColorStyle.borderColor; // Get the secondaryColor defined in CSS as border-color key/val and set it to syiro.secondaryColor
 		document.body.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
 
 		// #endregion

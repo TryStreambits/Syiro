@@ -78,18 +78,10 @@ namespace syiro.device {
 		syiro.device.SupportsTouch = ((syiro.device.OperatingSystem == "Android") || (syiro.device.OperatingSystem == "iOS") || (syiro.device.OperatingSystem == "Ubuntu Touch") || (syiro.device.OperatingSystem == "Windows Phone"));
 
 		if (syiro.device.SupportsTouch) { // If we support touch
-			syiro.events.Strings["down"] = ["touchstart"]; // Set down events to touchstart
-			syiro.events.Strings["up"] = ["touchend"]; // Set up events to touchend
-			syiro.events.Strings["move"] = ["touchmove"]; // Set move events to touchmove
-		} else { // If we are on a desktop operating system
-			syiro.events.Strings["down"] = ["mousedown"]; // Set down events to mousedown
-			syiro.events.Strings["up"]= ["mouseup"]; // Set up events to mouseup
-			syiro.events.Strings["move"] = ["mousemove"]; // Set move events to mousemove
+			syiro.events.Strings["down"] = "touchstart"; // Set down events to touchstart
+			syiro.events.Strings["up"] = "touchend"; // Set up events to touchend
+			syiro.events.Strings["move"] = "touchmove"; // Set move events to touchmove
 		}
-
-		Object.freeze(syiro.events.Strings["down"]); // Lock down events
-		Object.freeze(syiro.events.Strings["up"]); // Lock up events
-		Object.freeze(syiro.events.Strings["move"]); // Lock move events
 
 		// #endregion
 
@@ -115,24 +107,20 @@ namespace syiro.device {
 
 		if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")){ // If Screen Orientation API is properly supported
 			syiro.device.OrientationObject = screen.orientation; // Point syiro.device.OrientationObject to screen.orientation type
-			syiro.events.Strings["orientationchange"] = ["change"]; // Set our eventStrings orientationchange to only change
+			syiro.events.Strings["orientationchange"] = "change"; // Set our eventStrings orientationchange to only change
 		} else if (typeof screen.onmsorientationchange !== "undefined"){ // If this is the Internet Explorer vendor-prefixed orientation change
-			syiro.events.Strings["orientationchange"] = ["msorientationchange"]; // Set our eventStrings orientationchange to only the IE event string
+			syiro.events.Strings["orientationchange"] = "msorientationchange"; // Set our eventStrings orientationchange to only the IE event string
 		} else { // If orientationchange simply isn't supported
-			syiro.events.Strings["orientationchange"] = ["orientationchange-viainterval"]; // Delete our event string for orientationchange
+			syiro.events.Strings["orientationchange"] = "orientationchange-viainterval"; // Delete our event string for orientationchange
 		}
 
-		if (syiro.events.Strings["orientationchange"][0] !== "orientationchange-viainterval"){ // If orientation change is supported on the device
+		if (syiro.events.Strings["orientationchange"] !== "orientationchange-viainterval"){ // If orientation change is supported on the device
 			syiro.events.Add(syiro.events.Strings["orientationchange"], syiro.device.OrientationObject, orientationChangeHandler); // Add an orientation change event for the screen with our orientationChangeHandler
 		} else { // If the device does not support orientation change
 			window.setInterval(orientationChangeHandler.bind(this, "interval"), 2000); // Set a timer for every two seconds to check for change in device orientation. We are using this due to the lack of full orientationchange event support in major browsers.
 		}
 
-		Object.freeze(syiro.events.Strings["orientationchange"]); // Lock orientationchange events
-
 		// #endregion
-
-		Object.freeze(syiro.events.Strings); // Lock the eventStrings Object
 	}
 
 	// #endregion

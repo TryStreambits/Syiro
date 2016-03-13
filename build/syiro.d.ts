@@ -109,6 +109,7 @@ declare module syiro.mediacontrol {
 }
 declare namespace syiro.init {
     function Parser(componentElement: Element): void;
+    function LoadColors(): void;
     function createContentOverlay(purpose: string): Element;
     function Buttongroup(component: ComponentObject): void;
     function Grid(component: ComponentObject): void;

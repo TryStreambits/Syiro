@@ -62,6 +62,22 @@ namespace syiro.init {
 
 	// #endregion
 
+	// #region LoadColors
+	// CSS Color to Typescript Variable
+
+	export function LoadColors() {
+		var syiroInternalColorContainer : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "internalColorContainer"});
+		document.body.appendChild(syiroInternalColorContainer);
+
+		var syiroInternalColorStyle = window.getComputedStyle(syiroInternalColorContainer);
+		syiro.backgroundColor = syiroInternalColorStyle.backgroundColor; // Get the backgroundColor defined in CSS and set it to syiro.backgroundColor
+		syiro.primaryColor = syiroInternalColorStyle.color; // Get the primaryColor defined in CSS as color key/val and set it to syiro.primaryColor
+		syiro.secondaryColor = syiroInternalColorStyle.borderColor; // Get the secondaryColor defined in CSS as border-color key/val and set it to syiro.secondaryColor
+		document.body.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
+	}
+
+	// #endregion
+
 	// #region Content Overlay Creation Function
 
 	export function createContentOverlay(purpose : string): Element {

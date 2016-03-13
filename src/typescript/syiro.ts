@@ -111,19 +111,6 @@ namespace syiro {
 
 		// #endregion
 
-		// #region Syiro CSS-To-TypeScript Color Variable Setup
-
-		var syiroInternalColorContainer : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "internalColorContainer"});
-		document.body.appendChild(syiroInternalColorContainer);
-
-		var syiroInternalColorStyle = window.getComputedStyle(syiroInternalColorContainer);
-		syiro.backgroundColor = syiroInternalColorStyle.backgroundColor; // Get the backgroundColor defined in CSS and set it to syiro.backgroundColor
-		syiro.primaryColor = syiroInternalColorStyle.color; // Get the primaryColor defined in CSS as color key/val and set it to syiro.primaryColor
-		syiro.secondaryColor = syiroInternalColorStyle.borderColor; // Get the secondaryColor defined in CSS as border-color key/val and set it to syiro.secondaryColor
-		document.body.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
-
-		// #endregion
-
 		// #region Watch DOM For Components
 
 		if (syiro.device.SupportsMutationObserver){ // If MutationObserver is supported by the browser
@@ -186,6 +173,14 @@ namespace syiro {
 		}
 
 		// #endregion
+
+		// #region Colorization Init
+
+		if (syiro.utilities.TypeOfThing(requestAnimationFrame, "function")){ // If requestAnimationFrame is supported
+			requestAnimationFrame(syiro.init.LoadColors); // Request using an animation frame for LoadColors
+		} else { // If requestAnimationFrame is not supported
+			syiro.init.LoadColors(); // Immediately load colors
+		}
 
 	}
 

@@ -110,7 +110,7 @@ namespace syiro.searchbox {
 
 		if (searchboxValue !== ""){ // If the value is not empty
 			if (syiro.data.Read(searchboxComponent["id"] + "->preseed")){ // If preseed is enabled
-				syiro.style.Set(linkedListComponentElement, "visibility", "visible !important"); // Immediately ensure the Linked List of the Searchbox is visible
+				syiro.style.Set(linkedListComponentElement, "visibility", "visible"); // Immediately ensure the Linked List of the Searchbox is visible
 
 				if (innerListItemsOfLinkedList.length > 0){ // If the Linked List of the Searchbox has List Items
 					var numOfListItemsThatWillShow : number = 0; // Define numOfListItemsThatWillShow as, well the number of list items that will show, obviously.
@@ -121,19 +121,19 @@ namespace syiro.searchbox {
 						if (syiro.utilities.TypeOfThing(listItem, "Element")){ // If this is an Element
 							if (listItem.textContent.indexOf(searchboxValue) !== -1){ // If the List Item content contains the current searchboxValue
 								numOfListItemsThatWillShow++; // Increment the numOfListItemsThatWillShow by one
-								syiro.style.Set(listItem, "display", "block !important"); // Show the List Item since it has a suggestion string, use display CSS attribute so List height changes
+								syiro.style.Set(listItem, "display", "block"); // Show the List Item since it has a suggestion string, use display CSS attribute so List height changes
 							} else {
-								syiro.style.Set(listItem, "display", "none !important"); // Hide the List Item since it does not have content of the suggestion,  use display CSS attribute so List height changes
+								syiro.style.Set(listItem, "display", "none"); // Hide the List Item since it does not have content of the suggestion,  use display CSS attribute so List height changes
 							}
 						}
 					}
 
 					if (numOfListItemsThatWillShow == 0){ // If the numOfListItemsThatWillShow is zero
-						syiro.style.Set(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List since we have no suggestions that are valid
+						syiro.style.Set(linkedListComponentElement, "visibility", "hidden"); // Hide the List since we have no suggestions that are valid
 					}
 				}
 			} else { // If preseed is not enabled
-				syiro.style.Set(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List until we get suggestions and generate the new List Items
+				syiro.style.Set(linkedListComponentElement, "visibility", "hidden"); // Hide the List until we get suggestions and generate the new List Items
 
 				var suggestions : Array<string> = syiro.data.Read(searchboxComponent["id"] + "->handlers->suggestions").call(this, searchboxValue); // Call the suggestions handler function
 
@@ -148,11 +148,11 @@ namespace syiro.searchbox {
 						syiro.events.Add(syiro.events.Strings["up"], suggestionListItem, syiro.data.Read(searchboxComponent["id"] + "handlers->list-item-handler")); // Add the list-item-handler we have stored from syiro.data to the suggestionListItem
 					}
 
-					syiro.style.Set(linkedListComponentElement, "visibility", "visible !important"); // Show the List Item now that we have parsed the suggestions and generated List Items
+					syiro.style.Set(linkedListComponentElement, "visibility", "visible"); // Show the List Item now that we have parsed the suggestions and generated List Items
 				}
 			}
 		} else { // If the searchboxValue is empty
-			syiro.style.Set(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List
+			syiro.style.Set(linkedListComponentElement, "visibility", "hidden"); // Hide the List
 		}
 	}
 

@@ -216,7 +216,7 @@ namespace syiro.button {
 				syiro.render.Position(positionInformation, linkedListComponentObject, component); // Set the position of the List according to the position information for the Dropdown Button
 
 				componentElement.setAttribute("active", ""); // Set the "active" attribute
-				syiro.style.Set(linkedListComponentElement, "visibility", "visible !important"); // Show the List
+				syiro.style.Set(linkedListComponentElement, "visibility", "visible"); // Show the List
 			}
 		} else if (componentElement.getAttribute("data-syiro-component-type") == "toggle"){ // If this a Toggle Button
 			if (typeof active == "undefined"){ // If is not provided
@@ -313,12 +313,12 @@ namespace syiro.buttongroup {
 
 			for (var innerButtonElementsIndex = 0; innerButtonElementsIndex < innerButtonElements.length; innerButtonElementsIndex++){ // For each button
 				var buttonElement = innerButtonElements[innerButtonElementsIndex];
-				var widthValue : string = "calc(100% / " + innerButtonElements.length + ") !important"; // Define widthValue as a string (since we'll be apply it via CSS and letting CSS dynamically calc width). Default to 100% / num of button Elements
+				var widthValue : string = "calc(100% / " + innerButtonElements.length + ")"; // Define widthValue as a string (since we'll be apply it via CSS and letting CSS dynamically calc width). Default to 100% / num of button Elements
 
 				if (hasOddNumberOfButtons && (innerButtonElementsIndex == middleButtonNumber)){ // If this is the middle button Element
-					widthValue = "calc(100% / " + innerButtonElements.length + " - 2px) !important"; // Define widthValue as 100% / 2 minus 2px (bordering)
+					widthValue = "calc(100% / " + innerButtonElements.length + " - 2px)"; // Define widthValue as 100% / 2 minus 2px (bordering)
 				} else if (innerButtonElementsIndex == (innerButtonElements.length - 1)){ // If this is the last button Element
-					widthValue = "calc(100% / " + innerButtonElements.length + " - " + (innerButtonElements.length - 1) + "px) !important"; // Define widthValue as 100% / 2 minus N - 1px (for each button aside from the last, account for the bordering)
+					widthValue = "calc(100% / " + innerButtonElements.length + " - " + (innerButtonElements.length - 1) + "px)"; // Define widthValue as 100% / 2 minus N - 1px (for each button aside from the last, account for the bordering)
 				}
 
 				syiro.style.Set(buttonElement, "width", widthValue); // Set the width to be 100% / number of button Elements

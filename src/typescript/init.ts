@@ -274,7 +274,7 @@ namespace syiro.init {
 				function(){
 					var searchboxObject : ComponentObject = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox
 					var searchboxLinkedList : ComponentObject = syiro.component.FetchLinkedListComponentObject(searchboxObject); // Define searchboxLinkedList as the fetched Linked List Component
-					syiro.style.Set(searchboxLinkedList, "visibility", "hidden !important"); // Hide the Linked List
+					syiro.style.Set(searchboxLinkedList, "visibility", "hidden"); // Hide the Linked List
 				}.bind(this, component)
 			);
 		}

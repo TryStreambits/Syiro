@@ -28,7 +28,7 @@ We have a [document that highlights our policy](http://stroblindustries.com/devc
 
 You can download our [stable 1.6.0 release](https://github.com/StroblIndustries/Syiro/releases/download/1.6.0/stable.tar.gz) which provides the necessary minified CSS, images and JS wrapped in a nice package.
 
-You can also download our [devel 1.7.0-rc1 release](https://github.com/StroblIndustries/releases/download/1.7.0-rc1/devel.tar.xz).
+You can also download our [devel 1.7.0-rc1 release](https://github.com/StroblIndustries/Syiro/releases/download/1.7.0-rc1/devel.tar.xz).
 
 The package also comes with a gzipped version of the JavaScript code, so you can easily serve the compressed content.
 

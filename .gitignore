@@ -1,3 +1,4 @@
 build/syiro.js
 tests/design/js/syiro.js
 *.*~
+*.tar.xz

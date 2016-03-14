@@ -72,6 +72,7 @@ declare namespace syiro.utilities {
 declare namespace syiro.style {
     function GetObject(component: any): Object;
     function Get(component: any, property: string): string;
+    function GetPropertyCamelCased(property: string): string;
     function LoadColors(): void;
     function Set(component: any, property: string, value: string): boolean;
 }

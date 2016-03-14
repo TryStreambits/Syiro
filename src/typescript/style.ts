@@ -10,46 +10,49 @@ namespace syiro.style {
     // GetObject
     // This function will get an Object equivelant to the CSS styling of the object in question.
     export function GetObject(component : any) : Object {
-        var cssObject : Object = {}; // Define cssObject as the Object containing CSS style properties / values
-        var componentElement : Element = component; // Define componentElement as an Element, defaulting to component provided
+        var componentElement : HTMLElement = component; // Define componentElement as an Element, defaulting to component provided
         var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of the variable passed
 
         if (typeOfComponent == "ComponentObject"){ // If we were provided a Component Object
 			componentElement = syiro.component.Fetch(component); // Fetch the Element and assign it to modifiableElement
 		}
 
-        var currentElementStyling : string = ""; // Define currentElementStyling as a string, defaulting to empty
-
-        if (componentElement.hasAttribute("style")){ // If this componentElement has applied style already
-            currentElementStyling = componentElement.getAttribute("style"); // Get to the value of style
-        }
-
-        if (syiro.utilities.TypeOfThing(currentElementStyling, "string")){ // If the modifiableElement has the style attribute
-            var currentElementStylingArray = currentElementStyling.split(";"); // Split currentElementStyling into an array where the separator is the semi-colon
-
-            for (var styleKey in currentElementStylingArray){ // For each CSS property / value in the styling
-                var cssPropertyValue = currentElementStylingArray[styleKey].replace(" ", ""); // Define cssPropertyValue as this index in currentElementStylingArray, replacing whitespace
-                if (cssPropertyValue !== ""){ // If the array item value is not empty
-                    var propertyValueArray = cssPropertyValue.split(":"); // Split the propery / value based on the colon to an array
-                    cssObject[propertyValueArray[0]] = propertyValueArray[1]; // Add it as a key/val in the elementStylingObject
-                }
-            }
-        }
-
-        return cssObject;
+        return componentElement.style;
     }
 
     // Get
     // This function will get a CSS property value if it exists.
     export function Get(component : any, property : string) : string {
         var cssObjectOfComponent : Object = syiro.style.GetObject(component); // Get the CSS Object of the Component
-        var propertyValue : string = cssObjectOfComponent[property]; // Get the value of the property and set it to propertyValue
+        var camelCasedProperty : string = syiro.style.GetPropertyCamelCased(property); // Get the camelCased version of this property
+        var propertyValue : string = cssObjectOfComponent[camelCasedProperty]; // Get the value of the property and set it to propertyValue
 
         if (!syiro.utilities.TypeOfThing(propertyValue, "string")){ // If propertyValue is not a string
             propertyValue = ""; // Change to an empty string
         }
 
         return propertyValue;
+    }
+
+    // GetPropertyCamelCased
+    // This function will return a camel-cased version of the CSS property
+    export function GetPropertyCamelCased(property : string) : string {
+        var newPropertyString : string = property; // Set newPropertyString default to our property string
+        var propertySections : Array<string> = property.split("-"); // Split based on -
+
+        if (property !== "float"){ // Float is an exception to the rule
+            if (propertySections.length > 1){ // If there are multiple sections
+                newPropertyString = propertySections[0]; // Keep the first section normal
+
+                for (var section of propertySections.slice(1)){ // For each section in propertySections after the first one
+                    newPropertyString += (section.substr(0,1).toUpperCase() + section.substr(1)); // Append a string where the first char is capitalized
+                }
+            }
+        } else { // If the property is float
+            newPropertyString = "cssFloat"; // Change to cssFloat
+        }
+
+        return newPropertyString;
     }
 
     // LoadColors
@@ -74,7 +77,7 @@ namespace syiro.style {
     export function Set(component : any, property : string, value : string) : boolean {
         var setProperty : boolean = true; // Define whether we should set the style property of the component
         var typeOfComponent : string = syiro.utilities.TypeOfThing(component); // Get the type of the Component
-        var componentElement : Element = component; // Define componentElement as an Element, defaulting to component
+        var componentElement : HTMLElement = component; // Define componentElement as an Element, defaulting to component
 
         if (typeOfComponent == "ComponentObject"){ // If this is a ComponentObject
             componentElement = syiro.component.Fetch(component); // Fetch the Element for the Component
@@ -83,23 +86,11 @@ namespace syiro.style {
         }
 
         if (setProperty){ // if we should set the property
-            var propertySetter : Function = function(setterComponentElement : Element, property : string, value : string){ // Define propertySetter as the main setter functionality
+            var propertySetter : Function = function(setterComponentElement : HTMLElement, property : string, value : string){ // Define propertySetter as the main setter functionality
                 var cssObjectOfComponent : Object = syiro.style.GetObject(setterComponentElement); // Get the CSS object of the Element
-                cssObjectOfComponent[property] = value; // Set the property in cssObjectOfComponent to value
+                var camelCasedProperty : string = syiro.style.GetPropertyCamelCased(property); // Get the camelCased version of this property
 
-                var updatedCSSStyle : string = ""; // Define updatedCSSStyle as the new style we will apply
-
-				for (var cssProperty in cssObjectOfComponent){ // For each CSS property / value in the elementStylingObject
-					if (cssObjectOfComponent[cssProperty] !== ""){ // If the value is not an empty string
-						updatedCSSStyle = updatedCSSStyle + cssProperty + ": " + cssObjectOfComponent[cssProperty] + ";"; // Append the property + value to the updatedCSSStyle and ensure we have closing semi-colon
-					}
-				}
-
-				if (updatedCSSStyle.length !== 0){ // If the styling is not empty
-					setterComponentElement.setAttribute("style", updatedCSSStyle); // Set the style attribute
-				} else { // If the styling is empty
-					setterComponentElement.removeAttribute("style"); // Remove the style attribute
-				}
+                setterComponentElement.style[camelCasedProperty] = value.replace("!important", "").trim(); // Set property to a sane value
             }.bind(this, componentElement, property, value);
 
             syiro.utilities.Run(propertySetter); // Run optimized

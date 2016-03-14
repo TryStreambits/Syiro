@@ -34,10 +34,6 @@ function generatePage(){
     /* End of Buttongroup Generation */
 
     generateMediaPlayers(); // Generate the Media Players
-
-    syiro.events.Add("resize", window, function(){ // Add a resize event to the window
-        syiro.style.Set(videoPlayerContainer, "height", (syiro.device.height - 120).toString() + "px");
-    });
 }
 
 // #region Generate Navbar + Sidepane Function

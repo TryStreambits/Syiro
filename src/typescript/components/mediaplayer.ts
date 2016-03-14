@@ -120,7 +120,7 @@ module syiro.mediaplayer{
 
 		if (typeof properties["art"] !== "undefined"){
 			if (navigator.userAgent.indexOf("iPhone") == -1) { // If we are not using an iPhone
-				syiro.style.Set(componentElement, "background-image", 'url("' + properties["art"] + '")'); // Set it as the background image of the player
+				syiroComponentData["BackgroundImage"] = properties["art"]; // Set the BackgroundImage in the syiroComponentData
 			} else { // If we are using an iPhone
 				mediaPlayerProperties["poster"] = properties["art"]; // Define the poster property of the Media Element to be the art
 			}
@@ -214,7 +214,7 @@ module syiro.mediaplayer{
 						innerTimeLabel.setAttribute("data-syiro-component-live", ""); // Use "Live" View of Time Label
 						innerTimeLabel.textContent = "Live"; // Set the time label to "Live"
 					}
-				} else if (isPlayableOrStreamable == true){ // If the content is playable
+				} else { // If the content is playable
 					syiro.data.Delete(component.id + "->IsStreaming"); // Delete the IsStreaming key if it exists already to ensure we are changing it to non-streaming UX
 					mediaControl.removeAttribute("data-syiro-component-streamstyling"); // Remove Stream Styling if it exists in the Media Control
 
@@ -378,11 +378,13 @@ module syiro.mediaplayer{
 			for (var sourceElementInfo of sourceElementsInfo){ // For each source in playerSources
 				if (innerContentElement.canPlayType(sourceElementInfo["type"]) !== ""){ // If we do not get an empty string returned, meaning we may be able to play the content
 					isPlayable = true; // Set isPlayable to true
+					break;
 				}
 
 				if (!isStreamable){ // If we haven't already checked if the content is stream
 					if ((syiro.utilities.TypeOfThing(sourceElementInfo["streamable"], "string")) && (sourceElementInfo["streamable"] == "true")){ // If the source is streamable
 						isStreamable = true; // Set isStreamable to true
+						break;
 					}
 				}
 			}
@@ -488,6 +490,8 @@ module syiro.mediaplayer{
 
 		playerInnerContentElement.setAttribute("src", sources[0]); // Set via attribute to trigger MutationObserver
 		playerInnerContentElement.src = sources[0]; // Set the initial src of the audio or video player to the first source provide
+
+		syiro.mediaplayer.Reset(component); // Reset the media player
 	}
 
 	// #endregion

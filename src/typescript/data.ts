@@ -5,7 +5,7 @@ This is the namespace for managing Syiro Data.
 /// <reference path="interfaces.ts" />
 
 namespace syiro.data {
-    export var storage : Object = {}; // Define syiro.data.storage as the storage Object for all Syiro Data
+    export var storage : Object = { }; // Define syiro.data.storage as the storage Object for all Syiro Data
 
     // #region Function for reading or manipulating data stored in syiro.data.storage
     // Returns a boolean success value or the value (if read)

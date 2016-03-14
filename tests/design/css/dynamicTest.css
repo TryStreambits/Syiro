@@ -38,6 +38,7 @@ div[data-page-component="buttongroup-container"] > div[data-syiro-component="but
 /* Video Player Container */
 
 div[data-page-component="video-player-container"]{
+    height: 50%;
     visibility: hidden; /* Default to not display */
 }
 
@@ -69,7 +70,7 @@ div[data-page-component="video-player-container"]{
 @media (min-width: 601px){
     div[data-page-component="audio-player-container"]{
         width: 400px;
-        margin-left: calc((100% - 400px) / 2);        
+        margin-left: calc((100% - 400px) / 2);
     }
 
     div[data-page-component="video-player-container"]{

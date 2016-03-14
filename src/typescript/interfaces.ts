@@ -2,7 +2,9 @@
 	These are interface extensions so Typescript doesn't freak out.
 */
 
+var Promise : any;
 var WebKitMutationObserver : any;
+var resolve : Function;
 
 interface Document { // Document extensions
 	// #region Microsoft

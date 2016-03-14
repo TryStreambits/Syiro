@@ -1,4 +1,6 @@
+declare var Promise: any;
 declare var WebKitMutationObserver: any;
+declare var resolve: Function;
 interface Document {
     msFullscreenElement: Element;
     msExitFullscreen: Function;
@@ -62,7 +64,7 @@ declare namespace syiro.events {
 }
 declare namespace syiro.utilities {
     function ElementCreator(type: string, attributes: Object): any;
-    function Run(func: any): boolean;
+    function Run(func: Function): boolean;
     function SanitizeHTML(content: any): any;
     function SecondsToTimeFormat(seconds: number): Object;
     function TypeOfThing(thing: any, checkAgainstType?: string): any;
@@ -70,6 +72,7 @@ declare namespace syiro.utilities {
 declare namespace syiro.style {
     function GetObject(component: any): Object;
     function Get(component: any, property: string): string;
+    function LoadColors(): void;
     function Set(component: any, property: string, value: string): boolean;
 }
 declare namespace syiro.render {
@@ -114,7 +117,6 @@ declare module syiro.mediacontrol {
 }
 declare namespace syiro.init {
     function Parser(componentElement: Element): void;
-    function LoadColors(): void;
     function createContentOverlay(purpose: string): Element;
     function Buttongroup(component: ComponentObject): void;
     function Grid(component: ComponentObject): void;
@@ -212,6 +214,7 @@ declare namespace syiro {
     var primaryColor: string;
     var secondaryColor: string;
     var legacyDimensionsDetection: boolean;
+    var promiseNum: number;
     function Init(): void;
     var Fetch: typeof component.Fetch;
     var FetchComponentObject: typeof component.FetchComponentObject;

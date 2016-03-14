@@ -39,19 +39,27 @@ namespace syiro.utilities {
 	// #endregion
 
 	// Run
-	// This function will attempt to run the function using requestAnimationFrame (not always necessary or recommended, use wisely).
-	// Returns boolean if function was executed via requestAnimationFrame.
-	export function Run(func : any) : boolean {
-		var ranViaRAF : boolean = false;
+	// This function will attempt to run the function using promises and requestAnimationFrames.
+	// Returns boolean if function was executed in the *most* optimized state.
+	export function Run(func : Function) : boolean {
+		var runOptimized : boolean = false;
 
-		if (syiro.device.SupportsRequestAnimationFrame){ // If we support requestAnimationFrame
-			requestAnimationFrame(func); // Run via requestAnimationFrame
-			ranViaRAF = true;
-		} else { // If we do not support requestAnimationFrame
-			func.call(); // Directly call func
+		var runWithAnimationFrame : Function = function(func : any){ // Define runWithAnimationFrame as a function for checking and attempt to run the func provided with requestAnimationFrame
+			if (syiro.device.SupportsRequestAnimationFrame){ // If we support requestAnimationFrame
+				requestAnimationFrame(func); // Run via requestAnimationFrame
+			} else { // If we do not support requestAnimationFrame
+				func(); // Directly call func
+			}
+		}.bind(this, func);
+
+		if (typeof Promise == "function"){ // If Promises are supported
+			new Promise(runWithAnimationFrame);
+			runOptimized = true;
+		} else {
+			runWithAnimationFrame(); // Immediately run without Promise
 		}
 
-		return ranViaRAF;
+		return runOptimized;
 	}
 
 	// Sanitize HTML

@@ -118,7 +118,6 @@ namespace syiro.init {
 		if (syiro.data.Read(component.id + "->NoUX") == false){ // If we are apply UX to events to the Player
 			var componentElement : Element = syiro.component.Fetch(component); // Fetch the ComponentElement of the Media Player
 			var innerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Fetch the Player content Element
-			var mediaPlayerType : string = componentElement.getAttribute("data-syiro-component-type"); // Get the type of Media Player
 
 			// #region Media Controls List
 
@@ -150,30 +149,11 @@ namespace syiro.init {
 
 			// #endregion
 
-			// #region InnerContentElement Source Change Detection
-
-			var contentElementObserver = new MutationObserver(
-				function(){
-					syiro.mediaplayer.Reset(arguments[0]);
-				}.bind(this, component)
-			);
-
-			var contentElementObserverOptions : MutationObserverInit = { // Define mutationWatcherOptions as the options we'll pass to contentElementObserver.observe()
-				childList : false, // Watch child nodes of the element we are watching
-				attributes : true, // Watch for attribute changes
-				characterData : false, // Don't bother to watch character data changes
-				subtree: false
-			};
-
-			contentElementObserver.observe(innerContentElement, contentElementObserverOptions); // Observe the innerContentElement with the options to watch for attribute changes, calling IsPlayable
-
-			// #endregion
-
 			syiro.init.MediaControl(component, mediaControlComponent); // Initialize the MediaControl and inner Buttons
 
 			// #region Type Specific Initialization
 
-			if (mediaPlayerType == "video"){ // If this is a video-type Media Player
+			if (componentElement.getAttribute("data-syiro-component-type") == "video"){ // If this is a video-type Media Player
 				if (syiro.device.SupportsTouch){ // If the device supports touch
 					syiro.events.Add(syiro.events.Strings["up"], component, syiro.mediacontrol.Toggle.bind(this, mediaControlComponent)); // Add an "up" event to player container that toggles the Media Control
 				} else { // If the device uses a mouse instead of touch
@@ -184,6 +164,16 @@ namespace syiro.init {
 
 			// #endregion
 
+			// #region Background Loading
+
+			syiro.utilities.Run(function(component : ComponentObject, componentElement : Element){
+				var backgroundArt : any = syiro.data.Read(component.id + "->BackgroundImage"); // Get any background image stored for this Media Player
+
+				if (backgroundArt !== false){
+					syiro.style.Set(componentElement, "background-image", 'url("' + backgroundArt + '")'); // Set it as the background image of the player
+				}
+			}.bind(this, component, componentElement));
+
 			syiro.mediaplayer.Configure(component); // Configure the Media Player
 		}
 	}
@@ -193,7 +183,6 @@ namespace syiro.init {
 	// #region Media Control Initialization
 
 	export function MediaControl(componentObject : ComponentObject, mediaControlComponentObject : ComponentObject){
-		var componentElement : Element = syiro.component.Fetch(componentObject); // Fetch the componentElement of the Media Player
 		var mediaControlElement : Element = syiro.component.Fetch(mediaControlComponentObject); // Fetch the Media Control Element
 
 		// #region Player Range Initialization
@@ -261,17 +250,15 @@ namespace syiro.init {
 
 		// #endregion
 
-		if (componentElement.getAttribute("data-syiro-component-type") == "video"){ // If this is a video-type Media Player
-			// #region Video Player Fullscreen Button Enabling
+		// #region Fullscreen Button Listener
 
-			var fullscreenButtonElement : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
+		var fullscreenButtonElement : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
 
-			if (fullscreenButtonElement !== null){ // If the fullscreen button exists
-				syiro.events.Add(syiro.events.Strings["up"], fullscreenButtonElement, syiro.mediaplayer.ToggleFullscreen.bind(this, componentObject)); // Listen to up events on the fullscreen button
-			}
-
-			// #endregion
+		if (fullscreenButtonElement !== null){ // If the fullscreen button exists
+			syiro.events.Add(syiro.events.Strings["up"], fullscreenButtonElement, syiro.mediaplayer.ToggleFullscreen.bind(this, componentObject)); // Listen to up events on the fullscreen button
 		}
+
+		// #endregion
 	}
 
 	// #endregion

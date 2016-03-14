@@ -26,6 +26,8 @@ namespace syiro {
 	export var secondaryColor : string; // Define secondaryColor as the rgba value we get from the CSS of the Syiro Secondary Color
 	export var legacyDimensionsDetection : boolean; // Define legacyDimensionsDetection as a boolean, used if we need to check dimensions for non-MutationObserver supported browsers
 
+	export var promiseNum : number;
+
 	// #region Syiro Initialization Function
 
 	export function Init() : void {
@@ -34,7 +36,7 @@ namespace syiro {
 		// #region Document Scroll Event Listening
 
 		syiro.events.Add("scroll", document, // Add an event listener to the document for when the document is scrolling
-			function(){
+			syiro.utilities.Run.bind(this, function(){
 				var dropdownButtons : NodeList = document.querySelectorAll('div[data-syiro-component="button"][data-syiro-component-type="dropdown"][active]'); // Get all of the Dropdown Buttons that are active
 
 				for (var dropdownButtonIndex in dropdownButtons){ // For each of those Dropdown Button Components that are active
@@ -43,7 +45,7 @@ namespace syiro {
 						syiro.button.Toggle(thisDropdownButtonObject); // Toggle the Dropdown Button
 					}
 				}
-			}
+			})
 		);
 
 		// #endregion

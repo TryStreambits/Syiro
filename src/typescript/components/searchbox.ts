@@ -3,6 +3,7 @@
 */
 
 /// <reference path="../component.ts" />
+/// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
 // #region Syiro Searchbox Component
@@ -104,35 +105,35 @@ namespace syiro.searchbox {
 		var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponent); // Fetch the Element of the List Component
 		var innerListItemsOfLinkedList : NodeList = linkedListComponentElement.querySelectorAll('div[data-syiro-component="list-item"]'); // Fetch a NodeList of Elements of all the List Items in the List
 
-		syiro.component.CSS(linkedListComponentElement, "width", searchboxElement.clientWidth + "px"); // Ensure the Linked List is the same width of the Searchbox
+		syiro.style.Set(linkedListComponentElement, "width", searchboxElement.clientWidth + "px"); // Ensure the Linked List is the same width of the Searchbox
 		syiro.render.Position(["below", "center"], linkedListComponent, searchboxComponent); // Position the Linked List Component below and centered in relation to the Searchbox Component
 
 		if (searchboxValue !== ""){ // If the value is not empty
 			if (syiro.data.Read(searchboxComponent["id"] + "->preseed")){ // If preseed is enabled
-				syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Immediately ensure the Linked List of the Searchbox is visible
+				syiro.style.Set(linkedListComponentElement, "visibility", "visible !important"); // Immediately ensure the Linked List of the Searchbox is visible
 
 				if (innerListItemsOfLinkedList.length > 0){ // If the Linked List of the Searchbox has List Items
 					var numOfListItemsThatWillShow : number = 0; // Define numOfListItemsThatWillShow as, well the number of list items that will show, obviously.
 
-					for (var listItemIndex in innerListItemsOfLinkedList){ // For each List Item in the Linked List
+					for (var listItemIndex = 0; listItemIndex < innerListItemsOfLinkedList.length; listItemIndex++){ // For each List Item in the Linked List
 						var listItem = innerListItemsOfLinkedList[listItemIndex]; // Define listItem as this particular List Item in the index
 
 						if (syiro.utilities.TypeOfThing(listItem, "Element")){ // If this is an Element
 							if (listItem.textContent.indexOf(searchboxValue) !== -1){ // If the List Item content contains the current searchboxValue
 								numOfListItemsThatWillShow++; // Increment the numOfListItemsThatWillShow by one
-								syiro.component.CSS(listItem, "display", "block !important"); // Show the List Item since it has a suggestion string, use display CSS attribute so List height changes
+								syiro.style.Set(listItem, "display", "block !important"); // Show the List Item since it has a suggestion string, use display CSS attribute so List height changes
 							} else {
-								syiro.component.CSS(listItem, "display", "none !important"); // Hide the List Item since it does not have content of the suggestion,  use display CSS attribute so List height changes
+								syiro.style.Set(listItem, "display", "none !important"); // Hide the List Item since it does not have content of the suggestion,  use display CSS attribute so List height changes
 							}
 						}
 					}
 
 					if (numOfListItemsThatWillShow == 0){ // If the numOfListItemsThatWillShow is zero
-						syiro.component.CSS(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List since we have no suggestions that are valid
+						syiro.style.Set(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List since we have no suggestions that are valid
 					}
 				}
 			} else { // If preseed is not enabled
-				syiro.component.CSS(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List until we get suggestions and generate the new List Items
+				syiro.style.Set(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List until we get suggestions and generate the new List Items
 
 				var suggestions : Array<string> = syiro.data.Read(searchboxComponent["id"] + "->handlers->suggestions").call(this, searchboxValue); // Call the suggestions handler function
 
@@ -147,11 +148,11 @@ namespace syiro.searchbox {
 						syiro.events.Add(syiro.events.Strings["up"], suggestionListItem, syiro.data.Read(searchboxComponent["id"] + "handlers->list-item-handler")); // Add the list-item-handler we have stored from syiro.data to the suggestionListItem
 					}
 
-					syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Show the List Item now that we have parsed the suggestions and generated List Items
+					syiro.style.Set(linkedListComponentElement, "visibility", "visible !important"); // Show the List Item now that we have parsed the suggestions and generated List Items
 				}
 			}
 		} else { // If the searchboxValue is empty
-			syiro.component.CSS(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List
+			syiro.style.Set(linkedListComponentElement, "visibility", "hidden !important"); // Hide the List
 		}
 	}
 

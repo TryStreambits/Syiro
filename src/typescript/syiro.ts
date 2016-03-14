@@ -3,18 +3,19 @@
 */
 /// <reference path="init.ts" />
 /// <reference path="animation.ts" />
-/// <reference path="components/button.ts" />
 /// <reference path="component.ts" />
-/// <reference path="data.ts" />
-/// <reference path="device.ts" />
-/// <reference path="events.ts" />
 /// <reference path="components/grid.ts" />
 /// <reference path="components/navbar.ts" />
 /// <reference path="components/list.ts" />
-/// <reference path="render.ts" />
 /// <reference path="components/searchbox.ts" />
 /// <reference path="components/sidepane.ts" />
 /// <reference path="components/toast.ts" />
+/// <reference path="components/button.ts" />
+/// <reference path="data.ts" />
+/// <reference path="device.ts" />
+/// <reference path="events.ts" />
+/// <reference path="render.ts" />
+/// <reference path="style.ts" />
 /// <reference path="utilities.ts" />
 
 namespace syiro {
@@ -118,20 +119,13 @@ namespace syiro {
 				function(mutations : Array<MutationRecord>){ // Define mutationHandler as a variable that consists of a function that handles mutationRecords
 					for (var mutation of mutations){ // For each mutation of mutations
 						if (mutation.type == "childList"){ // If something in the document changed (childList)
-							for (var mutationIndex in mutation.addedNodes){ // For each node in the mutation.addedNodes
+							for (var mutationIndex = 0; mutationIndex < mutation.addedNodes.length; mutationIndex++){ // For each node in the mutation.addedNodes
 								var componentElement : any = mutation.addedNodes[mutationIndex]; // Get the Node
 								syiro.init.Parser(componentElement); // Send to Syiro's Component Parser
 							}
 						}
 					}
 				}
-			);
-
-			var triggerAccurateInitialDimensions = new MutationObserver( // Create a MutationObserver
-				function(){
-					syiro.device.FetchScreenDetails(); // Do a fetch of the screen details now that we have elements in the DOM
-					arguments[2].disconnect(); // Disconnect from the MutationObserver that we passed (which is provided as second argument since an array of changes are passed first)
-				}.bind(this, triggerAccurateInitialDimensions)
 			);
 
 			var mutationWatcherOptions : MutationObserverInit = { // Define mutationWatcherOptions as the options we'll pass to mutationWatcher.observe()
@@ -142,11 +136,7 @@ namespace syiro {
 				subtree: true
 			};
 
-			var tempWatcherOptions = mutationWatcherOptions; // Define tempWatcherOptions as a copy of the mutationWatcherOptions
-			delete tempWatcherOptions.attributeFilter; // Remove the attributeFilter from the tempWatcherOptions
-
 			mutationWatcher.observe(document.body, mutationWatcherOptions); // Watch the document body with the options provided.
-			triggerAccurateInitialDimensions.observe(document.body, tempWatcherOptions); // Watch the document body temporarily
 		} else { // If MutationObserver is NOT supported (IE10 and below), such as in Windows Phone
 			syiro.legacyDimensionsDetection = false; // Define legacyDimensionsDetection as false, implying we have not already had a Component enter DOM and need to re-check screen dimensions
 
@@ -176,19 +166,12 @@ namespace syiro {
 
 		// #region Colorization Init
 
-		if (syiro.utilities.TypeOfThing(requestAnimationFrame, "function")){ // If requestAnimationFrame is supported
-			requestAnimationFrame(syiro.init.LoadColors); // Request using an animation frame for LoadColors
-		} else { // If requestAnimationFrame is not supported
-			syiro.init.LoadColors(); // Immediately load colors
-		}
-
+		syiro.utilities.Run(syiro.style.LoadColors); // Load Colors
 	}
 
 	// #endregion
 
 	// #region Meta Functions
-
-	export var CSS = syiro.component.CSS; // Meta-function for modifying Syiro Component CSS styling
 
 	export var Fetch = syiro.component.Fetch; // Meta-function for fetching Syiro component HTMLElements
 	export var FetchComponentObject = syiro.component.FetchComponentObject; // Meta-function for fetching Syiro Component Objects from Component Elements.

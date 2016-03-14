@@ -19,6 +19,7 @@ namespace syiro.device {
 	export var IsOnline : boolean = true; // Define IsOnline as a boolean if the device is online.
 	export var OperatingSystem : string; // Define OperatingSystem as a string of what the OS is
 	export var SupportsMutationObserver : boolean; // Define SupportsMutationObserver as a boolean as to whether the browser / device supports MutationObserver or WebKitMutationObserver
+	export var SupportsRequestAnimationFrame : boolean; // Define SupportsRequestAnimationFrame as a boolean as to whether the browser supports requestAnimationFrame function.
 	export var SupportsTouch : boolean; // Define SupportsTouch as a boolean as to whether or not the device supports touch.
 
 	// #region Screen Variables
@@ -50,6 +51,7 @@ namespace syiro.device {
 		syiro.device.HasCryptography = syiro.utilities.TypeOfThing(window.crypto, "Crypto"); // HasCryptography is set to true if window.crypto is type Crypto
 		syiro.device.HasLocalStorage =  syiro.utilities.TypeOfThing(window.localStorage, "Storage"); // HasLocalStorage is set to true if window.localStorage is type Storage
 		syiro.device.SupportsMutationObserver = syiro.utilities.TypeOfThing(MutationObserver, "function"); // SupportsMutationObserver is if MutationObserver is a function
+		syiro.device.SupportsRequestAnimationFrame = syiro.utilities.TypeOfThing(requestAnimationFrame, "function"); // SupportsRequestAnimationFrame is if requestAnimationFrame is a function
 
 		// #region Online Status Support
 

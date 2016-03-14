@@ -4,9 +4,9 @@
 
 namespace syiro.utilities {
 
-	// #region Element Creator Function
-
-	export function ElementCreator(type : string, attributes : Object) { // Takes an optional componentId, componentType or the desired element tag name and attributes
+	// ElementCreator
+	// Takes an optional componentId, componentType or the desired element tag name and attributes
+	export function ElementCreator(type : string, attributes : Object) {
 		if ((typeof type == "string") && (typeof attributes == "object")){
 			var generatedElement : any = document.createElement(type); // Define componentElement as the generated HTMLElement based on the type supplied by argument 0
 
@@ -38,8 +38,24 @@ namespace syiro.utilities {
 
 	// #endregion
 
-	// #region Sanitize HTML - This function is responsible for removing script tags from HTML
+	// Run
+	// This function will attempt to run the function using requestAnimationFrame (not always necessary or recommended, use wisely).
+	// Returns boolean if function was executed via requestAnimationFrame.
+	export function Run(func : any) : boolean {
+		var ranViaRAF : boolean = false;
 
+		if (syiro.device.SupportsRequestAnimationFrame){ // If we support requestAnimationFrame
+			requestAnimationFrame(func); // Run via requestAnimationFrame
+			ranViaRAF = true;
+		} else { // If we do not support requestAnimationFrame
+			func.call(); // Directly call func
+		}
+
+		return ranViaRAF;
+	}
+
+	// Sanitize HTML
+	// This function is responsible for removing script tags from HTML
 	export function SanitizeHTML(content : any){
 		var updatedContent : any = false; // Define updatedContent as false (failure) by default
 
@@ -59,16 +75,15 @@ namespace syiro.utilities {
 					}
 				}
 			}
+
 			updatedContent = content; // Set the updatedContent to the HTML Element
 		}
 
 		return updatedContent; // Return the updatedContent
 	}
 
-	// #endregion
-
-	// #region Seconds to "Time" Object Format - This function is responsible for calculating hours, minutes, and seconds based on seconds provided, returning them in an Object
-
+	// SecondsToTimeFormat
+	// This function is responsible for calculating hours, minutes, and seconds based on seconds provided, returning them in an Object
 	export function SecondsToTimeFormat(seconds : number) : Object {
 		var timeObject : Object = {};
 
@@ -100,10 +115,8 @@ namespace syiro.utilities {
 		return timeObject;
 	}
 
-	// #endregion
-
-	// #region TypeOfThing - Get more clear type information about what is provided
-
+	// TypeOfThing
+	// Get more clear type information about what is provided
 	export function TypeOfThing(thing : any, checkAgainstType ?: string) : any {
 		var thingType : any = (typeof thing); // Initially set thingType as the typeof
 
@@ -133,7 +146,4 @@ namespace syiro.utilities {
 
 		return thingType;
 	}
-
-	// #endregion
-
 }

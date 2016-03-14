@@ -3,6 +3,7 @@
  */
 
 /// <reference path="../component.ts" />
+/// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
 // #region Syiro List Component
@@ -106,12 +107,12 @@ namespace syiro.list {
 				var listHeader : Element = componentElement.querySelector('div[data-syiro-minor-component="list-header"]'); // Fetch the List's Header
 				var listContent : Element = componentElement.querySelector('div[data-syiro-minor-component="list-content"]'); // Fetch the List's Content Container
 
-				if (syiro.component.CSS(listContent, "display") !== "block"){ // If the listContent is currently hidden
+				if (syiro.style.Get(listContent, "display") !== "block"){ // If the listContent is currently hidden
 					listHeader.setAttribute("active", ""); // Set listHeader "active" attribute to flip the Dropdown icon
-					syiro.component.CSS(listContent, "display", "block"); // Show the List content
+					syiro.style.Set(listContent, "display", "block"); // Show the List content
 				} else { // If the listContent is currently showing
 					listHeader.removeAttribute("active"); // Remove the active attribute to unflip the Dropdown icon
-					syiro.component.CSS(listContent, "display", ""); // Hide the List content
+					syiro.style.Set(listContent, "display", ""); // Hide the List content
 				}
 			}
 		}

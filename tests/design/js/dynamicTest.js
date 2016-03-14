@@ -36,7 +36,7 @@ function generatePage(){
     generateMediaPlayers(); // Generate the Media Players
 
     syiro.events.Add("resize", window, function(){ // Add a resize event to the window
-        syiro.CSS(videoPlayerContainer, "height", (syiro.device.height - 120).toString() + "px");
+        syiro.style.Set(videoPlayerContainer, "height", (syiro.device.height - 120).toString() + "px");
     });
 }
 
@@ -142,11 +142,11 @@ function generateMediaPlayers(){
 // #region Background Color Switcher
 
 function backgroundColorSwitcher(){
-    if (syiro.CSS(document.body, "background-color") == ""){ // If we are currently using a light background
-        syiro.CSS(document.body, "background-color", "rgba(0,0,0,0.75)"); // Set to 75% black
+    if (syiro.style.Get(document.body, "background-color") == ""){ // If we are currently using a light background
+        syiro.style.Set(document.body, "background-color", "rgba(0,0,0,0.75)"); // Set to 75% black
     }
     else { // If we are currently using a dark background
-        syiro.CSS(document.body, "background-color", ""); // Unset
+        syiro.style.Set(document.body, "background-color", ""); // Unset
     }
 }
 
@@ -185,16 +185,16 @@ function showPlayerContainer(){
 
     if (section == "audio"){ // If the section is audio
         syiro.animation.FadeOut(videoPlayerContainer, function(){
-            syiro.CSS(videoPlayerContainer, "display", "none"); // Set display to none
-            syiro.CSS(audioPlayerContainer, "display", "block"); // Set display to block
+            syiro.style.Set(videoPlayerContainer, "display", "none"); // Set display to none
+            syiro.style.Set(audioPlayerContainer, "display", "block"); // Set display to block
 
             syiro.animation.FadeIn(audioPlayerContainer); // Fade in the audio section
         });
     }
     else{ // IF the section is video
         syiro.animation.FadeOut(audioPlayerContainer, function(){
-            syiro.CSS(audioPlayerContainer, "display", "none"); // Set display to none
-            syiro.CSS(videoPlayerContainer, "display", "block"); // Set display to block
+            syiro.style.Set(audioPlayerContainer, "display", "none"); // Set display to none
+            syiro.style.Set(videoPlayerContainer, "display", "block"); // Set display to block
 
             syiro.animation.FadeIn(videoPlayerContainer); // Fade in the video section
         });

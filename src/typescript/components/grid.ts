@@ -3,6 +3,7 @@
  */
 
 /// <reference path="../component.ts" />
+/// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
 // #region Syiro Grid Component
@@ -61,7 +62,7 @@ module syiro.grid {
 
 					for (var innerGridItemIndex = 0; innerGridItemIndex < innerGridItems.length; innerGridItemIndex++){
 						var gridItem : any = innerGridItems[innerGridItemIndex]; // Get this gridItem
-						syiro.component.CSS(gridItem, "width", gridItemWidth.toString() + "px"); // Set the width of this gridItem
+						syiro.style.Set(gridItem, "width", gridItemWidth.toString() + "px"); // Set the width of this gridItem
 					}
 				}
 			}

@@ -4,6 +4,7 @@
 */
 
 /// <reference path="../component.ts" />
+/// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
 // #region Syiro Toast Component
@@ -164,8 +165,8 @@ namespace syiro.toast {
 					 	var toastElement = syiro.component.Fetch(component); // Get the Toast Element
 
 						 if (toastElement.getAttribute("data-syiro-component-type") == "dialog"){
-							 var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get the Toast ContentOverlay if it exists
-						 	syiro.component.CSS(toastContentOverlayElement, "display", "block"); // Show the toastContentOverlayElement under the Sidepane
+							var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get the Toast ContentOverlay if it exists
+						 	syiro.style.Set(toastContentOverlayElement, "display", "block"); // Show the toastContentOverlayElement under the Sidepane
 						 }
 					 }
 				 );
@@ -177,8 +178,8 @@ namespace syiro.toast {
 						 var toastElement = syiro.component.Fetch(component); // Get the Toast Element
 
 						 if (toastElement.getAttribute("data-syiro-component-type") == "dialog"){
-							 var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get the Toast ContentOverlay if it exists
-							syiro.component.CSS(toastContentOverlayElement, "display", ""); // Hide the toastContentOverlayElement
+							var toastContentOverlayElement  : Element = document.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="toast"]'); // Get the Toast ContentOverlay if it exists
+							syiro.style.Set(toastContentOverlayElement, "display", ""); // Hide the toastContentOverlayElement
 						 }
 					 }
 				 );

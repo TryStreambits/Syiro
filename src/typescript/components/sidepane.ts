@@ -3,6 +3,7 @@
  */
 
 /// <reference path="../component.ts" />
+/// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
 // #region Syiro Sidepane Functionality
@@ -92,7 +93,7 @@ namespace syiro.sidepane {
 		componentElement.setAttribute("data-syiro-render-animation", "false"); // Set render-animation to false so transition properties are not applied
 
 		var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Fetch the contentOverlay Element
-		syiro.component.CSS(sidepaneContentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
+		syiro.style.Set(sidepaneContentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
 	}
 
 	export function Drag(){
@@ -113,8 +114,8 @@ namespace syiro.sidepane {
 			updatedSidepanePosition = 0; // Set left position to 0
 		}
 
-		syiro.component.CSS(componentElement, "transform", "translateX(" + updatedSidepanePosition.toString() + "px)");  // Use GPU accelerated translateX to set position of Sidepane
-		syiro.component.CSS(componentElement, "-webkit-transform", "translateX(" + updatedSidepanePosition.toString() + "px)");  // Use GPU accelerated translateX to set position of Sidepane
+		syiro.style.Set(componentElement, "transform", "translateX(" + updatedSidepanePosition.toString() + "px)");  // Use GPU accelerated translateX to set position of Sidepane
+		syiro.style.Set(componentElement, "-webkit-transform", "translateX(" + updatedSidepanePosition.toString() + "px)");  // Use GPU accelerated translateX to set position of Sidepane
 	}
 
 	export function Release(){
@@ -144,7 +145,7 @@ namespace syiro.sidepane {
 			var showSidepane : boolean = false; // Define showSidepane as a defaulted "false"
 
 			if (componentElement.hasAttribute("data-syiro-animation") == false){ // If it does not have the animation attribute
-				var currentTransformProperty : any = syiro.component.CSS(component, "transform"); // Get the current transform property
+				var currentTransformProperty : any = syiro.style.Get(component, "transform"); // Get the current transform property
 
 				if ((typeof eventData !== "undefined") && ((typeof eventData.changedTouches !== "undefined") || (typeof eventData.screenX !== "undefined"))){ // If eventData is defined and is either touch or mouse event
 					var mousePosition : number;
@@ -166,15 +167,15 @@ namespace syiro.sidepane {
 			}
 
 			componentElement.removeAttribute("data-syiro-render-animation"); // Remove the property declaring to not render animation
-			syiro.component.CSS(componentElement, "transform", ""); // Ensure there is no transform property
-			syiro.component.CSS(componentElement, "-webkit-transform", ""); // Ensure there is no transform property
+			syiro.style.Set(componentElement, "transform", ""); // Ensure there is no transform property
+			syiro.style.Set(componentElement, "-webkit-transform", ""); // Ensure there is no transform property
 
 			if (showSidepane){ // If we are going to show the Sidepane
 				syiro.animation.Slide(component); // Slide out the Sidepane
-				syiro.component.CSS(sidepaneContentOverlay, "display", "block"); // Show the sidepaneContentOverlay under the Sidepane
+				syiro.style.Set(sidepaneContentOverlay, "display", "block"); // Show the sidepaneContentOverlay under the Sidepane
 			} else { // If we are going to hide the Sidepane
 				syiro.animation.Reset(component); // Reset Animation properties in the Sidepane
-				syiro.component.CSS(sidepaneContentOverlay, "display", ""); // Hide the sidepaneContentOverlay
+				syiro.style.Set(sidepaneContentOverlay, "display", ""); // Hide the sidepaneContentOverlay
 			}
 		}
 	}

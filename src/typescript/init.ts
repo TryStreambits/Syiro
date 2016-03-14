@@ -3,8 +3,10 @@
 */
 
 /// <reference path="component.ts" />
-/// <reference path="interfaces.ts" />
 /// <reference path="components/mediaplayer.ts" />
+/// <reference path="interfaces.ts" />
+/// <reference path="style.ts" />
+
 
 // #region Syiro Init System
 
@@ -58,22 +60,6 @@ namespace syiro.init {
 
 			syiro.data.Delete(component.id + "->HTMLElement"); // Ensure the Component's Element stored via syiro.data is deleted
 		}
-	}
-
-	// #endregion
-
-	// #region LoadColors
-	// CSS Color to Typescript Variable
-
-	export function LoadColors() {
-		var syiroInternalColorContainer : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "internalColorContainer"});
-		document.body.appendChild(syiroInternalColorContainer);
-
-		var syiroInternalColorStyle = window.getComputedStyle(syiroInternalColorContainer);
-		syiro.backgroundColor = syiroInternalColorStyle.backgroundColor; // Get the backgroundColor defined in CSS and set it to syiro.backgroundColor
-		syiro.primaryColor = syiroInternalColorStyle.color; // Get the primaryColor defined in CSS as color key/val and set it to syiro.primaryColor
-		syiro.secondaryColor = syiroInternalColorStyle.borderColor; // Get the secondaryColor defined in CSS as border-color key/val and set it to syiro.secondaryColor
-		document.body.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
 	}
 
 	// #endregion
@@ -301,7 +287,7 @@ namespace syiro.init {
 				function(){
 					var searchboxObject : ComponentObject = arguments[0]; // Define searchboxObject as a Syiro Component Object of the Searchbox
 					var searchboxLinkedList : ComponentObject = syiro.component.FetchLinkedListComponentObject(searchboxObject); // Define searchboxLinkedList as the fetched Linked List Component
-					syiro.component.CSS(searchboxLinkedList, "visibility", "hidden !important"); // Hide the Linked List
+					syiro.style.Set(searchboxLinkedList, "visibility", "hidden !important"); // Hide the Linked List
 				}.bind(this, component)
 			);
 		}

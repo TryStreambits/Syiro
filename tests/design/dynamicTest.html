@@ -19,7 +19,7 @@
 			var buttonGroupContainer = syiro.page.querySelector('div[data-page-component="buttongroup-container"]');
 			var audioPlayerContainer = syiro.page.querySelector('div[data-page-component="audio-player-container"]');
 			var videoPlayerContainer = syiro.page.querySelector('div[data-page-component="video-player-container"]');
-			syiro.CSS(videoPlayerContainer, "height", (screen.height * 0.50).toString() + "px");
+			syiro.style.Set(videoPlayerContainer, "height", (screen.height * 0.50).toString() + "px");
 
 			generatePage(); // Call our generatePage function
 		</script>

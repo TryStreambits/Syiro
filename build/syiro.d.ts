@@ -62,16 +62,21 @@ declare namespace syiro.events {
 }
 declare namespace syiro.utilities {
     function ElementCreator(type: string, attributes: Object): any;
+    function Run(func: any): boolean;
     function SanitizeHTML(content: any): any;
     function SecondsToTimeFormat(seconds: number): Object;
     function TypeOfThing(thing: any, checkAgainstType?: string): any;
+}
+declare namespace syiro.style {
+    function GetObject(component: any): Object;
+    function Get(component: any, property: string): string;
+    function Set(component: any, property: string, value: string): boolean;
 }
 declare namespace syiro.render {
     function Position(positioningList: (string | Array<string>), componentObject: any, relativeComponentObject: any): boolean;
 }
 declare namespace syiro.component {
     var lastUniqueIds: Object;
-    function CSS(component: any, property: string, newValue?: string): string;
     function Fetch(component: ComponentObject): any;
     function FetchComponentObject(...args: any[]): ComponentObject;
     function FetchDimensionsAndPosition(component: any): ClientRect;
@@ -120,40 +125,6 @@ declare namespace syiro.init {
     function Sidepane(component: ComponentObject): void;
     function Toast(component: ComponentObject): void;
 }
-declare namespace syiro.button {
-    function New(properties: Object): ComponentObject;
-    function SetIcon(component: ComponentObject, content: string): boolean;
-    function SetImage(component: ComponentObject, content: string): boolean;
-    function SetText(component: ComponentObject, content: string): boolean;
-    var SetLabel: Function;
-    function Toggle(component?: ComponentObject, active?: boolean): void;
-}
-declare namespace syiro.buttongroup {
-    function New(properties: Object): ComponentObject;
-    function CalculateInnerButtonWidth(component: any): HTMLElement;
-    function Toggle(buttonComponent: ComponentObject): void;
-}
-declare namespace syiro.device {
-    var DoNotTrack: boolean;
-    var HasCryptography: boolean;
-    var HasGeolocation: boolean;
-    var HasLocalStorage: boolean;
-    var IsOnline: boolean;
-    var OperatingSystem: string;
-    var SupportsMutationObserver: boolean;
-    var SupportsTouch: boolean;
-    var IsSubHD: boolean;
-    var IsHD: boolean;
-    var IsFullHDOrAbove: boolean;
-    var Orientation: string;
-    var OrientationObject: any;
-    var height: number;
-    var width: number;
-    function Detect(): void;
-    function FetchOperatingSystem(): string;
-    function FetchScreenDetails(): void;
-    function FetchScreenOrientation(): string;
-}
 declare module syiro.grid {
     function New(properties: Object): ComponentObject;
     function Scale(component: ComponentObject): void;
@@ -200,6 +171,41 @@ declare namespace syiro.toast {
     function ClearAll(): void;
     function Toggle(component: ComponentObject, action?: string): void;
 }
+declare namespace syiro.button {
+    function New(properties: Object): ComponentObject;
+    function SetIcon(component: ComponentObject, content: string): boolean;
+    function SetImage(component: ComponentObject, content: string): boolean;
+    function SetText(component: ComponentObject, content: string): boolean;
+    var SetLabel: Function;
+    function Toggle(component?: ComponentObject, active?: boolean): void;
+}
+declare namespace syiro.buttongroup {
+    function New(properties: Object): ComponentObject;
+    function CalculateInnerButtonWidth(component: any): HTMLElement;
+    function Toggle(buttonComponent: ComponentObject): void;
+}
+declare namespace syiro.device {
+    var DoNotTrack: boolean;
+    var HasCryptography: boolean;
+    var HasGeolocation: boolean;
+    var HasLocalStorage: boolean;
+    var IsOnline: boolean;
+    var OperatingSystem: string;
+    var SupportsMutationObserver: boolean;
+    var SupportsRequestAnimationFrame: boolean;
+    var SupportsTouch: boolean;
+    var IsSubHD: boolean;
+    var IsHD: boolean;
+    var IsFullHDOrAbove: boolean;
+    var Orientation: string;
+    var OrientationObject: any;
+    var height: number;
+    var width: number;
+    function Detect(): void;
+    function FetchOperatingSystem(): string;
+    function FetchScreenDetails(): void;
+    function FetchScreenOrientation(): string;
+}
 declare namespace syiro {
     var page: Element;
     var backgroundColor: string;
@@ -207,7 +213,6 @@ declare namespace syiro {
     var secondaryColor: string;
     var legacyDimensionsDetection: boolean;
     function Init(): void;
-    var CSS: typeof component.CSS;
     var Fetch: typeof component.Fetch;
     var FetchComponentObject: typeof component.FetchComponentObject;
     var FetchDimensionsAndPosition: typeof component.FetchDimensionsAndPosition;

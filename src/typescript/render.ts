@@ -1,9 +1,10 @@
 /*
-This is the namespace for render-oriented functionality for Components, such as positioning.
+	This is the namespace for render-oriented functionality for Components, such as positioning.
 */
 
 /// <reference path="component.ts" />
 /// <reference path="data.ts" />
+/// <reference path="style.ts" />
 /// <reference path="utilities.ts" />
 
 namespace syiro.render {
@@ -121,9 +122,9 @@ namespace syiro.render {
 					}
 
 					if ((position == "above") || (position == "below")){ // If we are setting vertical positioning
-						syiro.component.CSS(componentElement, "top", positionValue.toString() + "px"); // Set the top variable to be the Y position + px (ex. 100px)
+						syiro.style.Set(componentElement, "top", positionValue.toString() + "px"); // Set the top variable to be the Y position + px (ex. 100px)
 					} else { // If we are setting horizontal positioning
-						syiro.component.CSS(componentElement, "left", positionValue.toString() + "px"); // Set the left variable to the X position + px (ex. 400px)
+						syiro.style.Set(componentElement, "left", positionValue.toString() + "px"); // Set the left variable to the X position + px (ex. 400px)
 					}
 				}
 

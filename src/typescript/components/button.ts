@@ -3,6 +3,7 @@
  */
 
 /// <reference path="../component.ts" />
+/// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
 // #region Syiro Button and Toggle Button Functionality
@@ -125,10 +126,10 @@ namespace syiro.button {
 
 		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") !== "toggle")){ // If the button exists in syiro.data.storage or DOM AND Button is NOT a Toggle Button
 			if (content !== ""){ // If we are not removing the icon from the Button
-				syiro.component.CSS(componentElement, "background-image", 'url("' + content + '")'); // Set the backgroundImage to the content specified
+				syiro.style.Set(componentElement, "background-image", 'url("' + content + '")'); // Set the backgroundImage to the content specified
 				componentElement.setAttribute("data-syiro-render-icon", "custom"); // Specify not to render &:after icons
 			} else {
-				syiro.component.CSS(componentElement, "background-image", ""); // Remove the background-image
+				syiro.style.Set(componentElement, "background-image", ""); // Remove the background-image
 				componentElement.removeAttribute("data-syiro-render-icon"); // Remove the render-icon property
 			}
 
@@ -199,9 +200,9 @@ namespace syiro.button {
 			var linkedListComponentObject : ComponentObject = syiro.component.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown Button
 			var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponentObject); // Get the List Component's Element
 
-			if (syiro.component.CSS(linkedListComponentElement, "visibility") !== ""){ // If the CSS of the linked List Component is stating the List is active (visibility is visible)
+			if (syiro.style.Get(linkedListComponentElement, "visibility") !== ""){ // If the CSS of the linked List Component is stating the List is active (visibility is visible)
 				componentElement.removeAttribute("active"); // Remove the "active" attribute
-				syiro.component.CSS(linkedListComponentElement, "visibility", ""); // Remove the visibility attribute and hide the List
+				syiro.style.Set(linkedListComponentElement, "visibility", ""); // Remove the visibility attribute and hide the List
 			} else { // If the linked List is not active / showing
 				var linkedListComponentElementWidth : number = componentElement.clientWidth; // Define linkedListComponentELementWidth as a number, defaulting to the Dropdown width
 
@@ -209,13 +210,13 @@ namespace syiro.button {
 					linkedListComponentElementWidth = 200; // Set to 200(px)
 				}
 
-				syiro.component.CSS(linkedListComponentElement, "width", linkedListComponentElementWidth + "px"); // Ensure the Linked List is the same width of the Dropdown Button
+				syiro.style.Set(linkedListComponentElement, "width", linkedListComponentElementWidth + "px"); // Ensure the Linked List is the same width of the Dropdown Button
 
 				var positionInformation : Array<string> = syiro.data.Read(linkedListComponentObject["id"] + "->render"); // Get the position information on where we should render the List
 				syiro.render.Position(positionInformation, linkedListComponentObject, component); // Set the position of the List according to the position information for the Dropdown Button
 
 				componentElement.setAttribute("active", ""); // Set the "active" attribute
-				syiro.component.CSS(linkedListComponentElement, "visibility", "visible !important"); // Show the List
+				syiro.style.Set(linkedListComponentElement, "visibility", "visible !important"); // Show the List
 			}
 		} else if (componentElement.getAttribute("data-syiro-component-type") == "toggle"){ // If this a Toggle Button
 			if (typeof active == "undefined"){ // If is not provided
@@ -310,18 +311,17 @@ namespace syiro.buttongroup {
 				middleButtonNumber = Math.round(innerButtonElements.length / 2); // Define middleButtonNumber as the rounded-up int of innerButtonElements.length / 2 (ex. 5 / 2 = 2.5 -> 3)
 			}
 
-			for (var innerButtonElementsIndex in innerButtonElements){ // For each button
-				var index : number = Number(innerButtonElementsIndex);
+			for (var innerButtonElementsIndex = 0; innerButtonElementsIndex < innerButtonElements.length; innerButtonElementsIndex++){ // For each button
 				var buttonElement = innerButtonElements[innerButtonElementsIndex];
 				var widthValue : string = "calc(100% / " + innerButtonElements.length + ") !important"; // Define widthValue as a string (since we'll be apply it via CSS and letting CSS dynamically calc width). Default to 100% / num of button Elements
 
-				if (hasOddNumberOfButtons && (index == middleButtonNumber)){ // If this is the middle button Element
+				if (hasOddNumberOfButtons && (innerButtonElementsIndex == middleButtonNumber)){ // If this is the middle button Element
 					widthValue = "calc(100% / " + innerButtonElements.length + " - 2px) !important"; // Define widthValue as 100% / 2 minus 2px (bordering)
-				} else if (index == (innerButtonElements.length - 1)){ // If this is the last button Element
+				} else if (innerButtonElementsIndex == (innerButtonElements.length - 1)){ // If this is the last button Element
 					widthValue = "calc(100% / " + innerButtonElements.length + " - " + (innerButtonElements.length - 1) + "px) !important"; // Define widthValue as 100% / 2 minus N - 1px (for each button aside from the last, account for the bordering)
 				}
 
-				syiro.component.CSS(buttonElement, "width", widthValue); // Set the width to be 100% / number of button Elements
+				syiro.style.Set(buttonElement, "width", widthValue); // Set the width to be 100% / number of button Elements
 			}
 		}
 

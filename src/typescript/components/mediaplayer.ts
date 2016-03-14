@@ -5,6 +5,7 @@
 /// <reference path="../component.ts" />
 /// <reference path="../events.ts" />
 /// <reference path="../interfaces.ts" />
+/// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
 // #region Media Player Component
@@ -110,7 +111,7 @@ module syiro.mediaplayer{
 				properties[dimension] = dimensionValue.toString() + "px"; // Change to string and append px
 			}
 
-			syiro.component.CSS(componentElement, dimension, properties[dimension]); // Set the height or width of the componentElement
+			syiro.style.Set(componentElement, dimension, properties[dimension]); // Set the height or width of the componentElement
 		}
 
 		// #endregion
@@ -119,7 +120,7 @@ module syiro.mediaplayer{
 
 		if (typeof properties["art"] !== "undefined"){
 			if (navigator.userAgent.indexOf("iPhone") == -1) { // If we are not using an iPhone
-				syiro.component.CSS(componentElement, "background-image", 'url("' + properties["art"] + '")'); // Set it as the background image of the player
+				syiro.style.Set(componentElement, "background-image", 'url("' + properties["art"] + '")'); // Set it as the background image of the player
 			} else { // If we are using an iPhone
 				mediaPlayerProperties["poster"] = properties["art"]; // Define the poster property of the Media Element to be the art
 			}
@@ -178,7 +179,7 @@ module syiro.mediaplayer{
 			// #region Button Attribute Resetting
 
 			var playButton = mediaControl.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button from the Media Control
-			syiro.component.CSS(playButton, "background-image", ""); // Remove the background-image style / reset to play image for Play Button
+			syiro.style.Set(playButton, "background-image", ""); // Remove the background-image style / reset to play image for Play Button
 			playButton.removeAttribute("active"); // Remove component-status to imply play icon is not active (in this case, paused)
 
 			var volumeControl = mediaControl.querySelector('div[data-syiro-render-icon="volume"]'); // Get the Volume Button from the Media Control
@@ -228,9 +229,9 @@ module syiro.mediaplayer{
 					}
 				}
 
-				syiro.component.CSS(playerErrorNotice, "visibility", ""); // Remove the playerErrorNotice visibility styling if it exists (it defaults to hidden)
+				syiro.style.Set(playerErrorNotice, "visibility", ""); // Remove the playerErrorNotice visibility styling if it exists (it defaults to hidden)
 			} else { // If the content is not playable or streamable
-				syiro.component.CSS(playerErrorNotice, "visibility", "visible"); // Set the playerErrorNotice visibility styling to visible
+				syiro.style.Set(playerErrorNotice, "visibility", "visible"); // Set the playerErrorNotice visibility styling to visible
 			}
 
 		}
@@ -537,7 +538,7 @@ module syiro.mediaplayer{
 
 				var priorInputSpaceWidth : number = (roundedDownTime / Number(playerRange.max)) * playerRange.clientWidth; // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
 				var updatedGradient : string = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth +2) + "px, transparent 0px)"; // Define updatedGradient as the information we'd apply to linear-gradient
-				syiro.component.CSS(playerRange, "background", updatedGradient); // Set background to updated linear-gradient
+				syiro.style.Set(playerRange, "background", updatedGradient); // Set background to updated linear-gradient
 			}
 		}
 	}
@@ -569,7 +570,7 @@ module syiro.mediaplayer{
 			}
 		}
 
-		syiro.component.CSS(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + inputVolumeValue  + "%, transparent 0px)");
+		syiro.style.Set(playerRange, "background", "linear-gradient(to right, " + syiro.primaryColor + " " + inputVolumeValue  + "%, transparent 0px)");
 		playerInnerContentElement.volume = volume; // Set the Player volume
 	}
 
@@ -619,12 +620,12 @@ module syiro.mediaplayer{
 		var menuDialog : Element = componentElement.querySelector('div[data-syiro-minor-component="player-menu"]'); // Get the Menu Dialog
 		var menuButton : Element = componentElement.querySelector('div[data-syiro-render-icon="menu"]'); // Get the menu button element
 
-		if (syiro.component.CSS(menuDialog, "visibility") !== "visible"){ // If the Menu Dialog is currently not showing
+		if (syiro.style.Get(menuDialog, "visibility") !== "visible"){ // If the Menu Dialog is currently not showing
 			menuButton.setAttribute("active", "true"); // Set the menu button active to true
-			syiro.component.CSS(menuDialog, "visibility", "visible"); // Show the menu dialog
+			syiro.style.Set(menuDialog, "visibility", "visible"); // Show the menu dialog
 		} else { // If the Menu dialog currently IS showing
 			menuButton.removeAttribute("active"); // Remove the menu button active status
-			syiro.component.CSS(menuDialog, "visibility", ""); // Hide the menu dialog (removing the visibility attribute, putting the Menu Dialog back to default state)
+			syiro.style.Set(menuDialog, "visibility", ""); // Hide the menu dialog (removing the visibility attribute, putting the Menu Dialog back to default state)
 		}
 	}
 

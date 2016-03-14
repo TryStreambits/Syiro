@@ -24,11 +24,11 @@ namespace syiro.render {
 				positioningList = [arguments[0]]; // Redefine as an array
 			}
 
-			if (syiro.utilities.TypeOfThing(componentObject) == "ComponentObject"){ // If the componentObject passed is in fact a Syiro Component Object
+			if (syiro.component.IsComponentObject(componentObject)){ // If the componentObject passed is in fact a Syiro Component Object
 				componentElement = syiro.component.Fetch(componentObject); // Define componentElement as the Component Element that we fetch from the Component Object
 			}
 
-			if (syiro.utilities.TypeOfThing(relativeComponentObject) == "ComponentObject"){ // If the relativeComponentObject passed is in fact a Syiro Component Object
+			if (syiro.component.IsComponentObject(relativeComponentObject)){ // If the relativeComponentObject passed is in fact a Syiro Component Object
 				relativeComponentElement = syiro.component.Fetch(relativeComponentObject); // Define relativeComponentElement as the Component Element that we fetch from the relativeComponentObject
 			}
 

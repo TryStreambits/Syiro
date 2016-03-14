@@ -215,7 +215,6 @@ declare namespace syiro {
     var primaryColor: string;
     var secondaryColor: string;
     var legacyDimensionsDetection: boolean;
-    var promiseNum: number;
     function Init(): void;
     var Fetch: typeof component.Fetch;
     var FetchComponentObject: typeof component.FetchComponentObject;

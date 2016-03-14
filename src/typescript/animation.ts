@@ -63,7 +63,7 @@ namespace syiro.animation {
 	export function Reset(component : any){
 		var componentElement : Element; // Define componentElement as any
 
-		if (syiro.utilities.TypeOfThing(component) == "ComponentObject"){ // If we passed a Component Object
+		if (syiro.component.IsComponentObject(component)){ // If we passed a Component Object
 			componentElement = syiro.component.Fetch(component); //  Define componentElement as the fetched Syiro Component
 		} else { // If we passed an Element
 			componentElement = component; // Define componentElement as the component provided

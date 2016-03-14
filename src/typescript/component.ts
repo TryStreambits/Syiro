@@ -94,7 +94,7 @@ namespace syiro.component {
 	export function FetchDimensionsAndPosition(component : any) : ClientRect { // Get the height and width of the Element
 		var componentElement : HTMLElement; // Define componentElement as an Element
 
-		if (syiro.utilities.TypeOfThing(component) == "ComponentObject"){ // If the Component provided is a Syiro Component Object
+		if (syiro.component.IsComponentObject(component)){ // If the Component provided is a Syiro Component Object
 			componentElement = syiro.component.Fetch(component); // Fetch the Component Element
 		} else { // If the Component provided is NOT a Syiro Component Object
 			componentElement = component; // Set the componentElement to the component (Element) provided
@@ -132,14 +132,11 @@ namespace syiro.component {
 
 	// #endregion
 
-	// #region Is Component Object
+	// IsComponentObject
 	// This function verifies using multiple tests if the variable passed is actualy a Component Object
-
 	export function IsComponentObject(component : any) : boolean {
 		return (syiro.utilities.TypeOfThing(component) == "ComponentObject");
 	}
-
-	// #endregion
 
 	// #region Update Stored Component's HTMLElement, but only if it exists in the first place.
 
@@ -156,7 +153,7 @@ namespace syiro.component {
 	export function Add(appendOrPrepend : string, parentComponent : any, childComponent : any) : boolean { // Returns boolean if the component adding was successful or not
 		var parentElement : Element; // Define parentElement as an Element
 
-		if (syiro.utilities.TypeOfThing(parentComponent) == "ComponentObject"){ // If the parentComponent is a Component Object
+		if (syiro.component.IsComponentObject(parentComponent)){ // If the parentComponent is a Component Object
 			parentElement = syiro.component.Fetch(parentComponent); // Get the HTMLElement of the parentComponent
 		} else { // If it is an Element
 			parentElement = parentComponent; // Define parentElement as actually the parentComponent
@@ -171,7 +168,7 @@ namespace syiro.component {
 
 		var allowAdding : boolean = false; // Define variable to determine if we should allow adding the childComponent to the parentComponent or not. Defaults as false
 
-		if (syiro.utilities.TypeOfThing(childComponent) == "ComponentObject"){ // If the childComponent is an Syiro Component Object
+		if (syiro.component.IsComponentObject(childComponent)){ // If the childComponent is an Syiro Component Object
 			if ((parentComponent["type"] == "navbar") && (syiro.data.Read(parentComponent["id"] + "->Position") == "top") && ((childComponent["type"] == "button") || (childComponent["type"] == "searchbox"))){ // If the parentComponent is a top Navbar and childComponent is either a button or a searchbar
 				allowAdding = true; // Allow adding the childComponent
 			} else if ((parentComponent["type"] == "list") && (childComponent["type"].indexOf("list") !== -1)){ // If the parentComponent is a List and childComponent is a List or List Item

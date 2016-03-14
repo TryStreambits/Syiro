@@ -84,7 +84,7 @@ namespace syiro.navbar {
 
 		var componentAddingSucceeded : boolean = false; // Variable to store the determination of success (default to false)
 
-		if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component.type == "navbar")){ // If this is a Navbar Component and elementOrProperties is defined
+		if (syiro.component.IsComponentObject("ComponentObject") && (component.type == "navbar")){ // If this is a Navbar Component and elementOrProperties is defined
 			var typeOfElementOrProperties : string = syiro.utilities.TypeOfThing(elementOrProperties); // Get the type of elementOrProperties
 			var generatedElement : HTMLElement; // Define generatedElement as the element we will be appending
 
@@ -110,7 +110,7 @@ namespace syiro.navbar {
 	export function RemoveLink(component : ComponentObject, elementOrProperties : any) : boolean { // Return boolean if it was successful or not
 		var componentRemovingSucceed : boolean = false; // Variable to store the determination of success
 
-		if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component.type == "navbar")){ // If this is a Navbar Component
+		if (syiro.component.IsComponentObject(component) && (component.type == "navbar")){ // If this is a Navbar Component
 			var navbarElement : Element = syiro.component.Fetch(component); // Get the Element of the Navbar component
 			var typeOfElementOrProperties : string = syiro.utilities.TypeOfThing(elementOrProperties); // Get the type of elementOrProperties
 			var potentialLinkElement : Element; // Get the potential link element.
@@ -139,7 +139,7 @@ namespace syiro.navbar {
 	// #region Function for setting the top Navbar's logo
 
 	export function SetLogo(component : ComponentObject, content : string) : boolean{ // Requires the component object and string of the image URL
-		if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component.type == "navbar") && (syiro.data.Read(component.id + "->Position") == "top")){ // If this is a "top" Navbar Component
+		if (syiro.component.IsComponentObject(component) && (component.type == "navbar") && (syiro.data.Read(component.id + "->Position") == "top")){ // If this is a "top" Navbar Component
 			var navbarElement : Element = syiro.component.Fetch(component); // Get the HTMLElement
 			var imageElement : Element = navbarElement.querySelector('img[data-syiro-minor-component="logo"]'); // Set imageElement as the IMG element we will either fetch or generate
 
@@ -170,7 +170,7 @@ namespace syiro.navbar {
 	// #region Function to set the bottom navbar label (typically something like a Copyright notice)
 
 	export function SetLabel(component : ComponentObject, content : string) : boolean{ // Set the label text of the footer component to the labelText defined
-		if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component.type == "navbar") && (syiro.data.Read(component.id + "->Position") == "bottom")){ // If this is a "bottom" Navbar Component
+		if (syiro.component.IsComponentObject(component) && (component.type == "navbar") && (syiro.data.Read(component.id + "->Position") == "bottom")){ // If this is a "bottom" Navbar Component
 			var navbarElement = syiro.component.Fetch(component); // Get the Element of the Navbar component
 			var labelComponent : Element = navbarElement.querySelector("label"); // Fetch the labelComponent if it exists
 

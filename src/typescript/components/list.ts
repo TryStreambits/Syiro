@@ -186,7 +186,7 @@ namespace syiro.listitem {
 		var setControlSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
 
 		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "list-item")){ // Make sure the component is in fact a List Item
-			if ((syiro.utilities.TypeOfThing(control) == "ComponentObject") && (control["type"] == "button")){ // If the content is a Component Object and is a Button
+			if (syiro.component.IsComponentObject(control) && (control["type"] == "button")){ // If the content is a Component Object and is a Button
 				var listItemElement = syiro.component.Fetch(component); // Get the List Item Element
 
 				if (listItemElement.querySelector("div") !== null){ // If there is already a control inside the List Item

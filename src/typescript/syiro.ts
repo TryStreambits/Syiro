@@ -26,8 +26,6 @@ namespace syiro {
 	export var secondaryColor : string; // Define secondaryColor as the rgba value we get from the CSS of the Syiro Secondary Color
 	export var legacyDimensionsDetection : boolean; // Define legacyDimensionsDetection as a boolean, used if we need to check dimensions for non-MutationObserver supported browsers
 
-	export var promiseNum : number;
-
 	// #region Syiro Initialization Function
 
 	export function Init() : void {
@@ -165,8 +163,6 @@ namespace syiro {
 		}
 
 		// #endregion
-
-		// #region Colorization Init
 
 		syiro.utilities.Run(syiro.style.LoadColors); // Load Colors
 	}

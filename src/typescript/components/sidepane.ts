@@ -139,7 +139,7 @@ namespace syiro.sidepane {
 	// #region Toggle - This function will toggle the Sidepane and the content overlay
 
 	export function Toggle(component : ComponentObject, eventData ?: any){
-		if ((syiro.utilities.TypeOfThing(component) == "ComponentObject") && (component.type == "sidepane")){ // If this is a Component Object and indeed a Sidepane
+		if (syiro.component.IsComponentObject(component) && (component.type == "sidepane")){ // If this is a Component Object and indeed a Sidepane
 			var componentElement = syiro.component.Fetch(component); // Fetch the Sidepane Element
 			var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Fetch the sidepaneContentOverlay Element
 			var showSidepane : boolean = false; // Define showSidepane as a defaulted "false"

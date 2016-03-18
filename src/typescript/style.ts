@@ -82,7 +82,7 @@ namespace syiro.style {
             setProperty = false; // Redefine setProperty as false
         }
 
-        if (setProperty){ // if we should set the property
+        if (setProperty && (syiro.utilities.TypeOfThing(value, "string"))){ // if we should set the property and value is string
             var propertySetter : Function = function(setterComponentElement : HTMLElement, property : string, value : string){ // Define propertySetter as the main setter functionality
                 var cssObjectOfComponent : Object = syiro.style.GetObject(setterComponentElement); // Get the CSS object of the Element
                 var camelCasedProperty : string = syiro.style.GetPropertyCamelCased(property); // Get the camelCased version of this property

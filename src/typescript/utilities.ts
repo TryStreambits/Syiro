@@ -126,7 +126,7 @@ namespace syiro.utilities {
 	export function TypeOfThing(thing : any, checkAgainstType ?: string) : any {
 		var thingType : any = (typeof thing); // Initially set thingType as the typeof
 
-		if (thingType !== "undefined"){ // If the thing provided is not undefined
+		if ((thingType !== "undefined") && (thing !== null)){ // If the thing provided is not undefined
 			if ((thingType == "object") && (typeof thing.nodeType == "undefined")){ // If the thing is an Object and doesn't have a nodeType
 				if ((typeof thing["id"] !== "undefined") && (typeof thing["type"] !== "undefined")){ // If this Object has an id and type
 					thingType = "ComponentObject"; // Define thingType as Component Object
@@ -144,6 +144,8 @@ namespace syiro.utilities {
 					thingType = "Document"; // Set thingType to Document
 				}
 			}
+		} else if (thing == null){ // If null was passed
+			thingType = "null"; // Change thingType to null
 		}
 
 		if (typeof checkAgainstType == "string"){ // If checkAgainstType is defined

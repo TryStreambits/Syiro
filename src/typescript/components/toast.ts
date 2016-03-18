@@ -1,18 +1,16 @@
 /*
- This is the namespace for Syiro Toast component.
- Contrary to common belief, this does not actually have anything to do with toast.
+	This is the namespace for Syiro Toast component.
+	Contrary to common belief, this does not actually have anything to do with toast.
 */
 
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
-// #region Syiro Toast Component
-
 namespace syiro.toast {
 
-	// #region Generate Function
-
+	// New
+	// Create a Toast
 	export function New(properties : Object) : ComponentObject {
 		if ((typeof properties["type"] == "undefined") || ((properties["type"] !== "normal") && (properties["type"] !== "dialog"))){ // If no "type" is defined or it was defined as NOT normal or dialog
 			properties["type"] = "normal"; // Define as a "normal" Toast
@@ -94,16 +92,12 @@ namespace syiro.toast {
 			componentElement.appendChild(syiro.component.Fetch(closeIconButtonObject)); // Append the closeIconButton (that we fetch from closeIconButtonObject) to the Toast
 		}
 
-		// #endregion
-
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 		return { "id" : componentId, "type" : "toast" }; // Return a Component Object
 	}
 
-	// #endregion
-
-	// #region Clear - This function will remove a specific Toasts from DOM
-
+	// Clear
+	// Remove a specific Toasts from DOM
 	export function Clear(component : ComponentObject){
 		var componentElement = syiro.component.Fetch(component); // Fetch the componentElement
 
@@ -113,10 +107,8 @@ namespace syiro.toast {
 		}
 	}
 
-	// #endregion
-
-	// #region ClearAll - This function is a helper function for removing all Toasts from DOM
-
+	// ClearAll
+	// Removes all Toasts from DOM
 	export function ClearAll(){
 		var toasts : NodeList = document.body.querySelectorAll('div[data-syiro-component="toast"]'); // Get all Toasts
 
@@ -130,10 +122,8 @@ namespace syiro.toast {
 		}
 	}
 
-	// #endregion
-
-	// #region Toggle - This function will show or hide a particular Toast
-
+	// Toggle
+	// Show or hide a particular Toast
 	export function Toggle(component : ComponentObject, action ?: string){
 		var componentElement = syiro.component.Fetch(component); // Fetch the componentElement
 
@@ -186,9 +176,4 @@ namespace syiro.toast {
 			}
 		}
 	}
-
-	// #endregion
-
 }
-
-// #endregion

@@ -137,7 +137,7 @@ declare module syiro.griditem {
 }
 declare namespace syiro.navbar {
     function New(properties: Object): ComponentObject;
-    function AddLink(append: any, component: ComponentObject, elementOrProperties: any): boolean;
+    function AddLink(append: string, component: ComponentObject, elementOrProperties: any): boolean;
     function RemoveLink(component: ComponentObject, elementOrProperties: any): boolean;
     function SetLogo(component: ComponentObject, content: string): boolean;
     function SetLabel(component: ComponentObject, content: string): boolean;
@@ -179,7 +179,6 @@ declare namespace syiro.button {
     function SetIcon(component: ComponentObject, content: string): boolean;
     function SetImage(component: ComponentObject, content: string): boolean;
     function SetText(component: ComponentObject, content: string): boolean;
-    var SetLabel: Function;
     function Toggle(component?: ComponentObject, active?: boolean): void;
 }
 declare namespace syiro.buttongroup {

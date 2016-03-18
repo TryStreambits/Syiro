@@ -9,8 +9,8 @@
 
 namespace syiro.render {
 
-	// #region Positioning of Components or Elements
-
+	// Position
+	// Position a Component or Element relative to another one
 	export function Position(positioningList : (string | Array<string>), componentObject : any, relativeComponentObject : any) : boolean {
 		var positioningAllowed : boolean = false; // Define positioningAllowed as a boolean, defaulting to false
 
@@ -134,6 +134,4 @@ namespace syiro.render {
 
 		return positioningAllowed;
 	}
-
-	// #endregion
 }

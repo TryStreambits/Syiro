@@ -1,17 +1,15 @@
 /*
- This is the namespace for Syiro Grid component and it's sub-component, Grid Item
- */
+	This is the namespace for Syiro Grid component and it's sub-component, Grid Item
+*/
 
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
-// #region Syiro Grid Component
-
 module syiro.grid {
 
-	// #region New Grid Component
-
+	// New
+	// Create a Grid
 	export function New(properties : Object) : ComponentObject {
 		var component : ComponentObject = { "id" : syiro.component.IdGen("grid"), "type" : "grid" }; // Define componentObject as a new ComponentObject with a newly generated Id and type set to grid
 		var renderItems : string;
@@ -36,10 +34,8 @@ module syiro.grid {
 		return component;
 	}
 
-	// #endregion
-
-	// #region Scale Grid and inner Grid Items
-
+	// Scale
+	// Scales Grid and inner Grid Items
 	export function Scale(component : ComponentObject){
 		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "grid")){ // If this is a Grid Component
 			var componentElement : HTMLElement = syiro.component.Fetch(component); // Fetch the componentElement of this Grid Component
@@ -68,19 +64,12 @@ module syiro.grid {
 			}
 		}
 	}
-
-	// #endregion
-
 }
-
-// #endregion
-
-// #region Syiro Grid Item Component
 
 module syiro.griditem {
 
-	// #region New Grid Item Component
-
+	// New
+	// Create a Grid Item
 	export function New(properties : Object) : ComponentObject {
 		var gridItemComponent : ComponentObject;
 
@@ -101,8 +90,4 @@ module syiro.griditem {
 
 		return gridItemComponent;
 	}
-
-	// #endregion
 }
-
-// #endregion

@@ -5,17 +5,16 @@
 /// <reference path="component.ts" />
 /// <reference path="interfaces.ts" />
 
-// #region Syiro Animation System
-
 namespace syiro.animation {
 
-	// #region Component Animation Function
+	// Animate
+	// Animate a component with the provided AnimationOptions
 	export function Animate(component : any, properties : AnimationOptions){ // This function animates a particular Component or Element and calls a post-animation function if applicable
 		var element : any = null; // Define element as any
 		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of this component variable
 
 		if (typeOfComponent == "ComponentObject"){ // If we passed a Component Object
-			element = syiro.component.Fetch(component); //  Define element as the fetched Syiro Component
+			element = syiro.component.Fetch(component); // Define element as the fetched Syiro Component
 		} else if (typeOfComponent == "Element") { // If we passed an Element
 			element = component; // Define element as the component provided
 			component = syiro.component.FetchComponentObject(element); // Redefine component as the newly fetched Component Object of the element
@@ -56,15 +55,13 @@ namespace syiro.animation {
 		}
 	}
 
-	// #endregion
-
-	// #region Reset - Remove Syiro Animation Properties from Components
-
+	// Reset
+	// Remove Syiro Animation Properties from Components
 	export function Reset(component : any){
 		var componentElement : Element; // Define componentElement as any
 
 		if (syiro.component.IsComponentObject(component)){ // If we passed a Component Object
-			componentElement = syiro.component.Fetch(component); //  Define componentElement as the fetched Syiro Component
+			componentElement = syiro.component.Fetch(component); // Define componentElement as the fetched Syiro Component
 		} else { // If we passed an Element
 			componentElement = component; // Define componentElement as the component provided
 			component = syiro.component.FetchComponentObject(componentElement); // Redefine component as the newly fetched Component Object of the componentElement
@@ -80,10 +77,8 @@ namespace syiro.animation {
 		}
 	}
 
-	// #endregion
-
-	// #region Fade In Animation
-
+	// FadeIn
+	// Fade in a Component
 	export function FadeIn(component : any, postAnimationFunction ?: Function){
 		syiro.animation.Animate(component, // Call Animate with the Component and properties
 			{
@@ -93,10 +88,8 @@ namespace syiro.animation {
 		);
 	}
 
-	// #endregion
-
-	// #region Fade Out Animation
-
+	// FadeOut
+	// Fade out a Component
 	export function FadeOut(component : any, postAnimationFunction ?: Function){
 		syiro.animation.Animate(component, // Call Animate with the Component and properties
 			{
@@ -106,10 +99,9 @@ namespace syiro.animation {
 		);
 	}
 
-	// #endregion
 
-	// #region Slide Animation
-
+	// Slide
+	// Slide a Component if it supports it
 	export function Slide(component : any, postAnimationFunction ?: Function){
 		syiro.animation.Animate(component, // Call Animate with the Component and properties
 			{
@@ -118,7 +110,4 @@ namespace syiro.animation {
 			}
 		);
 	}
-
-	// #endregion
-
 }

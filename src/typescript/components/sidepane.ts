@@ -1,17 +1,15 @@
 /*
- This is the namespace for the Syiro Sidepane Component.
- */
+	This is the namespace for the Syiro Sidepane Component.
+*/
 
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
-// #region Syiro Sidepane Functionality
-
 namespace syiro.sidepane {
 
-	// #region Generation
-
+	// New
+	// Create a Sidepane
 	export function New(properties : Object) : ComponentObject {
 		var componentId : string = syiro.component.IdGen("sidepane"); // Generate a Sidepane Component Id
 		var componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : componentId, "data-syiro-component" : "sidepane"}); // Generate an empty Sidepane
@@ -38,7 +36,7 @@ namespace syiro.sidepane {
 
 		// #endregion
 
-		// #region SIdepane Searchbox
+		// #region Sidepane Searchbox
 
 		if (syiro.utilities.TypeOfThing(properties["searchbox"], "ComponentObject")){ // If there is a Searchbox Component Object
 			var searchboxElement : Element = syiro.component.Fetch(properties["searchbox"]); // Fetch the Searchbox
@@ -68,15 +66,12 @@ namespace syiro.sidepane {
 		return { "id" : componentId, "type" : "sidepane"}; // Return a Sidepane Component Object
 	}
 
-	// #endregion
-
-	// #region Gesture Functions
-
+	// GestureInit
 	export function GestureInit(){
 		var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
 		var moveElement : any; // Define moveElement as the element we will be tracking movement for
 
-		// #region Event Setting
+		// Event Setting
 
 		if (typeof arguments[1].touches !== "undefined"){ // If we are using touch events
 			moveElement = arguments[0]; // Set the Sidepane Edge to the moveElement
@@ -87,7 +82,7 @@ namespace syiro.sidepane {
 		syiro.events.Add(syiro.events.Strings["move"], moveElement, syiro.sidepane.Drag.bind(this, arguments[0])); // Bind the Sidepane Edge and moveElement to the Drag function for "move"
 		syiro.events.Add(syiro.events.Strings["up"], moveElement, syiro.sidepane.Release.bind(this, arguments[0])); // Bind the Sidepane Edge to Release function for "up"
 
-		// #endregion
+
 
 		componentElement.removeAttribute("data-syiro-animation"); // Remove the slide animation, sliding the Sidepane back into the edge.
 		componentElement.setAttribute("data-syiro-render-animation", "false"); // Set render-animation to false so transition properties are not applied
@@ -96,6 +91,7 @@ namespace syiro.sidepane {
 		syiro.style.Set(sidepaneContentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
 	}
 
+	// Drag
 	export function Drag(){
 		var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
 		var eventData = arguments[2]; // Define eventData as the event data passed
@@ -118,6 +114,7 @@ namespace syiro.sidepane {
 		syiro.style.Set(componentElement, "-webkit-transform", "translateX(" + updatedSidepanePosition.toString() + "px)");  // Use GPU accelerated translateX to set position of Sidepane
 	}
 
+	// Release
 	export function Release(){
 		var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
 		var component : ComponentObject = syiro.component.FetchComponentObject(arguments[0].parentElement); // Define component as the fetched Component Object
@@ -125,19 +122,12 @@ namespace syiro.sidepane {
 		var eventData : any = arguments[2]; // Define eventData as the event data passed
 
 		syiro.sidepane.Toggle(component, eventData); // Call Sidepane Toggle w/ event data
-
-		// #region Remove Events for Mouse / Touch Move + Up
-
 		syiro.events.Remove(syiro.events.Strings["move"], moveElement); // Remove the "move" function
 		syiro.events.Remove(syiro.events.Strings["up"], moveElement); // Remove the "up" function
-
-		// #endregion
 	}
 
-	// #endregion
-
-	// #region Toggle - This function will toggle the Sidepane and the content overlay
-
+	// Toggle
+	// Toggle the Sidepane and the content overlay
 	export function Toggle(component : ComponentObject, eventData ?: any){
 		if (syiro.component.IsComponentObject(component) && (component.type == "sidepane")){ // If this is a Component Object and indeed a Sidepane
 			var componentElement = syiro.component.Fetch(component); // Fetch the Sidepane Element
@@ -179,8 +169,4 @@ namespace syiro.sidepane {
 			}
 		}
 	}
-
-	// #endregion
 }
-
-// #endregion

@@ -57,7 +57,6 @@ namespace syiro.style {
 
     // LoadColors
 	// CSS Color to Typescript Variable
-
 	export function LoadColors() {
 		var syiroInternalColorContainer : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "internalColorContainer"});
 		document.body.appendChild(syiroInternalColorContainer);
@@ -68,8 +67,6 @@ namespace syiro.style {
 		syiro.secondaryColor = syiroInternalColorStyle.borderColor; // Get the secondaryColor defined in CSS as border-color key/val and set it to syiro.secondaryColor
 		document.body.removeChild(syiroInternalColorContainer); // Remove the no longer necessary Internal Color Container
 	}
-
-	// #endregion
 
     // Set
     // This function will set the CSS property of an object

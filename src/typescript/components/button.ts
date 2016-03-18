@@ -1,17 +1,15 @@
 /*
- This is the namespace for the Syiro Button, Buttongroup, and Toggle Button components.
- */
+	This is the namespace for the Syiro Button, Buttongroup, and Toggle Button components.
+*/
 
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
-// #region Syiro Button and Toggle Button Functionality
-
 namespace syiro.button {
 
-	// #region Basic, Dropdown, Toggle Button Generator
-
+	// New Button
+	// Creates a new Button with the applied properties
 	export function New(properties : Object) : ComponentObject { // Generate a Button Component and return a Component Object
 		if (typeof properties["type"] == "undefined"){ // If the type is undefined
 			properties["type"] = "basic"; // Default to a basic button
@@ -23,8 +21,6 @@ namespace syiro.button {
 
 		var componentId : string = syiro.component.IdGen("button"); // Generate a component Id
 		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
-
-		// #region Initial Button Component Data Generation
 
 		var componentData : Object = {
 			"data-syiro-component" : "button", // Set data-syiro-component to Button
@@ -115,10 +111,8 @@ namespace syiro.button {
 		return { "id" : componentId, "type" : "button" }; // Return a Component Object
 	}
 
-	// #endregion
-
-	// #region Function for setting the icon of a Button
-
+	// SetIcon
+	// Set the icon of a Button
 	export function SetIcon(component : ComponentObject, content : string) : boolean { // Returns boolean value in relation to success
 		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
 
@@ -140,10 +134,8 @@ namespace syiro.button {
 		return setSucceeded; // Return the boolean value
 	}
 
-	// #endregion
-
-	// #region Function for setting the image of a Dropdown Button
-
+	// SetImage
+	// Set the image of a Dropdown Button
 	export function SetImage(component : ComponentObject, content : string) : boolean {
 		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
 		var componentElement = syiro.component.Fetch(component); // Get the componentElement
@@ -169,10 +161,8 @@ namespace syiro.button {
 		return setSucceeded; // Return the boolean value
 	}
 
-	// #endregion
-
-	// #region Function for setting the label of a Basic or Dropdown Button
-
+	// SetText
+	// Set the label of a Basic or Dropdown Button
 	export function SetText(component : ComponentObject, content : string) : boolean { // Returns boolean value in relation to success
 		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
 		var componentElement = syiro.component.Fetch(component); // Get the componentElement
@@ -186,12 +176,8 @@ namespace syiro.button {
 		return setSucceeded; // Return the boolean value
 	}
 
-	export var SetLabel : Function = syiro.button.SetText; // Define SetLabel as meta-function for SetText
-
-	// #endregion
-
-	// #region Function for toggling either a Dropdown Button or Toggle Button
-
+	// Toggle
+	// Toggle a Dropdown Button or Toggle Button state
 	export function Toggle(component ?: ComponentObject, active ?: boolean){ // Function that will handle toggling the Dropdown
 		var component : ComponentObject = arguments[0]; // Get the component that was passed to this function as a bound argument
 		var componentElement : any = syiro.component.Fetch(component); // Get the componentElement based on the component Object
@@ -234,19 +220,12 @@ namespace syiro.button {
 			}
 		}
 	};
-
-	// #endregion
-
 }
-
-// #endregion
-
-// #region Syiro Buttongroup Component
 
 namespace syiro.buttongroup {
 
-	// #region Buttongroup Generator
-
+	// New
+	// Create a Buttongroup
 	export function New(properties : Object) : ComponentObject {
 		var buttongroupComponentObject : ComponentObject;
 
@@ -286,10 +265,7 @@ namespace syiro.buttongroup {
 		return buttongroupComponentObject;
 	}
 
-	// #endregion
-
-	// #region Buttongroup - Inner Button Width Calculation
-
+	// CalculateInnerButtonWidth
 	export function CalculateInnerButtonWidth(component : any) : HTMLElement {
 		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of the variable passed
 		var componentElement : HTMLElement; // Define componentElement as the Element of the Component Object and/or is the component passed
@@ -328,8 +304,8 @@ namespace syiro.buttongroup {
 		return componentElement; // Return the modified Component Element
 	}
 
-	// #region Buttongroup Active Button Toggling
-
+	// Toggle
+	// Buttongroup Active Button Toggling
 	export function Toggle(buttonComponent : ComponentObject){
 		var buttonElement : Element = syiro.component.Fetch(buttonComponent); // Fetch the buttonElement
 
@@ -345,9 +321,4 @@ namespace syiro.buttongroup {
 
 		syiro.component.Update(parentButtongroupComponentObject["id"], parentButtongroup); // Update the parentButtongroup if necessary
 	}
-
-	// #endregion
-
 }
-
-// #endregion

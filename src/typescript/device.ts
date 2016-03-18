@@ -1,18 +1,16 @@
 /*
- This is the namespace for information and functionality Syiro provides regarding the device using Syiro.
+	This is the namespace for information and functionality Syiro provides regarding the device using Syiro.
 */
 
 /// <reference path="events.ts" />
 /// <reference path="interfaces.ts" />
 /// <reference path="components/mediaplayer.ts" />
 
-// #region Syiro Device Information and Functionality
-
 namespace syiro.device {
 
-	// #region Browser / Device Support (Default all to true since Detect() will change it if necessary)
+	// Browser / Device Support (Default all to true since Detect() will change it if necessary)
 
-	export var DoNotTrack : boolean; // Define DoNotTrack as a boolean if the browser's user has Do Not Track enabled.
+	export var DoNotTrack : boolean = true; // Define DoNotTrack as a boolean if the browser's user has Do Not Track enabled.
 	export var HasCryptography : boolean; // Define HasCryptography as a boolean if the device has Crypto support (for instance for getting random values).
 	export var HasGeolocation : boolean; // Define HasGeolocation as a boolean if the device has Geolocation support.
 	export var HasLocalStorage : boolean; // Define HasLocalStorage as a boolean if the device has LocalStorage support.
@@ -22,7 +20,7 @@ namespace syiro.device {
 	export var SupportsRequestAnimationFrame : boolean; // Define SupportsRequestAnimationFrame as a boolean as to whether the browser supports requestAnimationFrame function.
 	export var SupportsTouch : boolean; // Define SupportsTouch as a boolean as to whether or not the device supports touch.
 
-	// #region Screen Variables
+	// Screen Variables
 
 	export var IsSubHD : boolean; // Define IsSubHD as a boolean if the device is less than an HD (720p) display.
 	export var IsHD : boolean; // Define IsHD as a boolean if the device is HD (720p) or greater than 720p.
@@ -33,20 +31,12 @@ namespace syiro.device {
 	export var height : number; // Define height as the number of the true height of the content
 	export var width : number; // Define width as the number of the true width of the content
 
-	// #endregion
-
-	// #region Detection Function - Use to detect functionality, define variables, etc.
-
+	// Detect
+	// Detect features, operating system, screen information, etc.
 	export function Detect(){
-		// #region Do Not Track
-
 		if (typeof navigator.doNotTrack !== "undefined"){ // If DoNotTrack is defined in the navigator Object
 			syiro.device.DoNotTrack = Boolean(navigator.doNotTrack); // Set the DoNotTrack variable to the value defined in navigator and converted to boolean
-		} else {  // If DoNotTrack is not defined in the navigator Object
-			syiro.device.DoNotTrack = true; // Set DoNotTrack to true by default
 		}
-
-		// #endregion
 
 		syiro.device.HasCryptography = syiro.utilities.TypeOfThing(window.crypto, "Crypto"); // HasCryptography is set to true if window.crypto is type Crypto
 		syiro.device.HasLocalStorage =  syiro.utilities.TypeOfThing(window.localStorage, "Storage"); // HasLocalStorage is set to true if window.localStorage is type Storage
@@ -125,10 +115,8 @@ namespace syiro.device {
 		// #endregion
 	}
 
-	// #endregion
-
-	// #region Fetch Operating System
-
+	// FetchOperatingSystem
+	// Fetch the potential operating system
 	export function FetchOperatingSystem() : string {
 		var userAgent : string = navigator.userAgent; // Get the userAgent
 
@@ -157,10 +145,8 @@ namespace syiro.device {
 		return syiro.device.OperatingSystem; // Return the OS in the event someone directly calls FetchOperatingSystem
 	}
 
-	// #endregion
-
-	// #region Screen Dimension Details
-
+	// FetchScreenDetails
+	// Fetch screen dimension details
 	export function FetchScreenDetails(){
 		syiro.device.height = screen.height; // Height of the entire device
 		syiro.device.width = screen.width; // Width of the entire device
@@ -170,10 +156,8 @@ namespace syiro.device {
 		syiro.device.IsFullHDOrAbove = ((syiro.device.height >= 1080) && (syiro.device.width >= 1920)); // Set IsFullHDOrAbove to whether or not height is 1080+ and width is 1920+
 	}
 
-	// #endregion
-
-	// #region Screen Orientation Data
-
+	// FetchScreenOrientation
+	// Fetch the device / screen orientation
 	export function FetchScreenOrientation() : string {
 		var deviceOrientation : string = "portrait"; // Define deviceOrientation as the orientation of the device, defaulting to portrait
 
@@ -189,9 +173,4 @@ namespace syiro.device {
 
 		return deviceOrientation;
 	}
-
-	// #endregion
-
 }
-
-// #endregion

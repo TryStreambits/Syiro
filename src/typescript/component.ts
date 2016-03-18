@@ -10,8 +10,8 @@
 namespace syiro.component {
 	export var lastUniqueIds : Object = {}; // Default the lastUniqueIds to an empty Object
 
-	// #region Fetch - Function for fetching the HTMLElement of a Component object
-
+	// Fetch
+	// Fetch the HTMLElement of a Component object
 	export function Fetch(component : ComponentObject) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
 		var componentElement : Element = document.querySelector('div[data-syiro-component-id="' + component.id + '"]'); // The (HTML)Element of the Syiro component we'll be returning (default to fetching Element via querySelector)
 
@@ -22,10 +22,8 @@ namespace syiro.component {
 		return componentElement;
 	}
 
-	// #endregion
-
-	// #region Fetch or Generate Component Object based on arguments provided
-
+	// FetchComponentObject
+	// Fetch or Generate Component Object based on arguments provided
 	export function FetchComponentObject( ...args : any[]) : ComponentObject {
 		var component : ComponentObject = { "id" : "", "type" : "" }; // Define component as the Object we'll return
 		var variableProvided : any; // Define variableProvided as either what was provided as the first argument or what we fetch from the selector
@@ -87,10 +85,8 @@ namespace syiro.component {
 		return component; // Return the Component
 	}
 
-	// #endregion
-
-	// #region Element Dimensions and Position Fetching
-
+	// FetchDimensionsAndPosition
+	// Fetch the Element Dimensions and Position
 	export function FetchDimensionsAndPosition(component : any) : ClientRect { // Get the height and width of the Element
 		var componentElement : HTMLElement; // Define componentElement as an Element
 
@@ -103,19 +99,15 @@ namespace syiro.component {
 		return componentElement.getClientRects()[0]; // Get the list of ComponentRect of this Component
 	}
 
-	// #endregion
-
-	// #region Function for fetching the Linked List component of the Dropdown Button or a Searchbox.
-
+	// FetchLinkedListComponentObject
+	// Fetch the Linked List component of the Dropdown Button or a Searchbox.
 	export function FetchLinkedListComponentObject(component) : ComponentObject {
 		var listSelector : string = 'div[data-syiro-component="list"][data-syiro-component-owner="' + component.id + '"]'; // Generate a List CSS selector with the owner set to the Component's Id
 		return syiro.component.FetchComponentObject(document.querySelector(listSelector)); // Get the Linked Component Object
 	}
 
-	// #endregion
-
-	// #region Component or Element ID Generator
-
+	// IdGen
+	// Generate a unique ID for a Component or Element
 	export function IdGen(type : string) : string { // Takes a Component type or Element tagName and returns the new component Id
 		var lastUniqueIdOfType : number; // Define lastUniqueIdOfType as a Number
 
@@ -130,26 +122,22 @@ namespace syiro.component {
 		return (type + newUniqueIdOfType.toString()); // Append newUniqueIdOfType to the type to create a "unique" ID
 	}
 
-	// #endregion
-
 	// IsComponentObject
-	// This function verifies using multiple tests if the variable passed is actualy a Component Object
+	// Verifies if the variable passed is a Component Object
 	export function IsComponentObject(component : any) : boolean {
 		return (syiro.utilities.TypeOfThing(component) == "ComponentObject");
 	}
 
-	// #region Update Stored Component's HTMLElement, but only if it exists in the first place.
-
+	// Update
+	// Updates stored Component's HTMLElement, but only if it exists in the first place.
 	export function Update(componentId : string, componentElement : Element){
 		if (syiro.data.Read(componentId + "->HTMLElement") !== false){ // If the HTMLElement is defined in for this Component
 			syiro.data.Write(componentId + "->HTMLElement", componentElement); // Update the componentElement with what we defined
 		}
 	}
 
-	// #endregion
-
-	// #region Add Component function - Responsible for adding components to other components or elements
-
+	// Add
+	// Adds components to other components or elements
 	export function Add(appendOrPrepend : string, parentComponent : any, childComponent : any) : boolean { // Returns boolean if the component adding was successful or not
 		var parentElement : Element; // Define parentElement as an Element
 
@@ -160,12 +148,7 @@ namespace syiro.component {
 			parentComponent = syiro.component.FetchComponentObject(parentElement); // Redefine parentComponent as the fetched Component Object
 		}
 
-		// #region Child Component Details
-
 		var childElement : Element; // Define childElement as an Element
-
-		// #endregion
-
 		var allowAdding : boolean = false; // Define variable to determine if we should allow adding the childComponent to the parentComponent or not. Defaults as false
 
 		if (syiro.component.IsComponentObject(childComponent)){ // If the childComponent is an Syiro Component Object
@@ -209,10 +192,8 @@ namespace syiro.component {
 		return allowAdding; // Return the updated component object
 	}
 
-	// #endregion
-
-	// #region Remove Component function - Responsible for removing components or Elements from their parents
-
+	// Remove
+	// Remove a Components or Elements from their parent
 	export function Remove(componentsToRemove : any) {
 		var typeOfThing = syiro.utilities.TypeOfThing(componentsToRemove); // Define typeOfThing as the type of componentsToRemove
 		var componentList : Array<any>; // Define componentList as an array of Component Objects to remove
@@ -229,7 +210,7 @@ namespace syiro.component {
 			var componentElement : Element; // Define componentElement as an Element
 
 			if (typeOfComponent == "ComponentObject"){ // If the individual Component is a Syiro Component Object
-				componentObject = component; //  Define componentObject as the Object provided
+				componentObject = component; // Define componentObject as the Object provided
 				componentElement = syiro.component.Fetch(component); // Define componentElement as the fetched Element of the Component
 			} else if (typeOfComponent == "Element"){ // If the individual Component is an Element
 				componentObject = syiro.component.FetchComponentObject(component); // Define componentObject as the Component Object we'll fetch based on the Element
@@ -250,6 +231,4 @@ namespace syiro.component {
 			}
 		}
 	}
-
-	// #endregion
 }

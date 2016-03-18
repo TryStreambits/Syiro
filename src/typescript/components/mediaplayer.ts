@@ -8,12 +8,9 @@
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
-// #region Media Player Component
-
 module syiro.mediaplayer{
 
-	// #region New Media Player
-
+	// New Media Player
 	export function New(properties : Object) : ComponentObject {
 		var syiroComponentData : Object = { "scaling" : {}}; // Define syiroComponentData as an Object to hold data we'll be writing to the Syiro Data System
 
@@ -35,14 +32,9 @@ module syiro.mediaplayer{
 		}
 
 		if (navigator.userAgent.indexOf("iPhone") == -1) { // If we are not using an iPhone
-			// #region Force Live User Interface
-			// This section will determine if we should force the live UX to be applied to the content
-
 			if ((typeof properties["ForceLiveUX"] == "boolean") && (properties["ForceLiveUX"])){ // If Force Live UX is defined as true
 				syiroComponentData["ForceLiveUX"] = true; // Define the syiroComponentData ForceLiveUX as true
 			}
-
-			// #endregion
 
 			// #region Player Menu Element Creation (If Applicable)
 
@@ -57,7 +49,7 @@ module syiro.mediaplayer{
 
 			// #endregion
 
-			// #region Type-specific  Checking and Implementations
+			// #region Type-specific Checking and Implementations
 
 			if (properties["type"] == "audio"){ // If this is an audio-type player
 				if ((typeof properties["title"] !== "undefined") || (typeof properties["artist"] !== "undefined")){ // If the properties has the artist information or audio file title defined
@@ -76,7 +68,7 @@ module syiro.mediaplayer{
 			mediaPlayerProperties["controls"] = "controls"; // Use the build-in iOS controls
 		}
 
-		// #endregion
+
 
 		// #region Dimension Setting
 
@@ -133,7 +125,7 @@ module syiro.mediaplayer{
 
 		// #endregion
 
-		// #region HTMLMediaElement  and inner-Source Creation
+		// #region HTMLMediaElement and inner-Source Creation
 
 		mediaPlayerElement = syiro.utilities.ElementCreator(properties["type"], mediaPlayerProperties); // Generate the correct HTMLMediaElement with the mediaPlayerProperties
 		mediaPlayerElement.autoplay = false; // Set autoplay on the mediaPlayerElement to false
@@ -162,10 +154,8 @@ module syiro.mediaplayer{
 		return componentObject; // Return a Component Object
 	}
 
-	// #endregion
-
-	// #region Configure - This function will configure the Media Player if necessary
-
+	// Configure
+	// Configures the Media Player if necessary
 	export function Configure(component : ComponentObject){
 		var componentElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerInnerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Get the associated audio or video player
@@ -189,8 +179,6 @@ module syiro.mediaplayer{
 			}
 
 			// #endregion
-
-			// #region Playable + Streamble Media Player Configuration
 
 			var isPlayableOrStreamable = syiro.mediaplayer.IsPlayable(component, true); // Check if the sources are playable (as well as streamable)
 			var playerErrorNotice : Element = componentElement.querySelector('div[data-syiro-minor-component="player-error"]'); // Define playerErrorNotice as any error notice on this Player
@@ -240,8 +228,8 @@ module syiro.mediaplayer{
 		syiro.data.Delete(component.id + "->IsChangingVolume"); // Remove IsChangingVolume for this Component
 	}
 
-	// #region DurationChange - Triggered on durationchange of innerContentElement
-
+	// DurationChange
+	// Triggered on durationchange of innerContentElement
 	export function DurationChange(component : ComponentObject){
 		if (syiro.data.Read(component.id + "->IsStreaming") == false){ // If the Player is NOT streaming content
 			var componentElement = syiro.component.Fetch(component); // Fetch the Player Element
@@ -254,23 +242,17 @@ module syiro.mediaplayer{
 			playerRange.setAttribute("step", playerMediaLengthInformation["step"]); // Set step attribute the playerMediaLengthInformation step key/val
 			syiro.mediacontrol.TimeLabelUpdater(mediaControlComponent, 1, playerMediaLengthInformation["max"]);
 		}
-
-		// #endregion
 	}
 
-	// #endregion
-
-	// #region Fetch Internal Audio or Video Element of Player container Component
-
+	// FetchInnerContentElement
+	// Fetch Internal Audio or Video Element of Player container Component
 	export function FetchInnerContentElement(component : ComponentObject) : HTMLMediaElement {
 		var componentElement = syiro.component.Fetch(component); // Get the Player Component
 		return componentElement.querySelector(componentElement.getAttribute("data-syiro-component-type")); // Return the Element fetched from querySelector (audio or video)
 	}
 
-	// #endregion
-
-	// #region Fetch Audio or Video Element Sources
-
+	// FetchSources
+	// Fetch Audio or Video Element Sources
 	export function FetchSources(component : ComponentObject) : Array<Object> { // Return an array of source types (string)
 		var innerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Fetch the inner audio or video Element from the Audio Player or Video Player Component
 		var sourceTags : any = innerContentElement.querySelectorAll("source"); // Get all source tags within the innerContentElement
@@ -291,10 +273,8 @@ module syiro.mediaplayer{
 		return sourcesArray;
 	}
 
-	// #endregion
-
-	// #region Generage Sources - Function for generating source Elements
-
+	// GenerateSources
+	// Generates source Elements
 	export function GenerateSources(type : string, sources : Array<string>) : Array<HTMLElement> {
 		var sourceElements : Array<HTMLElement> = []; // Define sourceElements as an array of source Elements
 
@@ -327,10 +307,8 @@ module syiro.mediaplayer{
 		return sourceElements;
 	}
 
-	// #endregion
-
-	// #region Get Information about the Player's Length and reasonable step intervals
-
+	// GetPlayerLengthInfo
+	// Get Information about the Player's Length and reasonable step intervals
 	export function GetPlayerLengthInfo(component : ComponentObject) : Object{
 		var playerLengthInfo : Object = {}; // Define playerLengthInfo as an empty Object to hold length information about the audio or video
 		var contentDuration : any = syiro.mediaplayer.FetchInnerContentElement(component).duration; // Get the Player's internal audio or video Element and its duration property
@@ -358,10 +336,8 @@ module syiro.mediaplayer{
 		return playerLengthInfo; // Return the playerLengthInfo Object
 	}
 
-	// #endregion
-
-	// #region Fetch whether content in player is playable
-
+	// IsPlayable
+	// Fetch whether content in player is playable
 	export function IsPlayable(component : ComponentObject, returnIsStreamble ?: boolean) : (string | boolean) {
 		var componentElement : Element = syiro.component.Fetch(component); // Define componentElement as the fetched Element of the Component
 		var innerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Fetch the inner content Element
@@ -399,10 +375,8 @@ module syiro.mediaplayer{
 		}
 	}
 
-	// #endregion
-
-	// #region Get Information about if the Player is playing
-
+	// IsPlaying
+	// Get Information about if the Player is playing
 	export function IsPlaying(component : ComponentObject) : boolean {
 		var componentElement = syiro.component.Fetch(component); // Fetch the Player Element
 		var isPaused = syiro.mediaplayer.FetchInnerContentElement(component).paused; // Get the value of paused on the Player (opposite of what we will return)
@@ -410,18 +384,14 @@ module syiro.mediaplayer{
 		return !isPaused; // Return the opposite boolean value (playing = (paused = false), therefore true. paused = (paused = true), therefore false)
 	}
 
-	// #endregion
-
-	// #region Fetch information about whether or not the content is streamable
-
+	// IsStreamable
+	// Fetch information about whether or not the content is streamable
 	export function IsStreamable(component : ComponentObject) : boolean {
 		return (syiro.mediaplayer.IsPlayable(component, true) == "streamable"); // Call IsPlayable, checking if returned string is "streamable"
 	}
 
-	// #endregion
-
-	// #region Play or Pause Audio or Video based on current state
-
+	// PlayOrPause
+	// Play or Pause Audio or Video based on current state
 	export function PlayOrPause(component : ComponentObject, playButtonObjectOrElement ?: any) {
 		var componentElement = syiro.component.Fetch(component); // Get the Component Element of the Player
 		var innerContentElement = syiro.mediaplayer.FetchInnerContentElement(component); // Get the inner audio or video Element
@@ -452,10 +422,8 @@ module syiro.mediaplayer{
 		}
 	}
 
-	// #endregion
-
-	// #region Reset Player - Function for resetting the player state to default (except for volume). Handy for source changing
-
+	// Reset Player
+	// Reset the player state to default (except for volume). Handy for source changing
 	export function Reset(component : ComponentObject){
 		var playerElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerInnerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Get the associated audio or video player
@@ -468,10 +436,8 @@ module syiro.mediaplayer{
 		syiro.mediaplayer.Configure(component); // Re-configure the Media Player
 	}
 
-	// #endregion
-
-	// #region Set Source - Function for easily setting the source(s) of the Media Player
-
+	// SetSource
+	// Function for easily setting the source(s) of the Media Player
 	export function SetSources(component : ComponentObject, sources : any){
 		var playerElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerInnerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Get the associated audio or video player
@@ -494,63 +460,63 @@ module syiro.mediaplayer{
 		syiro.mediaplayer.Reset(component); // Reset the media player
 	}
 
-	// #endregion
-
-	// #region Set Time - Function for easily setting the time location of an Audio or Video Player Component
-
+	// SetTime
+	// Function for easily setting the time location of an Audio or Video Player Component
 	export function SetTime(component : ComponentObject, setting : any){
 		var component : ComponentObject = arguments[0]; // Component Object is always passed on the first argument
-		var componentElement = syiro.component.Fetch(component); // Define componentElement as the fetched Component Element
-		var playerInnerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Define playerInnerContentElement as the HTMLMediaElement
-
-		var currentTime : number = playerInnerContentElement.currentTime; // Set time to currentTime of the content Element
-		var time : number = currentTime; // Set time to default to same as currentTime and only change if setting is a number
-		var fromEvent : boolean = true; // Set fromEvent as a boolean, defaulting to true
-
-		if (typeof setting == "number"){ // If setting is a number
-			time = setting; // We'll be changing the time to this specific location
-			fromEvent = false; // Declare that this is not from the timeupdate Event
-
-			if ((currentTime !== time) && (time <= playerInnerContentElement.duration)){ // If we are not setting the time to the exact same time as before or larger than the duration
-				playerInnerContentElement.currentTime = time; // Set the playerInnerContentElement's currentTime to the time provided
-			}
-		}
-
-		// #region Media Control Component & Element Defining
-
-		var mediaControlElement = componentElement.querySelector('div[data-syiro-component="media-control"]'); // Fetch the Media Control Element
-		var mediaControlComponent : ComponentObject = syiro.component.FetchComponentObject(mediaControlElement); // Get the Component Object of the Media Control
-		var playerRange = mediaControlElement.querySelector("input"); // Get the input range of the Media Control
-
-		// #endregion
-
-		syiro.mediacontrol.TimeLabelUpdater(mediaControlComponent, 0, time); // Update the label
 
 		if (syiro.data.Read(component.id + "->IsStreaming") == false){ // If we are not streaming
-			var allowInputChange : boolean = false; // Default to not allowing input value changing
-			var isChangingInputValue : boolean = syiro.data.Read(component.id + "->IsChangingInputValue"); // Get the boolean value if we are changing the input value or not
+			var componentElement = syiro.component.Fetch(component); // Define componentElement as the fetched Component Element
 
-			if ((!fromEvent) && (isChangingInputValue)){ // If the SetTime call did not come from timeupdate and we are changing the input value
-				allowInputChange = true; // Allow input change
-			} else if (fromEvent && (!isChangingInputValue)){ // If the SetTime call came from timeupdate and we are not changing the input value
-				allowInputChange = true; // Allow input change
+			var playerInnerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Define playerInnerContentElement as the HTMLMediaElement
+			var currentTime : number = playerInnerContentElement.currentTime; // Set time to currentTime of the content Element
+			var time : number = currentTime; // Set time to default to same as currentTime and only change if setting is a number
+			var fromEvent : boolean = (typeof setting == "string"); // Set fromEvent equal to if setting is a string (update-input) or number (SetTime)
+
+			if (!fromEvent){ // If this is not from an event
+				if ((currentTime !== setting) && (setting <= playerInnerContentElement.duration)){ // If we are not setting the time to the exact same time as before or larger than the duration
+					playerInnerContentElement.currentTime = setting; // Set the playerInnerContentElement's currentTime to the time provided
+					time = setting; // Set time to the setting pased
+				}
 			}
 
-			if (allowInputChange){ // If we are allowing input change
+			// #region Media Control Component & Element Defining
+
+			var mediaControlElement = componentElement.querySelector('div[data-syiro-component="media-control"]'); // Fetch the Media Control Element
+			var mediaControlComponent : ComponentObject = syiro.component.FetchComponentObject(mediaControlElement); // Get the Component Object of the Media Control
+			var playerRange = mediaControlElement.querySelector("input"); // Get the input range of the Media Control
+
+			// #endregion
+
+			syiro.mediacontrol.TimeLabelUpdater(mediaControlComponent, 0, time); // Update the label
+
+			var isChangingInputValue : boolean = syiro.data.Read(component.id + "->IsChangingInputValue"); // Get the boolean value if we are changing the input value or not
+			var allowUpdatingGradient : boolean = false;
+
+			if (isChangingInputValue && !fromEvent){ // If we are changing the input value (calling SetTime with a number)
+				allowUpdatingGradient = true;
+			} else if (!isChangingInputValue && fromEvent){ // If we are NOT changing the input value and it is from an event (normal input range gradient updating from playback)
+				allowUpdatingGradient = true;
+			}
+
+			if (allowUpdatingGradient){ // If we are allowing the updating of the gradient
 				var roundedDownTime : number = Math.floor(time);
 				playerRange.value = roundedDownTime; // Set the value to the volume (which is 0.1 to 1.0) times 10
 
 				var priorInputSpaceWidth : number = (roundedDownTime / Number(playerRange.max)) * playerRange.clientWidth; // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
-				var updatedGradient : string = "linear-gradient(to right, " + syiro.primaryColor + " " + (priorInputSpaceWidth +2) + "px, transparent 0px)"; // Define updatedGradient as the information we'd apply to linear-gradient
+				var updatedGradient : string = ""; // Default updatedGradient to an empty string
+
+				if (time !== 0){ // If the time is not zero
+					updatedGradient = "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, transparent 0px)"; // Define updatedGradient as the information we'd apply to linear-gradient
+				}
+
 				syiro.style.Set(playerRange, "background", updatedGradient); // Set background to updated linear-gradient
 			}
 		}
 	}
 
-	// #endregion
-
-	// #region Set Volume - Function for easily setting the volume of an Audio or Video Player
-
+	// SetVolume
+	// Function for easily setting the volume of an Audio or Video Player
 	export function SetVolume(component : ComponentObject, volume : number, fromEvent ?: string){
 		var playerElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerInnerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Get the associated audio or video player
@@ -578,10 +544,7 @@ module syiro.mediaplayer{
 		playerInnerContentElement.volume = volume; // Set the Player volume
 	}
 
-	// #endregion
-
-	// #region Toggle Fullscreen
-
+	// ToggleFullscreen
 	export function ToggleFullscreen(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Define componentElement as the fetched Element of the Video Player
 
@@ -614,10 +577,7 @@ module syiro.mediaplayer{
 		}
 	}
 
-	// #endregion
-
-	// #region Toggle Menu Dialog
-
+	// ToggleMenuDialog
 	export function ToggleMenuDialog(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Player Element
 
@@ -632,17 +592,11 @@ module syiro.mediaplayer{
 			syiro.style.Set(menuDialog, "visibility", ""); // Hide the menu dialog (removing the visibility attribute, putting the Menu Dialog back to default state)
 		}
 	}
-
-	// #endregion
 }
 
-// #endregion
-
-// #region Media Control Component
-
 module syiro.mediacontrol {
-	// #region Media Control Creator
 
+	// New Media Control
 	export function New(properties : Object) : ComponentObject {
 		var component : ComponentObject = { "id" : syiro.component.IdGen("media-control"), "type" : "media-control" }; // Generate the Component Object of the Media Control
 		var componentElement = syiro.utilities.ElementCreator("div",  { "data-syiro-component" : component.type, "data-syiro-component-id" : component.id }); // Generate the basic mediaControl container
@@ -701,10 +655,7 @@ module syiro.mediacontrol {
 		return component; // Return the Component Object
 	}
 
-	// #endregion
-
-	// #region Show Volume Slider
-
+	// ShowVolumeSlider
 	export function ShowVolumeSlider(mediaControlComponent : ComponentObject, volumeButtonComponent : ComponentObject){
 		var mediaControl : Element = syiro.component.Fetch(mediaControlComponent); // Fetch the Media Control Element
 		var volumeButton : Element = syiro.component.Fetch(volumeButtonComponent); // Fetch the Volume Button Element
@@ -740,14 +691,11 @@ module syiro.mediacontrol {
 
 			syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove  IsChangingInputValue
 			syiro.data.Delete(playerComponentObject["id"] + "->IsChangingVolume"); // Delete the IsChangingVolume key from this Player's data
-			syiro.mediaplayer.SetTime(playerComponentObject, playerContentElement.currentTime); // Call SetTime (which will have no visual change of the video for the user) to update the slider to the accurate position
+			syiro.mediaplayer.SetTime(playerComponentObject, "update-input"); // Call SetTime to update the slider to the accurate position
 		}
 	}
 
-	// #endregion
-
-	// #region Player Time Label Updating
-
+	// TimeLabelUpdater
 	export function TimeLabelUpdater(component : ComponentObject, timePart : number, value : any){
 		var mediaControlElement : HTMLElement = syiro.component.Fetch(component); // Get the Media Control's Element
 		var playerTimeElement = mediaControlElement.querySelector("time"); // Get the time Element
@@ -781,10 +729,8 @@ module syiro.mediacontrol {
 		}
 	}
 
-	// #endregion
-
-	// #region Toggle Media Control
-
+	// Toggle
+	// Toggle the Media Control
 	export function Toggle(component : ComponentObject, forceShow ?: boolean){
 		var mediaControlElement : Element = syiro.component.Fetch(component); // Fetch the Syiro Media Control Component Element
 		var currentAnimationStored : string; // Define currentAnimationStored as an undefined string
@@ -812,7 +758,4 @@ module syiro.mediacontrol {
 		}
 	}
 
-	// #endregion
 }
-
-// #endregion

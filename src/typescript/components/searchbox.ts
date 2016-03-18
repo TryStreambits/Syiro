@@ -1,17 +1,15 @@
 /*
- This is the namespace for Syiro Searchbox component.
+	This is the namespace for Syiro Searchbox component.
 */
 
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
-// #region Syiro Searchbox Component
-
 namespace syiro.searchbox {
 
-	// #region Searchbox Generator
-
+	// New
+	// Create a Searchbox
 	export function New(properties : Object) : ComponentObject { // Generate a Searchbox Component and return a Component Object
 		var componentId : string = syiro.component.IdGen("searchbox"); // Generate a component Id
 		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
@@ -83,10 +81,8 @@ namespace syiro.searchbox {
 		return { "id" : componentId, "type" : "searchbox" }; // Return a Component Object
 	}
 
-	// #endregion
-
-	// #region Searchbox Suggestions Handler
-
+	// Suggestions
+	// Searchbox Suggestions Handler
 	export function Suggestions(...args : any[]){
 		var searchboxElement : any;
 		var searchboxValue : string;
@@ -156,10 +152,8 @@ namespace syiro.searchbox {
 		}
 	}
 
-	// #endregion
-
-	// #region Setting Searchbox Text / Placeholder
-
+	// SetText
+	// Set the Searchbox Text / placeholder
 	export function SetText(component : ComponentObject, content : any) : void {
 		var searchboxElement : Element = syiro.component.Fetch(component); // Get the Searchbox Syiro component element
 
@@ -175,7 +169,5 @@ namespace syiro.searchbox {
 			syiro.component.Update(component.id, searchboxElement); // Update the Searchbox Component HTMLElement if necessary
 		}
 	}
-
-	// #endregion
 
 }

@@ -5,7 +5,7 @@
 namespace syiro.utilities {
 
 	// ElementCreator
-	// Takes an optional componentId, componentType or the desired element tag name and attributes
+	// Create an Element, taking an optional componentId, componentType or the desired element tag name and attributes
 	export function ElementCreator(type : string, attributes : Object) {
 		if ((typeof type == "string") && (typeof attributes == "object")){
 			var generatedElement : any = document.createElement(type); // Define componentElement as the generated HTMLElement based on the type supplied by argument 0
@@ -36,10 +36,8 @@ namespace syiro.utilities {
 		}
 	}
 
-	// #endregion
-
 	// Run
-	// This function will attempt to run the function using promises and requestAnimationFrames.
+	// Run a function using promises and requestAnimationFrames.
 	// Returns boolean if function was executed in the *most* optimized state.
 	export function Run(func : Function) : boolean {
 		var runOptimized : boolean = false;
@@ -63,7 +61,7 @@ namespace syiro.utilities {
 	}
 
 	// Sanitize HTML
-	// This function is responsible for removing script tags from HTML
+	// Removes script tags from HTML
 	export function SanitizeHTML(content : any){
 		var updatedContent : any = false; // Define updatedContent as false (failure) by default
 
@@ -91,7 +89,7 @@ namespace syiro.utilities {
 	}
 
 	// SecondsToTimeFormat
-	// This function is responsible for calculating hours, minutes, and seconds based on seconds provided, returning them in an Object
+	// Calculates hours, minutes, and seconds based on seconds provided, returning them in an Object
 	export function SecondsToTimeFormat(seconds : number) : Object {
 		var timeObject : Object = {};
 
@@ -128,7 +126,7 @@ namespace syiro.utilities {
 	export function TypeOfThing(thing : any, checkAgainstType ?: string) : any {
 		var thingType : any = (typeof thing); // Initially set thingType as the typeof
 
-		if (thingType !== "undefined"){ //  If the thing provided is not undefined
+		if (thingType !== "undefined"){ // If the thing provided is not undefined
 			if ((thingType == "object") && (typeof thing.nodeType == "undefined")){ // If the thing is an Object and doesn't have a nodeType
 				if ((typeof thing["id"] !== "undefined") && (typeof thing["type"] !== "undefined")){ // If this Object has an id and type
 					thingType = "ComponentObject"; // Define thingType as Component Object

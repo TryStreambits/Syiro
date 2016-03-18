@@ -5,15 +5,10 @@
 /// <reference path="../component.ts" />
 /// <reference path="../utilities.ts" />
 
-// #region Navbar Component
-
 namespace syiro.navbar {
 
-	// #region Shared Functionality
-
-	// #region Generator
-	// Used for generating both "top" navbars (previously referred to as Header) and "bottom" navbars (previously referred to as Footer)
-
+	// New
+	// Create a Navbar
 	export function New(properties : Object) : ComponentObject {
 		var navbarType : string; // Define navbarType as either "top" or "bottom"
 
@@ -69,19 +64,9 @@ namespace syiro.navbar {
 
 	}
 
-	// #endregion
-
-	// #region Function to add a link to the Navbar based on properties of that link
-
-	export function AddLink(append : any, component : ComponentObject, elementOrProperties : any) : boolean { // Returns boolean if it was successful or not
-		if (typeof append == "boolean"){ // If append was passed as a boolean
-			if (append){ // If we are appending
-				append = "append"; // Set as append
-			} else { // If we are not appending
-				append = "prepend"; // Set as prepend
-			}
-		}
-
+	// AddLink
+	// Add a link to a Navbar based on properties of that link
+	export function AddLink(append : string, component : ComponentObject, elementOrProperties : any) : boolean { // Returns boolean if it was successful or not
 		var componentAddingSucceeded : boolean = false; // Variable to store the determination of success (default to false)
 
 		if (syiro.component.IsComponentObject("ComponentObject") && (component.type == "navbar")){ // If this is a Navbar Component and elementOrProperties is defined
@@ -103,10 +88,8 @@ namespace syiro.navbar {
 		return componentAddingSucceeded;
 	}
 
-	// #endregion
-
-	// #region Function to remove a link from the Navbar based on the properties of that link
-
+	// RemoveLink
+	// Remove a link from a Navbar based on the properties of that link
 	export function RemoveLink(component : ComponentObject, elementOrProperties : any) : boolean { // Return boolean if it was successful or not
 		var componentRemovingSucceed : boolean = false; // Variable to store the determination of success
 
@@ -130,15 +113,12 @@ namespace syiro.navbar {
 		return componentRemovingSucceed;
 	}
 
-	// #endregion
-
-	// #endregion
-
 	// #region Top Navbar Specific Functions
 
-	// #region Function for setting the top Navbar's logo
-
-	export function SetLogo(component : ComponentObject, content : string) : boolean{ // Requires the component object and string of the image URL
+	// SetLogo
+	// Set a logo for a top Navbar
+	export function SetLogo(component : ComponentObject, content : string) : boolean { // Requires the component object and string of the image URL
+		var setLogo = false; // Define setLogo as default false
 		if (syiro.component.IsComponentObject(component) && (component.type == "navbar") && (syiro.data.Read(component.id + "->Position") == "top")){ // If this is a "top" Navbar Component
 			var navbarElement : Element = syiro.component.Fetch(component); // Get the HTMLElement
 			var imageElement : Element = navbarElement.querySelector('img[data-syiro-minor-component="logo"]'); // Set imageElement as the IMG element we will either fetch or generate
@@ -155,21 +135,21 @@ namespace syiro.navbar {
 				syiro.component.Remove(imageElement); // Remove the imageElement and update the navbarElement
 			}
 
-			return true;
-		} else { // If this is not a top Navbar Component
-			return false;
+			setLogo = true;
 		}
-	}
 
-	// #endregion
+		return setLogo;
+	}
 
 	// #endregion
 
 	// #region Bottom Navbar Specific Functions
 
-	// #region Function to set the bottom navbar label (typically something like a Copyright notice)
+	// SetLabel
+	// Set the label (typically something like a Copyright notice) of a bottom Navbar
+	export function SetLabel(component : ComponentObject, content : string) : boolean { // Set the label text of the footer component to the labelText defined
+		var setLabel : boolean = false; // Define setLabel as a boolean default to false
 
-	export function SetLabel(component : ComponentObject, content : string) : boolean{ // Set the label text of the footer component to the labelText defined
 		if (syiro.component.IsComponentObject(component) && (component.type == "navbar") && (syiro.data.Read(component.id + "->Position") == "bottom")){ // If this is a "bottom" Navbar Component
 			var navbarElement = syiro.component.Fetch(component); // Get the Element of the Navbar component
 			var labelComponent : Element = navbarElement.querySelector("label"); // Fetch the labelComponent if it exists
@@ -185,14 +165,12 @@ namespace syiro.navbar {
 				syiro.component.Remove(labelComponent); // Remove the labelComponent, updating the navbarElement
 			}
 
-			return true; // Return a success boolean
-		} else { // If this is not a bottom Navbar Component
-			return false;
+			setLabel = true;
 		}
+
+		return setLabel;
 	}
 
 	// #endregion
 
 }
-
-// #endregion

@@ -1,17 +1,15 @@
 /*
- This is the namespace for Syiro List component and it's sub-component, List Item
- */
+	This is the namespace for Syiro List component and it's sub-component, List Item
+*/
 
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />
 
-// #region Syiro List Component
-
 namespace syiro.list {
 
-	// #region List Generator
-
+	// New
+	// Create a List
 	export function New(properties : Object) : ComponentObject { // Generate a List Component and return a Component Object
 		var componentId : string = syiro.component.IdGen("list"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list", "data-syiro-component-id" : componentId, "aria-live" : "polite", "id" : componentId, "role" : "listbox" }); // Generate a List Element with an ID and listbox role for ARIA purposes
@@ -49,18 +47,16 @@ namespace syiro.list {
 			}
 
 			componentElement.appendChild(listContentContainer); // Append the List Content Container
-		}
 
-		// #endregion
+			// #endregion
+		}
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 		return { "id" : componentId, "type" : "list" }; // Return a Component Object
 	}
 
-	// #endregion
-
-	// #region Set Header of List
-
+	// SetHeader
+	// Set the Header of a List
 	export function SetHeader(component : ComponentObject, content : any){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the componentElement of the List
 		var listHeader : any = componentElement.querySelector('div[data-syiro-minor-component="list-header"]'); // Fetch the List's Header
@@ -89,10 +85,8 @@ namespace syiro.list {
 		syiro.component.Update(component.id, componentElement); // Update if necessary
 	}
 
-	// #endregion
-
-	// #region Toggle - Toggle visibility of List's inner content container
-
+	// Toggle
+	// Toggle visibility of List's inner content container
 	export function Toggle(component : any){
 		var componentElement : any; // Define componentElement as the Element of the List Component
 
@@ -119,19 +113,15 @@ namespace syiro.list {
 	}
 
 	export var AddItem = syiro.component.Add; // Meta-function for adding a List Item component to a List component
-
 	export var RemoveItem = syiro.component.Remove; // Meta-function for removing a List Item component from a List Item component
-
 }
-
-// #endregion
 
 // #region List Item Component
 
 namespace syiro.listitem {
 
-	// #region List Item Generator
-
+	// New
+	// Create a List Item
 	export function New(properties : Object) : ComponentObject { // Generate a ListItem Component and return a Component Object
 		var componentId : string = syiro.component.IdGen("list-item"); // Generate a component Id
 		var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "list-item", "data-syiro-component-id" : componentId, "role" : "option" }); // Generate a List Item Element with the role as "option" for ARIA
@@ -178,10 +168,8 @@ namespace syiro.listitem {
 		return { "id" : componentId, "type" : "list-item" }; // Return a Component Object
 	}
 
-	// #endregion
-
-	// #region Set Control in List Item
-
+	// SetControl
+	// Set a Control in a List Item
 	export function SetControl(component : ComponentObject, control : ComponentObject) : boolean {
 		var setControlSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
 
@@ -213,10 +201,8 @@ namespace syiro.listitem {
 		return setControlSucceeded;
 	}
 
-	// #endregion
-
-	// #region Set Image in List Item
-
+	// SetImage
+	// Set an Image in a List Item
 	export function SetImage(component : ComponentObject, content : string) : boolean {
 		var setImageSucceeded : boolean = false; // Variable we return with a boolean value, defaulint to false.
 
@@ -252,10 +238,8 @@ namespace syiro.listitem {
 		return setImageSucceeded;
 	}
 
-	// #endregion
-
-	// #region Set Label in List Item
-
+	// SetLabel
+	// Set a Label in a List Item
 	export function SetLabel(component : ComponentObject, content : string) : boolean {
 		var setLabelSucceeded : boolean = false; // Variable we return with a boolean value of success, defaulting to false.
 
@@ -301,10 +285,8 @@ namespace syiro.listitem {
 		return setLabelSucceeded;
 	}
 
-	// #endregion
-
-	// #region Set Link in List Item
-
+	// SetLink
+	// Set a Link in a List Item
 	export function SetLink(component : ComponentObject, properties : any) : boolean {
 		var setSucceeded : boolean = false;
 
@@ -342,8 +324,4 @@ namespace syiro.listitem {
 		return setSucceeded;
 	}
 
-	// #endregion
-
 }
-
-// #endregion

@@ -8,7 +8,7 @@
 
 namespace syiro.events {
 
-	export var Strings : Object = { // Set syiro.component.listenerStrings as an Object containing commonly used event lister combinations
+	export var Strings : Object = { // Commonly used event lister combinations
 		"down" : "mousedown", // Default down to mousedown
 		"up" : "mouseup", // Default up to mouseup
 		"move" : "mousemove", // Default move to mousemove
@@ -16,8 +16,8 @@ namespace syiro.events {
 		"orientationchange" : ["orientationchange", "mozorientationchange", "msorientationchange"]
 	};
 
-	// #region Syiro Component and Generic Element Event Handler
-
+	// Handler
+	// Syiro Component and Generic Element Event Handler
 	export function Handler(){
 		var eventData : Event = arguments[1]; // Set eventData as the second argument passed
 
@@ -28,9 +28,8 @@ namespace syiro.events {
 		syiro.events.Trigger(eventData.type, arguments[0], eventData); // Call Trigger automatically with the type, Component, and possible eventData
 	}
 
-	// #region Trigger - This function is used to determine what data to provide and trigger the functions necessary.
-	// This can be manually triggered or via Handler
-
+	// Trigger
+	// Used to determine what data to provide and trigger the functions necessary.
 	export function Trigger(eventType : string, component : any, eventData ?:Event){
 		var componentObject : ComponentObject = component; // Default componentObject as component
 		var componentElement : any; // Define componentElement as any (potentially Element)
@@ -70,10 +69,8 @@ namespace syiro.events {
 		}
 	}
 
-	// #endregion
-
-	// #region Syiro Component and Generic Element Add Listener Function
-
+	// Add
+	// Add a listener function to a Syiro Component and Generic Element
 	export function Add(listeners : any, component : any, listenerCallback : Function) : boolean { // Takes (optional) space-separated listeners, Component Object or a generic Element, and the handler function.
 		var allowListening : boolean = true; // Define allowListening as a boolean to which we determine if we should allow event listening on componentElement (DEFAULT : true)
 
@@ -124,10 +121,8 @@ namespace syiro.events {
 		return allowListening; // Return whether we allowed listening to the component
 	}
 
-	// #endregion
-
-	// #region Component Remove Event Listener
-
+	// Remove
+	// Remove event listening from a Component or Generic Element
 	export function Remove(... args : any[]) : boolean {
 		var allowRemoval : boolean = true; // Set allowRemoval as a boolean, defaulting to true and allowing Listener removal unless specified otherwise.
 		var successfulRemoval : boolean = false; // Set successfulRemove as a boolean, defaulting to false unless it was successful
@@ -189,7 +184,4 @@ namespace syiro.events {
 
 		return successfulRemoval; // Return whether the removal was successful
 	}
-
-	// #endregion
-
 }

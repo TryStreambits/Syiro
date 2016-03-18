@@ -1,5 +1,5 @@
 /*
-This is the namespace for managing Syiro Data.
+    This is the namespace for managing Syiro Data.
 */
 
 /// <reference path="interfaces.ts" />
@@ -7,9 +7,9 @@ This is the namespace for managing Syiro Data.
 namespace syiro.data {
     export var storage : Object = { }; // Define syiro.data.storage as the storage Object for all Syiro Data
 
-    // #region Function for reading or manipulating data stored in syiro.data.storage
+    // Manage
+    // Read or modify data stored in syiro.data.storage
     // Returns a boolean success value or the value (if read)
-
     export function Manage(modificationType : string, keyList : string, data ?: any) : any {
         var componentId : string; // Define componentId as a string
         var returnableValue : any; // Default to returnableValue as any value
@@ -62,29 +62,21 @@ namespace syiro.data {
 		return returnableValue; // Return the values
 	}
 
-	// #endregion
-
-    // #region Meta-function for reading data from syiro.data.storage
-
+    // Read
+    // Meta-function for reading data from syiro.data.storage
     export function Read(keyList : string) : any {
         return syiro.data.Manage("read", keyList);
     }
 
-    // #endregion
-
-    // #region Meta-function for writing data to syiro.data.storage
-
+    // Write
+    // Meta-function for writing data to syiro.data.storage
     export function Write(keyList : string, data : any) : any{
         return syiro.data.Manage("write", keyList, data);
     }
 
-    // #endregion
-
-    // #region Meta-function for deleting data in syiro.data.storage
-
+    // Delete
+    // Meta-function for deleting data in syiro.data.storage
     export function Delete(keyList : string) : any {
         return syiro.data.Manage("delete", keyList);
     }
-
-    // #endregion
 }

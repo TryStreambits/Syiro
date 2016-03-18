@@ -7,13 +7,10 @@
 /// <reference path="interfaces.ts" />
 /// <reference path="style.ts" />
 
-
-// #region Syiro Init System
-
 namespace syiro.init {
 
-	// #region Parser - Determines what the Component is and does the correct initialization
-
+	// Parser
+	// Determines what the Component is and does the correct initialization
 	export function Parser(componentElement : Element){
 		if ((componentElement.localName !== null) && (syiro.utilities.TypeOfThing(componentElement.hasAttribute, "function")) && (componentElement.hasAttribute("data-syiro-component"))){ // If the element is a Syiro component
 			var component = syiro.component.FetchComponentObject(componentElement); // Fetch the (potential) Component Object of the componentElement
@@ -62,20 +59,15 @@ namespace syiro.init {
 		}
 	}
 
-	// #endregion
-
-	// #region Content Overlay Creation Function
-
+	// createContentOverlay
+	// This function creates a Content Overlay
 	export function createContentOverlay(purpose : string): Element {
 		var contentOverlay : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "overlay", "data-syiro-overlay-purpose" : purpose}); // Generate an Content Overlay
 		document.body.appendChild(contentOverlay); // Append the contentOverlay to the body
 		return contentOverlay; // Return the contentOverlay variable
 	}
 
-	// #endregion
-
-	// #region Buttongroup Initialization
-
+	// Buttongroup Initialization
 	export function Buttongroup(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 		var innerButtons : any = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all the Button Components inside this Buttongroup
@@ -86,10 +78,7 @@ namespace syiro.init {
 		}
 	}
 
-	// #endregion
-
-	// #region Grid Initialization
-
+	// Grid Initialization
 	export function Grid(component : ComponentObject){
 		syiro.events.Add(syiro.events.Strings["orientationchange"], syiro.device.OrientationObject, syiro.grid.Scale.bind(this, component)); // Add an event listener on orientationchange to scale this Grid
 		syiro.events.Add("resize", window, syiro.grid.Scale.bind(this, component)); // Add an event listener on window resize to scale this Grid
@@ -97,10 +86,7 @@ namespace syiro.init {
 		syiro.grid.Scale(component); // Do an initial Grid scaling
 	}
 
-	// #endregion
-
-	// #region List Initialization
-
+	// List Initialization
 	export function List(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
@@ -110,21 +96,14 @@ namespace syiro.init {
 		}
 	}
 
-	// #endregion
-
-	// #region Media Player Initialization
-
+	// MediaPlayer Initialization
 	export function MediaPlayer(component : ComponentObject){
 		if (syiro.data.Read(component.id + "->NoUX") == false){ // If we are apply UX to events to the Player
 			var componentElement : Element = syiro.component.Fetch(component); // Fetch the ComponentElement of the Media Player
 			var innerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Fetch the Player content Element
 
-			// #region Media Controls List
-
 			var mediaControlArea = componentElement.querySelector('div[data-syiro-component="media-control"]'); // Get the Media Control section
 			var mediaControlComponent : ComponentObject = syiro.component.FetchComponentObject(mediaControlArea); // Get the Media Control Component Object
-
-			// #endregion
 
 			// #region ContextMenu Prevention
 
@@ -141,9 +120,9 @@ namespace syiro.init {
 
 			syiro.events.Add("durationchange", innerContentElement, syiro.mediaplayer.DurationChange.bind(this, component)); // Add durationchange event to innerContentElement that calls syiro.mediaplayer.DurationChange with bound componentObject
 
-			syiro.events.Add("timeupdate", innerContentElement, function(){ // Have timeupdate call a function, which calls SetTime with only the Component Object and "tick"
-				syiro.mediaplayer.SetTime(arguments[0], "tick"); // Call SetTime with arguments[0] (Component Object) and "tick"
-			}.bind(this, component, "tick"));
+			syiro.events.Add("timeupdate", innerContentElement, function(){ // Have timeupdate call a function, which calls SetTime with only the Component Object
+				syiro.mediaplayer.SetTime(arguments[0], "update-input"); // Call SetTime with arguments[0] (Component Object) and "update-input"
+			}.bind(this, component));
 
 			syiro.events.Add("ended", innerContentElement, syiro.mediaplayer.Reset.bind(this, component)); // Add ended event to innerContentElement that calls syiro.mediaplayer.Reset with bound componentObject
 
@@ -164,8 +143,6 @@ namespace syiro.init {
 
 			// #endregion
 
-			// #region Background Loading
-
 			syiro.utilities.Run(function(component : ComponentObject, componentElement : Element){
 				var backgroundArt : any = syiro.data.Read(component.id + "->BackgroundImage"); // Get any background image stored for this Media Player
 
@@ -178,14 +155,11 @@ namespace syiro.init {
 		}
 	}
 
-	// #endregion
-
-	// #region Media Control Initialization
-
+	// MediaControl Initialization
 	export function MediaControl(componentObject : ComponentObject, mediaControlComponentObject : ComponentObject){
 		var mediaControlElement : Element = syiro.component.Fetch(mediaControlComponentObject); // Fetch the Media Control Element
 
-		// #region Player Range Initialization
+		// Player Range Initialization
 
 		var playerRange = mediaControlElement.querySelector('input[type="range"]'); // Get the input range
 
@@ -203,7 +177,10 @@ namespace syiro.init {
 
 				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
 					syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove IsChangingInputValue
-					syiro.mediaplayer.PlayOrPause(playerComponentObject); // Play the video
+
+					if (!syiro.mediaplayer.IsPlaying(playerComponentObject)){ // If we're not playing the video
+						syiro.mediaplayer.PlayOrPause(playerComponentObject, true); // Start playback
+					}
 				}
 			}.bind(this, componentObject)
 		);
@@ -214,7 +191,7 @@ namespace syiro.init {
 				var playerRange : HTMLInputElement = arguments[1]; // Define playerRangeElement as the Element passed as the second arg
 				var valueNum : number = Number(playerRange.value); // Define valueNum as the converted string-to-number, where the value was the playerRange value
 
-				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
+				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") !== true){ // If we are doing a time change and not a volume change
 					syiro.mediaplayer.SetTime(playerComponentObject, valueNum); // Set the Time
 				} else { // If we are doing a volume change
 					syiro.mediaplayer.SetVolume(playerComponentObject, valueNum, "input"); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
@@ -222,24 +199,18 @@ namespace syiro.init {
 			}.bind(this, componentObject)
 		);
 
-		// #endregion
-
-		// #region Play Button Listener
+		// Play Button Listener
 
 		var playButton : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button Element
 		syiro.events.Add(syiro.events.Strings["up"], playButton, syiro.mediaplayer.PlayOrPause.bind(this, componentObject)); // Listen to up events on the playButton to the PlayOrPause (binding the component Object)
 
-		// #endregion
-
-		// #region Volume Button Listener
+		// Volume Button Listener
 
 		var volumeButton : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="volume"]'); // Get the Volume Button Element
 		var volumeButtonComponent : ComponentObject = syiro.component.FetchComponentObject(volumeButton); // Fetch the Component Object of the Volume Button so we may bind it during event adding
 		syiro.events.Add(syiro.events.Strings["up"], volumeButtonComponent, syiro.mediacontrol.ShowVolumeSlider.bind(this, mediaControlComponentObject)); // Listen to up events on the volumeButton Component to ShowVolumeSlider (binding the Player Component Object)
 
-		// #endregion
-
-		// #region Player Menu Dialog
+		// Player Menu Dialog
 
 		var menuButton = mediaControlElement.querySelector('div[data-syiro-render-icon="menu"]'); // Get the menuButton if it exists
 
@@ -248,23 +219,16 @@ namespace syiro.init {
 			syiro.events.Add(syiro.events.Strings["up"], menuButtonObject, syiro.mediaplayer.ToggleMenuDialog.bind(this, componentObject)); // Add an event listener to the button that calls ToggleMenuDialog, binding to the Player Component
 		}
 
-		// #endregion
-
-		// #region Fullscreen Button Listener
+		// Fullscreen Button Listener
 
 		var fullscreenButtonElement : Element = mediaControlElement.querySelector('div[data-syiro-render-icon="fullscreen"]'); // Define fullscreenButtonElement as the fetched Fullscreen Button
 
 		if (fullscreenButtonElement !== null){ // If the fullscreen button exists
 			syiro.events.Add(syiro.events.Strings["up"], fullscreenButtonElement, syiro.mediaplayer.ToggleFullscreen.bind(this, componentObject)); // Listen to up events on the fullscreen button
 		}
-
-		// #endregion
 	}
 
-	// #endregion
-
-	// #region Searchbox Initialization
-
+	// Searchbox Initialization
 	export function Searchbox(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
@@ -288,10 +252,7 @@ namespace syiro.init {
 		}.bind(this, component));
 	}
 
-	// #endregion
-
-	// #region Sidepane Initialization
-
+	// Sidepane Initialization
 	export function Sidepane(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
@@ -311,10 +272,7 @@ namespace syiro.init {
 		}
 	}
 
-	// #endregion
-
-	// #region Toast Initialization
-
+	// Toast Initialization
 	export function Toast(component : ComponentObject){
 		var componentElement : Element = syiro.component.Fetch(component); // Fetch the Component Element
 
@@ -347,9 +305,4 @@ namespace syiro.init {
 			syiro.data.Delete(component.id + "->ActionHandlers"); // Delete the ActionHandlers from the data of this Toast
 		}
 	}
-
-	// #endregion
-
 }
-
-// #endregion

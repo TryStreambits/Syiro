@@ -1,6 +1,7 @@
 /*
 	This is the aggregate of all the Syiro namespace into a unified namespace
 */
+
 /// <reference path="init.ts" />
 /// <reference path="animation.ts" />
 /// <reference path="component.ts" />
@@ -26,8 +27,8 @@ namespace syiro {
 	export var secondaryColor : string; // Define secondaryColor as the rgba value we get from the CSS of the Syiro Secondary Color
 	export var legacyDimensionsDetection : boolean; // Define legacyDimensionsDetection as a boolean, used if we need to check dimensions for non-MutationObserver supported browsers
 
-	// #region Syiro Initialization Function
-
+	// Init
+	// Initialize Syiro
 	export function Init() : void {
 		syiro.device.Detect(); // Detect Device information and functionality support by using our Detect() function.
 
@@ -48,7 +49,7 @@ namespace syiro {
 
 		// #endregion
 
-		// #region Video Player Fullscreen Scaling
+		// #region Video Player Fullscreen Changing
 
 		syiro.events.Add(syiro.events.Strings["fullscreenchange"], document,  // Call the eventAction, either syiro.events.Add or syiro.events.Remove
 			function(){
@@ -132,7 +133,7 @@ namespace syiro {
 				childList : true, // Watch child nodes of the element we are watching
 				attributes : true, // Watch for attribute changes
 				characterData : false, // Don't bother to watch character data changes
-				attributeFilter : ['data-syiro-component'], //  Look for elements with this particular attribute
+				attributeFilter : ['data-syiro-component'], // Look for elements with this particular attribute
 				subtree: true
 			};
 
@@ -167,8 +168,6 @@ namespace syiro {
 		syiro.utilities.Run(syiro.style.LoadColors); // Load Colors
 	}
 
-	// #endregion
-
 	// #region Meta Functions
 
 	export var Fetch = syiro.component.Fetch; // Meta-function for fetching Syiro component HTMLElements
@@ -184,5 +183,4 @@ namespace syiro {
 	export var Position = syiro.render.Position; // Meta function for setting the position of a Syiro Component
 
 	// #endregion
-
 }

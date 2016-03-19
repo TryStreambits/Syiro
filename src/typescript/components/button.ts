@@ -190,14 +190,6 @@ namespace syiro.button {
 				componentElement.removeAttribute("active"); // Remove the "active" attribute
 				syiro.style.Set(linkedListComponentElement, "visibility", ""); // Remove the visibility attribute and hide the List
 			} else { // If the linked List is not active / showing
-				var linkedListComponentElementWidth : number = componentElement.clientWidth; // Define linkedListComponentELementWidth as a number, defaulting to the Dropdown width
-
-				if (linkedListComponentElementWidth < 200){ // If the List is not at least 200px
-					linkedListComponentElementWidth = 200; // Set to 200(px)
-				}
-
-				syiro.style.Set(linkedListComponentElement, "width", linkedListComponentElementWidth + "px"); // Ensure the Linked List is the same width of the Dropdown Button
-
 				var positionInformation : Array<string> = syiro.data.Read(linkedListComponentObject["id"] + "->render"); // Get the position information on where we should render the List
 				syiro.render.Position(positionInformation, linkedListComponentObject, component); // Set the position of the List according to the position information for the Dropdown Button
 

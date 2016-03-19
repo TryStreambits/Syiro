@@ -54,9 +54,7 @@ namespace syiro.events {
 
 		// #region Passable Data Determination
 
-		if ((component.type == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If it is a Toggle Button
-			passableValue = (!componentElement.hasAttribute("active")); // Define passableValue as the reversed boolean of hasAttribute active, since it will be the new status of the Toggle Button
-		} else if (componentElement.nodeName =="INPUT"){ // If the Element is an input Element
+		if (componentElement.nodeName =="INPUT"){ // If the Element is an input Element
 			passableValue = componentElement.value; // Get the current value of the input
 		} else {
 			passableValue = eventData; // Simply set the passableValue to the event data passed

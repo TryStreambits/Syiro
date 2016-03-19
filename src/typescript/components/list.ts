@@ -131,7 +131,7 @@ namespace syiro.listitem {
 				var append : boolean = false; // Define append as boolean defaulting to false
 				var thing : any = properties[propertyKey]; // Define thing
 
-				if ((propertyKey == "control") && syiro.utilities.TypeOfThing(properties["image"], "undefined")){ // If we are adding a control and image is not defined
+				if ((propertyKey == "control") && !syiro.utilities.TypeOfThing(properties["image"], "string")){ // If we are adding a control and image is not defined
 					if (thing["type"] == "button"){ // If the component is either a basic or toggle button
 						generatedElement= syiro.component.Fetch(thing); // Get the component's (HTML)Element
 						append = true; // Define append as true

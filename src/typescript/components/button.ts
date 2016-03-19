@@ -197,18 +197,16 @@ namespace syiro.button {
 				syiro.style.Set(linkedListComponentElement, "visibility", "visible"); // Show the List
 			}
 		} else if (componentElement.getAttribute("data-syiro-component-type") == "toggle"){ // If this a Toggle Button
-			if (typeof active == "undefined"){ // If is not provided
+			if (syiro.utilities.TypeOfThing(active, "MouseEvent")){ // If is not provided (a MouseEvent Object is passed from syiro.events.Trigger)
 				active = componentElement.hasAttribute("active"); // Define active as the boolean provided by hasAttribute
-			} else { // If active is provided, flip the logic since the expected action is the FORCE the active provided
-				active = !active; // Reverse the boolean
 			}
 
-			if (active){ // If the status is currently active
-				syiro.animation.Reset(component); // Eliminate the animation property
-				componentElement.removeAttribute("active"); // Remove the active attribute
-			} else { // If the status is NOT active
+			if (!active) { // If the status is not currently active
 				syiro.animation.Slide(component);
 				componentElement.setAttribute("active", "true"); // Set to active
+			} else { // If the status is active
+				syiro.animation.Reset(component); // Eliminate the animation property
+				componentElement.removeAttribute("active"); // Remove the active attribute
 			}
 		}
 	};

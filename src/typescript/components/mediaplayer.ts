@@ -30,6 +30,23 @@ module syiro.mediaplayer{
 		if (typeof properties["type"] == "undefined"){ // If a type is not defined
 			properties["type"] = "video"; // Default to having a Video Player
 		}
+		
+		// #region Media Player Art
+
+		if (typeof properties["art"] !== "undefined"){
+			if (navigator.userAgent.indexOf("iPhone") == -1) { // If we are not using an iPhone
+				syiroComponentData["BackgroundImage"] = properties["art"]; // Set the BackgroundImage in the syiroComponentData
+			} else { // If we are using an iPhone
+				mediaPlayerProperties["poster"] = properties["art"]; // Define the poster property of the Media Element to be the art
+			}
+		} else { // If art has not been defined
+			if (properties["type"] == "audio"){ // If this is an audio-type Media Player
+				componentElement.setAttribute("data-syiro-audio-player", "mini"); // Set to "mini" player
+				delete properties["menu"]; // Disable a menu option
+			}
+		}
+
+		// #endregion		
 
 		if (navigator.userAgent.indexOf("iPhone") == -1) { // If we are not using an iPhone
 			if ((typeof properties["ForceLiveUX"] == "boolean") && (properties["ForceLiveUX"])){ // If Force Live UX is defined as true
@@ -52,7 +69,7 @@ module syiro.mediaplayer{
 			// #region Type-specific Checking and Implementations
 
 			if (properties["type"] == "audio"){ // If this is an audio-type player
-				if ((typeof properties["title"] !== "undefined") || (typeof properties["artist"] !== "undefined")){ // If the properties has the artist information or audio file title defined
+				if ((typeof properties["title"] == "string") || (typeof properties["artist"] == "string")){ // If the properties has the artist information or audio file title defined
 					properties["generate-content-info"] = true; // Set "generate-info" to true since we will pass that to the mediacontrol generator
 				}
 			}
@@ -69,10 +86,9 @@ module syiro.mediaplayer{
 		}
 
 
-
 		// #region Dimension Setting
 
-		if (syiro.utilities.TypeOfThing(properties["height"], "undefined")){ // If height is not defined
+		if (!syiro.utilities.TypeOfThing(properties["height"], "number")){ // If height is not a number
 			if (properties["type"] == "audio"){ // If this is an audio player
 				if (syiro.utilities.TypeOfThing(properties["mini"], "boolean") && properties["mini"]){ // If this is a mini player
 					properties["height"] = 50;
@@ -84,7 +100,7 @@ module syiro.mediaplayer{
 			}
 		}
 
-		if (syiro.utilities.TypeOfThing(properties["width"], "undefined")){ // If width is not defined
+		if (!syiro.utilities.TypeOfThing(properties["width"], "number")){ // If width is not a number
 			if (properties["type"] == "audio"){ // If this is an audio player
 				properties["width"] = 400; // Default to 400
 			} else { // If this is a video player
@@ -108,27 +124,9 @@ module syiro.mediaplayer{
 
 		// #endregion
 
-		// #region Media Player Art
-
-		if (typeof properties["art"] !== "undefined"){
-			if (navigator.userAgent.indexOf("iPhone") == -1) { // If we are not using an iPhone
-				syiroComponentData["BackgroundImage"] = properties["art"]; // Set the BackgroundImage in the syiroComponentData
-			} else { // If we are using an iPhone
-				mediaPlayerProperties["poster"] = properties["art"]; // Define the poster property of the Media Element to be the art
-			}
-		} else { // If art has not been defined
-			if (properties["type"] == "audio"){ // If this is an audio-type Media Player
-				componentElement.setAttribute("data-syiro-audio-player", "mini"); // Set to "mini" player
-				delete properties["menu"]; // Disable a menu option
-			}
-		}
-
-		// #endregion
-
 		// #region HTMLMediaElement and inner-Source Creation
 
 		mediaPlayerElement = syiro.utilities.ElementCreator(properties["type"], mediaPlayerProperties); // Generate the correct HTMLMediaElement with the mediaPlayerProperties
-		mediaPlayerElement.autoplay = false; // Set autoplay on the mediaPlayerElement to false
 
 		var sourceElements : Array<HTMLElement> = syiro.mediaplayer.GenerateSources(properties["type"], properties["sources"]); // Get an array of Source Elements
 

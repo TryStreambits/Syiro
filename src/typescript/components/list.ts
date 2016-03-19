@@ -25,18 +25,16 @@ namespace syiro.list {
 			var listContentContainer : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "list-content" }); // Create the listContent container
 
 			for (var individualItem of properties["items"]){ // For each list item in navigationItems Object array
-				var individualItemComponentObject : ComponentObject; // Define individualItemComponentObject as the Component Object of the individualitem
+				var individualItemComponentObject : ComponentObject = individualItem;
 				var typeOfIndividualItem : string = syiro.utilities.TypeOfThing(individualItem); // Get the type of the individualItem
 
-				if (typeOfIndividualItem == "ComponentObject"){ // If this is a Component Object
-					individualItemComponentObject = individualItem; // Define individualItemComponentObject as the individualItem
-				} else if (typeOfIndividualItem == "Object"){ // If this is an Object
+				if (typeOfIndividualItem == "Object"){ // If this is an Object
 					var typeOfHeader : string = syiro.utilities.TypeOfThing(individualItem["header"]); // Get the type of the header key/val
 					var typeOfItems : string = syiro.utilities.TypeOfThing(individualItem["item"]); // Get the type of items /key/val
 
 					if ((typeOfHeader == "string") && (typeOfItems == "Array")){ // If this is a List (with the necessary List Header and List Items properties)
 						individualItemComponentObject = syiro.list.New(individualItem); // Create a List based on the individualItem
-					} else if ((typeOfHeader == "undefined") && (typeOfItems == "undefined")){ // If this is a List Item
+					} else { // If this is a List Item
 						individualItemComponentObject = syiro.listitem.New(individualItem); // Generate a List Item based on the individualItem
 					}
 				}
@@ -128,12 +126,12 @@ namespace syiro.listitem {
 
 		var generatedElement : Element; // Define generatedElement as an Element we'll assign generated content to
 
-		if (syiro.utilities.TypeOfThing(properties["html"], "Element") == false){ // If we are not adding ANY HTML code to the List Item (therefore not needing nonstrict formatting)
+		if (!syiro.utilities.TypeOfThing(properties["html"], "Element")){ // If we are not adding ANY HTML code to the List Item (therefore not needing nonstrict formatting)
 			for (var propertyKey in properties){ // Recursive go through each propertyKey
 				var append : boolean = false; // Define append as boolean defaulting to false
 				var thing : any = properties[propertyKey]; // Define thing
 
-				if ((propertyKey == "control") && (typeof properties["image"] == "undefined")){ // If we are adding a control and image is not defined
+				if ((propertyKey == "control") && syiro.utilities.TypeOfThing(properties["image"], "undefined")){ // If we are adding a control and image is not defined
 					if (thing["type"] == "button"){ // If the component is either a basic or toggle button
 						generatedElement= syiro.component.Fetch(thing); // Get the component's (HTML)Element
 						append = true; // Define append as true

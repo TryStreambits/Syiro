@@ -93,7 +93,6 @@ function generateMediaPlayers(){
     /* Share Dialogs List Generation */
 
     var menuDialogItems = [ { "image" : "img/facebook.png", "label" : "Facebook" }, { "image" : "img/google-plus.png", "label" : "Google+" }, { "image" : "img/twitter.png", "label" : "Twitter" } ];
-    var audioMenuDialogList = syiro.list.New({ "items" : menuDialogItems } );
     var videoMenuDialogList = syiro.list.New({ "items" : menuDialogItems } );
 
     /* End of Share Dialogs List Generation */
@@ -101,7 +100,6 @@ function generateMediaPlayers(){
     var generatedAudioPlayer = syiro.mediaplayer.New(
             {
 				"type" : "audio",
-                "menu" : audioMenuDialogList,
                 "sources": ["http://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg", "http://www.noiseaddicts.com/samples/55.mp3" ],
                 "art" : "img/lake.jpg",
                 "title" : "Example OGG File",

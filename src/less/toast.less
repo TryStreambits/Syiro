@@ -12,10 +12,11 @@ div[data-syiro-component="toast"]{
 
 	& > label {
 		float: left;
+        color: lighten(contrast(@syiroToastBackground), 10%);
 		width: e("calc(100% - 20px)"); // 100% of width minus 20px margins
-		margin: 5px 10px 5px 10px; // 5px top and bottom, 10px left and right
+		margin: 5px 10px 0 10px; // 5px top, 10px left and right
 		font-family: inherit;
-		font-size: 13px;
+		font-size: 14px;
 		line-height: 24px;
 	}
 
@@ -25,6 +26,7 @@ div[data-syiro-component="toast"]{
 
 	& > span {
 		float: left;
+        color: lighten(contrast(@syiroToastBackground), 20%);
 		font-family: inherit;
 		margin: 5px 10px 5px 10px; // 5px top and bottom, 10px left and right
 		overflow-y: auto; // Overflow if it is a large mesage

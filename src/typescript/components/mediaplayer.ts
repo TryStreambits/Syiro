@@ -39,11 +39,6 @@ module syiro.mediaplayer{
 			} else { // If we are using an iPhone
 				mediaPlayerProperties["poster"] = properties["art"]; // Define the poster property of the Media Element to be the art
 			}
-		} else { // If art has not been defined
-			if (properties["type"] == "audio"){ // If this is an audio-type Media Player
-				componentElement.setAttribute("data-syiro-audio-player", "mini"); // Set to "mini" player
-				delete properties["menu"]; // Disable a menu option
-			}
 		}
 
 		// #endregion		
@@ -53,25 +48,20 @@ module syiro.mediaplayer{
 				syiroComponentData["ForceLiveUX"] = true; // Define the syiroComponentData ForceLiveUX as true
 			}
 
-			// #region Player Menu Element Creation (If Applicable)
+			// #region Type-specific Checking and Implementations
 
-			if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")){ // If the menu defined is a ComponentObject (List)
-				if (properties["menu"]["type"] == "list"){ // If the component provided is a List
+			if (properties["type"] == "audio"){ // If this is an audio-type player
+				delete properties["menu"]; // Delete the menu properties
+				if ((typeof properties["title"] == "string") || (typeof properties["artist"] == "string")){ // If the properties has the artist information or audio file title defined
+					properties["generate-content-info"] = true; // Set "generate-info" to true since we will pass that to the mediacontrol generator
+				}
+			} else { // If this is a video-type player
+				if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject") && (properties["menu"]["type"] == "list")){ // If the menu defined is a ComponentObject (List)
 					var playerMenuDialog : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
 					playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
 					playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
 					componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
-				}
-			}
-
-			// #endregion
-
-			// #region Type-specific Checking and Implementations
-
-			if (properties["type"] == "audio"){ // If this is an audio-type player
-				if ((typeof properties["title"] == "string") || (typeof properties["artist"] == "string")){ // If the properties has the artist information or audio file title defined
-					properties["generate-content-info"] = true; // Set "generate-info" to true since we will pass that to the mediacontrol generator
-				}
+				}				
 			}
 
 			// #endregion
@@ -90,11 +80,7 @@ module syiro.mediaplayer{
 
 		if (!syiro.utilities.TypeOfThing(properties["height"], "number")){ // If height is not a number
 			if (properties["type"] == "audio"){ // If this is an audio player
-				if (syiro.utilities.TypeOfThing(properties["mini"], "boolean") && properties["mini"]){ // If this is a mini player
-					properties["height"] = 50;
-				} else { // If this is not a mini player
-					properties["height"] = 150;
-				}
+				properties["height"] = 60;
 			} else { // If this is a video player
 				properties["height"] = 300;
 			}
@@ -626,11 +612,9 @@ module syiro.mediacontrol {
 
 		// #region Player Menu Element Creation (If Applicable)
 
-		if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject")){ // If the menu defined is a ComponentObject (List)
-			if (properties["menu"]["type"] == "list"){ // If the component provided is a List
-				var menuButton = syiro.button.New( { "icon" : "menu"} ); // Generate a Menu Button
-				componentElement.appendChild(syiro.component.Fetch(menuButton)); // Append the menuButton to the mediaControlElement
-			}
+		if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject") && (properties["menu"]["type"] == "list")){ // If the menu defined is a ComponentObject (List) with the player being video
+			var menuButton = syiro.button.New( { "icon" : "menu"} ); // Generate a Menu Button
+			componentElement.appendChild(syiro.component.Fetch(menuButton)); // Append the menuButton to the mediaControlElement
 		}
 
 		// #endregion

@@ -219,7 +219,7 @@ module syiro.mediaplayer{
 			var componentElement = syiro.component.Fetch(component); // Fetch the Player Element
 			var mediaControlElement  = componentElement.querySelector('div[data-syiro-component="media-control"]');
 			var mediaControlComponent : ComponentObject = syiro.component.FetchComponentObject(mediaControlElement); // Get the Media Control Component
-			var playerRange : Element = mediaControlElement.querySelector('input[type="range"]'); // Get the input range
+			var playerRange : Element = mediaControlElement.querySelector('div[data-syiro-minor-component="progressbar"] > input'); // Get the input range
 
 			var playerMediaLengthInformation : Object = syiro.mediaplayer.GetPlayerLengthInfo(component); // Get information about the appropriate settings for the input range
 			playerRange.setAttribute("max", playerMediaLengthInformation["max"]); // Set max attribute the playerMediaLengthInformation max key/val
@@ -468,7 +468,7 @@ module syiro.mediaplayer{
 
 			var mediaControlElement = componentElement.querySelector('div[data-syiro-component="media-control"]'); // Fetch the Media Control Element
 			var mediaControlComponent : ComponentObject = syiro.component.FetchComponentObject(mediaControlElement); // Get the Component Object of the Media Control
-			var playerRange = mediaControlElement.querySelector("input"); // Get the input range of the Media Control
+			var playerRange = mediaControlElement.querySelector('div[data-syiro-minor-component="progressbar"] > input'); // Get the input range of the Media Control
 
 			// #endregion
 
@@ -504,7 +504,7 @@ module syiro.mediaplayer{
 	export function SetVolume(component : ComponentObject, volume : number, fromEvent ?: string){
 		var playerElement = syiro.component.Fetch(component); // Get the Audio or Video Player Component Element
 		var playerInnerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Get the associated audio or video player
-		var playerRange : HTMLInputElement = playerElement.querySelector('input[type="range"]'); // Get the Media Control Range
+		var playerRange : HTMLInputElement = playerElement.querySelector('div[data-syiro-minor-component="progressbar"] > input'); // Get the Media Control Range
 		var inputVolumeValue : number = volume; // Set inputVolumeValue equal to volume
 
 		if ((typeof fromEvent == "string") && (fromEvent == "input")){ // If it came from playerRange input change
@@ -586,9 +586,11 @@ module syiro.mediacontrol {
 		var componentElement = syiro.utilities.ElementCreator("div",  { "data-syiro-component" : component.type, "data-syiro-component-id" : component.id }); // Generate the basic mediaControl container
 
 		var playButton = syiro.button.New( { "icon" : "play" } ); // Create a play button
+		var progressBar : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "progressbar" }); // Create a progressbar
 		var inputRange : HTMLElement = syiro.utilities.ElementCreator("input", { "type" : "range", "value" : "0"} ); // Create an input range
 
-		componentElement.appendChild(inputRange); // Append the input range
+		progressBar.appendChild(inputRange); // Append the input to the progressbar
+		componentElement.appendChild(progressBar); // Append the progressBar
 		componentElement.appendChild(syiro.component.Fetch(playButton)); // Append the play button
 
 		if (typeof properties["generate-content-info"] !== "undefined"){ // If we are adding content (for Audio Player)
@@ -645,7 +647,7 @@ module syiro.mediacontrol {
 		var playerComponentObject : ComponentObject = syiro.component.FetchComponentObject(mediaControl.parentElement); // Get the Component Object of the parent Player Component
 		var playerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(playerComponentObject); // Get the audio or video Element of the parent Player Component
 
-		var playerRange : any = mediaControl.querySelector('input[type="range"]'); // Get the Media Control Range
+		var playerRange : any = mediaControl.querySelector('div[data-syiro-minor-component="progressbar"] > input'); // Get the Media Control Range
 
 		if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are NOT already actively doing a volume change
 			syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true); // Set the IsChangingInputValue so Tick doesn't update slider while we have the Volume Slider area showing

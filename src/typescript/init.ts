@@ -161,7 +161,7 @@ namespace syiro.init {
 
 		// Player Range Initialization
 
-		var playerRange = mediaControlElement.querySelector('input[type="range"]'); // Get the input range
+		var playerRange = mediaControlElement.querySelector('div[data-syiro-minor-component="progressbar"] > input'); // Get the input range
 
 		syiro.events.Add(syiro.events.Strings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
 			function(){

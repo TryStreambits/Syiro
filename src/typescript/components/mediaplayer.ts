@@ -300,8 +300,10 @@ module syiro.mediaplayer{
 		if ((isNaN(contentDuration) == false) && (isFinite(contentDuration))){ // If we are able to properly fetch the duration and we are not streaming
 			playerLengthInfo["max"] = contentDuration; // Set the maximum to the contentDuration
 
-			if (contentDuration < 60){ // If the contentDuration is less than 60 seconds
-				playerLengthInfo["step"] = 1; // Se the step value to 1 second.
+			if (contentDuration < 30){ // If the contentDuration is less than 30 seconds
+				playerLengthInfo["step"] = 1; // Set the step value to 1 second.
+			} else if ((contentDuration >= 30) && (contentDuration <= 60)){ // If the contentDuration is 30s to 1min
+				playerLengthInfo["step"] = 2; // Set the step value to 2 seconds
 			} else if ((contentDuration > 60) && (contentDuration <= 300)){ // If the contentDuration is greater than 1 minute but less than or equal to 5 minutes
 				playerLengthInfo["step"] = 5; // Set the step value to 5 seconds
 			} else if ((contentDuration > 300) && (contentDuration < 900)){ // If the contentDuration is greater than 5 minutes but less than 15 minutes
@@ -587,7 +589,7 @@ module syiro.mediacontrol {
 
 		var playButton = syiro.button.New( { "icon" : "play" } ); // Create a play button
 		var progressBar : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "progressbar" }); // Create a progressbar
-		var inputRange : HTMLElement = syiro.utilities.ElementCreator("input", { "type" : "range", "value" : "0"} ); // Create an input range
+		var inputRange : HTMLElement = syiro.utilities.ElementCreator("input", { "type" : "range" } ); // Create an input range
 
 		progressBar.appendChild(inputRange); // Append the input to the progressbar
 		componentElement.appendChild(progressBar); // Append the progressBar

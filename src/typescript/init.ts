@@ -173,7 +173,6 @@ namespace syiro.init {
 		syiro.events.Add(syiro.events.Strings["up"], playerRange, // Add mouseup / touchend events to the playerRange, which calls a function to indicate we are no longer changing the input value
 			function(){
 				var playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
-				var playerRange = arguments[1]; // Get the playerRange passed as the second argument
 
 				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
 					syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove IsChangingInputValue

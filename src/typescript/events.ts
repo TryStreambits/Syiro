@@ -54,12 +54,12 @@ namespace syiro.events {
 
 		// #region Passable Data Determination
 
-		if (componentElement.nodeName =="INPUT"){ // If the Element is an input Element
+		if (componentElement.localName =="input"){ // If the Element is an input Element
 			passableValue = componentElement.value; // Get the current value of the input
 		} else {
 			passableValue = eventData; // Simply set the passableValue to the event data passed
 		}
-
+		
 		// #endregion
 
 		for (var individualFunc of functionsForListener){ // For each function that is related to the Component for this particular listener

@@ -360,9 +360,7 @@ module syiro.mediaplayer{
 	// Get Information about if the Player is playing
 	export function IsPlaying(component : ComponentObject) : boolean {
 		var componentElement = syiro.component.Fetch(component); // Fetch the Player Element
-		var isPaused = syiro.mediaplayer.FetchInnerContentElement(component).paused; // Get the value of paused on the Player (opposite of what we will return)
-
-		return !isPaused; // Return the opposite boolean value (playing = (paused = false), therefore true. paused = (paused = true), therefore false)
+		return !syiro.mediaplayer.FetchInnerContentElement(component).paused; // Get the value of paused on the Player and return opposite value (since we're checking if something is playing)
 	}
 
 	// IsStreamable
@@ -373,33 +371,22 @@ module syiro.mediaplayer{
 
 	// PlayOrPause
 	// Play or Pause Audio or Video based on current state
-	export function PlayOrPause(component : ComponentObject, playButtonObjectOrElement ?: any) {
+	export function PlayOrPause(component : ComponentObject, forcePlayOrButton: any) {
 		var componentElement = syiro.component.Fetch(component); // Get the Component Element of the Player
 		var innerContentElement = syiro.mediaplayer.FetchInnerContentElement(component); // Get the inner audio or video Element
-
-		var typeOfPlayButtonObject : string = syiro.utilities.TypeOfThing(playButtonObjectOrElement); // Get the type of the PlayButtonObject
-		var playButton : Element; // Define playButton as an Element
 
 		if (componentElement.getAttribute("data-syiro-component-type") == "video"){ // If this is a video-type Media Player
 			componentElement.setAttribute("data-syiro-show-video", "true"); // Set attribute of data-syiro-show-video to true, indicating to no longer hide the innerContentElement
 		}
-
-		if (typeOfPlayButtonObject == "ComponentObject"){ // If what was passed is a Component Object
-			playButton = syiro.component.Fetch(playButtonObjectOrElement); // Fetch the playButton
-		} else {  // If what was passed is not a Component Object
-			if ((typeOfPlayButtonObject !== "Element") || (playButtonObjectOrElement.getAttribute("data-syiro-render-icon") !== "play")){ // If the playButtonObjectOrElement is not an Element or isn't actually the Play Button
-				playButton = componentElement.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button Element
-			} else { // If what was passed was in fact the playButton Element
-				playButton = playButtonObjectOrElement;
-			}
+		
+		if (!syiro.utilities.TypeOfThing(forcePlayOrButton, "boolean")){ // If forcePlay is not a boolean
+			forcePlayOrButton = false; // Do not force play
 		}
 
-		if (syiro.mediaplayer.IsPlaying(component)){ // If the audio or video Element is playing
+		if (syiro.mediaplayer.IsPlaying(component) && !forcePlayOrButton){ // If the audio or video Element is playing and we are not enforcing playback
 			innerContentElement.pause(); // Pause the audio or video Element
-			playButton.removeAttribute("active"); // Remove the active attribute if it exists, since it is used to imply play / pause iconography
 		} else { // If the audio or video Element is paused
 			innerContentElement.play(); // Play the audio or video Element
-			playButton.setAttribute("active", "pause"); // Set the active attribute to "pause" to indicate using the pause icon
 		}
 	}
 

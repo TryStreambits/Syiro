@@ -126,6 +126,18 @@ namespace syiro.init {
 
 			syiro.events.Add("ended", innerContentElement, syiro.mediaplayer.Reset.bind(this, component)); // Add ended event to innerContentElement that calls syiro.mediaplayer.Reset with bound componentObject
 
+			var playButton : Element = mediaControlArea.querySelector('div[data-syiro-render-icon="play"]'); // Get the Play Button Element
+
+			syiro.events.Add("playing", innerContentElement, function(){ // Have the play event trigger updating the play button
+				var playButton : HTMLElement = arguments[0];
+				playButton.setAttribute("active", "pause"); // Set the active attribute to "pause" to indicate your next action will pause the player
+			}.bind(this, playButton));
+
+			syiro.events.Add("pause", innerContentElement, function(){ // Have the pause event trigger updating the play button
+				var playButton : HTMLElement = arguments[0];
+				playButton.removeAttribute("active"); // Remove the active attribute if it exists, to indicate your next action will be to play
+			}.bind(this, playButton));
+
 			// #endregion
 
 			syiro.init.MediaControl(component, mediaControlComponent); // Initialize the MediaControl and inner Buttons

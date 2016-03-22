@@ -102,7 +102,7 @@ declare module syiro.mediaplayer {
     function IsPlayable(component: ComponentObject, returnIsStreamble?: boolean): (string | boolean);
     function IsPlaying(component: ComponentObject): boolean;
     function IsStreamable(component: ComponentObject): boolean;
-    function PlayOrPause(component: ComponentObject, playButtonObjectOrElement?: any): void;
+    function PlayOrPause(component: ComponentObject, forcePlayOrButton: any): void;
     function Reset(component: ComponentObject): void;
     function SetSources(component: ComponentObject, sources: any): void;
     function SetTime(component: ComponentObject, setting: any): void;

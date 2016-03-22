@@ -338,16 +338,11 @@ module syiro.mediaplayer{
 			var sourceElementsInfo : Array<Object> = syiro.mediaplayer.FetchSources(component); // Define sourceElementsInfo as the fetched objects containing the information from the sources
 
 			for (var sourceElementInfo of sourceElementsInfo){ // For each source in playerSources
-				if (innerContentElement.canPlayType(sourceElementInfo["type"]) !== ""){ // If we do not get an empty string returned, meaning we may be able to play the content
-					isPlayable = true; // Set isPlayable to true
-					break;
-				}
+				isPlayable = (innerContentElement.canPlayType(sourceElementInfo["type"]) !== ""); // Define isPlayable as to if we can play a particular type does not return an empty syting
+				isStreamable = (sourceElementInfo["streamable"] == "true");
 
-				if (!isStreamable){ // If we haven't already checked if the content is stream
-					if ((syiro.utilities.TypeOfThing(sourceElementInfo["streamable"], "string")) && (sourceElementInfo["streamable"] == "true")){ // If the source is streamable
-						isStreamable = true; // Set isStreamable to true
-						break;
-					}
+				if (isPlayable || isStreamable){ // If the content is playable or streamable
+					break; // End the checking
 				}
 			}
 		}

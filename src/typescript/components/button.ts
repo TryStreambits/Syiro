@@ -19,10 +19,10 @@ namespace syiro.button {
 			}
 		}
 
-		var componentId : string = syiro.component.IdGen("button"); // Generate a component Id
-		var componentElement : HTMLElement; // Define componentElement as an HTMLElement
+		let componentId : string = syiro.component.IdGen("button"); // Generate a component Id
+		let componentElement : HTMLElement; // Define componentElement as an HTMLElement
 
-		var componentData : Object = {
+		let componentData : Object = {
 			"data-syiro-component" : "button", // Set data-syiro-component to Button
 			"data-syiro-component-id" : componentId,
 			"data-syiro-component-type" : properties["type"] // Be more granular with exactly what type of Button this is
@@ -48,7 +48,7 @@ namespace syiro.button {
 			delete properties["icon"]; // Remove the "icon" key
 
 			if (typeof properties["image"] == "string"){ // If an image (like an avatar) is defined in the properties
-				var primaryImage : HTMLElement = syiro.utilities.ElementCreator("img", { "src" : properties["image"] }); // Create an img Element with the image source
+				let primaryImage : HTMLElement = syiro.utilities.ElementCreator("img", { "src" : properties["image"] }); // Create an img Element with the image source
 				properties["content"] = primaryImage.outerHTML + properties["content"]; // Prepend the HTML of the img tag to the componentData->content
 				delete properties["image"]; // Remove the "image" key
 			}
@@ -62,7 +62,7 @@ namespace syiro.button {
 		if (properties["type"] == "dropdown"){ // If this is a Dropdown Button that is being generated
 			// #region List Creation and Linking
 
-			var listComponent : ComponentObject = properties["list"]; // Default listComponent as the Component Object of the List
+			let listComponent : ComponentObject = properties["list"]; // Default listComponent as the Component Object of the List
 			delete properties["list"]; // Delete "list" if it exists
 
 			if (typeof properties["items"] !== "undefined"){ // If List Items are provided in the properties
@@ -70,7 +70,7 @@ namespace syiro.button {
 				delete properties["items"]; // Remove the "items" key
 			}
 
-			var listComponentElement : Element = syiro.component.Fetch(listComponent); // Fetch the List Component Element
+			let listComponentElement : Element = syiro.component.Fetch(listComponent); // Fetch the List Component Element
 			document.body.appendChild(listComponentElement); // Append the List Element to the end of the document
 			listComponentElement.setAttribute("data-syiro-component-owner", componentId); // Set the List's owner to be the Dropdown
 			componentData["aria-owns"] = listComponent["id"]; // Define the aria-owns in componentData, setting it to the List Component to declare for ARIA that the Dropdown Button Component "owns" the List Component
@@ -88,7 +88,7 @@ namespace syiro.button {
 
 			// #endregion
 		} else if (properties["type"] == "toggle"){ // If this is a Toggle Button that is being generated
-			var buttonToggleAttributes = { "data-syiro-minor-component" : "buttonToggle"}; // Create an Object to hold the attributes we'll pass when creating the buttonToggle
+			let buttonToggleAttributes = { "data-syiro-minor-component" : "buttonToggle"}; // Create an Object to hold the attributes we'll pass when creating the buttonToggle
 
 			if (syiro.utilities.TypeOfThing(properties["default"], "boolean") && properties["default"]){ // If a default state for the button is defined and is defined as true (already active)
 				buttonToggleAttributes["data-syiro-component-status"] = "true"; // Add the data-syiro-component-status attribute with "true" as the value
@@ -102,7 +102,7 @@ namespace syiro.button {
 		componentElement = syiro.utilities.ElementCreator("div", componentData); // Generate the Component Element with the componentData provided
 
 		if (Object.keys(properties).length !== 0){ // If there are items in properties
-			for (var propertyKey in properties){ // Recursive go through any other attributes that needs to be set.
+			for (let propertyKey in properties){ // Recursive go through any other attributes that needs to be set.
 				componentElement.setAttribute(propertyKey, properties[propertyKey]); // Treat it like an attribute
 			}
 		}
@@ -114,9 +114,9 @@ namespace syiro.button {
 	// SetIcon
 	// Set the icon of a Button
 	export function SetIcon(component : ComponentObject, content : string) : boolean { // Returns boolean value in relation to success
-		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
+		let setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
 
-		var componentElement = syiro.component.Fetch(component); // Get the componentElement
+		let componentElement = syiro.component.Fetch(component); // Get the componentElement
 
 		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") !== "toggle")){ // If the button exists in syiro.data.storage or DOM AND Button is NOT a Toggle Button
 			if (content !== ""){ // If we are not removing the icon from the Button
@@ -137,11 +137,11 @@ namespace syiro.button {
 	// SetImage
 	// Set the image of a Dropdown Button
 	export function SetImage(component : ComponentObject, content : string) : boolean {
-		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
-		var componentElement = syiro.component.Fetch(component); // Get the componentElement
+		let setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
+		let componentElement = syiro.component.Fetch(component); // Get the componentElement
 
 		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") !== "toggle")){ // If the button exists in syiro.data.storage or DOM AND type is not a Toggle Button
-			var innerImage : Element = componentElement.querySelector("img"); // Get the image from the Button
+			let innerImage : Element = componentElement.querySelector("img"); // Get the image from the Button
 
 			if (content !== ""){ // If the content is not an empty string
 				if (innerImage == null){ // If the image element does not exist
@@ -164,8 +164,8 @@ namespace syiro.button {
 	// SetText
 	// Set the label of a Basic or Dropdown Button
 	export function SetText(component : ComponentObject, content : string) : boolean { // Returns boolean value in relation to success
-		var setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
-		var componentElement = syiro.component.Fetch(component); // Get the componentElement
+		let setSucceeded : boolean = false; // Define setSucceded as the boolean we return in relation to whether we successfully set the button label
+		let componentElement = syiro.component.Fetch(component); // Get the componentElement
 
 		if ((componentElement !== null) && (componentElement.getAttribute("data-syiro-component-type") !== "toggle")){ // If the button exists in syiro.data.storage or DOM AND button is "basic" rather than toggle
 			componentElement.textContent = content; // Set the button component textContent
@@ -178,19 +178,18 @@ namespace syiro.button {
 
 	// Toggle
 	// Toggle a Dropdown Button or Toggle Button state
-	export function Toggle(component ?: ComponentObject, active ?: boolean){ // Function that will handle toggling the Dropdown
-		var component : ComponentObject = arguments[0]; // Get the component that was passed to this function as a bound argument
-		var componentElement : any = syiro.component.Fetch(component); // Get the componentElement based on the component Object
+	export function Toggle(component : ComponentObject, active ?: boolean){ // Function that will handle toggling the Dropdown
+		let componentElement : Element = syiro.component.Fetch(component); // Get the componentElement based on the component Object
 
 		if (componentElement.getAttribute("data-syiro-component-type") == "dropdown"){ // If this is a Dropdown Button
-			var linkedListComponentObject : ComponentObject = syiro.component.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown Button
-			var linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponentObject); // Get the List Component's Element
+			let linkedListComponentObject : ComponentObject = syiro.component.FetchLinkedListComponentObject(component); // Get the linked List Component Object of the Dropdown Button
+			let linkedListComponentElement : Element = syiro.component.Fetch(linkedListComponentObject); // Get the List Component's Element
 
 			if (syiro.style.Get(linkedListComponentElement, "visibility") !== ""){ // If the CSS of the linked List Component is stating the List is active (visibility is visible)
 				componentElement.removeAttribute("active"); // Remove the "active" attribute
 				syiro.style.Set(linkedListComponentElement, "visibility", ""); // Remove the visibility attribute and hide the List
 			} else { // If the linked List is not active / showing
-				var positionInformation : Array<string> = syiro.data.Read(linkedListComponentObject["id"] + "->render"); // Get the position information on where we should render the List
+				let positionInformation : Array<string> = syiro.data.Read(linkedListComponentObject["id"] + "->render"); // Get the position information on where we should render the List
 				syiro.render.Position(positionInformation, linkedListComponentObject, component); // Set the position of the List according to the position information for the Dropdown Button
 
 				componentElement.setAttribute("active", ""); // Set the "active" attribute
@@ -217,21 +216,21 @@ namespace syiro.buttongroup {
 	// New
 	// Create a Buttongroup
 	export function New(properties : Object) : ComponentObject {
-		var buttongroupComponentObject : ComponentObject;
+		let buttongroupComponentObject : ComponentObject;
 
 		if (syiro.utilities.TypeOfThing(properties["items"], "Array")){ // If items is defined as an Array
 			if (properties["items"].length > 1){ // If the length of items is equal to or greater than 2
-				var componentId : string = syiro.component.IdGen("buttongroup"); // Generate a component Id
-				var componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "buttongroup", "data-syiro-component-id" : componentId } );
+				let componentId : string = syiro.component.IdGen("buttongroup"); // Generate a component Id
+				let componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "buttongroup", "data-syiro-component-id" : componentId } );
 
-				for (var buttonItem of properties["items"]){
-					var typeOfButton : string = syiro.utilities.TypeOfThing(buttonItem); // Get the type of the buttonItem
+				for (let buttonItem of properties["items"]){
+					let typeOfButton : string = syiro.utilities.TypeOfThing(buttonItem); // Get the type of the buttonItem
 
 					if (typeOfButton == "Object"){ // If the buttonItem provided is an Object, just not a Syiro Object
 						buttonItem = syiro.button.New(buttonItem); // Redefine buttonItem as the provided Button Component Object when we use generate a Syiro Button with the buttonItem current content
 					}
 
-					var buttonElement : Element = syiro.component.Fetch(buttonItem); // Define buttonElement as the fetched Button Element of the Button Component
+					let buttonElement : Element = syiro.component.Fetch(buttonItem); // Define buttonElement as the fetched Button Element of the Button Component
 
 					if (buttonElement.getAttribute("data-syiro-component-type") == "basic"){ // Ensure this is a Basic Button
 						componentElement.appendChild(buttonElement); // Append the buttonElement
@@ -241,8 +240,8 @@ namespace syiro.buttongroup {
 				componentElement = syiro.buttongroup.CalculateInnerButtonWidth(componentElement); // Update componentElement with the inner Button width calculations
 
 				if ((typeof properties["active"] == "number") && (properties["active"]  <= properties["items"].length)){ // If the active Number is provided and it is less than or equal to the max amount of buttons in this Buttongroup
-					var defaultActiveButton = componentElement.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["active"] + ')');
-					var activeButtonComponent = syiro.component.FetchComponentObject(defaultActiveButton); // Get this button's component so we can update any HTMLElement stored in Syiro's data system
+					let defaultActiveButton = componentElement.querySelector('div[data-syiro-component="button"]:nth-of-type(' + properties["active"] + ')');
+					let activeButtonComponent = syiro.component.FetchComponentObject(defaultActiveButton); // Get this button's component so we can update any HTMLElement stored in Syiro's data system
 					defaultActiveButton.setAttribute("active", ""); // Set active attribute
 					syiro.component.Update(activeButtonComponent["id"], defaultActiveButton); // Update the default active button HTMLElement
 				}
@@ -256,30 +255,21 @@ namespace syiro.buttongroup {
 	}
 
 	// CalculateInnerButtonWidth
-	export function CalculateInnerButtonWidth(component : any) : HTMLElement {
-		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of the variable passed
-		var componentElement : HTMLElement; // Define componentElement as the Element of the Component Object and/or is the component passed
-
-		if (typeOfComponent == "ComponentObject"){ // If it is a Component Object
-			if (component.type == "buttongroup"){ // If it is a Buttongroup Component
-				componentElement = syiro.component.Fetch(component); // Fetch the Component Element
-			}
-		} else if (typeOfComponent == "Element"){ // If it is an Element
-			componentElement = component; // Define componentElement as the component provided
-		}
+	export function CalculateInnerButtonWidth(componentProvided : any) : Element {
+		let component : ComponentObject = syiro.component.FetchComponentObject(componentProvided), componentElement : Element = syiro.component.Fetch(componentProvided); // Get the Component Object and Element of the componentProvided
 
 		if (componentElement !== null){ // If componentElement is defined as an actual Element
-			var innerButtonElements : NodeList = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all the inner Buttons
-			var hasOddNumberOfButtons : boolean = (Number((innerButtonElements.length / 2).toFixed()) !== (innerButtonElements.length / 2)); // Define hasOddNumberOfButtons as the bool of whether or not the toFixed of the divided num == non-fixed
-			var middleButtonNumber : number = 0; // Define middleButtonNumber as the INT-th position in innerButtonElements to declare as the middle number (if there is one) - Just default to 0
+			let innerButtonElements : NodeList = componentElement.querySelectorAll('div[data-syiro-component="button"]'); // Get all the inner Buttons
+			let hasOddNumberOfButtons : boolean = (Number((innerButtonElements.length / 2).toFixed()) !== (innerButtonElements.length / 2)); // Define hasOddNumberOfButtons as the bool of whether or not the toFixed of the divided num == non-fixed
+			let middleButtonNumber : number = 0; // Define middleButtonNumber as the INT-th position in innerButtonElements to declare as the middle number (if there is one) - Just default to 0
 
 			if (hasOddNumberOfButtons){ // If the divided lengths are not equal (one using toFixed() to remove floating points)
 				middleButtonNumber = Math.round(innerButtonElements.length / 2); // Define middleButtonNumber as the rounded-up int of innerButtonElements.length / 2 (ex. 5 / 2 = 2.5 -> 3)
 			}
 
-			for (var innerButtonElementsIndex = 0; innerButtonElementsIndex < innerButtonElements.length; innerButtonElementsIndex++){ // For each button
-				var buttonElement = innerButtonElements[innerButtonElementsIndex];
-				var widthValue : string = "calc(100% / " + innerButtonElements.length + ")"; // Define widthValue as a string (since we'll be apply it via CSS and letting CSS dynamically calc width). Default to 100% / num of button Elements
+			for (let innerButtonElementsIndex = 0; innerButtonElementsIndex < innerButtonElements.length; innerButtonElementsIndex++){ // For each button
+				let buttonElement = innerButtonElements[innerButtonElementsIndex];
+				let widthValue : string = "calc(100% / " + innerButtonElements.length + ")"; // Define widthValue as a string (since we'll be apply it via CSS and letting CSS dynamically calc width). Default to 100% / num of button Elements
 
 				if (hasOddNumberOfButtons && (innerButtonElementsIndex == middleButtonNumber)){ // If this is the middle button Element
 					widthValue = "calc(100% / " + innerButtonElements.length + " - 2px)"; // Define widthValue as 100% / 2 minus 2px (bordering)
@@ -297,11 +287,11 @@ namespace syiro.buttongroup {
 	// Toggle
 	// Buttongroup Active Button Toggling
 	export function Toggle(buttonComponent : ComponentObject){
-		var buttonElement : Element = syiro.component.Fetch(buttonComponent); // Fetch the buttonElement
+		let buttonElement : Element = syiro.component.Fetch(buttonComponent); // Fetch the buttonElement
 
-		var parentButtongroup = buttonElement.parentElement; // Define parentButtongroup as the parent of this buttonElement
-		var parentButtongroupComponentObject : ComponentObject = syiro.component.FetchComponentObject(parentButtongroup); // Fetch the ComponentObject of the parent Buttongroup
-		var potentialActiveButton = parentButtongroup.querySelector('div[data-syiro-component="button"][active]'); // Get any potential button that is active in the Buttongroup already
+		let parentButtongroup = buttonElement.parentElement; // Define parentButtongroup as the parent of this buttonElement
+		let parentButtongroupComponentObject : ComponentObject = syiro.component.FetchComponentObject(parentButtongroup); // Fetch the ComponentObject of the parent Buttongroup
+		let potentialActiveButton = parentButtongroup.querySelector('div[data-syiro-component="button"][active]'); // Get any potential button that is active in the Buttongroup already
 
 		if (potentialActiveButton !== null){ // If there is an already active Buttongroup
 			potentialActiveButton.removeAttribute("active"); // Remove the active attribute

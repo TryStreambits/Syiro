@@ -11,11 +11,11 @@ namespace syiro.sidepane {
 	// New
 	// Create a Sidepane
 	export function New(properties : Object) : ComponentObject {
-		var componentId : string = syiro.component.IdGen("sidepane"); // Generate a Sidepane Component Id
-		var componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : componentId, "data-syiro-component" : "sidepane"}); // Generate an empty Sidepane
-		var sidepaneContentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-content"}); // Generate an empty Sidepane Content div
-		var sidepaneInnerListContent : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-lists" }); // Generate an empty Sidepane Lists Container div
-		var sidepaneEdge : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-edge"}); // Generate an empty Sidepane Edge div
+		let componentId : string = syiro.component.IdGen("sidepane"); // Generate a Sidepane Component Id
+		let componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : componentId, "data-syiro-component" : "sidepane"}); // Generate an empty Sidepane
+		let sidepaneContentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-content"}); // Generate an empty Sidepane Content div
+		let sidepaneInnerListContent : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-lists" }); // Generate an empty Sidepane Lists Container div
+		let sidepaneEdge : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-edge"}); // Generate an empty Sidepane Edge div
 
 		componentElement.appendChild(sidepaneContentElement); // Append the content Element
 		sidepaneContentElement.appendChild(sidepaneInnerListContent); // Append the Lists container to the Sidepane Content container
@@ -25,7 +25,7 @@ namespace syiro.sidepane {
 		// #region Sidepane Logo
 
 		if (syiro.utilities.TypeOfThing(properties["logo"], "Element") || (typeof properties["logo"] == "string")){ // If the logo is an Element or string
-			var logoElement : Element = properties["logo"]; // Define logoElement as the Element. Default to the logo (assuming it is an Element)
+			let logoElement : Element = properties["logo"]; // Define logoElement as the Element. Default to the logo (assuming it is an Element)
 
 			if (typeof properties["logo"] == "string"){ // If the logo is a string
 				logoElement = syiro.utilities.ElementCreator("img", { "src" : properties["logo"] }); // Change logoElement to a newly generated img Element
@@ -39,7 +39,7 @@ namespace syiro.sidepane {
 		// #region Sidepane Searchbox
 
 		if (syiro.utilities.TypeOfThing(properties["searchbox"], "ComponentObject")){ // If there is a Searchbox Component Object
-			var searchboxElement : Element = syiro.component.Fetch(properties["searchbox"]); // Fetch the Searchbox
+			let searchboxElement : Element = syiro.component.Fetch(properties["searchbox"]); // Fetch the Searchbox
 			sidepaneContentElement.insertBefore(searchboxElement, sidepaneInnerListContent); // Insert the Searchbox before the Sidepane Inner Lists Content container
 		}
 
@@ -47,9 +47,9 @@ namespace syiro.sidepane {
 
 		// #region Items for Lists Container
 
-		for (var item of properties["items"]){ // For each item in items
-			var typeOfItem : string = syiro.utilities.TypeOfThing(item); // Get the type of this item
-			var appendableElement : Element; // Define appendableElement as the Element we'll be appending
+		for (let item of properties["items"]){ // For each item in items
+			let typeOfItem : string = syiro.utilities.TypeOfThing(item); // Get the type of this item
+			let appendableElement : Element; // Define appendableElement as the Element we'll be appending
 
 			if (typeOfItem == "ComponentObject"){ // If this item is a Syiro Component Object
 				appendableElement = syiro.component.Fetch(item); // Define appendableItem as the fetched Syiro Component Element
@@ -68,8 +68,8 @@ namespace syiro.sidepane {
 
 	// GestureInit
 	export function GestureInit(){
-		var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
-		var moveElement : any; // Define moveElement as the element we will be tracking movement for
+		let componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
+		let moveElement : any; // Define moveElement as the element we will be tracking movement for
 
 		// Event Setting
 
@@ -82,26 +82,24 @@ namespace syiro.sidepane {
 		syiro.events.Add(syiro.events.Strings["move"], moveElement, syiro.sidepane.Drag.bind(this, arguments[0])); // Bind the Sidepane Edge and moveElement to the Drag function for "move"
 		syiro.events.Add(syiro.events.Strings["up"], moveElement, syiro.sidepane.Release.bind(this, arguments[0])); // Bind the Sidepane Edge to Release function for "up"
 
-
-
 		componentElement.removeAttribute("data-syiro-animation"); // Remove the slide animation, sliding the Sidepane back into the edge.
 		componentElement.setAttribute("data-syiro-render-animation", "false"); // Set render-animation to false so transition properties are not applied
 
-		var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Fetch the contentOverlay Element
+		let sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Fetch the contentOverlay Element
 		syiro.style.Set(sidepaneContentOverlay, "display", "block"); // Show the contentOverlay under the Sidepane
 	}
 
 	// Drag
 	export function Drag(){
-		var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
-		var eventData = arguments[2]; // Define eventData as the event data passed
-		var mousePosition : number;
-		var updatedSidepanePosition : number;
+		let componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
+		let eventData = arguments[2]; // Define eventData as the event data passed
+		let mousePosition : number;
+		let updatedSidepanePosition : number;
 
 		if (typeof eventData.touches !== "undefined"){ // If Drag is being triggered by touchmove
 			mousePosition = eventData.touches[0].screenX;
 		} else { // If Drag is being triggered by mousemove
-			 mousePosition = eventData.clientX; // Get from clientX since we may be using multiple monitors
+			mousePosition = eventData.clientX; // Get from clientX since we may be using multiple monitors
 		}
 
 		updatedSidepanePosition = mousePosition- componentElement.offsetWidth; // Set updatedSidepanePosition to mousePosition minus the width of the Sidepane (including borders, padding, etc.)
@@ -116,29 +114,28 @@ namespace syiro.sidepane {
 
 	// Release
 	export function Release(){
-		var componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
-		var component : ComponentObject = syiro.component.FetchComponentObject(arguments[0].parentElement); // Define component as the fetched Component Object
-		var moveElement = arguments[1]; // Define moveElement as the third argument passed, the actual Element we are listening to
-		var eventData : any = arguments[2]; // Define eventData as the event data passed
+		let component : ComponentObject = syiro.component.FetchComponentObject(arguments[0].parentElement); // Define component as the fetched Component Object
+		let moveElement = arguments[1]; // Define moveElement as the third argument passed, the actual Element we are listening to
+		let eventData : any = arguments[2]; // Define eventData as the event data passed
 
 		syiro.sidepane.Toggle(component, eventData); // Call Sidepane Toggle w/ event data
-		syiro.events.Remove(syiro.events.Strings["move"], moveElement); // Remove the "move" function
-		syiro.events.Remove(syiro.events.Strings["up"], moveElement); // Remove the "up" function
+		syiro.events.Remove(syiro.events.Strings["move"], component); // Remove the "move" function
+		syiro.events.Remove(syiro.events.Strings["up"], component); // Remove the "up" function
 	}
 
 	// Toggle
 	// Toggle the Sidepane and the content overlay
 	export function Toggle(component : ComponentObject, eventData ?: any){
 		if (syiro.component.IsComponentObject(component) && (component.type == "sidepane")){ // If this is a Component Object and indeed a Sidepane
-			var componentElement = syiro.component.Fetch(component); // Fetch the Sidepane Element
-			var sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Fetch the sidepaneContentOverlay Element
-			var showSidepane : boolean = false; // Define showSidepane as a defaulted "false"
+			let componentElement = syiro.component.Fetch(component); // Fetch the Sidepane Element
+			let sidepaneContentOverlay = document.body.querySelector('div[data-syiro-minor-component="overlay"][data-syiro-overlay-purpose="sidepane"]'); // Fetch the sidepaneContentOverlay Element
+			let showSidepane : boolean = false; // Define showSidepane as a defaulted "false"
 
 			if (componentElement.hasAttribute("data-syiro-animation") == false){ // If it does not have the animation attribute
-				var currentTransformProperty : any = syiro.style.Get(component, "transform"); // Get the current transform property
+				let currentTransformProperty : any = syiro.style.Get(component, "transform"); // Get the current transform property
 
 				if ((typeof eventData !== "undefined") && ((typeof eventData.changedTouches !== "undefined") || (typeof eventData.screenX !== "undefined"))){ // If eventData is defined and is either touch or mouse event
-					var mousePosition : number;
+					let mousePosition : number;
 
 					if (typeof eventData.changedTouches !== "undefined"){ // If we are getting data from a touch event
 						mousePosition = eventData.changedTouches[0].screenX
@@ -148,7 +145,7 @@ namespace syiro.sidepane {
 
 					showSidepane = (mousePosition > (componentElement.clientWidth / 2)); // If we are going to show Sidepane or touchData was passed that has last pos at greater than 50% of Component Width, set showSidepane to true
 				} else if (currentTransformProperty !== false){ // IF currentTransformProperty is not false, meaning transform is a valid existing CSS attribute
-					var transformPosition : number = Number(currentTransformProperty.replace("translateX(-", "").replace("px)", "")); // Define transformPosition as the number after cleaning up the translateX string of the transform property
+					let transformPosition : number = Number(currentTransformProperty.replace("translateX(-", "").replace("px)", "")); // Define transformPosition as the number after cleaning up the translateX string of the transform property
 
 					showSidepane = (transformPosition < (componentElement.clientWidth / 2));// If the transformPosition is less than the client width (because moving left with decrease the transform, since the first transform is clientWidth and 100% showing Sidepane is 0, showSidepane is true
 				} else if (typeof eventData == "undefined"){ // If touchdata is not defined (triggered programmatically)

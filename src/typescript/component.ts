@@ -173,24 +173,14 @@ namespace syiro.component {
 	// Remove
 	// Remove a Components or Elements from their parent
 	export function Remove(componentsToRemove : any) {
-		var componentList : Array<any> = componentsToRemove; // Define componentList as an array to remove, default to componentsToRemove
+		let componentList : Array<any> = componentsToRemove; // Define componentList as an array to remove, default to componentsToRemove
 
 		if (!syiro.utilities.TypeOfThing(componentsToRemove, "array")){ // If the componentsToRemove is NOT an Array
 			componentList = [componentsToRemove]; // Set componentList to an Array consisting of the single Component Object
 		}
 
-		for (var component of componentList){ // For each Component and Sub-Component in componentList
-			var typeOfComponent : string = syiro.utilities.TypeOfThing(component); // Define typeOfComponent
-			var componentObject : ComponentObject; // Define componentObject as an Object
-			var componentElement : Element; // Define componentElement as an Element
-
-			if (typeOfComponent == "ComponentObject"){ // If the individual Component is a Syiro Component Object
-				componentObject = component; // Define componentObject as the Object provided
-				componentElement = syiro.component.Fetch(component); // Define componentElement as the fetched Element of the Component
-			} else if (typeOfComponent == "Element"){ // If the individual Component is an Element
-				componentObject = syiro.component.FetchComponentObject(component); // Define componentObject as the Component Object we'll fetch based on the Element
-				componentElement = component; // Define componentElement as the Element provided
-			}
+		for (let component of componentList){ // For each Component and Sub-Component in componentList
+			let componentObject = syiro.component.FetchComponentObject(component), componentElement = syiro.component.Fetch(component); // Get the ComponentObject and componentElement of the Component
 
 			if (syiro.utilities.TypeOfThing(componentElement, "Element")){ // If componentElement is an Element
 				var parentElement : Element = componentElement.parentElement; // Get the componentElement's parentElement

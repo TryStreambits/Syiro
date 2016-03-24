@@ -146,8 +146,8 @@ declare namespace syiro.list {
     function New(properties: Object): ComponentObject;
     function SetHeader(component: ComponentObject, content: any): void;
     function Toggle(component: any): void;
-    var AddItem: typeof component.Add;
-    var RemoveItem: typeof component.Remove;
+    let AddItem: typeof component.Add;
+    let RemoveItem: typeof component.Remove;
 }
 declare namespace syiro.listitem {
     function New(properties: Object): ComponentObject;
@@ -179,11 +179,11 @@ declare namespace syiro.button {
     function SetIcon(component: ComponentObject, content: string): boolean;
     function SetImage(component: ComponentObject, content: string): boolean;
     function SetText(component: ComponentObject, content: string): boolean;
-    function Toggle(component?: ComponentObject, active?: boolean): void;
+    function Toggle(component: ComponentObject, active?: boolean): void;
 }
 declare namespace syiro.buttongroup {
     function New(properties: Object): ComponentObject;
-    function CalculateInnerButtonWidth(component: any): HTMLElement;
+    function CalculateInnerButtonWidth(componentProvided: any): Element;
     function Toggle(buttonComponent: ComponentObject): void;
 }
 declare namespace syiro.device {

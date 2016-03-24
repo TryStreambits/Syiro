@@ -13,7 +13,7 @@ namespace syiro.component {
 	// Fetch
 	// Fetch the HTMLElement of a Component object
 	export function Fetch(component : ComponentObject) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
-		var componentElement : any = component; // Default componentElement to being the component
+		let componentElement : any = component; // Default componentElement to being the component
 		
 		if (syiro.utilities.TypeOfThing(component, "ComponentObject")){ // If component is a ComponentObject
 			componentElement = document.querySelector('div[data-syiro-component-id="' + component.id + '"]'); // The (HTML)Element of the Syiro component we'll be returning (default to fetching Element via querySelector)
@@ -179,19 +179,22 @@ namespace syiro.component {
 			componentList = [componentsToRemove]; // Set componentList to an Array consisting of the single Component Object
 		}
 
-		for (let component of componentList){ // For each Component and Sub-Component in componentList
-			let componentObject = syiro.component.FetchComponentObject(component), componentElement = syiro.component.Fetch(component); // Get the ComponentObject and componentElement of the Component
+		for (let componentProvided of componentList){ // For each Component and Sub-Component in componentList
+			let componentObject = syiro.component.FetchComponentObject(componentProvided), componentElement = syiro.component.Fetch(componentProvided); // Get the ComponentObject and componentElement of the Component
 
 			if (syiro.utilities.TypeOfThing(componentElement, "Element")){ // If componentElement is an Element
-				var parentElement : Element = componentElement.parentElement; // Get the componentElement's parentElement
+				let parentElement : Element = componentElement.parentElement; // Get the componentElement's parentElement
 
 				if (syiro.data.Read(componentObject.id) !== false){ // It there is data regarding individualComponentObject in syiro.data.storage
 					syiro.data.Delete(componentObject.id); // Delete the Component's data
 				}
 
-				if ((parentElement !== null) && parentElement.hasAttribute("data-syiro-component-id")){ // If the parentElement has a Component Id
+				if (parentElement !== null){ // If a parent of this Element exists
 					parentElement.removeChild(componentElement); // Remove this Component from the DOM, if it exists
-					syiro.component.Update(parentElement.getAttribute("data-syiro-component-id") + "->HTMLElement", parentElement); // Update this "parentElement" Component if necessary
+				
+					if (parentElement.hasAttribute("data-syiro-component-id")){ // If the parentElement has a Component Id
+						syiro.component.Update(parentElement.getAttribute("data-syiro-component-id") + "->HTMLElement", parentElement); // Update this "parentElement" Component if necessary
+					}
 				}
 			}
 		}

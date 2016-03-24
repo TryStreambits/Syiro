@@ -12,13 +12,13 @@ namespace syiro.render {
 	// Position
 	// Position a Component or Element relative to another one
 	export function Position(positioningList : (string | Array<string>), componentObject : any, relativeComponentObject : any) : boolean {
-		var positioningAllowed : boolean = false; // Define positioningAllowed as a boolean, defaulting to false
+		let positioningAllowed : boolean = false; // Define positioningAllowed as a boolean, defaulting to false
 
 		if (arguments.length == 3){ // If three arguments were passed
-			var componentElement : Element; // Define componentElement as the Element (if a Component Object was passed, of the Component)
-			var relativeComponentElement : Element; // Define realtiveComponentElement as an Element (if a relativeComponentObject was passed, of the Component)
+			let componentElement : Element; // Define componentElement as the Element (if a Component Object was passed, of the Component)
+			let relativeComponentElement : Element; // Define realtiveComponentElement as an Element (if a relativeComponentObject was passed, of the Component)
 
-			var typeOfPositioningList : string = syiro.utilities.TypeOfThing(positioningList); // Get the type of the positioningList
+			let typeOfPositioningList : string = syiro.utilities.TypeOfThing(positioningList); // Get the type of the positioningList
 
 			if (typeOfPositioningList == "string"){ // If the positioningList is a string
 				positioningList = [arguments[0]]; // Redefine as an array
@@ -37,27 +37,27 @@ namespace syiro.render {
 
 				// #region Primary Component & Relative Component Position Variable Defining
 
-				var componentDimensionsAndPosition : Object = syiro.component.FetchDimensionsAndPosition(componentElement); // Get the dimensions of the Component
-				var relativeComponentDimensionsAndPosition : Object = syiro.component.FetchDimensionsAndPosition(relativeComponentElement); // Get the dimensions and position of the Relative Component Element
+				let componentDimensionsAndPosition : Object = syiro.component.FetchDimensionsAndPosition(componentElement); // Get the dimensions of the Component
+				let relativeComponentDimensionsAndPosition : Object = syiro.component.FetchDimensionsAndPosition(relativeComponentElement); // Get the dimensions and position of the Relative Component Element
 
-				var componentHeight : number = componentDimensionsAndPosition["height"]; // Get the height of the primaryComponent
-				var componentWidth : number = componentDimensionsAndPosition["width"]; // Get the width of the primaryComponent
+				let componentHeight : number = componentDimensionsAndPosition["height"]; // Get the height of the primaryComponent
+				let componentWidth : number = componentDimensionsAndPosition["width"]; // Get the width of the primaryComponent
 
-				var relativeComponentHeight : number = relativeComponentDimensionsAndPosition["height"]; // Get the height of the relativeComponentElement
-				var relativeComponentWidth : number = relativeComponentDimensionsAndPosition["width"]; // Get the width of the relativeComponentElement
-				var relativeComponentYPosition : number = relativeComponentDimensionsAndPosition["top"]; // Get the top position of the relativeComponentElement
-				var relativeComponentXPosition : number = relativeComponentDimensionsAndPosition["left"]; // Get the left position of the relativeComponentElement
+				let relativeComponentHeight : number = relativeComponentDimensionsAndPosition["height"]; // Get the height of the relativeComponentElement
+				let relativeComponentWidth : number = relativeComponentDimensionsAndPosition["width"]; // Get the width of the relativeComponentElement
+				let relativeComponentYPosition : number = relativeComponentDimensionsAndPosition["top"]; // Get the top position of the relativeComponentElement
+				let relativeComponentXPosition : number = relativeComponentDimensionsAndPosition["left"]; // Get the left position of the relativeComponentElement
 
-				var componentWidthDifference = (componentWidth - relativeComponentWidth); // Set as the componentElement width minus the relativeComponent Element width
+				let componentWidthDifference = (componentWidth - relativeComponentWidth); // Set as the componentElement width minus the relativeComponent Element width
 
 				// #endregion
 
 				// #region Position Calculation and Setting
 
-				var componentAbovePosition : number = (relativeComponentYPosition - componentHeight); // Set the Component's above position to the relative Component's Y position minus the height of the component we are positioning
-				var componentBelowPosition : number = (relativeComponentYPosition + relativeComponentHeight); // Set the Component's below position to the relative Component's Y position plus the height of said Component
-				var componentLeftPosition : number = relativeComponentXPosition; // Set the Component's left position to the same as the relative Component's X position, since we are aligning to the left edge of the Components
-				var componentRightPosition : number = relativeComponentXPosition; // Initially set componentRightPosition to the relative Component's X position (assume initially that widths are same)
+				let componentAbovePosition : number = (relativeComponentYPosition - componentHeight); // Set the Component's above position to the relative Component's Y position minus the height of the component we are positioning
+				let componentBelowPosition : number = (relativeComponentYPosition + relativeComponentHeight); // Set the Component's below position to the relative Component's Y position plus the height of said Component
+				let componentLeftPosition : number = relativeComponentXPosition; // Set the Component's left position to the same as the relative Component's X position, since we are aligning to the left edge of the Components
+				let componentRightPosition : number = relativeComponentXPosition; // Initially set componentRightPosition to the relative Component's X position (assume initially that widths are same)
 
 				if (componentWidthDifference > 0){ // If the Component is wider than the relative Component
 					componentRightPosition = (relativeComponentXPosition - componentWidthDifference); // Set componentRightPosition to the X position of the relativeComponent minus the difference in width
@@ -65,8 +65,8 @@ namespace syiro.render {
 					componentRightPosition = (relativeComponentXPosition + Math.abs(componentWidthDifference)); // Set componentRightPosition to the X position + the positive form (using Math.abs) of the negative difference number
 				}
 
-				for (var position of positioningList){ // For each position in the positioningList
-					var positionValue : number; // Define positionValue as the variable to hold the coordinate of where the componentElement should render
+				for (let position of positioningList){ // For each position in the positioningList
+					let positionValue : number; // Define positionValue as the variable to hold the coordinate of where the componentElement should render
 
 					switch (position) {
 						case "above": // If we are positioning the Component above the relativeComponent
@@ -103,7 +103,7 @@ namespace syiro.render {
 							break;
 						case "center": // If we are positioning the Component centered to the relativeComponent
 							if (componentWidthDifference > 0){ // If the Component is wider than the relative Component
-								var primaryComponentSideLength = (componentWidthDifference / 2); // Get the amount of pixels that each side of the primaryComponent would have
+								let primaryComponentSideLength = (componentWidthDifference / 2); // Get the amount of pixels that each side of the primaryComponent would have
 
 								if (((relativeComponentXPosition - primaryComponentSideLength) + componentWidth) > syiro.device.width){ // If the X position of the relative Component minus the diff (since Component is wider) plus the total length means it will clip the right side of the page
 									positionValue = componentRightPosition; // Force to position right instead of center

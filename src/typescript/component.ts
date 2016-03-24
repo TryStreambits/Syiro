@@ -12,7 +12,7 @@ namespace syiro.component {
 
 	// Fetch
 	// Fetch the HTMLElement of a Component object
-	export function Fetch(component : ComponentObject) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
+	export function Fetch(component : any) : any { // Take a Syiro component object and return an HTMLElement (it's like magic!)
 		let componentElement : any = component; // Default componentElement to being the component
 		
 		if (syiro.utilities.TypeOfThing(component, "ComponentObject")){ // If component is a ComponentObject

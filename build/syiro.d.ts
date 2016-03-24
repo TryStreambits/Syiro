@@ -70,7 +70,6 @@ declare namespace syiro.utilities {
     function TypeOfThing(thing: any, checkAgainstType?: string): any;
 }
 declare namespace syiro.style {
-    function GetObject(component: any): Object;
     function Get(component: any, property: string): string;
     function GetPropertyCamelCased(property: string): string;
     function LoadColors(): void;
@@ -81,7 +80,7 @@ declare namespace syiro.render {
 }
 declare namespace syiro.component {
     var lastUniqueIds: Object;
-    function Fetch(component: ComponentObject): any;
+    function Fetch(component: any): any;
     function FetchComponentObject(element: any): ComponentObject;
     function FetchDimensionsAndPosition(component: any): ClientRect;
     function FetchLinkedListComponentObject(component: ComponentObject): ComponentObject;

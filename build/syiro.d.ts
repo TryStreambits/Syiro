@@ -82,13 +82,13 @@ declare namespace syiro.render {
 declare namespace syiro.component {
     var lastUniqueIds: Object;
     function Fetch(component: ComponentObject): any;
-    function FetchComponentObject(...args: any[]): ComponentObject;
+    function FetchComponentObject(element: any): ComponentObject;
     function FetchDimensionsAndPosition(component: any): ClientRect;
-    function FetchLinkedListComponentObject(component: any): ComponentObject;
+    function FetchLinkedListComponentObject(component: ComponentObject): ComponentObject;
     function IdGen(type: string): string;
     function IsComponentObject(component: any): boolean;
     function Update(componentId: string, componentElement: Element): void;
-    function Add(appendOrPrepend: string, parentComponent: any, childComponent: any): boolean;
+    function Add(appendOrPrepend: string, parentProvided: any, childProvided: any): boolean;
     function Remove(componentsToRemove: any): void;
 }
 declare module syiro.mediaplayer {

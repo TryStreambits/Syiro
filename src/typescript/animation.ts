@@ -9,16 +9,8 @@ namespace syiro.animation {
 
 	// Animate
 	// Animate a component with the provided AnimationOptions
-	export function Animate(component : any, properties : AnimationOptions){ // This function animates a particular Component or Element and calls a post-animation function if applicable
-		var element : any = null; // Define element as any
-		var typeOfComponent = syiro.utilities.TypeOfThing(component); // Get the type of this component variable
-
-		if (typeOfComponent == "ComponentObject"){ // If we passed a Component Object
-			element = syiro.component.Fetch(component); // Define element as the fetched Syiro Component
-		} else if (typeOfComponent == "Element") { // If we passed an Element
-			element = component; // Define element as the component provided
-			component = syiro.component.FetchComponentObject(element); // Redefine component as the newly fetched Component Object of the element
-		}
+	export function Animate(componentProvided : any, properties : AnimationOptions){ // This function animates a particular Component or Element and calls a post-animation function if applicable
+		let component : ComponentObject = syiro.component.FetchComponentObject(componentProvided), element : any = syiro.component.Fetch(componentProvided); // Get the ComponentObject and Element
 
 		if ((element !== null) && (typeof properties.animation == "string")){ // If the element exists in the DOM and an animation is provided
 			if ((component.type == "button") && (element.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
@@ -27,7 +19,7 @@ namespace syiro.animation {
 
 			if (typeof properties.postAnimationFunc == "function"){ // If a postAnimationFunction is defined
 				if ((typeof element.style["transition"] !== "undefined") || (typeof element.style["webkitTransition"] !== "undefined")){ // If transitionend Event is used
-					var transitionEndFlag = "webkitTransitionEnd"; // Default to webkitTransitionEnd as the event listener
+					let transitionEndFlag = "webkitTransitionEnd"; // Default to webkitTransitionEnd as the event listener
 
 					if (typeof element.style["transition"] !== "undefined"){ // If the standard transition property is supported
 						transitionEndFlag = "transitionend";
@@ -35,9 +27,9 @@ namespace syiro.animation {
 
 					syiro.events.Add(transitionEndFlag, element,
 						function(){
-							var postAnimationFunction = arguments[0]; // Get the first arg as postAnimationFunction
-							var transitionEndFlag = arguments[1]; // Get the second arg as the transitionEndFlag
-							var element = arguments[2]; // Get the element as the third argument
+							let postAnimationFunction = arguments[0]; // Get the first arg as postAnimationFunction
+							let transitionEndFlag = arguments[1]; // Get the second arg as the transitionEndFlag
+							let element = arguments[2]; // Get the element as the third argument
 
 							if (typeof postAnimationFunction == "function"){ // If postAnimationFunction was passed (as in, it existed in the first place)
 								postAnimationFunction(element); // Call the postAnimation function
@@ -57,17 +49,10 @@ namespace syiro.animation {
 
 	// Reset
 	// Remove Syiro Animation Properties from Components
-	export function Reset(component : any){
-		var componentElement : Element; // Define componentElement as any
+	export function Reset(componentProvided : any){
+		let component : ComponentObject = syiro.component.FetchComponentObject(componentProvided), componentElement : Element = syiro.component.Fetch(componentProvided); // Get the ComponentObject and Element
 
-		if (syiro.component.IsComponentObject(component)){ // If we passed a Component Object
-			componentElement = syiro.component.Fetch(component); // Define componentElement as the fetched Syiro Component
-		} else { // If we passed an Element
-			componentElement = component; // Define componentElement as the component provided
-			component = syiro.component.FetchComponentObject(componentElement); // Redefine component as the newly fetched Component Object of the componentElement
-		}
-
-		if (componentElement !== null){ // If the componentElement exists in the DOM
+		if (syiro.utilities.TypeOfThing(componentElement, "Element")){ // If the componentElement exists in the DOM
 			if ((component.type == "button") && (componentElement.getAttribute("data-syiro-component-type") == "toggle")){ // If we are animating a toggle button
 				componentElement = componentElement.querySelector('div[data-syiro-minor-component="buttonToggle"]'); // Get the inner button toggle
 			}

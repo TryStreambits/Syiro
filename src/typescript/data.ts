@@ -11,9 +11,9 @@ namespace syiro.data {
     // Read or modify data stored in syiro.data.storage
     // Returns a boolean success value or the value (if read)
     export function Manage(modificationType : string, keyList : string, data ?: any) : any {
-        var componentId : string; // Define componentId as a string
-        var returnableValue : any; // Default to returnableValue as any value
-		var keyToApply : string; // Define keyToApply as a string that'll be equivelant to undefined or a proper key/val after -> parsing
+        let componentId : string; // Define componentId as a string
+        let returnableValue : any; // Default to returnableValue as any value
+		let keyToApply : string; // Define keyToApply as a string that'll be equivelant to undefined or a proper key/val after -> parsing
 
 		if (keyList.indexOf("->") !== -1){ // If we are applying data to a key/val in the Component's data
 			componentId= keyList.slice(0, keyList.indexOf("->")); // Define componentId as the first string before the first ->

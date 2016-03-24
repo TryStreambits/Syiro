@@ -49,8 +49,8 @@ declare namespace syiro.data {
     function Delete(keyList: string): any;
 }
 declare namespace syiro.animation {
-    function Animate(component: any, properties: AnimationOptions): void;
-    function Reset(component: any): void;
+    function Animate(componentProvided: any, properties: AnimationOptions): void;
+    function Reset(componentProvided: any): void;
     function FadeIn(component: any, postAnimationFunction?: Function): void;
     function FadeOut(component: any, postAnimationFunction?: Function): void;
     function Slide(component: any, postAnimationFunction?: Function): void;
@@ -58,8 +58,8 @@ declare namespace syiro.animation {
 declare namespace syiro.events {
     var Strings: Object;
     function Handler(): void;
-    function Trigger(eventType: string, component: any, eventData?: Event): void;
-    function Add(listeners: any, component: any, listenerCallback: Function): boolean;
+    function Trigger(eventType: string, componentProvided: any, eventData?: Event): void;
+    function Add(listeners: any, componentProvided: any, listenerCallback: Function): boolean;
     function Remove(...args: any[]): boolean;
 }
 declare namespace syiro.utilities {

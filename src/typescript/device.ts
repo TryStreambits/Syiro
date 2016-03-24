@@ -82,15 +82,15 @@ namespace syiro.device {
 
 		// #region Orientation Listening and Determinination Support
 
-		var orientationChangeHandler : Function = function(){ // This function is the handler for when the orientation is changed (or if we fire the function during a window interval / timer)
-			var currentOrientation : string = syiro.device.FetchScreenOrientation(); // Fetch the current screen orientation (portrait or landscape)
+		let orientationChangeHandler : Function = function(){ // This function is the handler for when the orientation is changed (or if we fire the function during a window interval / timer)
+			let currentOrientation : string = syiro.device.FetchScreenOrientation(); // Fetch the current screen orientation (portrait or landscape)
 
 			if (currentOrientation !== syiro.device.Orientation){ // If currentOrientation does not match the syiro.device.Orientation stored already
 				syiro.device.Orientation = currentOrientation; // Update Orientation value for syiro.device.Orientation
 
 				if (arguments[0] == "interval"){ // If we are calling orientationChangeHandler via window.setInterval, call all the other [vendor]orientationchange handlers
-					var orientationChangeViaIntervalHanders : Array<Function> = syiro.data.Read("screen->handlers->orientationchange-viainterval"); // Define orientationChangeViaIntervalHanders as the fetched array of Functions from screen
-					for (var orientationChangeIndex in orientationChangeViaIntervalHanders){ // For each orientation handler
+					let orientationChangeViaIntervalHanders : Array<Function> = syiro.data.Read("screen->handlers->orientationchange-viainterval"); // Define orientationChangeViaIntervalHanders as the fetched array of Functions from screen
+					for (let orientationChangeIndex in orientationChangeViaIntervalHanders){ // For each orientation handler
 						orientationChangeViaIntervalHanders[orientationChangeIndex](); // Call the function
 					}
 				}
@@ -118,7 +118,7 @@ namespace syiro.device {
 	// FetchOperatingSystem
 	// Fetch the potential operating system
 	export function FetchOperatingSystem() : string {
-		var userAgent : string = navigator.userAgent; // Get the userAgent
+		let userAgent : string = navigator.userAgent; // Get the userAgent
 
 		if (userAgent.indexOf("Android") !== -1){ // If the userAgent is set to claim the device is Android
 			syiro.device.OperatingSystem = "Android"; // Set device to Android
@@ -159,7 +159,7 @@ namespace syiro.device {
 	// FetchScreenOrientation
 	// Fetch the device / screen orientation
 	export function FetchScreenOrientation() : string {
-		var deviceOrientation : string = "portrait"; // Define deviceOrientation as the orientation of the device, defaulting to portrait
+		let deviceOrientation : string = "portrait"; // Define deviceOrientation as the orientation of the device, defaulting to portrait
 
 		if ((typeof screen.orientation !== "undefined") && (typeof screen.orientation.onchange !== "undefined")){ // If Screen Orientation API is properly supported
 			deviceOrientation = screen.orientation; // Set deviceOrientation to screen.orientation type

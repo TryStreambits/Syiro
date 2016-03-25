@@ -8,10 +8,10 @@ namespace syiro.utilities {
 	// Create an Element, taking an optional componentId, componentType or the desired element tag name and attributes
 	export function ElementCreator(type : string, attributes : Object) {
 		if ((typeof type == "string") && (typeof attributes == "object")){
-			var generatedElement : any = document.createElement(type); // Define componentElement as the generated HTMLElement based on the type supplied by argument 0
+			let generatedElement : any = document.createElement(type); // Define componentElement as the generated HTMLElement based on the type supplied by argument 0
 
-			for (var attributeKey in attributes){ // For each attributeKey in attributes
-				var attributeValue = attributes[attributeKey]; // Get the attribute value based on key
+			for (let attributeKey in attributes){ // For each attributeKey in attributes
+				let attributeValue = attributes[attributeKey]; // Get the attribute value based on key
 
 				if (attributeKey !== "content"){ // If the attributeKey is not content
 					if (attributeKey == "content-attr"){ // If the attributeKey is "content-attr" (used in meta tag creation)
@@ -21,7 +21,7 @@ namespace syiro.utilities {
 					generatedElement.setAttribute(attributeKey, syiro.utilities.SanitizeHTML(attributeValue)); // Set the attribute to a sanitized form of the attributeValue
 				} else { // If the attributeKey IS "content"
 					if ((typeof attributeValue == "string") || (syiro.utilities.TypeOfThing(attributeValue, "Element"))){ // If the attributeValue we passed is a string or an appropriate Element
-						var sanitizedContent = syiro.utilities.SanitizeHTML(attributeValue); // Set sanitizedContent to sanitized HTML (whether it is a string or Element)
+						let sanitizedContent = syiro.utilities.SanitizeHTML(attributeValue); // Set sanitizedContent to sanitized HTML (whether it is a string or Element)
 
 						if (typeof attributeValue == "string"){ // If the attributeValue we passed is a string
 							generatedElement.innerHTML = sanitizedContent; // Set generatedElement innerHTML to sanitizedContent
@@ -40,9 +40,9 @@ namespace syiro.utilities {
 	// Run a function using promises and requestAnimationFrames.
 	// Returns boolean if function was executed in the *most* optimized state.
 	export function Run(func : Function) : boolean {
-		var runOptimized : boolean = false;
+		let runOptimized : boolean = false;
 
-		var runWithAnimationFrame : Function = function(func : any){ // Define runWithAnimationFrame as a function for checking and attempt to run the func provided with requestAnimationFrame
+		let runWithAnimationFrame : Function = function(func : any){ // Define runWithAnimationFrame as a function for checking and attempt to run the func provided with requestAnimationFrame
 			if (syiro.device.SupportsRequestAnimationFrame){ // If we support requestAnimationFrame
 				requestAnimationFrame(func); // Run via requestAnimationFrame
 			} else { // If we do not support requestAnimationFrame
@@ -63,17 +63,17 @@ namespace syiro.utilities {
 	// Sanitize HTML
 	// Removes script tags from HTML
 	export function SanitizeHTML(content : any){
-		var updatedContent : any = false; // Define updatedContent as false (failure) by default
+		let updatedContent : any = false; // Define updatedContent as false (failure) by default
 
 		if (typeof content == "string"){ // If the content we passed is a string
 			updatedContent = content.replace(/<*[^]script*>/g, ""); // Replace all <script> and </script> tags
 		} else if (syiro.utilities.TypeOfThing(content, "Element")){ // If this is an Element
 			if (content.tagName.toLowerCase() !== "script"){ // If we are not including a singular script tag
-				var innerScriptElements = content.querySelectorAll("script"); // Get all inner JavaScript tags
+				let innerScriptElements = content.querySelectorAll("script"); // Get all inner JavaScript tags
 
 				if (innerScriptElements.length !== 0){ // If there are inner JavaScript tags
-					for (var innerScriptElementIndex in innerScriptElements){ // For each inner JavaScript tag
-						var innerScriptElement = innerScriptElements[innerScriptElementIndex];
+					for (let innerScriptElementIndex in innerScriptElements){ // For each inner JavaScript tag
+						let innerScriptElement = innerScriptElements[innerScriptElementIndex];
 
 						if (syiro.utilities.TypeOfThing(innerScriptElement, "Element")){ // IF this is an Element
 							innerScriptElement.parentElement.removeChild(innerScriptElement); // Remove the script tag
@@ -91,7 +91,7 @@ namespace syiro.utilities {
 	// SecondsToTimeFormat
 	// Calculates hours, minutes, and seconds based on seconds provided, returning them in an Object
 	export function SecondsToTimeFormat(seconds : number) : Object {
-		var timeObject : Object = {};
+		let timeObject : Object = {};
 
 		if (seconds >= 3600){ // If there is more than 1 hour in "seconds"
 			timeObject["hours"] = Math.floor(seconds / 3600); // Divide the seconds by 1 hour to get the number of hours (rounded down)
@@ -107,9 +107,9 @@ namespace syiro.utilities {
 
 		timeObject["seconds"] = Math.floor(timeObject["seconds"]); // Seconds should always round down
 
-		for (var timeObjectKey in timeObject){ // For each key in the timeObject
-			var timeObjectValue = timeObject[timeObjectKey]; // Set timeObjectValue as the value based on key
-			var timeObjectValueString = timeObjectValue.toString(); // Convert the int to string
+		for (let timeObjectKey in timeObject){ // For each key in the timeObject
+			let timeObjectValue = timeObject[timeObjectKey]; // Set timeObjectValue as the value based on key
+			let timeObjectValueString = timeObjectValue.toString(); // Convert the int to string
 
 			if (timeObjectValue < 10){ // If we are dealing with an int less than 10
 				timeObjectValueString = "0" + timeObjectValueString; // Prepend a 0
@@ -124,7 +124,7 @@ namespace syiro.utilities {
 	// TypeOfThing
 	// Get more clear type information about what is provided
 	export function TypeOfThing(thing : any, checkAgainstType ?: string) : any {
-		var thingType : any = (typeof thing); // Initially set thingType as the typeof
+		let thingType : any = (typeof thing); // Initially set thingType as the typeof
 
 		if ((thingType !== "undefined") && (thing !== null)){ // If the thing provided is not undefined
 			if ((thingType == "object") && (typeof thing.nodeType == "undefined")){ // If the thing is an Object and doesn't have a nodeType

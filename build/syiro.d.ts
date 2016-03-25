@@ -145,8 +145,8 @@ declare namespace syiro.list {
     function New(properties: Object): ComponentObject;
     function SetHeader(component: ComponentObject, content: any): void;
     function Toggle(component: any): void;
-    let AddItem: typeof component.Add;
-    let RemoveItem: typeof component.Remove;
+    var AddItem: typeof component.Add;
+    var RemoveItem: typeof component.Remove;
 }
 declare namespace syiro.listitem {
     function New(properties: Object): ComponentObject;

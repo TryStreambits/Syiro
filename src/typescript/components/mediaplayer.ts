@@ -217,10 +217,10 @@ module syiro.mediaplayer{
 	export function DurationChange(component : ComponentObject){
 		if (syiro.data.Read(component.id + "->IsStreaming") == false){ // If the Player is NOT streaming content
 			let componentElement = syiro.component.Fetch(component); // Fetch the Player Element
-			let mediaControlComponent : ComponentObject = syiro.component.FetchComponentObject('div[data-syiro-component="media-control"]'); // Get the Media Control Component
+			let mediaControlComponent : ComponentObject = syiro.component.FetchComponentObject(componentElement.querySelector('div[data-syiro-component="media-control"]')); // Get the Media Control Component
 			let playerRange : Element = componentElement.querySelector('div[data-syiro-minor-component="progressbar"] > input'); // Get the input range
-
 			let playerMediaLengthInformation : Object = syiro.mediaplayer.GetPlayerLengthInfo(component); // Get information about the appropriate settings for the input range
+
 			playerRange.setAttribute("max", playerMediaLengthInformation["max"]); // Set max attribute the playerMediaLengthInformation max key/val
 			playerRange.setAttribute("step", playerMediaLengthInformation["step"]); // Set step attribute the playerMediaLengthInformation step key/val
 			syiro.mediacontrol.TimeLabelUpdater(mediaControlComponent, 1, playerMediaLengthInformation["max"]);

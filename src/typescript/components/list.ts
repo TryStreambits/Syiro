@@ -104,8 +104,8 @@ namespace syiro.list {
 		}
 	}
 
-	export let AddItem = syiro.component.Add; // Meta-function for adding a List Item component to a List component
-	export let RemoveItem = syiro.component.Remove; // Meta-function for removing a List Item component from a List Item component
+	export var AddItem = syiro.component.Add; // Meta-function for adding a List Item component to a List component
+	export var RemoveItem = syiro.component.Remove; // Meta-function for removing a List Item component from a List Item component
 }
 
 // #region List Item Component

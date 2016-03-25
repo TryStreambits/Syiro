@@ -36,11 +36,11 @@ namespace syiro {
 
 		syiro.events.Add("scroll", document, // Add an event listener to the document for when the document is scrolling
 			syiro.utilities.Run.bind(this, function(){
-				var dropdownButtons : NodeList = document.querySelectorAll('div[data-syiro-component="button"][data-syiro-component-type="dropdown"][active]'); // Get all of the Dropdown Buttons that are active
+				let dropdownButtons : NodeList = document.querySelectorAll('div[data-syiro-component="button"][data-syiro-component-type="dropdown"][active]'); // Get all of the Dropdown Buttons that are active
 
-				for (var dropdownButtonIndex in dropdownButtons){ // For each of those Dropdown Button Components that are active
+				for (let dropdownButtonIndex in dropdownButtons){ // For each of those Dropdown Button Components that are active
 					if (syiro.utilities.TypeOfThing(dropdownButtons[dropdownButtonIndex], "Element")){ // If this is an Element
-						var thisDropdownButtonObject : ComponentObject = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]); // Get the Component Object of the Dropdown Button
+						let thisDropdownButtonObject : ComponentObject = syiro.component.FetchComponentObject(dropdownButtons[dropdownButtonIndex]); // Get the Component Object of the Dropdown Button
 						syiro.button.Toggle(thisDropdownButtonObject); // Toggle the Dropdown Button
 					}
 				}
@@ -53,7 +53,7 @@ namespace syiro {
 
 		syiro.events.Add(syiro.events.Strings["fullscreenchange"], document,  // Call the eventAction, either syiro.events.Add or syiro.events.Remove
 			function(){
-				var fullscreenVideoPlayerElement : Element; // Define fullscreenVideoPlayerElement as an Element
+				let fullscreenVideoPlayerElement : Element; // Define fullscreenVideoPlayerElement as an Element
 
 				if ((typeof document.fullscreenElement !== "undefined") && (document.fullscreenElement !== null)){ // If the standard fullscreenElement is implemented
 					fullscreenVideoPlayerElement = document.fullscreenElement;
@@ -77,25 +77,25 @@ namespace syiro {
 
 		// #region Page Heading
 
-		var documentHeadSection : Element = document.querySelector("head"); // Get the head tag from the document
+		let documentHeadSection : Element = document.querySelector("head"); // Get the head tag from the document
 
 		if (documentHeadSection == null){ // If the documentHeadSection doesn't actually exist
 			documentHeadSection = document.createElement("head"); // Create the head section / tag
 			document.querySelector("html").insertBefore(documentHeadSection, document.body); // Insert the head tag before the body
 		}
 
-		var metaTagsToCheck : Object = { // Create an Object we'll recurse over that contains the meta tags + attributes we want to check
+		let metaTagsToCheck : Object = { // Create an Object we'll recurse over that contains the meta tags + attributes we want to check
 			"ie-compat" : { "http-equiv" : "X-UA-Compatible", "content-attr" : "IE=edge" }, // IE Compat Enforcement
 			"utf8" : { "charset" : "utf-8" }, // Enforce UTF-8 Charset if page doesn't have charset defined already
 			"viewport" : { "name" : "viewport", "content-attr" : "width=device-width, maximum-scale=1.0, initial-scale=1,user-scalable=no" } // VIewporting: Enable scaling and disable zooming
 		};
 
-		for (var metaAttributeKey in metaTagsToCheck){ // For headAttributeObject in headAttributesToCheck
-			var metaAttributeObject = metaTagsToCheck[metaAttributeKey]; // Get the Object related to the key
-			var firstKey : string = Object.keys(metaAttributeObject)[0]; // Get the first key in headAttributeObject
+		for (let metaAttributeKey in metaTagsToCheck){ // For headAttributeObject in headAttributesToCheck
+			let metaAttributeObject = metaTagsToCheck[metaAttributeKey]; // Get the Object related to the key
+			let firstKey : string = Object.keys(metaAttributeObject)[0]; // Get the first key in headAttributeObject
 
 			if (documentHeadSection.querySelector('meta[' + firstKey + '="' + metaAttributeObject[firstKey] + '"]') == null){ // If this particular meta tag (constructed using the first key/val as the selector)
-				var metaElement : HTMLElement = syiro.utilities.ElementCreator("meta", metaAttributeObject); // Create this meta  Element
+				let metaElement : HTMLElement = syiro.utilities.ElementCreator("meta", metaAttributeObject); // Create this meta  Element
 				syiro.component.Add("append", documentHeadSection, metaElement); // Append this meta Element
 			}
 		}
@@ -105,7 +105,7 @@ namespace syiro {
 		// #region Main Page Creation
 
 		if (document.body.querySelector('div[data-syiro-component="page"]') == null){ // If the page Component doesn't exist
-			var pageElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "page", "role" : "main" }); // Create the page Element
+			let pageElement = syiro.utilities.ElementCreator("div", { "data-syiro-component" : "page", "role" : "main" }); // Create the page Element
 			syiro.component.Add("prepend", document.body, pageElement); // Prepend the pageElement
 		}
 
@@ -116,12 +116,12 @@ namespace syiro {
 		// #region Watch DOM For Components
 
 		if (syiro.device.SupportsMutationObserver){ // If MutationObserver is supported by the browser
-			var mutationWatcher = new MutationObserver(
+			let mutationWatcher = new MutationObserver(
 				function(mutations : Array<MutationRecord>){ // Define mutationHandler as a variable that consists of a function that handles mutationRecords
-					for (var mutation of mutations){ // For each mutation of mutations
+					for (let mutation of mutations){ // For each mutation of mutations
 						if (mutation.type == "childList"){ // If something in the document changed (childList)
-							for (var mutationIndex = 0; mutationIndex < mutation.addedNodes.length; mutationIndex++){ // For each node in the mutation.addedNodes
-								var componentElement : any = mutation.addedNodes[mutationIndex]; // Get the Node
+							for (let mutationIndex = 0; mutationIndex < mutation.addedNodes.length; mutationIndex++){ // For each node in the mutation.addedNodes
+								let componentElement : any = mutation.addedNodes[mutationIndex]; // Get the Node
 								syiro.init.Parser(componentElement); // Send to Syiro's Component Parser
 							}
 						}
@@ -129,7 +129,7 @@ namespace syiro {
 				}
 			);
 
-			var mutationWatcherOptions : MutationObserverInit = { // Define mutationWatcherOptions as the options we'll pass to mutationWatcher.observe()
+			let mutationWatcherOptions : MutationObserverInit = { // Define mutationWatcherOptions as the options we'll pass to mutationWatcher.observe()
 				childList : true, // Watch child nodes of the element we are watching
 				attributes : true, // Watch for attribute changes
 				characterData : false, // Don't bother to watch character data changes
@@ -144,8 +144,8 @@ namespace syiro {
 			(function mutationTimer(){
 				window.setTimeout( // Set interval to 3000 (3 seconds) with a timeout
 					function(){ // Call this function
-						for (var componentId in syiro.data.storage){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
-							var componentElement = document.querySelector('div[data-syiro-component-id="' + componentId + '"]'); // Get the potential component Element
+						for (let componentId in syiro.data.storage){ // Quickly cycle through each storedComponent key (we don't need the sub-objects)
+							let componentElement = document.querySelector('div[data-syiro-component-id="' + componentId + '"]'); // Get the potential component Element
 							if (componentElement !== null){ // If the component exists in the DOM
 								syiro.init.Parser(componentElement); // Send to Syiro's Component Parser
 

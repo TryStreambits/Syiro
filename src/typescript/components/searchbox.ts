@@ -17,15 +17,15 @@ namespace syiro.searchbox {
 
 		let searchboxContainerData : Object = { "data-syiro-component" : "searchbox", "data-syiro-component-id" : componentId }; // Define searchboxContainerData to contain properties we should apply to the Searchbox
 
-		if (typeof properties == "undefined"){ // If no properties were passed during the Generate call
+		if (!syiro.utilities.TypeOfThing(properties, "object")){ // If no properties were provided
 			properties = {}; // Set as an empty Object
 		}
 
-		if (typeof properties.content == "undefined"){ // If a placeholder text is not provided
+		if (!syiro.utilities.TypeOfThing(properties.content, "string")){ // If a placeholder text is not provided
 			properties.content = "Search here..."; // Default to "Search here..." message
 		}
 
-		if ((typeof properties.DisableInputTrigger == "boolean") && (properties.DisableInputTrigger == true)){ // If we have DisableInputTrigger set to true, meaning we will prevent event handling on the input box of the Searchbox
+		if (properties.DisableInputTrigger){ // If we have DisableInputTrigger as true, we will prevent event handling on the input box of the Searchbox
 			componentData["DisableInputTrigger"] = true; // Set it in componentData
 		}
 
@@ -34,24 +34,22 @@ namespace syiro.searchbox {
 
 		// #region Suggestions Enabling
 
-		if ((typeof properties.suggestions !== "undefined") && (properties.suggestions)){ // If suggestions is enabled
+		if (properties.suggestions){ // If suggestions is enabled
 			componentData["suggestions"] = "enabled"; // Define suggestions as a string "enabled" to imply suggestions are enabled
 
 			componentData["handlers"] = { // Add "handlers" to the searchboxComponentData
-				"list-item-handler" : properties.listItemHandler // Handler for dynamically generated List Items as well as preseeded ones.
+				"listItemHandler" : properties.listItemHandler // Handler for dynamically generated List Items as well as preseeded ones.
 			};
 
 			let listItems : Array<Object> = []; // Define listItems as an array of Objects, defaulting to an empty array
+			componentData["preseed"] = syiro.utilities.TypeOfThing(properties.preseed, "array"); // Define preseed as the truth of if preseed is an array
 
-			if (typeof properties.preseed == "object"){ // If a preseed []string is provided
-				componentData["preseed"] = true; // Define preseed value in searchboxComponentData as true
-
+			if (componentData["preseed"]){ // If a preseed []string is provided
 				for (let preseedItemIndex in properties.preseed){ // For each item in preseed
 					listItems.push(syiro.listitem.New({ "label" : properties.preseed[preseedItemIndex] })); /// Push a new generated List Item Component Object to listItemsArray
 				}
 			} else { // If preseed []string is not provided
 				componentData["handlers"]["suggestions"] = properties.handler; // Faux "suggestions" key with the val as the handler passed (that we will use to get suggestions)
-				componentData["preseed"] = false; // Define preseed value in searchboxComponentData as false
 			}
 
 			let searchSuggestionsList : ComponentObject = syiro.list.New( { "items" : listItems }); // Generate a List with the items provided (if any)
@@ -62,7 +60,7 @@ namespace syiro.searchbox {
 
 			document.body.appendChild(searchSuggestionsListElement); // Append the List Element to the end of the document
 
-			if (typeof properties.preseed !== "undefined"){ // If a preseed []string is provided
+			if (componentData["preseed"]){ // If a preseed is enabled
 				for (let listItemIndex in listItems){ // For each List Item in listItems array
 					syiro.events.Add(syiro.events.Strings["up"], listItems[listItemIndex], properties.listItemHandler); // Add a mouseup / touchend event to List Item with the handler being list-item-handler
 				}
@@ -141,7 +139,7 @@ namespace syiro.searchbox {
 					for (let suggestionIndex in suggestions){ // For each suggestion in suggestions
 						let suggestionListItem : ComponentObject = syiro.listitem.New({ "label" : suggestions[suggestionIndex] }); // Create a List Item with the label being the suggestion
 						syiro.list.AddItem("append", linkedListComponent, suggestionListItem); // Append the List Item to the Linked List
-						syiro.events.Add(syiro.events.Strings["up"], suggestionListItem, syiro.data.Read(searchboxComponent.id + "handlers->list-item-handler")); // Add the list-item-handler we have stored from syiro.data to the suggestionListItem
+						syiro.events.Add(syiro.events.Strings["up"], suggestionListItem, syiro.data.Read(searchboxComponent.id + "handlers->listItemHandler")); // Add the list-item-handler we have stored from syiro.data to the suggestionListItem
 					}
 
 					syiro.style.Set(linkedListComponentElement, "visibility", "visible"); // Show the List Item now that we have parsed the suggestions and generated List Items

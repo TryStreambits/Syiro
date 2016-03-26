@@ -144,7 +144,7 @@ namespace syiro.utilities {
 					thingType = "Document"; // Set thingType to Document
 				}
 			}
-		} else if (thing == null){ // If null was passed
+		} else if ((thingType == "object") && (thing == null)){ // If null was passed
 			thingType = "null"; // Change thingType to null
 		}
 

@@ -28,13 +28,28 @@ namespace syiro.button {
 			"data-syiro-component-type" : properties.type // Be more granular with exactly what type of Button this is
 		};
 
-		if (properties.type !== "toggle"){ // If the type is NOT Toggle (so we are making either a Basic Button or Dropdown Button)
-			componentData["content"] = ""; // Default as an empty string
-
-			if (properties.type == "dropdown"){ // If this is a Dropdown Button
+		if (properties.type !== "toggle"){ // If the type is NOT Toggle (so we are making either a Basic Button or Dropdown Button)		
+			if (properties.type == "dropdown"){ // If this is a Dropdown Button that is being generated
 				componentData["data-syiro-render-icon"] = "menu"; // Default to Menu icon
-			}
 
+				let listComponent : ComponentObject = properties.list; // Default listComponent as the Component Object of the List
+
+				if (syiro.utilities.TypeOfThing(properties.items, "Array")){ // If List Items are provided in the properties
+					listComponent = syiro.list.New({ "items" : properties.items}); // Simply generate a new List component from the provided list items and set the listComponent Object to the one provided by Generate
+				}
+
+				let listComponentElement : Element = syiro.component.Fetch(listComponent); // Fetch the List Component Element
+				document.body.appendChild(listComponentElement); // Append the List Element to the end of the document
+				listComponentElement.setAttribute("data-syiro-component-owner", componentId); // Set the List's owner to be the Dropdown
+				componentData["aria-owns"] = listComponent.id; // Define the aria-owns in componentData, setting it to the List Component to declare for ARIA that the Dropdown Button Component "owns" the List Component
+
+				if (!syiro.utilities.TypeOfThing(properties.position, "Array")){ // If the position information is NOT an Array
+					properties.position = ["below", "center"]; // Default to showing the List centered, below the Dropdown
+				}
+
+				syiro.data.Write(listComponent.id + "->render", properties.position); // Write to syiro.data.storage, updating / adding render key/val to ListComponent
+			}
+			
 			if ((typeof properties.icon == "string") && (properties.icon !== "")){ // If an icon is defined and it is a non-empty string
 				componentData["data-syiro-render-icon"] = properties.icon; // Default to render-icon being the icon property, for things like built-in icons
 
@@ -42,70 +57,27 @@ namespace syiro.button {
 					componentData["data-syiro-render-icon"] = "custom"; // Set the data-syiro-render-icon to custom so we don't automatically render the default Dropdown icon or menu icon
 					componentData["style"] = 'background-image: url("' + properties.icon + '")'; // Add to the componentData the style attribute with background-image being set
 				}
-
 			}
-
-			delete properties.icon; // Remove the "icon" key
 
 			if (typeof properties.image == "string"){ // If an image (like an avatar) is defined in the properties
 				let primaryImage : HTMLElement = syiro.utilities.ElementCreator("img", { "src" : properties.image }); // Create an img Element with the image source
 				properties.content = primaryImage.outerHTML + properties.content; // Prepend the HTML of the img tag to the componentData->content
-				delete properties.image; // Remove the "image" key
 			}
 
 			if (typeof properties.content == "string"){ // If content is defined and it is a string
 				componentData["content"] = properties.content; // Set the componentData content of the button
-				delete properties.content; // Remove the "content" key
 			}
-		}
-
-		if (properties.type == "dropdown"){ // If this is a Dropdown Button that is being generated
-			// #region List Creation and Linking
-
-			let listComponent : ComponentObject = properties.list; // Default listComponent as the Component Object of the List
-			delete properties.list; // Delete "list" if it exists
-
-			if (syiro.utilities.TypeOfThing(properties.items, "Array")){ // If List Items are provided in the properties
-				listComponent = syiro.list.New({ "items" : properties.items}); // Simply generate a new List component from the provided list items and set the listComponent Object to the one provided by Generate
-				delete properties.items; // Remove the "items" key
-			}
-
-			let listComponentElement : Element = syiro.component.Fetch(listComponent); // Fetch the List Component Element
-			document.body.appendChild(listComponentElement); // Append the List Element to the end of the document
-			listComponentElement.setAttribute("data-syiro-component-owner", componentId); // Set the List's owner to be the Dropdown
-			componentData["aria-owns"] = listComponent.id; // Define the aria-owns in componentData, setting it to the List Component to declare for ARIA that the Dropdown Button Component "owns" the List Component
-
-			// #endregion
-
-			// #region Dropdown List Position (For the Dropdown toggling of the List)
-
-			if (!syiro.utilities.TypeOfThing(properties.position, "Array")){ // If the position information is NOT an Array
-				properties.position = ["below", "center"]; // Default to showing the List centered, below the Dropdown
-			}
-
-			syiro.data.Write(listComponent.id + "->render", properties.position); // Write to syiro.data.storage, updating / adding render key/val to ListComponent
-			delete properties.position; // Delete "position" from properties
-
-			// #endregion
-		} else if (properties.type == "toggle"){ // If this is a Toggle Button that is being generated
+		} else { // If this is a Toggle Button that is being generated
 			let buttonToggleAttributes = { "data-syiro-minor-component" : "buttonToggle"}; // Create an Object to hold the attributes we'll pass when creating the buttonToggle
 
 			if (properties.default){ // If a default state for the button is defined and is defined as true (already active)
 				buttonToggleAttributes["data-syiro-component-status"] = "true"; // Add the data-syiro-component-status attribute with "true" as the value
-				delete properties.default; // Remove the "content" key
 			}
 
 			componentData["content"] = syiro.utilities.ElementCreator("div", buttonToggleAttributes); // Set the componentData content to the Button Toggle we generate
 		}
 
-		delete properties.type; // Remove the "type" key
 		componentElement = syiro.utilities.ElementCreator("div", componentData); // Generate the Component Element with the componentData provided
-
-		if (Object.keys(properties).length !== 0){ // If there are items in properties
-			for (let propertyKey in properties){ // Recursive go through any other attributes that needs to be set.
-				componentElement.setAttribute(propertyKey, properties[propertyKey]); // Treat it like an attribute
-			}
-		}
 
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 		return { "id" : componentId, "type" : "button" }; // Return a Component Object

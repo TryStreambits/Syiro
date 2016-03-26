@@ -11,73 +11,73 @@ namespace syiro.toast {
 
 	// New
 	// Create a Toast
-	export function New(properties : Object) : ComponentObject {
-		if ((typeof properties["type"] == "undefined") || ((properties["type"] !== "normal") && (properties["type"] !== "dialog"))){ // If no "type" is defined or it was defined as NOT normal or dialog
-			properties["type"] = "normal"; // Define as a "normal" Toast
+	export function New(properties : ToastPropertiesObject) : ComponentObject {
+		if ((typeof properties.type == "undefined") || ((properties.type !== "normal") && (properties.type !== "dialog"))){ // If no "type" is defined or it was defined as NOT normal or dialog
+			properties.type = "normal"; // Define as a "normal" Toast
 		}
 
-		if ((typeof properties["title"] == "undefined") && (properties["type"] == "dialog")){ // If no title was provided for this Dialog Toast
-			properties["type"] = "normal"; // Define as a "normal" Toast
+		if ((typeof properties.title == "undefined") && (properties.type == "dialog")){ // If no title was provided for this Dialog Toast
+			properties.type = "normal"; // Define as a "normal" Toast
 		}
 
 		let componentId = syiro.component.IdGen("toast"); // Generate a Component Id for this Toast
-		let componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : componentId, "data-syiro-component" : "toast", "data-syiro-component-type" : properties["type"] }); // Generate the Toast container
+		let componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : componentId, "data-syiro-component" : "toast", "data-syiro-component-type" : properties.type }); // Generate the Toast container
 
 		// #region Title Generation / Properties Redirect
 
-		if (typeof properties["title"] !== "undefined"){ // If a title is defined
-			if (typeof properties["message"] !== "undefined"){ // If a message is defined (meaning don't do a properties change
-				let titleLabel : Element = syiro.utilities.ElementCreator("label", { "content" : properties["title"] }); // Generate a title
+		if (typeof properties.title !== "undefined"){ // If a title is defined
+			if (typeof properties.message !== "undefined"){ // If a message is defined (meaning don't do a properties change
+				let titleLabel : Element = syiro.utilities.ElementCreator("label", { "content" : properties.title }); // Generate a title
 				componentElement.appendChild(titleLabel); // Append the label to the componentElement
 			} else { // If a message is not defined, do a properties change
-				properties["message"] = properties["title"] ; // Redefine message as title content
-				delete properties["title"]; // Delete title from properties
+				properties.message = properties.title ; // Redefine message as title content
+				delete properties.title; // Delete title from properties
 			}
 		}
 
 		// #endregion
 
-		let message : Element = syiro.utilities.ElementCreator("span", { "content" : properties["message"] }); // Generate a span to hold the message content
+		let message : Element = syiro.utilities.ElementCreator("span", { "content" : properties.message }); // Generate a span to hold the message content
 		componentElement.appendChild(message); // Append the message span to the componentElement
 
 		// #region Toast Buttons Generation
 
-		if (typeof properties["title"] !== "undefined"){ // If both a title and message are provided (only check title since if title is provided but no message, it is automatically changed to message and therefore title = undefined
+		if (typeof properties.title !== "undefined"){ // If both a title and message are provided (only check title since if title is provided but no message, it is automatically changed to message and therefore title = undefined
 			let toastButtonsContainer : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "toast-buttons" }); // Create a "container" to hold the Buttons
 			let futureButtonHandlers : Object = {}; // Define futureButtonHandlers as an Object
 
 			// #region Buttons Properties Check
 
-			if (typeof properties["buttons"] == "undefined"){ // If no Buttons were provided
-				properties["buttons"] = [{ "action" : "deny", "content" : "Ok" }]; // Default the content to "Ok"
+			if (typeof properties.buttons == "undefined"){ // If no Buttons were provided
+				properties.buttons = [{ "action" : "deny", "content" : "Ok" }]; // Default the content to "Ok"
 			}
 
 			// #endregion
 
 			// #region Deny Before Affirm Button Checking
 
-			if (properties["buttons"][0]["action"] == "affirm"){ // If the affirm action is provided before the deny action
-				properties["buttons"].reverse(); // Reverse the array
+			if (properties.buttons[0].action == "affirm"){ // If the affirm action is provided before the deny action
+				properties.buttons.reverse(); // Reverse the array
 			}
 
 			// #endregion
 
-			for (let toastButtonProperties of properties["buttons"]){ // For each Toast Button Properties Object of properties["buttons"]
-				if (typeof toastButtonProperties["content"] == "undefined"){ // If content is not defined
-					if (toastButtonProperties["action"] == "deny"){ // If this is a "deny" action
-						toastButtonProperties["content"] = "No"; // Simply set to "No"
+			for (let toastButtonProperties of properties.buttons){ // For each Toast Button Properties Object of properties.buttons
+				if (typeof toastButtonProperties.content == "undefined"){ // If content is not defined
+					if (toastButtonProperties.action == "deny"){ // If this is a "deny" action
+						toastButtonProperties.content = "No"; // Simply set to "No"
 					} else { // If this is an "affirm" action
-						toastButtonProperties["content"] = "Yes"; // Simply set to "Yes"
+						toastButtonProperties.content = "Yes"; // Simply set to "Yes"
 					}
 				}
 
-				if (typeof toastButtonProperties["function"] !== "undefined"){ // If a function was defined for this action
-					futureButtonHandlers[toastButtonProperties["action"]] =  toastButtonProperties["function"]; // Push to the futureButtonHandlers Object a key/val where the action is the key and value is the func
+				if (typeof toastButtonProperties.function !== "undefined"){ // If a function was defined for this action
+					futureButtonHandlers[toastButtonProperties.action] =  toastButtonProperties.function; // Push to the futureButtonHandlers Object a key/val where the action is the key and value is the func
 				}
 
-				let toastButtonObject : ComponentObject = syiro.button.New({ "type" : "basic", "content" : toastButtonProperties["content"] });
+				let toastButtonObject : ComponentObject = syiro.button.New({ "type" : "basic", "content" : toastButtonProperties.content });
 				let toastButtonElement : Element = syiro.component.Fetch(toastButtonObject); // Fetch the Button Element
-				toastButtonElement.setAttribute("data-syiro-dialog-action", toastButtonProperties["action"]); // Set the dialog-action of attribute of the toastButtonElement
+				toastButtonElement.setAttribute("data-syiro-dialog-action", toastButtonProperties.action); // Set the dialog-action of attribute of the toastButtonElement
 
 				toastButtonsContainer.appendChild(toastButtonElement); // Append the Toast Button Element to the Toast Buttons Container
 			}

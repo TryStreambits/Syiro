@@ -128,7 +128,7 @@ namespace syiro.utilities {
 
 		if ((thingType !== "undefined") && (thing !== null)){ // If the thing provided is not undefined
 			if ((thingType == "object") && (typeof thing.nodeType == "undefined")){ // If the thing is an Object and doesn't have a nodeType
-				if ((typeof thing["id"] !== "undefined") && (typeof thing["type"] !== "undefined")){ // If this Object has an id and type
+				if ((typeof thing.id !== "undefined") && (typeof thing.type !== "undefined")){ // If this Object has an id and type
 					thingType = "ComponentObject"; // Define thingType as Component Object
 				} else if ((typeof thing["link"] !== "undefined") && (typeof thing["title"] !== "undefined")){ // If this Object has href and title properties
 					thingType = "LinkPropertiesObject"; // Define as Link Properties Object

@@ -142,9 +142,9 @@ namespace syiro.component {
 		let allowAdding : boolean = true; // Allow adding by default
 
 		if (parentComponent.type == "navbar"){ // If the parentComponent is a Navbar
-			allowAdding = ((syiro.data.Read(parentComponent["id"] + "->Position") == "top") && ((childComponent["type"] == "button") || (childComponent["type"] == "searchbox"))); // If parent is top Navbar and child is Button or Searchbox
+			allowAdding = ((syiro.data.Read(parentComponent.id + "->Position") == "top") && ((childComponent.type == "button") || (childComponent.type == "searchbox"))); // If parent is top Navbar and child is Button or Searchbox
 		} else if (parentComponent.type == "list"){ // If the parentComponent is a List
-			allowAdding = (childComponent["type"].indexOf("list") !== -1); // If the Child component is a List or List Item
+			allowAdding = (childComponent.type.indexOf("list") !== -1); // If the Child component is a List or List Item
 
 			if (allowAdding){ // If we are allowing the adding of the Child Component
 				parentElement = parentElement.querySelector('div[data-syiro-minor-component="list-content"]'); // Change parentElement to listContent container for append
@@ -160,11 +160,11 @@ namespace syiro.component {
 				parentElement.appendChild(childElement); // Append the Element
 			}
 			
-			if (parentComponent["type"] == "list"){ // If the parentComponent is a List
+			if (parentComponent.type == "list"){ // If the parentComponent is a List
 				parentElement = parentElement.parentElement; // Change parentElement back to the List Element
 			}
 
-			syiro.component.Update(parentComponent["id"], parentElement); // Update the HTMLElement of parentComponent if necessary
+			syiro.component.Update(parentComponent.id, parentElement); // Update the HTMLElement of parentComponent if necessary
 		}
 
 		return allowAdding; // Return the updated component object
@@ -189,7 +189,7 @@ namespace syiro.component {
 					syiro.data.Delete(componentObject.id); // Delete the Component's data
 				}
 
-				if (parentElement !== null){ // If a parent of this Element exists
+				if (syiro.utilities.TypeOfThing(parentElement, "Element")){ // If a parent of this Element exists
 					parentElement.removeChild(componentElement); // Remove this Component from the DOM, if it exists
 				
 					if (parentElement.hasAttribute("data-syiro-component-id")){ // If the parentElement has a Component Id

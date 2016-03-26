@@ -139,8 +139,6 @@ namespace syiro {
 
 			mutationWatcher.observe(document.body, mutationWatcherOptions); // Watch the document body with the options provided.
 		} else { // If MutationObserver is NOT supported (IE10 and below), such as in Windows Phone
-			syiro.legacyDimensionsDetection = false; // Define legacyDimensionsDetection as false, implying we have not already had a Component enter DOM and need to re-check screen dimensions
-
 			(function mutationTimer(){
 				window.setTimeout( // Set interval to 3000 (3 seconds) with a timeout
 					function(){ // Call this function
@@ -148,11 +146,6 @@ namespace syiro {
 							let componentElement = document.querySelector('div[data-syiro-component-id="' + componentId + '"]'); // Get the potential component Element
 							if (componentElement !== null){ // If the component exists in the DOM
 								syiro.init.Parser(componentElement); // Send to Syiro's Component Parser
-
-								if (syiro.legacyDimensionsDetection == false){ // If we should update screen dimensions now
-									syiro.device.FetchScreenDetails(); // Update screen details
-									syiro.legacyDimensionsDetection = true; // Set legacyDimensionsDetection to true
-								}
 							}
 						}
 

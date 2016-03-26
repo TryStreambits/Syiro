@@ -10,7 +10,7 @@ namespace syiro.sidepane {
 
 	// New
 	// Create a Sidepane
-	export function New(properties : Object) : ComponentObject {
+	export function New(properties : SidepanePropertiesObject) : ComponentObject {
 		let componentId : string = syiro.component.IdGen("sidepane"); // Generate a Sidepane Component Id
 		let componentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : componentId, "data-syiro-component" : "sidepane"}); // Generate an empty Sidepane
 		let sidepaneContentElement : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "sidepane-content"}); // Generate an empty Sidepane Content div
@@ -24,13 +24,8 @@ namespace syiro.sidepane {
 
 		// #region Sidepane Logo
 
-		if (syiro.utilities.TypeOfThing(properties["logo"], "Element") || (typeof properties["logo"] == "string")){ // If the logo is an Element or string
-			let logoElement : Element = properties["logo"]; // Define logoElement as the Element. Default to the logo (assuming it is an Element)
-
-			if (typeof properties["logo"] == "string"){ // If the logo is a string
-				logoElement = syiro.utilities.ElementCreator("img", { "src" : properties["logo"] }); // Change logoElement to a newly generated img Element
-			}
-
+		if (typeof properties.logo == "string"){ // If the logo is an Element or string
+			let logoElement : Element = syiro.utilities.ElementCreator("img", { "src" : properties.logo }); // Change logoElement to a newly generated img Element
 			sidepaneContentElement.insertBefore(logoElement, sidepaneInnerListContent); // Insert the logo image before the Sidepane Inner Lists Content container
 		}
 
@@ -38,8 +33,8 @@ namespace syiro.sidepane {
 
 		// #region Sidepane Searchbox
 
-		if (syiro.utilities.TypeOfThing(properties["searchbox"], "ComponentObject")){ // If there is a Searchbox Component Object
-			let searchboxElement : Element = syiro.component.Fetch(properties["searchbox"]); // Fetch the Searchbox
+		if (syiro.utilities.TypeOfThing(properties.searchbox, "ComponentObject")){ // If there is a Searchbox Component Object
+			let searchboxElement : Element = syiro.component.Fetch(properties.searchbox); // Fetch the Searchbox
 			sidepaneContentElement.insertBefore(searchboxElement, sidepaneInnerListContent); // Insert the Searchbox before the Sidepane Inner Lists Content container
 		}
 
@@ -47,7 +42,7 @@ namespace syiro.sidepane {
 
 		// #region Items for Lists Container
 
-		for (let item of properties["items"]){ // For each item in items
+		for (let item of properties.items){ // For each item in items
 			let typeOfItem : string = syiro.utilities.TypeOfThing(item); // Get the type of this item
 			let appendableElement : Element; // Define appendableElement as the Element we'll be appending
 

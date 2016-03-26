@@ -9,13 +9,13 @@ namespace syiro.navbar {
 
 	// New
 	// Create a Navbar
-	export function New(properties : Object) : ComponentObject {
+	export function New(properties : NavbarPropertiesObject) : ComponentObject {
 		let navbarType : string; // Define navbarType as either "top" or "bottom"
 
-		if ((typeof properties["position"] !== "string") || ((properties["position"] !== "top") && (properties["position"] !== "bottom"))){ // If position is not defined as a string or is defined as neither top or bottom
+		if ((typeof properties.position !== "string") || ((properties.position !== "top") && (properties.position !== "bottom"))){ // If position is not defined as a string or is defined as neither top or bottom
 			navbarType = "top"; // Default to be a top-positioned navbar / Header
 		} else { // If it is defined as either top or bottom
-			navbarType = properties["position"]; // Define navbarType as top or bottom
+			navbarType = properties.position; // Define navbarType as top or bottom
 		}
 
 		let componentId : string = syiro.component.IdGen("navbar"); // Generate a component Id using "navbar"
@@ -23,7 +23,7 @@ namespace syiro.navbar {
 
 		for (let propertyKey in properties){ // Recursive go through each propertyKey
 			if (propertyKey == "items"){ // If we are adding items to the Header
-				for (let individualItem of properties["items"]){ // For each individualItem in navigationItems Object array
+				for (let individualItem of properties.items){ // For each individualItem in navigationItems Object array
 					let typeOfItem : string = syiro.utilities.TypeOfThing(individualItem); // Get the type of the individualItem
 
 					if (typeOfItem == "LinkPropertiesObject"){ // If we are adding a link
@@ -34,15 +34,13 @@ namespace syiro.navbar {
 					}
 				}
 			} else if ((propertyKey == "logo") && (navbarType == "top")){ // If we are adding a Logo to the top-positioned navbar (Header)
-				let generatedElement : HTMLElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : properties["logo"] }); // Generate an image with data-syiro-minor-component set to logo and src set to logo defined
+				let generatedElement : HTMLElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : properties.logo }); // Generate an image with data-syiro-minor-component set to logo and src set to logo defined
 				componentElement.appendChild(generatedElement); // Append the logo to the generatedElement
 			} else if ((propertyKey == "content") && (navbarType == "bottom")){ // If content or label prop are not undefined and the navbarType is botto (Footer)
 				let labelContent : string = ""; // Define labelContent initially as an empty string
 
-				if (typeof properties["content"] !== "undefined"){ // If the content property is defined
-					labelContent = properties["content"]; // Assign content key/val to labelContent
-				} else { // If the label property is defined
-					labelContent = properties["label"]; // Assign label key/val to labelContent
+				if (typeof properties.content !== "undefined"){ // If the content property is defined
+					labelContent = properties.content; // Assign content key/val to labelContent
 				}
 
 				let generatedElement : HTMLElement = syiro.utilities.ElementCreator("label", { "content" : labelContent }); // Generate a generic label element
@@ -52,7 +50,7 @@ namespace syiro.navbar {
 
 		// #region Fixed Positioning Check
 
-		if ((typeof properties["fixed"] == "boolean") && (properties["fixed"])){ // If the "fixed" property is defined and is set to true
+		if ((typeof properties.fixed == "boolean") && (properties.fixed)){ // If the "fixed" property is defined and is set to true
 			componentElement.setAttribute("data-syiro-position", "fixed"); // Set position attribute to fixed so we can more dynamically set CSS values without needing to use JavaScript
 		}
 

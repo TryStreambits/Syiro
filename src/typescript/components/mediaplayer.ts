@@ -11,7 +11,7 @@
 module syiro.mediaplayer{
 
 	// New Media Player
-	export function New(properties : Object) : ComponentObject {
+	export function New(properties : MediaPlayerPropertiesObject) : ComponentObject {
 		let syiroComponentData : Object = { "scaling" : {}}; // Define syiroComponentData as an Object to hold data we'll be writing to the Syiro Data System
 
 		let componentObject : ComponentObject = { // Create a Component Onject
@@ -21,45 +21,45 @@ module syiro.mediaplayer{
 
 		let componentElement : Element = syiro.utilities.ElementCreator("div", { // Create the Media Player container div
 			"data-syiro-component-id" : componentObject.id, "data-syiro-component" : "media-player", // Set the id and component
-			"data-syiro-component-type" : properties["type"], "name" : componentObject.id // Set the sub-type and name (name so we can jump to it)
+			"data-syiro-component-type" : properties.type, "name" : componentObject.id // Set the sub-type and name (name so we can jump to it)
 		});
 
 		let mediaPlayerElement : HTMLMediaElement; // Define mediaPlayerElement as the Element we'll be generated that'll either be audio or video Element
 		let mediaPlayerProperties : Object = { "preload" : "metadata", "UIWebView" : "allowsInlineMediaPlayback","volume" : "0.5" }; // Define mediaPlayerProperties as the default properties we'll use with the mediaPlayerELement
 
-		if (typeof properties["type"] == "undefined"){ // If a type is not defined
-			properties["type"] = "video"; // Default to having a Video Player
+		if (typeof properties.type == "undefined"){ // If a type is not defined
+			properties.type = "video"; // Default to having a Video Player
 		}
 		
 		// #region Media Player Art
 
-		if (typeof properties["art"] !== "undefined"){
+		if (typeof properties.art !== "undefined"){
 			if (navigator.userAgent.indexOf("iPhone") == -1) { // If we are not using an iPhone
-				syiroComponentData["BackgroundImage"] = properties["art"]; // Set the BackgroundImage in the syiroComponentData
+				syiroComponentData["BackgroundImage"] = properties.art; // Set the BackgroundImage in the syiroComponentData
 			} else { // If we are using an iPhone
-				mediaPlayerProperties["poster"] = properties["art"]; // Define the poster property of the Media Element to be the art
+				mediaPlayerProperties["poster"] = properties.art; // Define the poster property of the Media Element to be the art
 			}
 		}
 
 		// #endregion		
 
 		if (navigator.userAgent.indexOf("iPhone") == -1) { // If we are not using an iPhone
-			if ((typeof properties["ForceLiveUX"] == "boolean") && (properties["ForceLiveUX"])){ // If Force Live UX is defined as true
+			if ((typeof properties.ForceLiveUX == "boolean") && (properties.ForceLiveUX)){ // If Force Live UX is defined as true
 				syiroComponentData["ForceLiveUX"] = true; // Define the syiroComponentData ForceLiveUX as true
 			}
 
 			// #region Type-specific Checking and Implementations
 
-			if (properties["type"] == "audio"){ // If this is an audio-type player
-				delete properties["menu"]; // Delete the menu properties
-				if ((typeof properties["title"] == "string") || (typeof properties["artist"] == "string")){ // If the properties has the artist information or audio file title defined
-					properties["generate-content-info"] = true; // Set "generate-info" to true since we will pass that to the mediacontrol generator
+			if (properties.type == "audio"){ // If this is an audio-type player
+				delete properties.menu; // Delete the menu properties
+				if ((typeof properties.title == "string") || (typeof properties.artist == "string")){ // If the properties has the artist information or audio file title defined
+					properties.generateContentInfo = true; // Set generatedContentInfo to true since we will pass that to the mediacontrol generator
 				}
 			} else { // If this is a video-type player
-				if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject") && (properties["menu"]["type"] == "list")){ // If the menu defined is a ComponentObject (List)
+				if (syiro.utilities.TypeOfThing(properties.menu, "ComponentObject") && (properties.menu.type == "list")){ // If the menu defined is a ComponentObject (List)
 					let playerMenuDialog : Element = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "player-menu" } ); // Create a div element with the minor-component of player-menu
 					playerMenuDialog.appendChild(syiro.utilities.ElementCreator("label", { "content" : "Menu" })); // Create a label with the content "Menu"
-					playerMenuDialog.appendChild(syiro.component.Fetch(properties["menu"])); // Append the List Element to the playerMenuDialog
+					playerMenuDialog.appendChild(syiro.component.Fetch(properties.menu)); // Append the List Element to the playerMenuDialog
 					componentElement.insertBefore(playerMenuDialog, componentElement.firstChild); // Prepend the Menu Dialog
 				}				
 			}
@@ -78,22 +78,22 @@ module syiro.mediaplayer{
 
 		// #region Dimension Setting
 
-		if (!syiro.utilities.TypeOfThing(properties["height"], "number")){ // If height is not a number
-			if (properties["type"] == "audio"){ // If this is an audio player
-				properties["height"] = 60;
+		if (!syiro.utilities.TypeOfThing(properties.height, "number")){ // If height is not a number
+			if (properties.type == "audio"){ // If this is an audio player
+				properties.height = 60;
 			} else { // If this is a video player
-				properties["height"] = 300;
+				properties.height = 300;
 			}
 		}
 
-		if (!syiro.utilities.TypeOfThing(properties["width"], "number")){ // If width is not a number
-			if (properties["type"] == "audio"){ // If this is an audio player
-				properties["width"] = 400; // Default to 400
+		if (!syiro.utilities.TypeOfThing(properties.width, "number")){ // If width is not a number
+			if (properties.type == "audio"){ // If this is an audio player
+				properties.width = 400; // Default to 400
 			} else { // If this is a video player
-				if (syiro.utilities.TypeOfThing(properties["height"], "number")){ // If we have a number for height (pixels)
-					properties["width"] = properties["height"] * 1.77; // Ensure we have a widescreen ratio
+				if (syiro.utilities.TypeOfThing(properties.height, "number")){ // If we have a number for height (pixels)
+					properties.width = properties.height * 1.77; // Ensure we have a widescreen ratio
 				} else { // If we likely have a string
-					properties["width"] = properties["height"]; // Have width reflect height, like if height is set to 100%
+					properties.width = properties.height; // Have width reflect height, like if height is set to 100%
 				}
 			}
 		}
@@ -112,9 +112,9 @@ module syiro.mediaplayer{
 
 		// #region HTMLMediaElement and inner-Source Creation
 
-		mediaPlayerElement = syiro.utilities.ElementCreator(properties["type"], mediaPlayerProperties); // Generate the correct HTMLMediaElement with the mediaPlayerProperties
+		mediaPlayerElement = syiro.utilities.ElementCreator(properties.type, mediaPlayerProperties); // Generate the correct HTMLMediaElement with the mediaPlayerProperties
 
-		let sourceElements : Array<HTMLElement> = syiro.mediaplayer.GenerateSources(properties["type"], properties["sources"]); // Get an array of Source Elements
+		let sourceElements : Array<HTMLElement> = syiro.mediaplayer.GenerateSources(properties.type, properties.sources); // Get an array of Source Elements
 
 		for (let sourceElement of sourceElements){ // For each sourceElement in arrayofSourceElements
 			mediaPlayerElement.appendChild(sourceElement); // Append the sourceElement
@@ -125,7 +125,7 @@ module syiro.mediaplayer{
 		// #region Third-Party Streaming Support
 		// This section will determine if we are using a third-party library for live streaming support (like dashjs)
 
-		if ((typeof properties["UsingExternalLibrary"] == "boolean") && (properties["UsingExternalLibrary"])){ // If an external library is going to be tied into the Syiro Video Player
+		if ((typeof properties.UsingExternalLibrary == "boolean") && (properties.UsingExternalLibrary)){ // If an external library is going to be tied into the Syiro Video Player
 			syiroComponentData["UsingExternalLibrary"] = true; // Set the UsingExternalLibrary to true
 		}
 
@@ -556,7 +556,7 @@ module syiro.mediaplayer{
 module syiro.mediacontrol {
 
 	// New Media Control
-	export function New(properties : Object) : ComponentObject {
+	export function New(properties : MediaPlayerPropertiesObject) : ComponentObject {
 		let component : ComponentObject = { "id" : syiro.component.IdGen("media-control"), "type" : "media-control" }; // Generate the Component Object of the Media Control
 		let componentElement = syiro.utilities.ElementCreator("div",  { "data-syiro-component" : component.type, "data-syiro-component-id" : component.id }); // Generate the basic mediaControl container
 
@@ -568,20 +568,20 @@ module syiro.mediacontrol {
 		componentElement.appendChild(progressBar); // Append the progressBar
 		componentElement.appendChild(syiro.component.Fetch(playButton)); // Append the play button
 
-		if (typeof properties["generate-content-info"] !== "undefined"){ // If we are adding content (for Audio Player)
+		if (typeof properties.generateContentInfo !== "undefined"){ // If we are adding content (for Audio Player)
 			let infoSection : HTMLElement = document.createElement("section"); // Generate a section Element
 
-			if (typeof properties["title"] !== "undefined"){ // If a title is defined
-				infoSection.appendChild(syiro.utilities.ElementCreator("b", { "content" : properties["title"]})); // Create the Audio b tag and append it to the infoSection section
+			if (typeof properties.title !== "undefined"){ // If a title is defined
+				infoSection.appendChild(syiro.utilities.ElementCreator("b", { "content" : properties.title})); // Create the Audio b tag and append it to the infoSection section
 			}
 
-			if (typeof properties["artist"] !== "undefined"){ // If an artist is defined
-				infoSection.appendChild(syiro.utilities.ElementCreator("label", { "content" : properties["artist"]})); // Create the Artist label and append it to the infoSection section
+			if (typeof properties.artist !== "undefined"){ // If an artist is defined
+				infoSection.appendChild(syiro.utilities.ElementCreator("label", { "content" : properties.artist})); // Create the Artist label and append it to the infoSection section
 			}
 
 			componentElement.appendChild(infoSection); // Append the info section
 		} else { // If we are not generating content info
-			if (properties["type"] == "video"){ // If we are generated a Media Control for a video-type Media Player
+			if (properties.type == "video"){ // If we are generated a Media Control for a video-type Media Player
 				let timeStamp : HTMLElement = syiro.utilities.ElementCreator("time", { "content" : "00:00 / 00:00"} ); // Create a timestamp time element
 				componentElement.appendChild(timeStamp); // Append the timestamp time element
 			}
@@ -589,7 +589,7 @@ module syiro.mediacontrol {
 
 		// #region Player Menu Element Creation (If Applicable)
 
-		if (syiro.utilities.TypeOfThing(properties["menu"], "ComponentObject") && (properties["menu"]["type"] == "list")){ // If the menu defined is a ComponentObject (List) with the player being video
+		if (syiro.utilities.TypeOfThing(properties.menu, "ComponentObject") && (properties.menu.type == "list")){ // If the menu defined is a ComponentObject (List) with the player being video
 			let menuButton = syiro.button.New( { "icon" : "menu"} ); // Generate a Menu Button
 			componentElement.appendChild(syiro.component.Fetch(menuButton)); // Append the menuButton to the mediaControlElement
 		}
@@ -598,7 +598,7 @@ module syiro.mediacontrol {
 
 		// #region Video Player - Additional Functionality Adding
 
-		if (properties["type"] == "video"){ // If the type is a video Media Player
+		if (properties.type == "video"){ // If the type is a video Media Player
 			let fullscreenButton = syiro.button.New( { "icon" : "fullscreen"} ); // Create a fullscreen button
 			componentElement.appendChild(syiro.component.Fetch(fullscreenButton)); // Append the fullscreen control
 		}
@@ -624,13 +624,13 @@ module syiro.mediacontrol {
 
 		let playerRange : any = mediaControl.querySelector('div[data-syiro-minor-component="progressbar"] > input'); // Get the Media Control Range
 
-		if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are NOT already actively doing a volume change
-			syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true); // Set the IsChangingInputValue so Tick doesn't update slider while we have the Volume Slider area showing
-			syiro.data.Write(playerComponentObject["id"] + "->IsChangingVolume", true); // Set the IsChangingVolume to true so we don't end up changing the "location" in the content
+		if (syiro.data.Read(playerComponentObject.id + "->IsChangingVolume") == false){ // If we are NOT already actively doing a volume change
+			syiro.data.Write(playerComponentObject.id + "->IsChangingInputValue", true); // Set the IsChangingInputValue so Tick doesn't update slider while we have the Volume Slider area showing
+			syiro.data.Write(playerComponentObject.id + "->IsChangingVolume", true); // Set the IsChangingVolume to true so we don't end up changing the "location" in the content
 
 			volumeButton.setAttribute("active", "true"); // Set component active to true to imply it is active
 
-			if (syiro.data.Read(playerComponentObject["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
+			if (syiro.data.Read(playerComponentObject.id + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
 				mediaControl.removeAttribute("data-syiro-component-streamstyling"); // Default to NOT having the Media Control "Stream Styling"
 			}
 
@@ -640,7 +640,7 @@ module syiro.mediacontrol {
 		} else { // If we are already actively doing a volume change, meaning the user wants to switch back to the normal view
 			volumeButton.removeAttribute("active"); // Remove component-active to imply volume icon is not active
 
-			if (syiro.data.Read(playerComponentObject["id"] + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
+			if (syiro.data.Read(playerComponentObject.id + "->IsStreaming")){ // If we are streaming content and have the player range hidden unless changing volume
 				mediaControl.setAttribute("data-syiro-component-streamstyling", ""); // Default to having a "Stream Styling"
 			}
 
@@ -648,8 +648,8 @@ module syiro.mediacontrol {
 			playerRange.setAttribute("max", playerMediaLengthInformation["max"]); // Set max attribute the playerMediaLengthInformation max key/val
 			playerRange.setAttribute("step", playerMediaLengthInformation["step"]); // Set step attribute the playerMediaLengthInformation step key/val
 
-			syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove  IsChangingInputValue
-			syiro.data.Delete(playerComponentObject["id"] + "->IsChangingVolume"); // Delete the IsChangingVolume key from this Player's data
+			syiro.data.Delete(playerComponentObject.id + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove  IsChangingInputValue
+			syiro.data.Delete(playerComponentObject.id + "->IsChangingVolume"); // Delete the IsChangingVolume key from this Player's data
 			syiro.mediaplayer.SetTime(playerComponentObject, "update-input"); // Call SetTime to update the slider to the accurate position
 		}
 	}

@@ -1,5 +1,4 @@
 declare var Promise: any;
-declare var WebKitMutationObserver: any;
 declare var resolve: Function;
 interface Document {
     msFullscreenElement: Element;
@@ -40,6 +39,78 @@ interface Screen {
     mozOrientation: any;
     onorientationchange: any;
     onmozorientationchange: any;
+}
+interface ButtonPropertiesObject extends Object {
+    content?: string;
+    default?: boolean;
+    icon?: string;
+    image?: string;
+    items?: Array<any>;
+    list?: ComponentObject;
+    position?: Array<string>;
+    type?: string;
+}
+interface GridPropertiesObject extends Object {
+    columns?: number;
+    items: Array<GridItemPropertiesObject>;
+}
+interface GridItemPropertiesObject extends Object {
+    html?: any;
+}
+interface ListPropertiesObject extends Object {
+    header?: string;
+    items: Array<any>;
+}
+interface ListItemPropertiesObject extends Object {
+    control?: ComponentObject;
+    html?: any;
+    image?: string;
+    label?: string;
+    link?: LinkPropertiesObject;
+}
+interface MediaPlayerPropertiesObject extends Object {
+    artist?: string;
+    title?: string;
+    generateContentInfo?: boolean;
+    height?: number;
+    width?: number;
+    art?: string;
+    ForceLiveUX?: boolean;
+    menu?: ComponentObject;
+    sources: Array<string>;
+    type?: "audio" | "video";
+    UsingExternalLibrary?: boolean;
+}
+interface NavbarPropertiesObject extends Object {
+    content?: string;
+    logo?: string;
+    fixed?: boolean;
+    items: Array<any>;
+    position?: "top" | "bottom";
+}
+interface SearchboxPropertiesObject extends Object {
+    content?: string;
+    DisableInputTrigger?: boolean;
+    handler?: Function;
+    listItemHandler?: Function;
+    preseed?: Array<string>;
+    suggestions?: boolean;
+}
+interface SidepanePropertiesObject extends Object {
+    items?: Array<any>;
+    logo?: string;
+    searchbox?: ComponentObject;
+}
+interface ToastPropertiesObject extends Object {
+    buttons?: Array<ToastButtonPropertiesObject>;
+    message: string;
+    title?: string;
+    type?: "dialog" | "normal";
+}
+interface ToastButtonPropertiesObject extends Object {
+    action?: "affirm" | "deny";
+    content?: string;
+    function?: Function;
 }
 declare namespace syiro.data {
     var storage: Object;
@@ -91,7 +162,7 @@ declare namespace syiro.component {
     function Remove(componentsToRemove: any): void;
 }
 declare module syiro.mediaplayer {
-    function New(properties: Object): ComponentObject;
+    function New(properties: MediaPlayerPropertiesObject): ComponentObject;
     function Configure(component: ComponentObject): void;
     function DurationChange(component: ComponentObject): void;
     function FetchInnerContentElement(component: ComponentObject): HTMLMediaElement;
@@ -110,7 +181,7 @@ declare module syiro.mediaplayer {
     function ToggleMenuDialog(component: ComponentObject): void;
 }
 declare module syiro.mediacontrol {
-    function New(properties: Object): ComponentObject;
+    function New(properties: MediaPlayerPropertiesObject): ComponentObject;
     function ShowVolumeSlider(mediaControlComponent: ComponentObject, volumeButtonComponent: ComponentObject): void;
     function TimeLabelUpdater(component: ComponentObject, timePart: number, value: any): void;
     function Toggle(component: ComponentObject, forceShow?: boolean): void;
@@ -128,53 +199,53 @@ declare namespace syiro.init {
     function Toast(component: ComponentObject): void;
 }
 declare module syiro.grid {
-    function New(properties: Object): ComponentObject;
+    function New(properties: GridPropertiesObject): ComponentObject;
     function Scale(component: ComponentObject): void;
 }
 declare module syiro.griditem {
-    function New(properties: Object): ComponentObject;
+    function New(properties: GridItemPropertiesObject): ComponentObject;
 }
 declare namespace syiro.navbar {
-    function New(properties: Object): ComponentObject;
+    function New(properties: NavbarPropertiesObject): ComponentObject;
     function AddLink(append: string, component: ComponentObject, elementOrProperties: any): boolean;
     function RemoveLink(component: ComponentObject, elementOrProperties: any): boolean;
     function SetLogo(component: ComponentObject, content: string): boolean;
     function SetLabel(component: ComponentObject, content: string): boolean;
 }
 declare namespace syiro.list {
-    function New(properties: Object): ComponentObject;
+    function New(properties: ListPropertiesObject): ComponentObject;
     function SetHeader(component: ComponentObject, content: any): void;
     function Toggle(component: any): void;
     var AddItem: typeof component.Add;
     var RemoveItem: typeof component.Remove;
 }
 declare namespace syiro.listitem {
-    function New(properties: Object): ComponentObject;
+    function New(properties: ListItemPropertiesObject): ComponentObject;
     function SetControl(component: ComponentObject, control: ComponentObject): boolean;
     function SetImage(component: ComponentObject, content: string): boolean;
     function SetLabel(component: ComponentObject, content: string): boolean;
     function SetLink(component: ComponentObject, properties: any): boolean;
 }
 declare namespace syiro.searchbox {
-    function New(properties: Object): ComponentObject;
+    function New(properties: SearchboxPropertiesObject): ComponentObject;
     function Suggestions(...args: any[]): void;
     function SetText(component: ComponentObject, content: any): void;
 }
 declare namespace syiro.sidepane {
-    function New(properties: Object): ComponentObject;
+    function New(properties: SidepanePropertiesObject): ComponentObject;
     function GestureInit(): void;
     function Drag(): void;
     function Release(): void;
     function Toggle(component: ComponentObject, eventData?: any): void;
 }
 declare namespace syiro.toast {
-    function New(properties: Object): ComponentObject;
+    function New(properties: ToastPropertiesObject): ComponentObject;
     function Clear(component: ComponentObject): void;
     function ClearAll(): void;
     function Toggle(component: ComponentObject, action?: string): void;
 }
 declare namespace syiro.button {
-    function New(properties: Object): ComponentObject;
+    function New(properties: ButtonPropertiesObject): ComponentObject;
     function SetIcon(component: ComponentObject, content: string): boolean;
     function SetImage(component: ComponentObject, content: string): boolean;
     function SetText(component: ComponentObject, content: string): boolean;

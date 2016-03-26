@@ -10,20 +10,20 @@ module syiro.grid {
 
 	// New
 	// Create a Grid
-	export function New(properties : Object) : ComponentObject {
+	export function New(properties : GridPropertiesObject) : ComponentObject {
 		let component : ComponentObject = { "id" : syiro.component.IdGen("grid"), "type" : "grid" }; // Define componentObject as a new ComponentObject with a newly generated Id and type set to grid
 		let renderItems : string;
 
-		if (syiro.utilities.TypeOfThing(properties["columns"], "number")){ // If the horizontal amount (columns) of grid items allowed is a number
-			renderItems = properties["columns"].toString(); // Set renderitems to the string of columns
+		if (syiro.utilities.TypeOfThing(properties.columns, "number")){ // If the horizontal amount (columns) of grid items allowed is a number
+			renderItems = properties.columns.toString(); // Set renderitems to the string of columns
 		} else { // If renderItems is not a number
 			renderItems = "dynamic"; // Set to dynamically set column amount
 		}
 
 		let componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : component.id, "data-syiro-component" : "grid", "data-syiro-render-columns" : renderItems }); // Generate the Grid container
 
-		if (syiro.utilities.TypeOfThing(properties["items"], "Array")){ // If there are items defined
-			for (let gridItemProperties of properties["items"]){ // For each item
+		if (syiro.utilities.TypeOfThing(properties.items, "Array")){ // If there are items defined
+			for (let gridItemProperties of properties.items){ // For each item
 				let gridItem : ComponentObject = syiro.griditem.New(gridItemProperties); // Create a Grid Item Component based on the gridItemProperties
 				let gridItemElement : HTMLElement = syiro.component.Fetch(gridItem); // Fetch the Grid item Element
 				componentElement.appendChild(gridItemElement); // Append the gridItemElement
@@ -70,19 +70,19 @@ module syiro.griditem {
 
 	// New
 	// Create a Grid Item
-	export function New(properties : Object) : ComponentObject {
+	export function New(properties : GridItemPropertiesObject) : ComponentObject {
 		let gridItemComponent : ComponentObject;
 
-		if ((syiro.utilities.TypeOfThing(properties["html"], "Element")) || (syiro.utilities.TypeOfThing(properties["html"], "string"))){ // If the only valid property, HTML, is defined, as an Element or string
+		if ((syiro.utilities.TypeOfThing(properties.html, "Element")) || (syiro.utilities.TypeOfThing(properties.html, "string"))){ // If the only valid property, HTML, is defined, as an Element or string
 			let gridItemComponent : ComponentObject = { "id" : syiro.component.IdGen("grid-item"), "type" : "grid-item" }; // Define componentObject as the generated ComponentObject with the unique Id as well as type to grid-item
 			let componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { "data-syiro-component-id" : gridItemComponent.id, "data-syiro-component" : "grid-item" }); // Create the Grid Item container
 
-			properties["html"] = syiro.utilities.SanitizeHTML(properties["html"]); // Sanitize the HTML, whether it be a string or an Element of some sort
+			properties.html = syiro.utilities.SanitizeHTML(properties.html); // Sanitize the HTML, whether it be a string or an Element of some sort
 
-			if (syiro.utilities.TypeOfThing(properties["html"], "Element")){ // If it is an Element
-				componentElement.appendChild(properties["html"]); // Append the HTMLElement
+			if (syiro.utilities.TypeOfThing(properties.html, "Element")){ // If it is an Element
+				componentElement.appendChild(properties.html); // Append the HTMLElement
 			} else { // If it is a string
-				componentElement.innerHTML = properties["html"]; // Set the innerHTML of the componentElement to the HTML
+				componentElement.innerHTML = properties.html; // Set the innerHTML of the componentElement to the HTML
 			}
 
 			syiro.data.Write(gridItemComponent.id + "->HTMLElement", componentElement); // Write the Grid Item HTMLELement

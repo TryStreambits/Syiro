@@ -178,7 +178,7 @@ namespace syiro.init {
 		syiro.events.Add(syiro.events.Strings["down"], playerRange, // Add mousedown / touchstart events to the playerRange
 			function(){
 				let playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
-				syiro.data.Write(playerComponentObject["id"] + "->IsChangingInputValue", true); // Set the ChangingInputValue to true to infer we are changing the input value of the playerRange
+				syiro.data.Write(playerComponentObject.id + "->IsChangingInputValue", true); // Set the ChangingInputValue to true to infer we are changing the input value of the playerRange
 			}.bind(this, componentObject)
 		);
 
@@ -186,8 +186,8 @@ namespace syiro.init {
 			function(){
 				let playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
 
-				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
-					syiro.data.Delete(playerComponentObject["id"] + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove IsChangingInputValue
+				if (syiro.data.Read(playerComponentObject.id + "->IsChangingVolume") == false){ // If we are doing a time change and not a volume change
+					syiro.data.Delete(playerComponentObject.id + "->IsChangingInputValue"); // Since we not changing the volume, immediately remove IsChangingInputValue
 
 					if (!syiro.mediaplayer.IsPlaying(playerComponentObject)){ // If we're not playing the video
 						syiro.mediaplayer.PlayOrPause(playerComponentObject, true); // Start playback
@@ -199,15 +199,15 @@ namespace syiro.init {
 		syiro.events.Add("input", playerRange, // Add input event to the playerRange, which updates either the time or volume whenever the input is changed
 			function(){
 				let playerComponentObject : ComponentObject = arguments[0]; // Get the Player Component Object passed as bound argument
-				let playerRange : HTMLInputElement = arguments[1]; // Define playerRangeElement as the Element passed as the second arg
+				let playerRange : HTMLInputElement = arguments[1]; // Define playerRangeElement as the secound bound argument
 				let valueNum : number = Number(playerRange.value); // Define valueNum as the converted string-to-number, where the value was the playerRange value
 
-				if (syiro.data.Read(playerComponentObject["id"] + "->IsChangingVolume") !== true){ // If we are doing a time change and not a volume change
+				if (syiro.data.Read(playerComponentObject.id + "->IsChangingVolume") !== true){ // If we are doing a time change and not a volume change
 					syiro.mediaplayer.SetTime(playerComponentObject, valueNum); // Set the Time
 				} else { // If we are doing a volume change
-					syiro.mediaplayer.SetVolume(playerComponentObject, valueNum, "input"); // Set the volume to value of the range, diving the number by 100 to get an int from 0.0 to 1.0.
+					syiro.mediaplayer.SetVolume(playerComponentObject, valueNum); // Set the volume to value of the range
 				}
-			}.bind(this, componentObject)
+			}.bind(this, componentObject, playerRange)
 		);
 
 		// Play Button Listener

@@ -16,7 +16,7 @@ namespace syiro.device {
 	export var HasLocalStorage : boolean; // Define HasLocalStorage as a boolean if the device has LocalStorage support.
 	export var IsOnline : boolean = true; // Define IsOnline as a boolean if the device is online.
 	export var OperatingSystem : string; // Define OperatingSystem as a string of what the OS is
-	export var SupportsMutationObserver : boolean; // Define SupportsMutationObserver as a boolean as to whether the browser / device supports MutationObserver or WebKitMutationObserver
+	export var SupportsMutationObserver : boolean; // Define SupportsMutationObserver as a boolean as to whether the browser / device supports MutationObserver
 	export var SupportsRequestAnimationFrame : boolean; // Define SupportsRequestAnimationFrame as a boolean as to whether the browser supports requestAnimationFrame function.
 	export var SupportsTouch : boolean; // Define SupportsTouch as a boolean as to whether or not the device supports touch.
 

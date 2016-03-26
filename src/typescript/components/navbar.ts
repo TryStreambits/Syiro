@@ -10,53 +10,46 @@ namespace syiro.navbar {
 	// New
 	// Create a Navbar
 	export function New(properties : NavbarPropertiesObject) : ComponentObject {
-		let navbarType : string; // Define navbarType as either "top" or "bottom"
-
-		if ((typeof properties.position !== "string") || ((properties.position !== "top") && (properties.position !== "bottom"))){ // If position is not defined as a string or is defined as neither top or bottom
-			navbarType = "top"; // Default to be a top-positioned navbar / Header
-		} else { // If it is defined as either top or bottom
-			navbarType = properties.position; // Define navbarType as top or bottom
+		if ((properties.position !== "top") && (properties.position !== "bottom")){ // If position is not defined as top or bottom
+			properties.position = "top"; // Default to be a top-positioned navbar / Header
 		}
 
 		let componentId : string = syiro.component.IdGen("navbar"); // Generate a component Id using "navbar"
-		let componentElement : HTMLElement = syiro.utilities.ElementCreator("div", {  "data-syiro-component" : "navbar", "data-syiro-component-id" : componentId, "role" : "navigation", "data-syiro-component-type" : navbarType }); // Generate a div Element with the role of "navigation" (for ARIA) and data-syiro-component-type to navbarType
+		let componentElement : HTMLElement = syiro.utilities.ElementCreator("div", { // Create a Navbar div Element
+			"data-syiro-component" : "navbar",
+			"data-syiro-component-id" : componentId,
+			"data-syiro-component-type" : properties.position, // Type should be the position (top or bottom)
+			"role" : "navigation" // Define role as "navigation" for ARIA
+		});
 
-		for (let propertyKey in properties){ // Recursive go through each propertyKey
-			if (propertyKey == "items"){ // If we are adding items to the Header
-				for (let individualItem of properties.items){ // For each individualItem in navigationItems Object array
-					let typeOfItem : string = syiro.utilities.TypeOfThing(individualItem); // Get the type of the individualItem
-
-					if (typeOfItem == "LinkPropertiesObject"){ // If we are adding a link
-						let generatedElement  : HTMLElement = syiro.utilities.ElementCreator("a", { "href" : individualItem["link"], "content" : individualItem["title"] }); // Generate a generic Link
-						componentElement.appendChild(generatedElement); // Append the component to the parent component element
-					} else if ((typeOfItem == "ComponentObject") && (navbarType == "top")){ // If we are adding a Syiro Component (whether it be a Dropdown Button or a Searchbox) and the navbarType is top
-						componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the fetched Component Element
-					}
-				}
-			} else if ((propertyKey == "logo") && (navbarType == "top")){ // If we are adding a Logo to the top-positioned navbar (Header)
+		if (properties.position == "top"){ // If Navbar is top-positioned
+			if (syiro.utilities.TypeOfThing(properties.logo, "string") && (properties.logo.length !== 0)){ // If a logo is defined
 				let generatedElement : HTMLElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : properties.logo }); // Generate an image with data-syiro-minor-component set to logo and src set to logo defined
 				componentElement.appendChild(generatedElement); // Append the logo to the generatedElement
-			} else if ((propertyKey == "content") && (navbarType == "bottom")){ // If content or label prop are not undefined and the navbarType is botto (Footer)
-				let labelContent : string = ""; // Define labelContent initially as an empty string
+			}
+		} else { // If Navbar is bottom-positioned
+			if (syiro.utilities.TypeOfThing(properties.content, "string") && (properties.content.length !== 0)){ // If content is defined
+				let generatedElement : HTMLElement = syiro.utilities.ElementCreator("label", { "content" : properties.content }); // Generate a generic label element
+				componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the navbar				
+			}
+		}
+		
+		for (let individualItem of properties.items){ // For each individualItem in navigationItems Object array
+			let typeOfItem : string = syiro.utilities.TypeOfThing(individualItem); // Get the type of the individualItem
 
-				if (typeof properties.content !== "undefined"){ // If the content property is defined
-					labelContent = properties.content; // Assign content key/val to labelContent
-				}
-
-				let generatedElement : HTMLElement = syiro.utilities.ElementCreator("label", { "content" : labelContent }); // Generate a generic label element
-				componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the navbar
+			if (typeOfItem == "LinkPropertiesObject"){ // If we are adding a link
+				let generatedElement  : HTMLElement = syiro.utilities.ElementCreator("a", { "href" : individualItem["link"], "content" : individualItem["title"] }); // Generate a generic Link
+				componentElement.appendChild(generatedElement); // Append the component to the parent component element
+			} else if ((typeOfItem == "ComponentObject") && (properties.position == "top")){ // If we are adding a Syiro Component (whether it be a Dropdown Button or a Searchbox) and the navbarType is top
+				componentElement.appendChild(syiro.component.Fetch(individualItem)); // Append the fetched Component Element
 			}
 		}
 
-		// #region Fixed Positioning Check
-
-		if ((typeof properties.fixed == "boolean") && (properties.fixed)){ // If the "fixed" property is defined and is set to true
+		if (properties.fixed){ // If the "fixed" property is defined and is set to true
 			componentElement.setAttribute("data-syiro-position", "fixed"); // Set position attribute to fixed so we can more dynamically set CSS values without needing to use JavaScript
 		}
 
-		// #endregion
-
-		syiro.data.Write(componentId + "->Position", navbarType); // In addition to data-syiro-component-type on the componentElement to indicate where you position
+		syiro.data.Write(componentId + "->Position", properties.position); // In addition to data-syiro-component-type on the componentElement to indicate where you position
 		syiro.data.Write(componentId + "->HTMLElement", componentElement); // Add the componentElement to the HTMLElement key/val of the component
 		return { "id" : componentId, "type" : "navbar" }; // Return a Component Object
 

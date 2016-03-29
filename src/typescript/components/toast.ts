@@ -12,7 +12,7 @@ namespace syiro.toast {
 	// New
 	// Create a Toast
 	export function New(properties : ToastPropertiesObject) : ComponentObject {
-		if ((typeof properties.type == "undefined") || ((properties.type !== "normal") && (properties.type !== "dialog"))){ // If no "type" is defined or it was defined as NOT normal or dialog
+		if ((properties.type !== "normal") && (properties.type !== "dialog")){ // If the type is not normal or dialog
 			properties.type = "normal"; // Define as a "normal" Toast
 		}
 
@@ -48,7 +48,7 @@ namespace syiro.toast {
 
 			// #region Buttons Properties Check
 
-			if (typeof properties.buttons == "undefined"){ // If no Buttons were provided
+			if (!syiro.utilities.TypeOfThing(properties.buttons, "array")){ // If no Buttons were provided
 				properties.buttons = [{ "action" : "deny", "content" : "Ok" }]; // Default the content to "Ok"
 			}
 
@@ -72,7 +72,7 @@ namespace syiro.toast {
 				}
 
 				if (typeof toastButtonProperties.function !== "undefined"){ // If a function was defined for this action
-					futureButtonHandlers[toastButtonProperties.action] =  toastButtonProperties.function; // Push to the futureButtonHandlers Object a key/val where the action is the key and value is the func
+					futureButtonHandlers[toastButtonProperties.action] = toastButtonProperties.function; // Push to the futureButtonHandlers Object a key/val where the action is the key and value is the func
 				}
 
 				let toastButtonObject : ComponentObject = syiro.button.New({ "type" : "basic", "content" : toastButtonProperties.content });

@@ -131,7 +131,7 @@ declare namespace syiro.events {
     function Handler(): void;
     function Trigger(eventType: string, componentProvided: any, eventData?: Event): void;
     function Add(listeners: any, componentProvided: any, listenerCallback: Function): boolean;
-    function Remove(...args: any[]): boolean;
+    function Remove(listeners: any, componentProvided: any, specFunc?: Function): boolean;
 }
 declare namespace syiro.utilities {
     function ElementCreator(type: string, attributes: Object): any;

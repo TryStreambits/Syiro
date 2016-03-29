@@ -63,7 +63,8 @@ namespace syiro.sidepane {
 
 	// GestureInit
 	export function GestureInit(){
-		let componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
+		let sidepaneEdgeElement : Element = syiro.component.Fetch(arguments[0]); // Get the sidepaneEdge
+		let componentElement = sidepaneEdgeElement.parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
 		let moveElement : any; // Define moveElement as the element we will be tracking movement for
 
 		// Event Setting
@@ -86,18 +87,19 @@ namespace syiro.sidepane {
 
 	// Drag
 	export function Drag(){
-		let componentElement = arguments[0].parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
+		let sidepaneEdgeElement : Element = syiro.component.Fetch(arguments[0]); // Get the sidepaneEdge
+		let moveElement : Element = syiro.component.Fetch(arguments[1]); // Get the element we are listening to
+		let componentElement = sidepaneEdgeElement.parentElement; // Define componentElement as the Sidepane Container of the Sidepane Edge
 		let eventData = arguments[2]; // Define eventData as the event data passed
-		let mousePosition : number;
-		let updatedSidepanePosition : number;
 
+		let mousePosition : number;
 		if (typeof eventData.touches !== "undefined"){ // If Drag is being triggered by touchmove
 			mousePosition = eventData.touches[0].screenX;
 		} else { // If Drag is being triggered by mousemove
 			mousePosition = eventData.clientX; // Get from clientX since we may be using multiple monitors
 		}
 
-		updatedSidepanePosition = mousePosition- componentElement.offsetWidth; // Set updatedSidepanePosition to mousePosition minus the width of the Sidepane (including borders, padding, etc.)
+		let updatedSidepanePosition : number = mousePosition- componentElement.offsetWidth; // Set updatedSidepanePosition to mousePosition minus the width of the Sidepane (including borders, padding, etc.)
 
 		if (updatedSidepanePosition > 0){ // If the touch position is further on the right side that the Sidepane would usually "break" from the edge
 			updatedSidepanePosition = 0; // Set left position to 0
@@ -109,13 +111,13 @@ namespace syiro.sidepane {
 
 	// Release
 	export function Release(){
-		let component : ComponentObject = syiro.component.FetchComponentObject(arguments[0].parentElement); // Define component as the fetched Component Object
-		let moveElement = arguments[1]; // Define moveElement as the third argument passed, the actual Element we are listening to
-		let eventData : any = arguments[2]; // Define eventData as the event data passed
+		let sidepaneEdgeElement : Element = syiro.component.Fetch(arguments[0]); // Get the sidepaneEdge
+		let moveElement : Element = syiro.component.Fetch(arguments[1]); // Get the element we are listening to
+		let component : ComponentObject = syiro.component.FetchComponentObject(sidepaneEdgeElement.parentElement); // Define component as the fetched Component Object
 
-		syiro.sidepane.Toggle(component, eventData); // Call Sidepane Toggle w/ event data
-		syiro.events.Remove(syiro.events.Strings["move"], component); // Remove the "move" function
-		syiro.events.Remove(syiro.events.Strings["up"], component); // Remove the "up" function
+		syiro.sidepane.Toggle(component, arguments[2]); // Call Sidepane Toggle w/ event data
+		syiro.events.Remove(syiro.events.Strings["move"], moveElement); // Remove the "move" function
+		syiro.events.Remove(syiro.events.Strings["up"], moveElement); // Remove the "up" function
 	}
 
 	// Toggle

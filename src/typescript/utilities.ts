@@ -12,21 +12,22 @@ namespace syiro.utilities {
 
 			for (let attributeKey in attributes){ // For each attributeKey in attributes
 				let attributeValue = attributes[attributeKey]; // Get the attribute value based on key
+				let typeOfValue : string = syiro.utilities.TypeOfThing(attributeValue); // Get the type of the value
 
-				if (attributeKey !== "content"){ // If the attributeKey is not content
-					if (attributeKey == "content-attr"){ // If the attributeKey is "content-attr" (used in meta tag creation)
-						attributeKey = "content"; // Set to content instead.
-					}
+				if ((typeOfValue !== "undefined") && (typeOfValue !== "null")){ // If the value is not undefined or null
+					attributeValue = syiro.utilities.SanitizeHTML(attributeValue); // Sanitize the value
 
-					generatedElement.setAttribute(attributeKey, syiro.utilities.SanitizeHTML(attributeValue)); // Set the attribute to a sanitized form of the attributeValue
-				} else { // If the attributeKey IS "content"
-					if ((typeof attributeValue == "string") || (syiro.utilities.TypeOfThing(attributeValue, "Element"))){ // If the attributeValue we passed is a string or an appropriate Element
-						let sanitizedContent = syiro.utilities.SanitizeHTML(attributeValue); // Set sanitizedContent to sanitized HTML (whether it is a string or Element)
+					if (attributeKey !== "content"){ // If the attributeKey is not content
+						if (attributeKey == "content-attr"){ // If the attributeKey is "content-attr" (used in meta tag creation)
+							attributeKey = "content"; // Set to content instead.
+						}
 
-						if (typeof attributeValue == "string"){ // If the attributeValue we passed is a string
-							generatedElement.innerHTML = sanitizedContent; // Set generatedElement innerHTML to sanitizedContent
-						} else { // If this is an Element
-							generatedElement.appendChild(sanitizedContent); // Append the sanitizedContent
+						generatedElement.setAttribute(attributeKey, attributeValue); // Set the attribute to a sanitized form of the attributeValue
+					} else { // If the attributeKey IS "content"
+						if (typeOfValue == "string"){ // If the attributeValue we passed is a string
+							generatedElement.innerHTML = attributeValue; // Set generatedElement innerHTML to sanitizedContent
+						} else if (typeOfValue == "Element"){ // If this is an Element
+							generatedElement.appendChild(attributeValue); // Append the sanitizedContent
 						}
 					}
 				}

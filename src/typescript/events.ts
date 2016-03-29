@@ -103,58 +103,42 @@ namespace syiro.events {
 
 	// Remove
 	// Remove event listening from a Component or Generic Element
-	export function Remove(... args : any[]) : boolean {
+	export function Remove(listeners : any, componentProvided : any, specFunc ?: Function) : boolean {
 		let allowRemoval : boolean = true; // Set allowRemoval as a boolean, defaulting to true and allowing Listener removal unless specified otherwise.
-		let successfulRemoval : boolean = false; // Set successfulRemove as a boolean, defaulting to false unless it was successful
-		let listeners : any; // Define listeners as any (array or string -> array)
-		let component : any; // Define component as any (Object, Element, document, or window)
-		let componentElement : any; // Define componentElement as any. It is either an Element, document, or window.
-		let specFunc : Function; // Define specFunc as a Function
+	
+		switch (syiro.utilities.TypeOfThing(listeners)){
+			case "string": // If listeners is a string
+				listeners = listeners.replace(" ", "").split(","); // Remove whitespace then split comma-separated listeners
+				break;
+			case "undefined": // If listeners is undefined
+				allowRemoval = false; // Do not allow removal
+				break;
+		}
+		
+		let component : ComponentObject = syiro.component.FetchComponentObject(componentProvided), componentElement : Element = syiro.component.Fetch(componentProvided); // Get the ComponentObject and Element
 
-		if ((args.length >= 2) && (args.length < 4)){ // If an appropriate amount of arguments are provided
-			if ((typeof args[0] == "string") || (typeof args[0].length !== "undefined")){ // If this is a string or args[0].length is not undefined (so it is an array)
-				listeners = args[0]; // Define listeners as the first argument
+		if (allowRemoval){ // If we are going to allow the removal of event listeners from the Element
+			for (let listener of listeners){ // For each listener that was defined in listeners array
+				let componentListeners = [];
 
-				if (typeof listeners == "string"){ // If the listeners was defined a string
-					listeners = listeners.trim().split(" "); // Trim the whitespace around the string then convert it to an array
-				}
-			} else { // If the first argument is neither a string or an array
-				allowRemoval = false; // Disallow removal
-			}
+				if (typeof specFunc == "function") { // If a specific function is defined
+					componentListeners = syiro.data.Read(component.id + "->handlers->" + listener); // Define componentListeners as all the listeners for that handler->listener
+					let componentListenersFunctionIndex : number = componentListeners.indexOf(specFunc); // Get the index of this function
 
-			let component : ComponentObject = syiro.component.FetchComponentObject(args[1]), componentElement : Element = syiro.component.Fetch(args[1]); // Get the ComponentObject and Element
-
-			if (typeof args[2] == "function"){ // If a specific function for removal is defined
-				specFunc = args[2]; // Define specFunc as args[2]
-			}
-
-			if (allowRemoval){ // If we are going to allow the removal of event listeners from the Element
-				if (syiro.utilities.TypeOfThing(componentElement, "Element")){
-					for (let listener of listeners){ // For each listener that was defined in listeners array
-						let componentListeners : any = null; // Define componentListeners as an array of functions specific to that listener, only for specFunc, or null (default) if all functions should be removed
-
-						if (typeof specFunc == "function") { // If a specific function is defined
-							componentListeners = syiro.data.Read(component.id + "->handlers->" + listener); // Define componentListeners as the array of functions specific to that listener
-							let componentListenersFunctionIndex : number = componentListeners.indexOf(specFunc); // Get the index of this function
-
-							if (componentListenersFunctionIndex !== -1){ // If the function exists as a listener
-								componentListeners.splice(componentListenersFunctionIndex, 1); // Remove the specific function from the componentListeners by splicing the array (removing an item based on index and number defined)
-							}
-						}
-
-						if ((componentListeners == null) || (componentListeners.length == 0)){ // If the componentListeners is null or does NOT have a length (essentially null)
-							syiro.data.Delete(component.id + "->handlers->" + listener); // Remove the specific listener from this handler from the particular Component
-							componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component)); // Remove the event listener (specific to the listener and func)
-						} else { // If componentListeners.length is still not zero after removing the specFunc
-							syiro.data.Write(component.id + "->handlers->" + listener, componentListeners); // Update the listener functions array for this handler
-						}
+					if (componentListenersFunctionIndex !== -1){ // If the function exists as a listener
+						componentListeners.splice(componentListenersFunctionIndex, 1); // Remove the specific function from the componentListeners by splicing the array (removing an item based on index and number defined)
 					}
-
-					successfulRemoval = true; // Return true since we successfully removed event listeners
+				}
+				
+				if (componentListeners.length == 0){ // If we are deleting all the component listeners (including if specFunc is the only listener)
+					syiro.data.Delete(component.id + "->handlers->" + listener); // Remove the specific listener from this handler from the particular Component
+					componentElement.removeEventListener(listener, syiro.events.Handler.bind(this, component)); // Remove the event listener (specific to the listener and func)						
+				} else { // If we are removing a specific function and there are still other listeners
+					syiro.data.Write(component.id + "->handlers->" + listener, componentListeners); // Update the listener functions array for this handler
 				}
 			}
 		}
 
-		return successfulRemoval; // Return whether the removal was successful
+		return allowRemoval; // Return whether we allowed removal
 	}
 }

@@ -40,7 +40,7 @@ Bootstrap 3.3.6 | 36.9kb | 122.5kb | None Provided
 Polymer 1.3.1 | Varies depending on use of components | 155.3kb | None Provided
 Syiro 1.6.0 | 31.7kb | 63.8kb | 14.4kb
 Syiro 1.7.0-rc1 | 29.4kb | 58.1kb | 13.0kb
-Syiro (DEV) | 29.0kb | 56.3kb | 12.6kb
+Syiro (DEV) | 29.0kb | 56.2kb | 12.5kb
 
 Details:
 

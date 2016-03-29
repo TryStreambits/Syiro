@@ -293,26 +293,23 @@ module syiro.mediaplayer{
 		let playerLengthInfo : Object = {}; // Define playerLengthInfo as an empty Object to hold length information about the audio or video
 		let contentDuration : any = syiro.mediaplayer.FetchInnerContentElement(component).duration; // Get the Player's internal audio or video Element and its duration property
 
-		if ((isNaN(contentDuration) == false) && (isFinite(contentDuration))){ // If we are able to properly fetch the duration and we are not streaming
-			playerLengthInfo["max"] = contentDuration; // Set the maximum to the contentDuration
+		playerLengthInfo["max"] = contentDuration; // Default maximum to the contentDuration
+		playerLengthInfo["step"] = 1; // Default step value to 1 second
 
-			if (contentDuration < 30){ // If the contentDuration is less than 30 seconds
-				playerLengthInfo["step"] = 1; // Set the step value to 1 second.
-			} else if ((contentDuration >= 30) && (contentDuration <= 60)){ // If the contentDuration is 30s to 1min
+		if (!isNaN(contentDuration) && isFinite(contentDuration)){ // If we are able to properly fetch the duration and we are not streaming
+			if ((contentDuration >= 30) && (contentDuration <= 60)){ // If the contentDuration is 30s to 1min
 				playerLengthInfo["step"] = 2; // Set the step value to 2 seconds
 			} else if ((contentDuration > 60) && (contentDuration <= 300)){ // If the contentDuration is greater than 1 minute but less than or equal to 5 minutes
 				playerLengthInfo["step"] = 5; // Set the step value to 5 seconds
 			} else if ((contentDuration > 300) && (contentDuration < 900)){ // If the contentDuration is greater than 5 minutes but less than 15 minutes
 				playerLengthInfo["step"] = 10; // Set the step value to 10 seconds
-			} else { // If the video is greater than 15 minutes
+			} else if (contentDuration > 900){ // If the video is greater than 15 minutes
 				playerLengthInfo["step"] = 15; // Set the step value to 15 seconds
 			}
-		} else if (isNaN(contentDuration)){ // If the contentDuration is unknown
-			playerLengthInfo["max"] = "Unknown"; // Set max to unknown
-			playerLengthInfo["step"] = 1; // Set step value to 1 second
 		} else if (isFinite(contentDuration) == false){ // If we are streaming content
 			playerLengthInfo["max"] = "Streaming"; // Set max to Streaming
-			playerLengthInfo["step"] = 1; // Set step value to 1 second
+		} else { // If the content duration or streaming is unknown
+			playerLengthInfo["max"] = "Unknown"; // Set max to unknown
 		}
 
 		return playerLengthInfo; // Return the playerLengthInfo Object
@@ -323,13 +320,10 @@ module syiro.mediaplayer{
 	export function IsPlayable(component : ComponentObject, returnIsStreamble ?: boolean) : (string | boolean) {
 		let componentElement : Element = syiro.component.Fetch(component); // Define componentElement as the fetched Element of the Component
 		let innerContentElement : HTMLMediaElement = syiro.mediaplayer.FetchInnerContentElement(component); // Fetch the inner content Element
-
-		let isPlayable : boolean = false; // Set isPlayable as a boolean default to false
-		let isStreamable : boolean = false; // Set isStreamable as the returned boolean
+		let isPlayable : boolean = false, isStreamable : boolean = false // Set isPlayable and isStreamable as bool false
 
 		if (syiro.data.Read(component.id + "->UsingExternalLibrary")){ // If we are using an external library
-			isPlayable = true; // Set to being playable by default
-			isStreamable = true; // Set to being streamable by default
+			isPlayable = true, isStreamable = true; // Set isPlayable and isStreamable to true
 		} else { // If we are not using an external library
 			let sourceElementsInfo : Array<Object> = syiro.mediaplayer.FetchSources(component); // Define sourceElementsInfo as the fetched objects containing the information from the sources
 
@@ -446,29 +440,22 @@ module syiro.mediaplayer{
 
 			let mediaControlElement = componentElement.querySelector('div[data-syiro-component="media-control"]'); // Fetch the Media Control Element
 			let mediaControlComponent : ComponentObject = syiro.component.FetchComponentObject(mediaControlElement); // Get the Component Object of the Media Control
-			let playerRange = mediaControlElement.querySelector('div[data-syiro-minor-component="progressbar"] > input'); // Get the input range of the Media Control
 
 			// #endregion
 
 			syiro.mediacontrol.TimeLabelUpdater(mediaControlComponent, 0, time); // Update the label
 
 			let isChangingInputValue : boolean = syiro.data.Read(component.id + "->IsChangingInputValue"); // Get the boolean value if we are changing the input value or not
-			let allowUpdatingGradient : boolean = false;
-
-			if (isChangingInputValue && !fromEvent){ // If we are changing the input value (calling SetTime with a number)
-				allowUpdatingGradient = true;
-			} else if (!isChangingInputValue && fromEvent){ // If we are NOT changing the input value and it is from an event (normal input range gradient updating from playback)
-				allowUpdatingGradient = true;
-			}
+			let allowUpdatingGradient : boolean = ((isChangingInputValue && !fromEvent) || (!isChangingInputValue && fromEvent)); // If we are changing the input value with a num or from an event
 
 			if (allowUpdatingGradient){ // If we are allowing the updating of the gradient
-				let roundedDownTime : number = Math.floor(time);
-				playerRange.value = roundedDownTime; // Set the value to the volume (which is 0.1 to 1.0) times 10
+				let playerRange = mediaControlElement.querySelector('div[data-syiro-minor-component="progressbar"] > input'); // Get the input range of the Media Control
+				playerRange.value = time; // Set the value to the volume (which is 0.1 to 1.0) times 10
 
-				let priorInputSpaceWidth : number = (roundedDownTime / Number(playerRange.max)) * playerRange.clientWidth; // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
 				let updatedGradient : string = ""; // Default updatedGradient to an empty string
 
 				if (time !== 0){ // If the time is not zero
+					let priorInputSpaceWidth : number = (Math.floor(time) / Number(playerRange.max)) * playerRange.clientWidth; // Get the width of the empty space before the input range thumb by getting the currentTime, dividing by the max value and times the clientWidth
 					updatedGradient = "linear-gradient(to right, " + syiro.primaryColor + " " + priorInputSpaceWidth + "px, transparent 0px)"; // Define updatedGradient as the information we'd apply to linear-gradient
 				}
 
@@ -486,8 +473,8 @@ module syiro.mediaplayer{
 		let inputVolumeValue : number = volume; // Set inputVolumeValue equal to volume
 
 		if ((typeof fromEvent == "string") && (fromEvent == "input")){ // If it came from playerRange input change
-			 inputVolumeValue *= 10; // Times the number by 100 to get absolute percentage value
-			 volume /= 10; // Divide the number by 10 to get the floating point number we assign to HTMLMediaElement.volume
+			inputVolumeValue *= 10; // Times the number by 10 to get absolute percentage value
+			volume /= 10; // Divide the number by 10 to get the floating point number we assign to HTMLMediaElement.volume
 		} else { // If it is not from an event
 			if ((inputVolumeValue > 10) && (inputVolumeValue <= 100)){ // If we are provided a number between 10 and 100
 				inputVolumeValue = Math.round(volume / 10) * 10; // Round the number to nearest 10 after dividing it by 10 (example 84 -> 8.4 -> 8 * 10 -> 80)
@@ -536,7 +523,6 @@ module syiro.mediaplayer{
 	// ToggleMenuDialog
 	export function ToggleMenuDialog(component : ComponentObject){
 		let componentElement : Element = syiro.component.Fetch(component); // Fetch the Player Element
-
 		let menuDialog : Element = componentElement.querySelector('div[data-syiro-minor-component="player-menu"]'); // Get the Menu Dialog
 		let menuButton : Element = componentElement.querySelector('div[data-syiro-render-icon="menu"]'); // Get the menu button element
 
@@ -565,7 +551,7 @@ module syiro.mediacontrol {
 		componentElement.appendChild(progressBar); // Append the progressBar
 		componentElement.appendChild(syiro.component.Fetch(playButton)); // Append the play button
 
-		if (typeof properties.generateContentInfo !== "undefined"){ // If we are adding content (for Audio Player)
+		if (properties.generateContentInfo){ // If we are adding content (for Audio Player)
 			let infoSection : HTMLElement = document.createElement("section"); // Generate a section Element
 
 			if (typeof properties.title !== "undefined"){ // If a title is defined
@@ -704,7 +690,7 @@ module syiro.mediacontrol {
 		} else if (forceShow == false){ // If we are forcing to hide the Media Control
 			syiro.animation.FadeOut(component); // Fade out the Media Control
 		} else if ((typeof forceShow == "undefined") || (forceShow == null)){ // If the forceShow is not defined or defined as null
-			if ((currentAnimationStored == "fade-out") || (mediaControlElement.hasAttribute("data-syiro-animation") == false)){ // If the current status is the Media Control is faded out OR the Media Control does not have the animation attribute
+			if ((currentAnimationStored == "fade-out") || (!mediaControlElement.hasAttribute("data-syiro-animation"))){ // If the current status is the Media Control is faded out OR the Media Control does not have the animation attribute
 				syiro.animation.FadeIn(component); // Fade in the Media Control
 			} else { // If the current status is the Media Control is faded in (showing)
 				syiro.animation.FadeOut(component); // Fade out the Media Control

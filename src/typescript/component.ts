@@ -16,10 +16,24 @@ namespace syiro.component {
 		let componentElement : any = component; // Default componentElement to being the component
 		
 		if (syiro.utilities.TypeOfThing(component, "ComponentObject")){ // If component is a ComponentObject
-			componentElement = document.querySelector('div[data-syiro-component-id="' + component.id + '"]'); // The (HTML)Element of the Syiro component we'll be returning (default to fetching Element via querySelector)
+			switch (component.type) { // For each potential Component type
+				case "document": // If the type is document
+					componentElement = document; // Define componentElement as the document
+					break;
+				case "screen": // If the type is screen
+					componentElement = screen; // Define componentElement as the screen
+					break;
+				case "window": // If the type is window
+					componentElement = window; // Define componentElement as the window
+					break;
+				default: // Otherwise
+					componentElement = document.querySelector('div[data-syiro-component-id="' + component.id + '"]'); // The (HTML)Element of the Syiro component we'll be returning (default to fetching Element via querySelector)
 
-			if (componentElement == null){ // If an HTMLElement is defined, meaning this is a new component that has not been put in the DOM yet
-				componentElement = syiro.data.Read(component.id + "->HTMLElement"); // Get the HTMLElement via syiro.data APIs
+					if (componentElement == null){ // If an HTMLElement is defined, meaning this is a new component that has not been put in the DOM yet
+						componentElement = syiro.data.Read(component.id + "->HTMLElement"); // Get the HTMLElement via syiro.data APIs
+					}
+					
+					break;
 			}
 		}
 

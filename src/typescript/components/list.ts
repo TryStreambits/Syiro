@@ -61,26 +61,25 @@ namespace syiro.list {
 		let typeOfContent : string = syiro.utilities.TypeOfThing(content); // Get the type of the content
 
 		if ((typeOfContent == "string") || (typeOfContent == "Element")){ // If the content is a string or Element
-			if (listHeader == null){ // If the listHeader does not exist
-				listHeader = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "list-header" }); // Generate the listHeader
-				componentElement.insertBefore(listHeader, componentElement.firstChild); // Prepend the listHeader
-			}
-
 			content = syiro.utilities.SanitizeHTML(content); // Sanitize the content
-
-			if (typeOfContent == "string"){ // If the content is a string
-				if (content !== ""){ // If the content is not an empty string
-					listHeader.innerHTML = content; // Set innerHTML to content
-				} else { // If the content is empty
-					componentElement.removeChild(listHeader); // Remove the listHeader
-				}
-			} else { // If it is an Element
-				listHeader.innerHTML = ""; // Clean up the listHeader
-				listHeader.appendChild(content); // Append the Element
+			
+			if (typeOfContent == "Element"){ // If the content is an Element
+				content = content.outerHTML; // Change to being an HTML string
 			}
-		}
+			
+			if (content !== ""){ // If the content is not an empty string
+				if (listHeader == null){ // If the listHeader does not exist
+					listHeader = syiro.utilities.ElementCreator("div", { "data-syiro-minor-component" : "list-header" }); // Generate the listHeader
+					componentElement.insertBefore(listHeader, componentElement.firstChild); // Prepend the listHeader
+				}
+				
+				listHeader.innerHTML = content; // Set innerHTML to the content
+			} else if ((content == "") && (listHeader !== null)){ // If we are removing content from a valid listHeader
+				componentElement.removeChild(listHeader); // Remove the listHeader
+			}
 
-		syiro.component.Update(component.id, componentElement); // Update if necessary
+			syiro.component.Update(component.id, componentElement); // Update if necessary
+		}
 	}
 
 	// Toggle
@@ -132,6 +131,7 @@ namespace syiro.listitem {
 					}
 				} else if ((propertyKey == "image") && (typeof properties.control == "undefined")){ // If we are adding an image and a control is NOT defined
 					generatedElement = syiro.utilities.ElementCreator("img", { "src" : thing } ); // Create an image with the source set the properties.image
+					append = true;
 				} else if ((propertyKey == "label") && (typeof properties.link == "undefined")){ // If we are adding a label (and link is undefined)
 					generatedElement = syiro.utilities.ElementCreator("label", { "content" : thing }); // Create a label within the "label" (labelception) to hold the defined text.
 
@@ -285,10 +285,9 @@ namespace syiro.listitem {
 		if ((syiro.utilities.TypeOfThing(component, "ComponentObject")) && (component.type == "list-item")){ // Make sure the component is in fact a List Item
 			let componentElement : HTMLElement = syiro.component.Fetch(component); // Fetch the componentElement of the List Item Component
 			let innerLink : Element = componentElement.querySelector("a"); // Get the innerLink if it doesn't exist already
+			setSucceeded = true;
 
 			if (syiro.utilities.TypeOfThing(properties, "LinkPropertiesObject")){ // If the properties is a LinkPropertiesObject
-				setSucceeded = true;
-
 				if (innerLink !== null){ // If there is already an innerLink here
 					innerLink.setAttribute("href", properties["link"]); // Change the href attribute
 					innerLink.setAttribute("title", properties["title"]); // Change the title attribute
@@ -307,7 +306,6 @@ namespace syiro.listitem {
 					syiro.component.Add("append", component, innerLink); // Append the innerLink to the List Item
 				}
 			} else if (properties == ""){ // If the properties is an empty string
-				setSucceeded = true;
 				syiro.component.Remove(innerLink); // Remove the link
 			}
 

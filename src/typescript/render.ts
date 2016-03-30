@@ -11,7 +11,7 @@ namespace syiro.render {
 
 	// Position
 	// Position a Component or Element relative to another one
-	export function Position(positioningList : (string | Array<string>), componentObject : any, relativeComponentObject : any) : boolean {
+	export function Position(positioningList : string | Array<string>, componentObject : any, relativeComponentObject : any) : boolean {
 		let positioningAllowed : boolean = false; // Define positioningAllowed as a boolean, defaulting to false
 
 		if (arguments.length == 3){ // If three arguments were passed

@@ -1,2 +1,2 @@
 Stable: 1.6.0
-Devel: 1.7.0-rc1
+Devel: 1.7.0-rc2

@@ -147,7 +147,7 @@ declare namespace syiro.style {
     function Set(component: any, property: string, value: string): boolean;
 }
 declare namespace syiro.render {
-    function Position(positioningList: (string | Array<string>), componentObject: any, relativeComponentObject: any): boolean;
+    function Position(positioningList: string | Array<string>, componentObject: any, relativeComponentObject: any): boolean;
 }
 declare namespace syiro.component {
     var lastUniqueIds: Object;

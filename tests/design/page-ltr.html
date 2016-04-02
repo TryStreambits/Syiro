@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html manifest="test.appcache">
+	<head>
+		<title>Dynamic Syiro Testing</title>
+		<link rel="stylesheet" type="text/css" href="css/syiro.css" />
+		<link rel="stylesheet" type="text/css" href="css/dynamicTest.css" />
+		<script type="text/javascript" src="js/syiro.min.js"></script>
+		<script type="text/javascript" src="js/dynamicTest.js"></script>
+	</head>
+	<body>
+		<div data-syiro-component="page" role="main">
+			<div data-page-component="buttongroup-container"></div>
+			<div data-page-component="audio-player-container"></div>
+			<div data-page-component="video-player-container"></div>
+		</div>
+		<script>
+			syiro.Init(); // Initialize Syiro
+
+			var buttonGroupContainer = syiro.page.querySelector('div[data-page-component="buttongroup-container"]');
+			var audioPlayerContainer = syiro.page.querySelector('div[data-page-component="audio-player-container"]');
+			var videoPlayerContainer = syiro.page.querySelector('div[data-page-component="video-player-container"]');
+
+			generatePage(); // Call our generatePage function
+		</script>
+	</body>
+</html>

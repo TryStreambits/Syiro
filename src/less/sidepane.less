@@ -5,9 +5,10 @@
 div[data-syiro-component="sidepane"]{
     float: left;
     height: 100%;
-    touch-action: pan-y; // Ensure only vertical scrolling is enabled
+    left: 0; // Enforce Sidepane rendering on left, even for RTL
     -ms-touch-action: pan-y;
     position: fixed; // Fixed positioning
+    touch-action: pan-y; // Ensure only vertical scrolling is enabled
     z-index : 9;
 
     // #region Screen-Based Width

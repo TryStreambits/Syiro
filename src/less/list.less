@@ -3,13 +3,16 @@
 body {
 
     @listItemHeight : 40px;
+    @listItemHalfHeight: unit((@listItemHeight / 2), px);
+    @listItemPadding: unit((@listItemHeight / 4), px);
 
     .listItemProperties(){
     	float: left;
     	height: @listItemHeight;
-    	width: 100%;
+    	width: e("calc(100% - @{listItemHalfHeight})");
     	font-size: 13px;
     	line-height: @listItemHeight;
+        padding: 0 @listItemPadding 0 @listItemPadding; // Padding on left and right
     	overflow: hidden;
     }
 
@@ -27,10 +30,6 @@ body {
     		position: fixed; // Fixed position
     		z-index: 8; // Float above other content, but not above contentOverlay (9) or Toasts (10)
     		visibility: hidden; // Hide (not using display: block) so getBoundingClientRect properly calculates dimensions
-
-            & > div[data-syiro-minor-component="list-content"] div[data-syiro-component="list-item"] > label { // Inner label of Dropdown or Searchbox owned List in List Item
-                margin-left: 10px;
-            }
     	}
 
         // #region List Header
@@ -39,8 +38,8 @@ body {
     		.listItemProperties(); // Apply same properties as List Item
 
     		&:not([data-syiro-nonstrict-formatting]){ // If we are not including HTML
+                color: lighten(contrast(@syiroBackground), 20%); // Have a lighter contrasting text color for the List Header
     			font-size: 16px;
-    			opacity: 0.60; // 60% opacity
     		}
     	}
 
@@ -83,33 +82,54 @@ body {
     			.listItemProperties(); // Apply listItemProperties()
 
     			& > img, & > picture { // Image
-    				float: left;
                     height: inherit;
                     width: auto;
     				border-radius: 50%; // Ensure icon is circular
-
-                    &:not(:last-child) { // Not the last child in the List Item
-                        margin-right: 10px;
-                    }
     			}
 
     			& > a { // Inner Links
-    				float: left;
     				width: 100%; // Only allow the link to be in this particular List Item component (disallow secondary controls)
     				color: @syiroPrimaryColor; // Force link color (primary color)
     				font-weight: normal;
     				text-decoration: none; // No text decoration
     			}
-
-
-    			& > div[data-syiro-component="button"]{ // Inner Buttons
-    				float: right; // Float the component to the right
-    			}
     		}
 
             // #endregion
         }
+    }
+    
+    // #region Dir-Specific
+    
+    &:not([dir="rtl"]){ // LTR
+        div[data-syiro-component="list"]{
+            & > div[data-syiro-minor-component="list-content"]{
+                & div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Non-strict formatting List Item
+                    & > a, & > img, & > picture { // Inner images and pictures links
+                        float: left;
+                    }
 
-        // #region
+                    & > div[data-syiro-component="button"]{ // Inner Buttons
+        				float: right; // Float the component to the right
+        			}
+                }
+            }                    
+        }
+    }
+    
+    &[dir="rtl"]{ // RTL
+        div[data-syiro-component="list"]{
+            & > div[data-syiro-minor-component="list-content"]{
+                & div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Non-strict formatting List Item
+                    & > a, & > img, & > picture { // Inner images and pictures links
+                        float: right;
+                    }
+                    
+                    & > div[data-syiro-component="button"]{ // Inner Buttons
+        				float: left; // Float the component to the right
+        			}
+                }
+            }                    
+        }        
     }
 }

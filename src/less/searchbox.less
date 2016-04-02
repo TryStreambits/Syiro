@@ -1,36 +1,58 @@
 @import (reference) "core.less"; // Import Core as a reference
 @import (reference) "icons.less"; // Import Icons as a reference
 
-div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
-	.left;
-	.dimensions(38px, 198px); // Really ends up being 40px, 198px because of the border
-	color: fadeout(contrast(@syiroBackground), 10%); // Contrast the background but slightly fade the text
-	background-color: @syiroBackground;
-	border: 1px solid darken(@syiroBackground, 20%); // Thin (1px) outline of the darkened form of the @syiroBackground
-
-	& > input{ // Syiro Searchbox (Input Element) Component
+body {
+	div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
 		.left;
-		.dimensions(38px, e("calc(100% - 40px)")); // 38px height, width 100% minus button width
-		line-height: 38px;
-		text-indent: 10px;
-		background-color: transparent;
-		border: 0; // No border
-		padding: 0; // No padding
-		outline: 0;
+		.dimensions(38px, 198px); // Really ends up being 40px, 198px because of the border
+		color: fadeout(contrast(@syiroBackground), 10%); // Contrast the background but slightly fade the text
+		background-color: @syiroBackground;
+		border: 1px solid darken(@syiroBackground, 20%); // Thin (1px) outline of the darkened form of the @syiroBackground
 
-		&:focus{  // When the Searchbox is in focus
-			outline-offset: 0; // Disable any offsetting of the outline
+		& > input { // Syiro Searchbox (Input Element) Component
+			.dimensions(38px, e("calc(100% - 40px)")); // 38px height, width 100% minus button width
+			line-height: 38px;
+			text-indent: 10px;
+			background-color: transparent;
+			border: 0; // No border
+			padding: 0; // No padding
+			outline: 0;
+
+			&:focus{  // When the Searchbox is in focus
+				outline-offset: 0; // Disable any offsetting of the outline
+			}
+		}
+
+		& > div[data-syiro-component="button"]{ // Search Button
+			border-radius: 0; // Override border-radius of Basic Button
+			margin: -1px -1px 0 0; // Ensure the icon is covering the border
+			padding: 0; // Remove the button's  padding
 		}
 	}
 
-	// #region Search Button
-
-	& > div[data-syiro-component="button"] {
-		.right;
-		border-radius: 0; // Override border-radius of Basic Button
-		margin: -1px -1px 0 0; // Ensure the icon is covering the border
-		padding: 0; // Remove the button's  padding
+	// #region Dir-Specific
+	
+	&:not([dir="rtl"]){ // LTR
+		div[data-syiro-component="searchbox"]{
+			& > input { // Syiro Searchbox (Input Element) Component
+				.left; // Position input on left side
+			}
+			
+			& > div[data-syiro-component="button"]{ // Search Button
+				.right; // Position button on right side
+			}
+		}
 	}
-
-	// #endregion
+	
+	&[dir="rtl"]{ // RTL
+		div[data-syiro-component="searchbox"]{
+			& > input { // Syiro Searchbox (Input Element) Component
+				.right; // Position input on right side
+			}
+			
+			& > div[data-syiro-component="button"]{ // Search Button
+				.left; // Position button on left side
+			}
+		}		
+	}
 }

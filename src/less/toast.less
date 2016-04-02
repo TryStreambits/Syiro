@@ -11,7 +11,7 @@ div[data-syiro-component="toast"]{
 	// #region Toast Title
 
 	& > label {
-		float: left;
+		.left;
         color: lighten(contrast(@syiroToastBackground), 10%);
 		width: e("calc(100% - 20px)"); // 100% of width minus 20px margins
 		margin: 5px 10px 0 10px; // 5px top, 10px left and right
@@ -25,7 +25,7 @@ div[data-syiro-component="toast"]{
 	// #region Toast Message
 
 	& > span {
-		float: left;
+		.left;
         color: lighten(contrast(@syiroToastBackground), 20%);
 		font-family: inherit;
 		margin: 5px 10px 5px 10px; // 5px top and bottom, 10px left and right
@@ -34,8 +34,7 @@ div[data-syiro-component="toast"]{
 		// #region No Title Provided (Message Only)
 
 		&:first-child{ // Is this the first child
-			height: 40px; // Force 40px max height (carries over to entire Toast height)
-			width: e("calc(100% - (20px + 42px))"); // 100% width minus (20px margin plus 42px (Buttons, 32px + margin))
+            .dimensions(40px, e("calc(100% - (20px + 42px))")); // Force 40px max height (carries over to entire Toast height), 100% width minus (20px margin plus 42px (Buttons, 32px + margin))
 			font-size: 13px; // Utilize the extra room by having a larger font
 		}
 
@@ -44,8 +43,9 @@ div[data-syiro-component="toast"]{
 		// #region Title Provided
 
 		&:not(:first-child){
-			height: e("calc(100% - (34px + 42px))"); // 100% of height of Toast minus (34px top  title height and 42px Buttons container height)
-			width: e("calc(100% - 20px)"); // 100% of width minus 20px margins
+            // 100% of height of Toast minus (34px top  title height and 42px Buttons container height)
+            // 100% of width minus 20px margins
+            .dimensions(e("calc(100% - (34px + 42px))"), e("calc(100% - 20px)"));
 			font-size: 12px;
 			margin: 5px 10px 5px 10px; // 5px top and bottom, 10px left and right
 		}
@@ -71,7 +71,7 @@ div[data-syiro-component="toast"]{
 	// #region Buttons Container
 
 	& > div[data-syiro-minor-component="toast-buttons"]{
-		float: right; // Float the Toast Buttons Container to the right
+		.right; // Float the Toast Buttons Container to the right
 		height: 32px;
 
 		// #region Inner Syiro Buttons
@@ -83,7 +83,7 @@ div[data-syiro-component="toast"]{
 			margin: 0; // Override default margins of Syiro Button
 
 			&:only-child, &:last-of-type { // If this is the only child or the last Button (usually Affirm)
-				float: right; // Float the Deny button to the right
+				.right; // Float the Deny button to the right
 				color: @syiroPrimaryColor; // Use the Syiro Primary Color (implying this single action is not "negative")
 			}
 
@@ -91,7 +91,7 @@ div[data-syiro-component="toast"]{
 
 			&[data-syiro-dialog-action="deny"]{
 				&:not(:last-child){ // If this is not the last child
-					float: left; // Float the Deny button to the left
+					.left; // Float the Deny button to the left
 					color: @syiroRed;
 				}
 			}
@@ -108,7 +108,7 @@ div[data-syiro-component="toast"]{
 	// #region Message-Only Button (To Close)
 
 	& > div[data-syiro-component="button"]{
-		float: right; // Float to right
+		.right; // Float to right
 		min-width: 32px; // Only allow to be 32px wide
 		max-width: 32px; // No, really ensure it is a max of 32px
 		font-size: 18px; // Naturally larger content
@@ -160,7 +160,7 @@ div[data-syiro-component="toast"]{
 		// #region Normal-Specific Toast Styling
 
 		&[data-syiro-component-type="normal"]{
-			float: right;
+			.right;
 			width: 300px;
 			left:100%;// Default to 100% outside the screen (on the right)
 			bottom: 10px;
@@ -173,9 +173,8 @@ div[data-syiro-component="toast"]{
 		// #region Dialog-Specific Toast Styling
 
 		&[data-syiro-component-type="dialog"]{
-			float: left;
-			height: 60%; // 60% of the page
-			width: 40%; // 40% of the page
+			.left;
+            .dimensions(60%, 40%); // 60% of page height, 40% of width
 			top: 20%; // Center Dialog Toast vertically
 			left: 30%; // Center Dialog Toast horizontally
 		}

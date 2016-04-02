@@ -3,7 +3,7 @@
 // This is the core LESS of the Sidepane Component.
 
 div[data-syiro-component="sidepane"]{
-    float: left;
+    .left;
     height: 100%;
     left: 0; // Enforce Sidepane rendering on left, even for RTL
     -ms-touch-action: pan-y;
@@ -40,7 +40,7 @@ div[data-syiro-component="sidepane"]{
     // #region Sidepane Content
 
     & > div[data-syiro-minor-component="sidepane-content"]{
-        float: left;
+        .left;
         height: 100%;
         background-color: @syiroBackground; // Set a fixed hex background color
 
@@ -60,7 +60,7 @@ div[data-syiro-component="sidepane"]{
         // #region Logo and Searchbox
 
         & > img:first-child, & > picture:first-child, div[data-syiro-component="searchbox"] { // Select any img or picture that is the first child of the Sidepane, as well as any Searchbox
-            float: left;
+            .left;
             width: 90%;
             margin: 5%;
         }
@@ -70,13 +70,13 @@ div[data-syiro-component="sidepane"]{
         // #region Lists
 
         & > div[data-syiro-minor-component="sidepane-lists"] { // Lists Container
-			float: left;
+			.left;
 			width: 90%;
 			margin: 5%;
 			overflow-y: auto; // Scroll if needed
 
 			& > div[data-syiro-component="list"]{
-				float: left;
+				.left;
 				width: 100%;
 				margin: 0;
 
@@ -116,9 +116,8 @@ div[data-syiro-component="sidepane"]{
     // #region Sidepane Edge
 
     & > div[data-syiro-minor-component="sidepane-edge"]{
-		float: right;
-		height: inherit;
-		width: 5%;
+		.right;
+        .dimensions(inherit, 5%);
 
 		// #region Scaling
 

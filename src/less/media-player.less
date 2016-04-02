@@ -5,16 +5,15 @@ body {
     div[data-syiro-component="media-player"] {
         // #region Shared Attributes
 
-        float: left;
+        .left;
         font-size: 13px;
         background-color: black;
         background-repeat: no-repeat; // Do not repeat any Video Art
         background-size: 100%; // Ensure Video Art is full container
 
         & > audio, video { // Audio and Video Elements
-            float: left;
-            height: inherit; // Inherit from parent Video Player container
-            width: inherit; // Inherit from parent Video Player container
+            .left;
+            .dimensions(inherit, inherit); // Inherit from parent Media Player container
             background-color: black; // Set background color of video to black in the event it doesn't have the proper aspect ratio, to make any letterboxing less jarring
             visibility: hidden; // Default to being hidden
 
@@ -43,14 +42,13 @@ body {
 
             & > div[data-syiro-component="media-control"]{ // Media Control
                 & > section { // Audio Information
-        			float: left;
-        			height: 40px;
-        			width: 150px;
+        			.left;
+                    .dimensions(40px, 150px);
         			text-align: center;
                     margin-left: e("calc(50% - 42px - 75px)"); // Half width of audio player, minus 42px for calculated button width (play button) minus half width of section
 
                     & > b, label {
-        				float: left;
+        				.left;
         				width: 100%; // Fill up entire "row"
         				color: contrast(@syiroPlayerControlColor); // Make sure the text contrasts the player control color
                         font-weight: normal; // No font-weight
@@ -77,8 +75,7 @@ body {
             }
 
             &:-webkit-full-screen{ // Webkit Fullscreen
-                height: 100% !important;
-                width: 100% !important;
+                .dimensions("100% !important", "100% !important");
         		position: absolute;
         		top: 0;
             }
@@ -102,7 +99,7 @@ body {
         // #region Media Control
 
         & > div[data-syiro-component="media-control"]{ // Media Control
-            float: left;
+            .left;
             width: inherit; // Scales to width of video player
             position: relative;
             z-index: 7; // Ensure it always sits above player menu
@@ -131,8 +128,7 @@ body {
             // #region Buttons
 
             & > div[data-syiro-component="button"][data-syiro-component-type="basic"]{ // Custom LESS for Basic Button Components inside Media Control
-                height: 32px;
-                width: 32px;
+                .dimensions(32px, 32px);
                 color: contrast(@syiroPlayerControlColor); // Ensure the color contrasts the syiroPlayerControlColor
                 line-height: 32px; // Ensure the icon is centered vertically
                 text-align: center; // Ensure the icon is centered horizontally
@@ -145,7 +141,7 @@ body {
                 }
                 
                 &:not([data-syiro-render-icon="play"]){ // Is not the play button
-                    float: right;
+                    .right;
                 }
 
                 &[active]:not([data-syiro-render-icon="play"]):after{ // If the button is active and it is not the play button
@@ -167,9 +163,8 @@ body {
             // #region Progressbar
 
             & > div[data-syiro-minor-component="progressbar"] {
-                float: left;
-                height: 7px;
-                width: 100%; // Have it fill the entire media-control top
+                .left;
+                .dimensions(7px, 100%); // 7px height, full width (fill entire parent width)
                 margin: 0 0 3px 0; // 3px margin on bottom
                 
                 .noAppearance(){
@@ -184,8 +179,7 @@ body {
                 .thumbProperties(){
                     -moz-appearance: none; // No Firefox appearance
         			-webkit-appearance: none; // No WebKit appearance
-                    height: 14px;
-                    width: 14px;
+                    .dimensions(14px, 14px);
                     background-color: @syiroPrimaryColor;
                     border: 0;
                     border-radius: 50%;
@@ -194,9 +188,8 @@ body {
                 .trackProperties(){
                     -moz-appearance: none; // No Firefox styling
                     -webkit-appearance: none; // No WebKit styling
-                    float: left;
-                    height: inherit;
-                    width: inherit;
+                    .left;
+                    .dimensions(inherit, inherit);
                     background-color: transparent;
                     border: 0; // No border
                     outline: 0;
@@ -250,12 +243,11 @@ body {
             // #region Label Time Information
 
             & > time {
-                float: left;
+                .left;
                 color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the syiroPlayerControlColor
 
                 &[data-syiro-component-live]{ // Live "View"
-                    height: 12px;
-                    width: 12px;
+                    .dimensions(12px, 12px);
                     text-indent: 18px;
                     line-height: 12px;
                     background-color: @syiroRed;
@@ -272,7 +264,7 @@ body {
         // #region Player Error Dialog (Codec)
 
         div[data-syiro-minor-component="player-error"]{
-            float: left;
+            .left;
             display: none;
             height: e("calc(85% - 60px)"); // 85% of the height of the Media Player, minus 60 for media control
             color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the syiroPlayerControlColor
@@ -287,9 +279,8 @@ body {
         // #region Player Menu Dialog
 
         div[data-syiro-minor-component="player-menu"]{
-            float: left;
-            height: inherit; // Inherit from parent
-            width: inherit; // Inherit from parent
+            .left;
+            .dimensions(inherit, inherit); // Inherit height and width from Media Player
             color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the background color
             background-color: fade(@syiroPlayerControlColor, 80%); // Set the background color to the syiroBackgroundColor, faded (transparency) to 80%
             position: absolute;
@@ -297,7 +288,7 @@ body {
             visibility: hidden; // Default to not being visible
 
             & > label { // Menu Dialog Label
-                float: left;
+                .left;
                 height: 50px;
                 width: 100%;
                 font-size: 16px;
@@ -306,7 +297,7 @@ body {
             }
 
             & > div[data-syiro-component="list"]{ // Menu Dialog List
-                float: left;
+                .left;
                 height: auto;
                 width: 90%;
         		color: contrast(@syiroPlayerControlColor); // Contrast the Syiro Player background color

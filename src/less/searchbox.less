@@ -2,17 +2,15 @@
 @import (reference) "icons.less"; // Import Icons as a reference
 
 div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
-	float: left;
-	height: 38px;
-	width: 198px;
+	.left;
+	.dimensions(38px, 198px); // Really ends up being 40px, 198px because of the border
 	color: fadeout(contrast(@syiroBackground), 10%); // Contrast the background but slightly fade the text
 	background-color: @syiroBackground;
 	border: 1px solid darken(@syiroBackground, 20%); // Thin (1px) outline of the darkened form of the @syiroBackground
 
 	& > input{ // Syiro Searchbox (Input Element) Component
-		float: left;
-		height: 38px;
-		width: e("calc(100% - 40px)"); // Set to calc 100% of the width of the parent minus button width
+		.left;
+		.dimensions(38px, e("calc(100% - 40px)")); // 38px height, width 100% minus button width
 		line-height: 38px;
 		text-indent: 10px;
 		background-color: transparent;
@@ -28,7 +26,7 @@ div[data-syiro-component="searchbox"]{ // Syiro Searchbox Component
 	// #region Search Button
 
 	& > div[data-syiro-component="button"] {
-		float: right;
+		.right;
 		border-radius: 0; // Override border-radius of Basic Button
 		margin: -1px -1px 0 0; // Ensure the icon is covering the border
 		padding: 0; // Remove the button's  padding

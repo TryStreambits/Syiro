@@ -7,20 +7,18 @@ body {
     @listItemPadding: unit((@listItemHeight / 4), px);
 
     .listItemProperties(){
-    	float: left;
-    	height: @listItemHeight;
-    	width: e("calc(100% - @{listItemHalfHeight})");
+    	.left;
+        .dimensions(@listItemHeight, e("calc(100% - @{listItemHalfHeight})"));
     	font-size: 13px;
     	line-height: @listItemHeight;
-        padding: 0 @listItemPadding 0 @listItemPadding; // Padding on left and right
+        padding: 0 @listItemPadding; // Padding on left and right
     	overflow: hidden;
     }
 
     div[data-syiro-component="list"]{
-        float: left;
-        height: auto;
+        .left;
+        .dimensions(auto, auto);
         min-height: @listItemHeight;
-        width: auto;
         color: contrast(@syiroBackground);
         overflow: hidden;
 
@@ -58,7 +56,7 @@ body {
 
                 & > div[data-syiro-minor-component="list-header"]{
                     &:after{
-                        float: right;
+                        .right;
                         .icon("dropdown");
                     }
 
@@ -106,11 +104,11 @@ body {
             & > div[data-syiro-minor-component="list-content"]{
                 & div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Non-strict formatting List Item
                     & > a, & > img, & > picture { // Inner images and pictures links
-                        float: left;
+                        .left;
                     }
 
                     & > div[data-syiro-component="button"]{ // Inner Buttons
-        				float: right; // Float the component to the right
+        				.right; // Float the component to the right
         			}
                 }
             }                    
@@ -122,11 +120,11 @@ body {
             & > div[data-syiro-minor-component="list-content"]{
                 & div[data-syiro-component="list-item"]:not([data-syiro-nonstrict-formatting]){ // Non-strict formatting List Item
                     & > a, & > img, & > picture { // Inner images and pictures links
-                        float: right;
+                        .right;
                     }
                     
                     & > div[data-syiro-component="button"]{ // Inner Buttons
-        				float: left; // Float the component to the right
+        				.left; // Float the component to the right
         			}
                 }
             }                    

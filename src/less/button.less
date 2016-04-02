@@ -6,7 +6,7 @@ body {
     // #region Buttons
 
     div[data-syiro-component="button"]{
-        float: left;
+        .left;
         cursor: default; // Default to "arrow" cursor
         margin: 5px;
 
@@ -83,8 +83,7 @@ body {
         // #region Toggle Button
 
         &[data-syiro-component-type="toggle"]{
-            height: 22px; // Make it smaller than the typical button
-    		width: 50px; // Fixed width
+            .dimensions(22px, 50px); // Smaller than a typical button, fixed width
             border-radius: 12px; // Make sure the Toggle has a rounded edge
             margin: 9px 4px 9px 0;
 
@@ -106,9 +105,8 @@ body {
             }
 
             & > div[data-syiro-minor-component="buttonToggle"]{ // Syiro "Toggle" Button - Actual Toggle
-                float: left;
-                height: 18px;
-                width: 18px;
+                .left;
+                .dimensions(18px, 18px); // Height and width of 18px
                 border-radius: 50%;  // Make the buttonToggle circular
                 margin-top: 1px;
 
@@ -134,7 +132,7 @@ body {
     // #region Buttongroup
 
     div[data-syiro-component="buttongroup"]{
-    		float: left;
+    		.left;
             height: @buttonHeight;
     		min-width: 300px;
     		background-color: darken(@syiroBackground, 5%); // Set background color to @syiroBackground darkened by 5%
@@ -145,7 +143,7 @@ body {
     		// #region Inner Button
 
     		& > div[data-syiro-component="button"][data-syiro-component-type="basic"]{
-    			float: left;
+    			.left;
     			min-width: 0; // No minimum width
     			border-radius: 0; // No border radius
     			margin: 0; // No margin

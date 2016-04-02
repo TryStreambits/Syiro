@@ -1,14 +1,18 @@
 @import (reference) "core.less"; // Import Core as a reference
 
 body {
+    @navbarHeight: 60px;
+    @navbarHalfHeight: unit((@navbarHeight / 2), px);
+    @navbarPadding: unit((@navbarHeight / 4), px);
+    
     div[data-syiro-component="navbar"]{
-        float: left;
-        height: 60px;
-        width: 100%;
+        .left;
+        .dimensions(@navbarHeight, e("calc(100% - @{navbarHalfHeight})"));
         color: contrast(darken(@syiroBackground, 2.5%));
         font-size: 14px;
-        line-height: 60px;
+        line-height: @navbarHeight;
         background-color: darken(@syiroBackground, 2.5%);
+        padding: 0 @navbarPadding; // Padding on left & right
 
         &[data-syiro-position="fixed"]{ // Fixed Positioning
             left: 0;
@@ -18,9 +22,7 @@ body {
         }
 
         & > a { // Links
-            float: left; // Float left
-            height: inherit; // Inherit from parent navbar
-            width: auto; // Automatic width
+            .dimensions(inherit, auto); // Inherit height from parent Navbar, auto width
             color: inherit; // Inherit from parent
             line-height: inherit; // Inherit from parent navbar
             text-align: center; // Center the text
@@ -28,9 +30,7 @@ body {
             padding: 0 15px; // Padding on each side of link
         }
 
-        // #region Top Navbar Component
-
-        &[data-syiro-component-type="top"]{
+        &[data-syiro-component-type="top"]{ // Top Navbar Component
             border-bottom: 2px lighten(@syiroSecondaryColor, 20%);
 
             &[data-syiro-position="fixed"]{ // Fixed positioning
@@ -38,10 +38,9 @@ body {
             }
 
             & > img[data-syiro-minor-component="logo"]{ // Logo component within header
-                float: left;
                 height: e("calc(100% - 20px)"); // Set height to 100% of navbar - 20px
                 width: auto;
-                margin: 10px 10px 10px 20px;
+                margin: 10px 10px;
                 border: 0;
             }
 
@@ -58,20 +57,15 @@ body {
             }
 
             & > div[data-syiro-component="searchbox"]{ // Searchbox Modifications
-                float: right; // Force the component to float to the right
-                margin: 10px 10px 0 0; // Center in header, adequate spacing on right
+                margin: 10px 0 0 0; // Center in header
             }
         }
 
-        // #endregion
-
-        // #region Bottom Navbar
-
-        &[data-syiro-component-type="bottom"]{
+        &[data-syiro-component-type="bottom"]{ // Bottom Navbar
             border-top: 2px lighten(@syiroSecondaryColor, 20%);
 
         	& > label { // Footer Text
-        		float: left;
+        		.left;
         		margin-left: 20px;
         	}
 
@@ -79,7 +73,43 @@ body {
                 bottom : 0;
             }
         }
+    }
+    
+    // #region Dir-Specific
+    
+    &:not([dir="rtl"]){ // LTR
+        div[data-syiro-component="navbar"]{
+            .left;
+            
+            &[data-syiro-component-type="top"]{
+                & > img[data-syiro-minor-component="logo"]{ // Logo component within header
+                    .left;
+                }
+                
+                & > div[data-syiro-component="searchbox"]{ // Searchbox Modifications
+                    .right; // Force the component to float to the right
+                }
+            }
+        }
+    }
 
-        // #endregion
+    &[dir="ltr"]{ // LTR
+        div[data-syiro-component="navbar"]{
+            .right;
+            
+            & > a { // Links
+                .right; // Enforce right float to maintain the DOM order (1, 2, 3 -> 3, 2, 1)
+            }
+
+            &[data-syiro-component-type="top"]{
+                & > img[data-syiro-minor-component="logo"]{ // Logo component within header
+                    .right;
+                }
+                
+                & > div[data-syiro-component="searchbox"]{ // Searchbox Modifications
+                    .left; // Force the component to float to the right
+                }
+            }
+        }    
     }
 }

@@ -245,6 +245,8 @@ body {
             & > time {
                 .left;
                 color: contrast(@syiroPlayerControlColor); // Set the color to the contrasting color of the syiroPlayerControlColor
+                direction: ltr; // Force LTR (RTL timestamps is just..wrong)
+                unicode-bidi: embed;
 
                 &[data-syiro-component-live]{ // Live "View"
                     .dimensions(12px, 12px);

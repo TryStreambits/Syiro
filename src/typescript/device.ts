@@ -2,9 +2,9 @@
 	This is the namespace for information and functionality Syiro provides regarding the device using Syiro.
 */
 
-/// <reference path="events.ts" />
-/// <reference path="interfaces.ts" />
 /// <reference path="components/mediaplayer.ts" />
+/// <reference path="interfaces/core.ts" />
+/// <reference path="events.ts" />
 
 namespace syiro.device {
 

@@ -2,6 +2,7 @@
 	This is the namespace for the Syiro Button, Buttongroup, and Toggle Button components.
 */
 
+/// <reference path="../interfaces/button.ts" />
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />

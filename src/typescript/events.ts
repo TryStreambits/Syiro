@@ -2,9 +2,9 @@
 	This is the namespace for Syiro Component and Generic Element Event Handling
 */
 
+/// <reference path="interfaces/core.ts" />
 /// <reference path="animation.ts" />
 /// <reference path="component.ts" />
-/// <reference path="interfaces.ts" />
 
 namespace syiro.events {
 

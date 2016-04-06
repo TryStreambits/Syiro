@@ -3,6 +3,7 @@
 	Contrary to common belief, this does not actually have anything to do with toast.
 */
 
+/// <reference path="../interfaces/toast.ts" />
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />

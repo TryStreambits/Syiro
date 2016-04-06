@@ -2,9 +2,9 @@
 	This is the namespace for Syiro's init system
 */
 
-/// <reference path="component.ts" />
 /// <reference path="components/mediaplayer.ts" />
-/// <reference path="interfaces.ts" />
+/// <reference path="interfaces/core.ts" />
+/// <reference path="component.ts" />
 /// <reference path="style.ts" />
 
 namespace syiro.init {

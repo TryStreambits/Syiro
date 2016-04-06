@@ -2,7 +2,7 @@
     This is the namespace for managing Syiro Data.
 */
 
-/// <reference path="interfaces.ts" />
+/// <reference path="interfaces/core.ts" />
 
 namespace syiro.data {
     export var storage : Object = { }; // Define syiro.data.storage as the storage Object for all Syiro Data

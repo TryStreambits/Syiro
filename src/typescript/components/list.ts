@@ -2,6 +2,7 @@
 	This is the namespace for Syiro List component and it's sub-component, List Item
 */
 
+/// <reference path="../interfaces/list.ts" />
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />

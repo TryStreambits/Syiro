@@ -2,6 +2,7 @@
 	This is the namespace for the Syiro Sidepane Component.
 */
 
+/// <reference path="../interfaces/sidepane.ts" />
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />

@@ -2,6 +2,7 @@
 	This is the namespace for Syiro Searchbox component.
 */
 
+/// <reference path="../interfaces/searchbox.ts" />
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />

@@ -2,8 +2,8 @@
 	This is the namespace for animation in Syiro
 */
 
+/// <reference path="interfaces/core.ts" />
 /// <reference path="component.ts" />
-/// <reference path="interfaces.ts" />
 
 namespace syiro.animation {
 

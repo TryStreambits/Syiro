@@ -2,9 +2,9 @@
 	This is the namespace for core Syiro functionality.
 */
 
+/// <reference path="interfaces/core.ts" />
 /// <reference path="data.ts" />
 /// <reference path="events.ts" />
-/// <reference path="interfaces.ts" />
 /// <reference path="render.ts" />
 
 namespace syiro.component {

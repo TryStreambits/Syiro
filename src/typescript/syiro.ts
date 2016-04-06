@@ -8,6 +8,7 @@
 /// <reference path="components/grid.ts" />
 /// <reference path="components/navbar.ts" />
 /// <reference path="components/list.ts" />
+/// <reference path="components/picture.ts" />
 /// <reference path="components/searchbox.ts" />
 /// <reference path="components/sidepane.ts" />
 /// <reference path="components/toast.ts" />

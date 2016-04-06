@@ -2,6 +2,7 @@
 	This is the namespace for Syiro Grid component and it's sub-component, Grid Item
 */
 
+/// <reference path="../interfaces/grid.ts" />
 /// <reference path="../component.ts" />
 /// <reference path="../style.ts" />
 /// <reference path="../utilities.ts" />

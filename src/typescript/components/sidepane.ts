@@ -25,9 +25,13 @@ namespace syiro.sidepane {
 
 		// #region Sidepane Logo
 
-		if (typeof properties.logo == "string"){ // If the logo is an Element or string
-			let logoElement : Element = syiro.utilities.ElementCreator("img", { "src" : properties.logo }); // Change logoElement to a newly generated img Element
-			sidepaneContentElement.insertBefore(logoElement, sidepaneInnerListContent); // Insert the logo image before the Sidepane Inner Lists Content container
+		if (syiro.utilities.TypeOfThing(properties.logo, "string") && (properties.logo.length !== 0)){ // If a logo is defined
+			properties.logo = syiro.picture.New({ "default" : properties.logo }); // Create a new Picture Component, set to properties.logo
+		}
+
+		if (syiro.component.IsComponentObject(properties.logo) && (properties.logo.type == "picture")) { // If logo is a Picture Component
+			let logoElement : HTMLElement = syiro.component.Fetch(properties.logo); // Fetch the Logo
+			componentElement.appendChild(logoElement); // Append the logoElement
 		}
 
 		// #endregion

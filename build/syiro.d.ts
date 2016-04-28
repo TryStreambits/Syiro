@@ -135,6 +135,7 @@ declare namespace syiro.init {
     function List(component: ComponentObject): void;
     function MediaPlayer(component: ComponentObject): void;
     function MediaControl(componentObject: ComponentObject, mediaControlComponentObject: ComponentObject): void;
+    function Picture(component: ComponentObject): void;
     function Searchbox(component: ComponentObject): void;
     function Sidepane(component: ComponentObject): void;
     function Toast(component: ComponentObject): void;
@@ -155,7 +156,7 @@ declare module syiro.griditem {
 }
 interface NavbarPropertiesObject extends Object {
     content?: string;
-    logo?: string;
+    logo?: any;
     fixed?: boolean;
     items: Array<any>;
     position?: "top" | "bottom";
@@ -203,7 +204,8 @@ interface QuerySource {
     source: string;
 }
 declare namespace syiro.picture {
-    function New(properties: PicturePropertiesObject): void;
+    function New(properties: PicturePropertiesObject): ComponentObject;
+    function Detect(component: ComponentObject): void;
     function AddQuerySource(component: ComponentObject, querySource: QuerySource): void;
     function RemoveQuerySource(component: ComponentObject, querySource: QuerySource): void;
 }
@@ -222,7 +224,7 @@ declare namespace syiro.searchbox {
 }
 interface SidepanePropertiesObject extends Object {
     items?: Array<any>;
-    logo?: string;
+    logo?: any;
     searchbox?: ComponentObject;
 }
 declare namespace syiro.sidepane {

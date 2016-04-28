@@ -4,7 +4,7 @@ body {
     @navbarHeight: 60px;
     @navbarHalfHeight: unit((@navbarHeight / 2), px);
     @navbarPadding: unit((@navbarHeight / 4), px);
-    
+
     div[data-syiro-component="navbar"]{
         .left;
         .dimensions(@navbarHeight, e("calc(100% - @{navbarHalfHeight})"));
@@ -37,7 +37,7 @@ body {
                 top : 0;
             }
 
-            & > img[data-syiro-minor-component="logo"]{ // Logo component within header
+            & > div[data-syiro-component="picture"]:first-of-type { // Logo component within header
                 height: e("calc(100% - 20px)"); // Set height to 100% of navbar - 20px
                 width: auto;
                 margin: 10px 10px;
@@ -74,18 +74,18 @@ body {
             }
         }
     }
-    
+
     // #region Dir-Specific
-    
+
     &:not([dir="rtl"]){ // LTR
         div[data-syiro-component="navbar"]{
             .left;
-            
+
             &[data-syiro-component-type="top"]{
-                & > img[data-syiro-minor-component="logo"]{ // Logo component within header
+                & > div[data-syiro-component="picture"]:first-of-type { // Logo component within header
                     .left;
                 }
-                
+
                 & > div[data-syiro-component="searchbox"]{ // Searchbox Modifications
                     .right; // Force the component to float to the right
                 }
@@ -96,20 +96,20 @@ body {
     &[dir="rtl"]{ // RTL
         div[data-syiro-component="navbar"]{
             .right;
-            
+
             & > a { // Links
                 .right; // Enforce right float to maintain the DOM order (1, 2, 3 -> 3, 2, 1)
             }
 
             &[data-syiro-component-type="top"]{
-                & > img[data-syiro-minor-component="logo"]{ // Logo component within header
+                & > div[data-syiro-component="picture"]:first-of-type { // Logo component within header
                     .right;
                 }
-                
+
                 & > div[data-syiro-component="searchbox"]{ // Searchbox Modifications
                     .left; // Force the component to float to the right
                 }
             }
-        }    
+        }
     }
 }

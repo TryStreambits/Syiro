@@ -34,6 +34,9 @@ namespace syiro.init {
 				case "media-player" : // If the Component is a Media Player Component
 					syiro.init.MediaPlayer(component); // Initialize the Player
 					break;
+				case "picture" : // If the Component is a Picture Component
+					syiro.init.Picture(component);
+					break;
 				case "searchbox" : // If it is a Searchbox Component
 					syiro.init.Searchbox(component); // Initialize the Searchbox
 					break;
@@ -237,6 +240,18 @@ namespace syiro.init {
 		if (fullscreenButtonElement !== null){ // If the fullscreen button exists
 			syiro.events.Add(syiro.events.Strings["up"], fullscreenButtonElement, syiro.mediaplayer.ToggleFullscreen.bind(this, componentObject)); // Listen to up events on the fullscreen button
 		}
+	}
+
+	// Picture Initialization
+	export function Picture(component : ComponentObject){
+		syiro.picture.Detect(component); // Do an initial detection of the best source for the Picture
+
+		let detectListener : Function = function(component : ComponentObject){
+			syiro.picture.Detect(component);
+		}.bind(this, component);
+
+		syiro.events.Add("resize", window, detectListener); // Listen on document resize
+		syiro.events.Add(syiro.device.OrientationObject, syiro.events.Strings["orientationchange"], detectListener); // Listen on orientationchange
 	}
 
 	// Searchbox Initialization

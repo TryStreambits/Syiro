@@ -48,9 +48,24 @@ function generateNavbarAndSidepane(){
 
 	// #endregion
 
+	// #region Picture Generation
+
+	var picture = syiro.picture.New({
+		"default" : "img/syiro_qr_large.jpg",
+		"sources" : [
+			{
+				"mediaQuery" : "screen and (max-width: 600px)",
+				"source" : "img/syiro_qr_small.jpg"
+			}
+		]
+	});
+
+	// #endregion
+
     // #region Navbar Component Generation
 
     var navbarComponentObject = syiro.navbar.New({
+		"logo" : picture,
         "position" : "top",
         "items" : [
 			{ "link" : "http://syiro.com", "title" : "Home" },
@@ -67,12 +82,10 @@ function generateNavbarAndSidepane(){
 	var searchboxComponent= syiro.searchbox.New({ "DisableInputTrigger" : true}); // Generate a new Searchbox
 
     var backgroundColorToggler = syiro.button.New({ "type" : "toggle" }); // Generate a Toggle Button
-    var sidepaneListObject = syiro.list.New(  // Generate a List
-		{
-			"header" : "Syiro",
-			"items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" }, { "link" : { "link" : "http://syiro.com", "title" : "Syiro Website" } } ]
-		}
-	)
+    var sidepaneListObject = syiro.list.New({  // Generate a List
+		"header" : "Syiro",
+		"items" : [ { "label" : "Dark BG", "control" : backgroundColorToggler}, { "label" : "Another List Item" }, { "link" : { "link" : "http://syiro.com", "title" : "Syiro Website" } } ]
+	});
     var sidepaneComponentObject = syiro.sidepane.New({ "searchbox" : searchboxComponent, "items" : [ sidepaneListObject ]}); // Generate a List
 
     document.body.insertBefore(syiro.Fetch(sidepaneComponentObject), syiro.page); // Prepend in body

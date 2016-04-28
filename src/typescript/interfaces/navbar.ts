@@ -7,7 +7,7 @@ interface NavbarPropertiesObject extends Object { // Properties object for Navba
 	content ?: string; // Content, usually a Copyright section
 
 	// Top-position Navbar properties
-	logo ?: string; // Source of the logo to use in the Navbar
+	logo ?: any; // Source of the logo to use in the Navbar
 
 	fixed ?: boolean; // Should we have a fixed position
 	items : Array<any>; // Items to add to the Navbar

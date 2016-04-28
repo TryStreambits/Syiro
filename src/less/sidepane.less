@@ -59,7 +59,7 @@ div[data-syiro-component="sidepane"]{
 
         // #region Logo and Searchbox
 
-        & > img:first-child, & > picture:first-child, div[data-syiro-component="searchbox"] { // Select any img or picture that is the first child of the Sidepane, as well as any Searchbox
+        & > div[data-syiro-component="picture"]:first-of-type, & > div[data-syiro-component="searchbox"] { // Select any img or picture that is the first child of the Sidepane, as well as any Searchbox
             .left;
             width: 90%;
             margin: 5%;

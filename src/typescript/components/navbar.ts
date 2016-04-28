@@ -25,16 +25,20 @@ namespace syiro.navbar {
 
 		if (properties.position == "top"){ // If Navbar is top-positioned
 			if (syiro.utilities.TypeOfThing(properties.logo, "string") && (properties.logo.length !== 0)){ // If a logo is defined
-				let generatedElement : HTMLElement = syiro.utilities.ElementCreator("img", { "data-syiro-minor-component" : "logo", "src" : properties.logo }); // Generate an image with data-syiro-minor-component set to logo and src set to logo defined
-				componentElement.appendChild(generatedElement); // Append the logo to the generatedElement
+				properties.logo = syiro.picture.New({ "default" : properties.logo }); // Create a new Picture Component, set to properties.logo
+			}
+
+			if (syiro.component.IsComponentObject(properties.logo) && (properties.logo.type == "picture")) { // If logo is a Picture Component
+				let logoElement : HTMLElement = syiro.component.Fetch(properties.logo); // Fetch the Logo
+				componentElement.appendChild(logoElement); // Append the logoElement
 			}
 		} else { // If Navbar is bottom-positioned
 			if (syiro.utilities.TypeOfThing(properties.content, "string") && (properties.content.length !== 0)){ // If content is defined
 				let generatedElement : HTMLElement = syiro.utilities.ElementCreator("label", { "content" : properties.content }); // Generate a generic label element
-				componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the navbar				
+				componentElement.insertBefore(generatedElement, componentElement.firstChild); // Prepend the label to the navbar
 			}
 		}
-		
+
 		for (let individualItem of properties.items){ // For each individualItem in navigationItems Object array
 			let typeOfItem : string = syiro.utilities.TypeOfThing(individualItem); // Get the type of the individualItem
 

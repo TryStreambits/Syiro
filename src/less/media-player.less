@@ -6,7 +6,6 @@ body {
         // #region Shared Attributes
 
         .left;
-        font-size: 13px;
         background-color: black;
         background-repeat: no-repeat; // Do not repeat any Video Art
         background-size: 100%; // Ensure Video Art is full container
@@ -135,11 +134,11 @@ body {
                 background-color: transparent;
                 border-radius: 0;
                 margin: 0 5px 0 5px; // Center on Media Control
-                
+
                 &:after {
                     font-size: 13px;
                 }
-                
+
                 &:not([data-syiro-render-icon="play"]){ // Is not the play button
                     .right;
                 }
@@ -166,10 +165,10 @@ body {
                 .left;
                 .dimensions(7px, 100%); // 7px height, full width (fill entire parent width)
                 margin: 0 0 3px 0; // 3px margin on bottom
-                
+
                 .noAppearance(){
                     -moz-appearance: none; // No Firefox appearance
-                    -webkit-appearance: none; // No WebKit appearance   
+                    -webkit-appearance: none; // No WebKit appearance
                     background-color: transparent;
                     background: transparent;
                     border: 0;
@@ -196,7 +195,7 @@ body {
                     margin: 0;
                     padding: 0;
                 }
-                                
+
                 & > input { // Normal input styling
                     &::-moz-range-track { // Gecko Input Track
                         .trackProperties;
@@ -206,35 +205,35 @@ body {
                         .trackProperties;
                     }
 
-                    .trackProperties; // Normal                    
+                    .trackProperties; // Normal
                 }
-                
+
                 &:not(:active){ // If the progressbar is NOT active
                     & > input::-ms-range-thumb { // IE Range Thumb
                         .noAppearance;
                     }
-                    
+
                     & > input::-moz-range-thumb { // Gecko Range Thumb
-                        .noAppearance;                   
+                        .noAppearance;
                     }
-                    
+
                     & > input::-webkit-slider-thumb { // Webkit Slider Thumb
                         .noAppearance;
                     }
                 }
-                
+
                 &:active { // If the progressbar is active
                     & > input::-ms-range-thumb { // IE Range Thumb
                         .thumbProperties;
                     }
-                    
+
                     & > input::-moz-range-thumb { // Gecko Range Thumb
-                        .thumbProperties;                   
+                        .thumbProperties;
                     }
-                    
+
                     & > input::-webkit-slider-thumb { // Webkit Slider Thumb
                         .thumbProperties;
-                    }                    
+                    }
                 }
             }
 

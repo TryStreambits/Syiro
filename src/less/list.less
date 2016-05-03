@@ -9,7 +9,6 @@ body {
     .listItemProperties(){
     	.left;
         .dimensions(@listItemHeight, e("calc(100% - @{listItemHalfHeight})"));
-    	font-size: 13px;
     	line-height: @listItemHeight;
         padding: 0 @listItemPadding; // Padding on left and right
     	overflow: hidden;
@@ -23,6 +22,7 @@ body {
         overflow: hidden;
 
         &[data-syiro-component-owner]{ // If this List is owned
+            max-width: 200px; // Enforce a sane size
     		background-color: darken(@syiroBackground, 2.5); // Set background to slightly darkened form of @syiroBackground
     		border-top: 2px solid darken(@syiroBackground, 20%);
     		position: fixed; // Fixed position
@@ -96,9 +96,9 @@ body {
             // #endregion
         }
     }
-    
+
     // #region Dir-Specific
-    
+
     &:not([dir="rtl"]){ // LTR
         div[data-syiro-component="list"]{
             & > div[data-syiro-minor-component="list-content"]{
@@ -111,10 +111,10 @@ body {
         				.right; // Float the component to the right
         			}
                 }
-            }                    
+            }
         }
     }
-    
+
     &[dir="rtl"]{ // RTL
         div[data-syiro-component="list"]{
             & > div[data-syiro-minor-component="list-content"]{
@@ -122,12 +122,12 @@ body {
                     & > a, & > img, & > picture { // Inner images and pictures links
                         .right;
                     }
-                    
+
                     & > div[data-syiro-component="button"]{ // Inner Buttons
         				.left; // Float the component to the right
         			}
                 }
-            }                    
-        }        
+            }
+        }
     }
 }

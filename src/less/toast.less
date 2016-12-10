@@ -110,15 +110,6 @@ body {
 
     	// #endregion
 
-    	// #region Dialog-Specific Toast Styling
-
-    	&[data-syiro-component-type="dialog"]{
-    		opacity: 0; // Default opacity of 0 (transparent)
-    		visibility: hidden; // Default to a hidden Dialog Toast
-    	}
-
-    	// #endregion
-
     	// #region Small Screen Devices
 
     	@media screen and (max-width: 1024px){
@@ -126,13 +117,9 @@ body {
     		top: 5%; // 5% from the top
     		left: 10%; // 10% from left
 
-    		&[data-syiro-component-type="normal"]:not([data-syiro-animation="slide"]){ // "Normal" Toasts that aren't already being shown via a slide animation (happens during scaling from large -> small document)
+    		&:not([data-syiro-animation="slide"]){ // "Normal" Toasts that aren't already being shown via a slide animation (happens during scaling from large -> small document)
     			opacity: 0; // Default opacity of 0 (transparent)
     			visibility: hidden; // Default to a hidden Dialog Toast
-    		}
-
-    		&[data-syiro-component-type="dialog"]{ // Dialog Toasts
-    			height: 90%; // Ensure Dialog covers the majority of the page
     		}
     	}
 
@@ -141,29 +128,12 @@ body {
     	// #region Reasonably-Sized Devices and Beyond
 
     	@media screen and (min-width: 1024px){
-    		// #region Normal-Specific Toast Styling
+			.right;
+			width: 300px;
+			left:100%;// Default to 100% outside the screen (on the right)
+			bottom: 10px;
 
-    		&[data-syiro-component-type="normal"]{
-    			.right;
-    			width: 300px;
-    			left:100%;// Default to 100% outside the screen (on the right)
-    			bottom: 10px;
-
-    			.slideLeft("calc(100% - 300px - 10px)", 125) // Dynamically calculate 10px from the right edge, slide within 125ms
-    		}
-
-    		// #endregion
-
-    		// #region Dialog-Specific Toast Styling
-
-    		&[data-syiro-component-type="dialog"]{
-    			.left;
-                .dimensions(60%, 40%); // 60% of page height, 40% of width
-    			top: 20%; // Center Dialog Toast vertically
-    			left: 30%; // Center Dialog Toast horizontally
-    		}
-
-    		// #endregion
+			.slideLeft("calc(100% - 300px - 10px)", 125); // Dynamically calculate 10px from the right edge, slide within 125ms
     	}
 
     	// #endregion

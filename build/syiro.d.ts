@@ -238,7 +238,6 @@ interface ToastPropertiesObject extends Object {
     buttons?: Array<ToastButtonPropertiesObject>;
     message: string;
     title?: string;
-    type?: "dialog" | "normal";
 }
 interface ToastButtonPropertiesObject extends Object {
     action?: "affirm" | "deny";
